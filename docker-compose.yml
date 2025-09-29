@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Servicio principal - Análisis de datos
+  nna-analyzer:
+    build: .
+    container_name: nna-analyzer
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - TZ=America/Mexico_City
+    networks:
+      - nna-network
+    command: ["python", "demo_docker.py", "schedule"]
+  
+  # Servicio web - Interfaz Flask
+  nna-webapp:
+    build: .
+    container_name: nna-webapp
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - FLASK_APP=app_docker.py
+      - FLASK_ENV=production
+      - PYTHONPATH=/app
+      - TZ=America/Mexico_City
+    networks:
+      - nna-network
+    depends_on:
+      - nna-analyzer
+    command: ["python", "app_docker.py"]
+
+networks:
+  nna-network:
+    driver: bridge
+
+volumes:
+  nna-data:
+  nna-logs:

@@ -91,8 +91,22 @@
         <tbody>
             {% for article in articles %}
             <tr {% if article.menores_identificados == 'Sí' %}class="highlight"{% endif %}>
-                <td>{{ article.titulo }}</td>
-                <td>{{ article.contenido[:100] }}{% if article.contenido|length > 100 %}...{% endif %}</td>
+                <td>
+                    {% if article.enlace %}
+                      <a href="{{ article.enlace}}" target="_blank" rel="noopener noreferrer">
+                        {{ article.titulo }}
+                      </a>
+                    {% else %}
+                        {{ article.titulo }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if article.contenido and article.contenido|length > 0 %}
+                        {{ article.contenido[:100] }}{% if article.contenido|length > 100 %}...{% endif %}
+                    {% else %}
+                        <em>Sin contenido</em>
+                    {% endif %}
+                </td>
                 <td>{{ article.fecha }}</td>
                 <td>{{ article.fuente.split('/')[-1] }}</td>
                 <td>{{ article.cluster }}</td>

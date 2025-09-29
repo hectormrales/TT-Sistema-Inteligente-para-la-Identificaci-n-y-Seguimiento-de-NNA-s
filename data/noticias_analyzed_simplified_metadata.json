@@ -1,0 +1,27 @@
+{
+  "total_noticias": 146,
+  "noticias_con_nna": 41,
+  "columnas_disponibles": [
+    "titulo",
+    "contenido",
+    "enlace",
+    "fuente",
+    "fecha",
+    "cluster",
+    "menores_identificados",
+    "titulo_limpio",
+    "contenido_limpio",
+    "topic_id",
+    "topic_probability",
+    "topic_description",
+    "most_similar_doc_idx",
+    "max_similarity"
+  ],
+  "version": "simplified_analyzer_v1.0",
+  "algoritmos_usados": [
+    "TF-IDF",
+    "LDA (scikit-learn)",
+    "K-Means",
+    "Similitud Coseno"
+  ]
+}

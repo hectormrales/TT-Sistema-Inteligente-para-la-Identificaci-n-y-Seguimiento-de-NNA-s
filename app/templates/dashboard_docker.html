@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Inteligente NNA - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card.nna {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .stat-card.clusters {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .stat-card.topics {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .news-card {
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .badge-nna {
+            background-color: #f5576c;
+        }
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #667eea;
+        }
+        .btn-analyze {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+        }
+        .loading {
+            display: none;
+        }
+        .container-fluid {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-0">
+                            <i class="fas fa-shield-alt text-primary"></i>
+                            Sistema Inteligente NNA
+                        </h1>
+                        <p class="text-muted">Identificación y Seguimiento de Casos</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary btn-analyze" onclick="runAnalysis()">
+                            <i class="fas fa-play"></i> Ejecutar Análisis
+                        </button>
+                        <button class="btn btn-success" onclick="exportData()">
+                            <i class="fas fa-download"></i> Exportar CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="row loading" id="loadingDiv">
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Ejecutando análisis completo...</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row" id="statsRow">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0" id="totalNoticias">-</h3>
+                            <p class="mb-0">Total Noticias</p>
+                        </div>
+                        <i class="fas fa-newspaper fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card nna">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0" id="noticiasNNA">-</h3>
+                            <p class="mb-0">Casos NNA</p>
+                        </div>
+                        <i class="fas fa-child fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card clusters">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0" id="clusters">-</h3>
+                            <p class="mb-0">Clusters</p>
+                        </div>
+                        <i class="fas fa-project-diagram fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card topics">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0" id="topics">-</h3>
+                            <p class="mb-0">Tópicos</p>
+                        </div>
+                        <i class="fas fa-tags fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-search"></i> Búsqueda Inteligente
+                        </h5>
+                        <div class="input-group">
+                            <input type="text" class="form-control search-box" 
+                                   placeholder="Buscar noticias (ej: feminicidio, violencia, niños)..." 
+                                   id="searchInput">
+                            <button class="btn btn-primary" onclick="searchNews()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">
+                            La búsqueda incluye sinónimos automáticamente (ej: "niños" encuentra también "menores", "NNA")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Results -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list"></i> 
+                            <span id="resultsTitle">Últimas Noticias</span>
+                        </h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="loadNews(true)">
+                                Solo NNA
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadNews(false)">
+                                Todas
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="newsContainer">
+                            <p class="text-muted text-center">Cargando noticias...</p>
+                        </div>
+                        <nav id="pagination" class="mt-3" style="display: none;">
+                            <ul class="pagination justify-content-center">
+                                <!-- Pagination buttons will be inserted here -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <p class="text-muted">
+                    Sistema Inteligente para Identificación y Seguimiento de NNA - 
+                    <span id="lastUpdate">-</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentPage = 1;
+        let onlyNNA = false;
+
+        // Cargar estadísticas
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('totalNoticias').textContent = stats.total_noticias;
+                    document.getElementById('noticiasNNA').textContent = stats.noticias_nna;
+                    document.getElementById('clusters').textContent = stats.clusters;
+                    document.getElementById('topics').textContent = stats.topics;
+                    document.getElementById('lastUpdate').textContent = stats.ultima_actualizacion;
+                }
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Cargar noticias
+        async function loadNews(nnaOnly = false, page = 1) {
+            onlyNNA = nnaOnly;
+            currentPage = page;
+            
+            try {
+                const url = `/api/noticias?page=${page}&per_page=10&only_nna=${nnaOnly}`;
+                const response = await fetch(url);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayNews(data.noticias);
+                    displayPagination(data);
+                    document.getElementById('resultsTitle').textContent = 
+                        nnaOnly ? `Casos NNA (${data.total})` : `Todas las Noticias (${data.total})`;
+                }
+            } catch (error) {
+                console.error('Error cargando noticias:', error);
+                document.getElementById('newsContainer').innerHTML = 
+                    '<p class="text-danger">Error cargando noticias</p>';
+            }
+        }
+
+        // Mostrar noticias
+        function displayNews(noticias) {
+            const container = document.getElementById('newsContainer');
+            
+            if (noticias.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">No se encontraron noticias</p>';
+                return;
+            }
+
+            let html = '';
+            noticias.forEach(noticia => {
+                const badgeNNA = noticia.menores_identificados === 'Si' ? 
+                    '<span class="badge badge-nna">NNA</span>' : '';
+                
+                html += `
+                    <div class="news-card card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">${noticia.titulo}</h6>
+                                ${badgeNNA}
+                            </div>
+                            <p class="card-text text-muted small">${noticia.contenido}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> ${noticia.fecha} | 
+                                    <i class="fas fa-link"></i> ${noticia.fuente}
+                                </small>
+                                <div class="text-end">
+                                    <small class="text-muted">
+                                        Cluster: ${noticia.cluster} | 
+                                        Tópico: ${noticia.topic_id} | 
+                                        Similitud: ${(noticia.similitud * 100).toFixed(1)}%
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Mostrar paginación
+        function displayPagination(data) {
+            const paginationContainer = document.getElementById('pagination');
+            const ul = paginationContainer.querySelector('ul');
+            
+            if (data.total_pages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            
+            // Previous button
+            html += `<li class="page-item ${data.page <= 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page - 1})">Anterior</a>
+            </li>`;
+            
+            // Page numbers
+            for (let i = 1; i <= Math.min(data.total_pages, 5); i++) {
+                html += `<li class="page-item ${i === data.page ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${i})">${i}</a>
+                </li>`;
+            }
+            
+            // Next button
+            html += `<li class="page-item ${data.page >= data.total_pages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page + 1})">Siguiente</a>
+            </li>`;
+            
+            ul.innerHTML = html;
+            paginationContainer.style.display = 'block';
+        }
+
+        // Búsqueda de noticias
+        async function searchNews() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayNews(data.noticias);
+                    document.getElementById('resultsTitle').textContent = 
+                        `Resultados para "${query}" (${data.resultados})`;
+                    document.getElementById('pagination').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error en búsqueda:', error);
+            }
+        }
+
+        // Enter key en búsqueda
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchNews();
+            }
+        });
+
+        // Ejecutar análisis
+        async function runAnalysis() {
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('statsRow').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/analyze');
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Recargar datos
+                    await loadStats();
+                    await loadNews();
+                    alert('Análisis completado exitosamente');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error ejecutando análisis:', error);
+                alert('Error ejecutando análisis');
+            } finally {
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('statsRow').style.display = 'flex';
+            }
+        }
+
+        // Exportar datos
+        function exportData() {
+            window.location.href = '/api/export/csv';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadNews();
+        });
+    </script>
+</body>
+</html>
