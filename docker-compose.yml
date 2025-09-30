@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Servicio principal - Análisis de datos
   nna-analyzer:

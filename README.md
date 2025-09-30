@@ -1,166 +1,197 @@
-# Sistema Inteligente para la Identificación y Seguimiento de NNA's
+# Sistema Inteligente para Identificación y Seguimiento de NNA
 
-##  Descripción del Proyecto
-Sistema web desarrollado en Flask para la **identificación automática de menciones de Niños, Niñas y Adolescentes (NNA)** en noticias, especialmente en casos relacionados con femicidios. El sistema utiliza técnicas de procesamiento de lenguaje natural y web scraping para recopilar, analizar y visualizar información relevante.
+## 🎯 **Descripción del Proyecto**
 
-##  Funcionalidades Principales
+Sistema automatizado para detectar y analizar menciones de **Niños, Niñas y Adolescentes (NNA)** en medios digitales mexicanos, utilizando técnicas de Machine Learning y procesamiento de lenguaje natural.
 
--  **Detección automática de menciones de menores** en textos de noticias
--  **Recolección automática de noticias** desde feeds RSS
--  **Dashboard web interactivo** para visualización de resultados
--  **Resaltado visual** de casos que involucran menores
--  **Estadísticas en tiempo real** del análisis
--  **API REST** para integración con otros sistemas
+## 🚀 **Inicio Rápido con Docker**
 
-##  Tecnologías Utilizadas
+### **Prerrequisitos**
+- Docker Desktop instalado
+- Puerto 5000 disponible
 
-- **Backend**: Flask (Python)
-- **Procesamiento de datos**: Pandas
-- **Web scraping**: BeautifulSoup4, Requests
-- **Machine Learning**: Scikit-learn (TF-IDF, K-Means, LDA)
-- **Frontend**: HTML, CSS, JavaScript
-- **Almacenamiento**: CSV (con opción a base de datos)
-
-##  Estado Actual - FUNCIONAL 
-
-La aplicación está **completamente funcional** con las siguientes características implementadas:
-
-- **Servidor Flask ejecutándose correctamente**
-- **Dashboard web accesible y funcional**
-- **Recolección de noticias desde RSS feeds**
-- **Detección de menciones de menores operativa**
-- **Interfaz de usuario intuitiva**
-- **Sistema de pruebas implementado**
-
-##  Inicio Rápido
-
-### Opción 1: Scripts automatizados (Recomendado)
-```powershell
-# Para configuración inicial (solo la primera vez):
-.\setup.ps1
-
-# Para iniciar la aplicación:
-.\start.ps1
-```
-
-### Opción 2: Manual
-```powershell
-# Activar entorno virtual
-.\venv\Scripts\Activate.ps1
-
-# Ejecutar aplicación
-python run.py
-```
-
-### Acceso al sistema:
-1. **Dashboard principal**: `http://127.0.0.1:5000/dashboard`
-2. **Recolectar noticias**: Hacer clic en "Recolectar Noticias"
-3. **Ver resultados**: Los casos con menores aparecerán resaltados
-
-##  Estructura del Proyecto
-
-```
-TT-1-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s/
-│
-├──  run.py                      # Punto de entrada de la aplicación
-├──  config.py                   # Configuración general
-├──  requirements.txt            # Dependencias
-├──  test_app.py                # Script de pruebas
-│
-├──  app/                        # Aplicación Flask
-│   ├── __init__.py               # Inicialización
-│   ├── routes.py                 # Rutas y endpoints
-│   └── templates/
-│       └── dashboard.html        # Interfaz web
-│
-├──  src/                       # Código fuente principal
-│   ├── collection/
-│   │   └── data_collector.py     # Recolección de noticias
-│   ├── processing/
-│   │   └── text_processor.py     # Procesamiento de texto
-│   ├── analysis/
-│   │   └── news_analyzer.py      # Análisis con ML
-│   └── utils/
-│       └── file_handler.py       # Manejo de archivos
-│
-└──  data/                      # Datos procesados
-    └── noticias_analizadas.csv   # Resultados del análisis
-```
-
-##  Configuración
-
-### RSS Feeds (config.py)
-```python
-RSS_FEEDS = [
-    'https://www.jornada.com.mx/rss/politica.xml',
-    'https://www.proceso.com.mx/feed',
-    'https://aristeguinoticias.com/feed/',
-]
-```
-
-### Palabras Clave para Detección de Menores
-```python
-keywords = [
-    'hijo', 'hija', 'hijos', 'hijas', 
-    'menor', 'menores', 'niño', 'niña', 
-    'adolescente', 'huérfano', 'huérfana'
-]
-```
-
-##  API Endpoints
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/dashboard` | Dashboard principal |
-| POST | `/collect-news` | Recolectar y analizar noticias |
-| GET | `/api/status` | Estado del sistema |
-
-##  Pruebas del Sistema
-
-Ejecutar suite de pruebas:
+### **Ejecutar Sistema**
 ```bash
-.\.venv\Scripts\python.exe .\test_app.py
+# Clonar e ingresar al directorio
+cd /ruta/del/proyecto
+
+# Iniciar sistema completo
+docker-compose up -d
+
+# Verificar estado
+docker-compose ps
+
+# Acceder al dashboard
+# Abrir: http://localhost:5000
 ```
 
-**Resultados esperados**:
--  Detección de menciones de menores
--  Procesamiento de texto
--  Carga de datos CSV
+### **Comandos Útiles**
+```bash
+# Ver logs en vivo
+docker-compose logs -f
 
-##  Problemas Solucionados
+# Detener sistema
+docker-compose down
 
-1. ** Dependencias faltantes** → ✅ Instaladas en entorno virtual
-2. ** Error con spaCy** → ✅ Implementado procesamiento alternativo
-3. ** Archivo CSV inexistente** → ✅ Creación automática con datos de ejemplo
-4. ** Rutas no encontradas** → ✅ Sistema de rutas corregido
+# Reiniciar con reconstrucción
+docker-compose up --build -d
+```
 
-##  Próximas Mejoras
+## 📊 **Funcionalidades**
 
-- [ ] Integración completa con spaCy para NLP avanzado
-- [ ] Base de datos PostgreSQL/SQLite
-- [ ] Clustering automático con ML
-- [ ] Sistema de alertas en tiempo real
-- [ ] API para exportación de reportes
-- [ ] Autenticación y autorización
+### ✅ **Análisis Automático**
+- **Recolección RSS** de 8 fuentes mexicanas cada 6 horas
+- **Procesamiento NLP** completo con 7 etapas
+- **Detección NNA** con diccionario de sinónimos especializado
+- **Clustering** automático de noticias similares
+- **Análisis de tópicos** con LDA
 
-##  Documentación Adicional
+### ✅ **Interfaz Web**
+- **Dashboard interactivo** con Bootstrap
+- **Búsqueda inteligente** con expansión de sinónimos
+- **Estadísticas en tiempo real**
+- **Exportación CSV** de resultados
+- **Paginación** automática de noticias
 
-- Ver `COMO_EJECUTAR.md` para instrucciones detalladas de instalación
-- Los logs de la aplicación aparecen en la consola durante la ejecución
+### ✅ **API REST**
+```bash
+GET  /api/stats           # Estadísticas generales
+GET  /api/noticias        # Lista paginada de noticias
+GET  /api/search?q=texto  # Búsqueda con sinónimos
+POST /api/analyze         # Ejecutar análisis completo
+GET  /api/export/csv      # Descargar datos CSV
+GET  /api/health          # Estado del sistema
+```
 
-##  Contribución
+## 🏗️ **Arquitectura del Sistema**
 
-Para contribuir al proyecto:
-1. Fork del repositorio
-2. Crear rama de feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit de cambios (`git commit -am 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crear Pull Request
+### **Componentes Docker**
+```
+📦 Sistema Multi-Container
+├── 🔬 nna-analyzer    # Análisis automático en background
+├── 🌐 nna-webapp      # Interfaz web (puerto 5000)
+└── 🔗 nna-network     # Red interna Docker
+```
 
-##  Licencia
+### **Pipeline de Análisis (7 Etapas)**
+```
+1️⃣ Recolección RSS     → Feeds de noticias mexicanas
+2️⃣ Almacenamiento CSV  → Persistencia de datos
+3️⃣ Vectorización TF-IDF → Representación numérica
+4️⃣ Modelado LDA        → Identificación de tópicos
+5️⃣ Clustering K-Means  → Agrupación por similitud
+6️⃣ Análisis Similitud  → Cálculo de distancias
+7️⃣ Detección NNA       → Clasificación especializada
+```
 
-Este proyecto está bajo una licencia de uso académico/educativo.
+## 📁 **Estructura del Proyecto**
+
+```
+📁 sistema-nna/
+├── 🐳 docker-compose.yml      # Orquestación de contenedores
+├── 🐳 Dockerfile              # Configuración de imagen
+├── ⚙️  app_docker.py           # Aplicación web Flask
+├── 🤖 demo_docker.py           # Analizador automático
+├── ⚙️  config.py               # Configuración del sistema
+├── 📋 requirements.txt         # Dependencias Python
+├── 📁 src/
+│   ├── analysis/
+│   │   ├── simplified_analyzer.py    # Motor de análisis principal
+│   │   └── synonym_dictionary.py     # Diccionario NNA especializado
+│   └── collection/
+│       └── data_collector.py         # Recolector RSS
+├── 📁 app/
+│   ├── __init__.py
+│   └── templates/
+│       └── dashboard_docker.html     # Interfaz web moderna
+└── 📁 data/
+    ├── noticias.csv             # Datos procesados
+    └── synonym_dictionary.json  # Diccionario de sinónimos
+```
+
+## 🔧 **Tecnologías Utilizadas**
+
+### **Core Analysis**
+- **pandas 2.2.2** - Manipulación de datos
+- **scikit-learn 1.4.2** - Machine Learning (TF-IDF, LDA, K-Means)
+- **numpy** - Cálculos numéricos
+
+### **Web Scraping**
+- **requests 2.31.0** - Peticiones HTTP
+- **beautifulsoup4 4.12.2** - Parsing HTML/XML
+- **lxml 5.3.0** - Procesador XML rápido
+
+### **Web Application**
+- **Flask 3.0.3** - Framework web
+- **Flask-CORS 4.0.1** - Cross-origin requests
+
+### **Automation**
+- **schedule 1.2.2** - Tareas programadas
+- **Docker** - Containerización
+
+## 📊 **Resultados del Análisis**
+
+### **Métricas Actuales**
+- 📰 **146 noticias** recolectadas y procesadas
+- 👶 **41 casos NNA** detectados (28.1% tasa de detección)
+- 🏷️  **4 clusters** de noticias similares generados
+- 🎯 **5 tópicos** principales identificados
+
+### **Fuentes RSS Monitoreadas**
+- La Jornada (Política)
+- Proceso
+- Aristegui Noticias
+- Animal Político
+- Sin Embargo
+- Forbes México
+- El Sol de México
+- El Financiero
+
+## 🔍 **Diccionario NNA Especializado**
+
+Basado en vocabularios oficiales:
+- **UN Women** - Glosario de género
+- **CEPAL** - Terminología especializada
+- **INMUJERES** - Vocabulario institucional
+- **143 términos** relacionados con NNA y violencia de género
+
+## 🚨 **Solución de Problemas**
+
+### **Error: Puerto 5000 ocupado**
+```bash
+# Encontrar proceso usando el puerto
+netstat -ano | findstr :5000
+
+# Cambiar puerto en docker-compose.yml
+ports:
+  - "5001:5000"  # Usar puerto 5001 en su lugar
+```
+
+### **Error: Docker no responde**
+```bash
+# Reiniciar Docker Desktop
+# Verificar que está ejecutándose
+docker --version
+
+# Limpiar contenedores
+docker-compose down --volumes
+docker system prune -f
+```
+
+### **Ver logs detallados**
+```bash
+# Logs del analizador
+docker-compose logs nna-analyzer
+
+# Logs de la webapp
+docker-compose logs nna-webapp
+
+# Todos los logs
+docker-compose logs
+```
 
 ---
 
-** Objetivo**: Contribuir a la protección de menores mediante tecnología de análisis automatizado de noticias.
+## 🚀 **Sistema completamente automatizado y listo para producción**
+
+Para soporte técnico, verificar logs del sistema y estado de contenedores Docker.

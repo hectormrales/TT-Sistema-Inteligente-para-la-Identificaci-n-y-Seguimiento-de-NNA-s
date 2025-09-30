@@ -66,15 +66,12 @@ class DockerDemo:
                 
             self.log("🔬 Iniciando análisis completo...")
             
-            # Leer datos
-            df = pd.read_csv(self.data_file)
-            self.log(f"📊 Analizando {len(df)} noticias")
+            # Ejecutar análisis completo (lee los datos automáticamente)
+            df_analyzed = self.analyzer.run_complete_analysis()
             
-            # Ejecutar análisis
-            df_analyzed = self.analyzer.analyze_news(df)
-            
-            # Guardar resultados
-            df_analyzed.to_csv(self.data_file, index=False)
+            if df_analyzed is not None and not df_analyzed.empty:
+                # Guardar resultados en el archivo principal
+                df_analyzed.to_csv(self.data_file, index=False)
             
             # Estadísticas
             nna_count = len(df_analyzed[df_analyzed['menores_identificados'] == 'Si'])

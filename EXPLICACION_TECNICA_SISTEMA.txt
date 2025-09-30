@@ -1,0 +1,210 @@
+# Sistema Inteligente para Identificación y Seguimiento de NNA
+## Explicación Técnica del Funcionamiento
+
+### Introducción al Sistema
+
+El Sistema Inteligente para Identificación y Seguimiento de NNA (Niños, Niñas y Adolescentes) es una aplicación automatizada que analiza noticias de medios digitales mexicanos para detectar y clasificar menciones relacionadas con casos de violencia hacia menores de edad. El sistema está diseñado bajo una arquitectura de microservicios utilizando contenedores Docker y emplea técnicas avanzadas de procesamiento de lenguaje natural y machine learning.
+
+### Arquitectura General del Sistema
+
+El sistema está compuesto por dos servicios principales ejecutándose en contenedores Docker independientes:
+
+1. **Servicio Analizador (nna-analyzer)**: Responsable de la recolección automática de datos y el procesamiento analítico
+2. **Servicio Web (nna-webapp)**: Proporciona la interfaz de usuario y API REST para consulta de resultados
+
+Ambos servicios comparten un volumen de datos persistente donde se almacenan los resultados del análisis en formato CSV y los metadatos en formato JSON.
+
+### Proceso de Recolección de Datos
+
+#### Fuentes de Información
+
+El sistema monitorea ocho fuentes principales de noticias mexicanas a través de sus feeds RSS:
+
+- La Jornada (sección política)
+- Proceso
+- Aristegui Noticias  
+- Animal Político
+- Sin Embargo
+- Forbes México
+- El Sol de México
+- El Financiero
+
+#### Mecanismo de Recolección
+
+La recolección se ejecuta automáticamente cada 6 horas mediante un planificador interno. El proceso funciona de la siguiente manera:
+
+1. **Conexión a feeds RSS**: El sistema realiza peticiones HTTP a cada URL de feed RSS configurada
+2. **Parsing XML**: Utiliza BeautifulSoup para extraer la información estructurada de cada feed
+3. **Extracción de metadatos**: Para cada noticia obtiene título, contenido, enlace, fecha de publicación y fuente
+4. **Normalización de datos**: Convierte las fechas a formato ISO 8601 y limpia el contenido HTML
+5. **Detección de duplicados**: Compara títulos y contenido para evitar almacenar noticias repetidas
+6. **Almacenamiento inicial**: Guarda los datos en formato CSV en el archivo noticias.csv
+
+### Pipeline de Análisis de Datos
+
+El sistema implementa un pipeline de análisis de 7 etapas secuenciales que procesan los datos recolectados:
+
+#### Etapa 1: Carga y Preparación de Datos
+
+- Lee el archivo CSV con las noticias recolectadas
+- Valida la integridad de los datos
+- Realiza conteo inicial de registros
+- Prepara las estructuras de datos para el procesamiento
+
+#### Etapa 2: Detección Inicial de Menciones NNA
+
+Implementa un algoritmo de detección basado en patrones de texto que identifica menciones de menores de edad:
+
+- **Palabras clave directas**: hijo, hija, menor, niño, niña, adolescente, huérfano, infante, bebé, recién nacido, NNA
+- **Patrones de edad**: Expresiones regulares que detectan menciones de edades específicas como "de X años" o "X meses"
+- **Normalización de texto**: Elimina acentos y convierte a minúsculas para mejorar la detección
+- **Clasificación binaria**: Asigna "Si" o "No" a cada noticia según la presencia de menciones
+
+#### Etapa 3: Vectorización TF-IDF
+
+Convierte el contenido textual en representaciones numéricas para el procesamiento por algoritmos de machine learning:
+
+- **Preprocesamiento de texto**: Limpia caracteres especiales, normaliza espacios y elimina stop words
+- **Cálculo TF-IDF**: Genera matrices de términos ponderados por frecuencia e importancia
+- **Configuración de parámetros**: Utiliza máximo 1000 características, n-gramas de 1-2 palabras
+- **Reducción de dimensionalidad**: Filtra términos poco relevantes para optimizar el procesamiento
+
+#### Etapa 4: Modelado de Tópicos con LDA
+
+Aplica Latent Dirichlet Allocation para identificar temas principales en las noticias:
+
+- **Configuración del modelo**: Genera 5 tópicos principales con 10 términos representativos cada uno
+- **Entrenamiento iterativo**: Utiliza 100 iteraciones para optimizar la distribución de temas
+- **Asignación de tópicos**: Calcula la probabilidad de pertenencia de cada noticia a cada tópico
+- **Extracción de palabras clave**: Identifica los términos más representativos de cada tema
+- **Generación de metadatos**: Almacena información sobre la coherencia y distribución de tópicos
+
+#### Etapa 5: Clustering con K-Means
+
+Agrupa las noticias por similitud de contenido utilizando algoritmo de clustering:
+
+- **Configuración de clusters**: Genera 4 grupos principales de noticias similares
+- **Algoritmo K-Means**: Utiliza las representaciones TF-IDF como espacio de características
+- **Cálculo de centroides**: Determina los puntos centrales de cada grupo
+- **Asignación de etiquetas**: Clasifica cada noticia en su cluster correspondiente
+- **Análisis de cohesión**: Calcula métricas de calidad del clustering como silhouette score
+
+#### Etapa 6: Análisis de Similitud
+
+Computa similitudes entre noticias para identificar patrones y relaciones:
+
+- **Matriz de similitud**: Calcula similitud coseno entre todos los pares de noticias
+- **Umbral de relevancia**: Identifica pares con similitud superior al 50%
+- **Ranking de similitudes**: Ordena las noticias por proximidad de contenido
+- **Detección de agrupaciones**: Encuentra conjuntos de noticias altamente relacionadas
+- **Almacenamiento de métricas**: Guarda las puntuaciones de similitud para cada documento
+
+#### Etapa 7: Sistema de Búsqueda Mejorada
+
+Implementa un diccionario de sinónimos especializado para mejorar la detección y búsqueda:
+
+- **Diccionario especializado**: Contiene 143 términos relacionados con NNA y violencia de género
+- **Fuentes oficiales**: Basado en vocabularios de UN Women, CEPAL e INMUJERES
+- **Expansión de consultas**: Automáticamente incluye sinónimos en las búsquedas
+- **Ejemplos de sinónimos**: feminicidio/femicidio, niños/menores/NNA, violencia/agresión
+- **Persistencia**: Almacena el diccionario en formato JSON para uso posterior
+
+### Tecnologías y Algoritmos Empleados
+
+#### Librerías de Machine Learning
+
+- **scikit-learn 1.4.2**: Framework principal para algoritmos de ML
+- **TfidfVectorizer**: Para la vectorización de texto
+- **LatentDirichletAllocation**: Para modelado de tópicos
+- **KMeans**: Para clustering de documentos
+- **cosine_similarity**: Para cálculo de similitudes
+
+#### Procesamiento de Datos
+
+- **pandas 2.2.2**: Manipulación y análisis de datasets
+- **numpy**: Operaciones numéricas y matriciales
+- **requests**: Comunicación HTTP para feeds RSS
+- **BeautifulSoup4**: Parsing de contenido XML y HTML
+
+#### Aplicación Web
+
+- **Flask 3.0.3**: Framework web para la interfaz de usuario
+- **Flask-CORS**: Manejo de peticiones cross-origin
+- **Bootstrap 5**: Framework CSS para interfaz responsiva
+- **JavaScript**: Interactividad y comunicación con API
+
+### Flujo de Datos y Almacenamiento
+
+#### Estructura de Datos Principal
+
+El archivo noticias.csv contiene los siguientes campos para cada noticia procesada:
+
+- **titulo**: Título de la noticia
+- **contenido**: Texto completo del artículo
+- **enlace**: URL original de la noticia
+- **fuente**: Feed RSS de origen
+- **fecha**: Timestamp en formato ISO 8601
+- **menores_identificados**: Clasificación Si/No de menciones NNA
+- **cluster**: Identificador del grupo de clustering (0-3)
+- **topic_id**: Identificador del tópico principal (0-4)
+- **similitud**: Puntuación de similitud máxima con otras noticias
+
+#### Archivos de Metadatos
+
+- **noticias_analyzed_simplified_metadata.json**: Contiene información sobre la calidad del análisis, distribución de clusters, coherencia de tópicos y estadísticas generales
+- **synonym_dictionary.json**: Diccionario de sinónimos utilizado para búsquedas mejoradas
+
+### Interfaz Web y API
+
+#### Dashboard Principal
+
+La interfaz web proporciona:
+
+- **Vista general**: Estadísticas en tiempo real del análisis
+- **Lista de noticias**: Navegación paginada con filtros por tipo
+- **Búsqueda inteligente**: Sistema de consultas con expansión de sinónimos  
+- **Exportación**: Descarga de resultados en formato CSV
+- **Métricas visuales**: Indicadores de clusters, tópicos y casos detectados
+
+#### API REST
+
+El sistema expone los siguientes endpoints:
+
+- **GET /api/stats**: Estadísticas generales del sistema
+- **GET /api/noticias**: Lista paginada de noticias con filtros
+- **GET /api/search**: Búsqueda con expansión de sinónimos
+- **POST /api/analyze**: Ejecución manual del análisis completo
+- **GET /api/export/csv**: Descarga de datos procesados
+- **GET /api/health**: Estado de salud del sistema
+
+### Programación y Automatización
+
+El sistema opera de forma completamente autónoma mediante:
+
+- **Recolección automática**: Cada 6 horas ejecuta el proceso de obtención de noticias
+- **Análisis programado**: Cada 12 horas procesa los datos acumulados
+- **Persistencia de estado**: Mantiene continuidad entre ejecuciones
+- **Logging estructurado**: Registra todas las operaciones con timestamps
+- **Recuperación de errores**: Continúa operando ante fallos temporales de fuentes
+
+### Métricas de Rendimiento
+
+El sistema actual procesa aproximadamente:
+
+- **144 noticias por ciclo de recolección**
+- **Tasa de detección NNA**: 34.7% de las noticias contienen menciones relevantes
+- **Tiempo de análisis completo**: Aproximadamente 2-3 minutos por ciclo
+- **Precisión de clustering**: Silhouette score promedio de 0.3-0.4
+- **Cobertura temporal**: Análisis de noticias de las últimas 24-48 horas
+
+### Escalabilidad y Mantenimiento
+
+La arquitectura containerizada permite:
+
+- **Escalamiento horizontal**: Múltiples instancias de analizador
+- **Actualización sin interrupciones**: Despliegue de nuevas versiones
+- **Monitoreo centralizado**: Logs agregados de todos los servicios
+- **Configuración externa**: Modificación de parámetros sin reconstruir
+- **Backup automático**: Persistencia de datos en volúmenes Docker
+
+Este sistema representa una solución completa para la identificación automatizada de casos relacionados con NNA en medios digitales, combinando técnicas modernas de NLP con una arquitectura robusta y escalable.

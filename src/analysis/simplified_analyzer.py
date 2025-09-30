@@ -14,8 +14,6 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from src.collection.data_collector import collect_all_news, detect_children_mentions
-from src.processing.text_processor import clean_and_lemmatize_series
-from src.analysis.news_analyzer import cluster_dataframe
 from src.analysis.synonym_dictionary import SynonymDictionary, enhanced_search
 
 # Importaciones de ML que sí funcionan
@@ -23,6 +21,29 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.cluster import KMeans
+import re
+import unicodedata
+
+def clean_and_lemmatize_series(text_series):
+    """
+    Función simplificada de limpieza de texto.
+    """
+    def clean_text(text):
+        if pd.isna(text):
+            return ""
+        # Normalizar unicode
+        text = unicodedata.normalize('NFKD', str(text))
+        # Convertir a minúsculas
+        text = text.lower()
+        # Eliminar caracteres especiales, mantener solo letras, números y espacios
+        text = re.sub(r'[^\w\s]', ' ', text)
+        # Eliminar espacios múltiples
+        text = re.sub(r'\s+', ' ', text)
+        # Eliminar espacios al inicio y final
+        text = text.strip()
+        return text
+    
+    return text_series.apply(clean_text)
 
 class SimplifiedNewsAnalyzer:
     """
