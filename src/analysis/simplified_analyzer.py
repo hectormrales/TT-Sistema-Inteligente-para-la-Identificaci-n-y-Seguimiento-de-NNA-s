@@ -14,6 +14,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from src.collection.data_collector import collect_all_news, detect_children_mentions
+from src.collection.smart_data_collector import SmartDataCollector, collect_smart_news_data
 from src.analysis.synonym_dictionary import SynonymDictionary, enhanced_search
 
 # Importaciones de ML que sí funcionan
@@ -51,7 +52,7 @@ class SimplifiedNewsAnalyzer:
     Usa scikit-learn para todo el análisis de ML.
     """
     
-    def __init__(self):
+    def __init__(self, use_smart_collector: bool = True):
         self.df_original = None
         self.df_processed = None
         self.df_analyzed = None
@@ -60,25 +61,45 @@ class SimplifiedNewsAnalyzer:
         self.lda_model = None
         self.kmeans_model = None
         self.synonym_dict = SynonymDictionary()
+        self.use_smart_collector = use_smart_collector
+        self.smart_collector = SmartDataCollector() if use_smart_collector else None
         
-    def step_1_collect_data(self) -> pd.DataFrame:
-        """Paso 1: Recolección de datos desde RSS feeds."""
-        print("=== PASO 1: RECOLECCIÓN DE DATOS ===")
-        print("Recolectando noticias desde feeds RSS...")
+    def step_1_collect_data(self, relevance_threshold: float = 0.3) -> pd.DataFrame:
+        """Paso 1: Recolección de datos desde RSS feeds con análisis inteligente."""
+        print("=== PASO 1: RECOLECCIÓN INTELIGENTE DE DATOS ===")
         
-        self.df_original = collect_all_news()
-        
-        if len(self.df_original) == 0:
-            print("⚠️  No se recolectaron noticias. Verifique la configuración de RSS.")
-            return self.df_original
-        
-        print(f"✅ {len(self.df_original)} noticias recolectadas")
-        
-        # Detectar menciones a NNA
-        print("Detectando menciones a NNA...")
-        self.df_original['menores_identificados'] = self.df_original['contenido'].apply(detect_children_mentions)
-        nna_count = (self.df_original['menores_identificados'] == 'Si').sum()
-        print(f"🎯 {nna_count} noticias con menciones a NNA detectadas")
+        if self.use_smart_collector and self.smart_collector:
+            print("🤖 Usando recolector inteligente (Smart Collector)")
+            print("   - Verifica robots.txt automáticamente")
+            print("   - Filtra por relevancia antes de descargar contenido completo")
+            print("   - Respeta delays de crawling")
+            
+            import config
+            self.df_original = self.smart_collector.collect_smart_news(
+                config.RSS_FEEDS, 
+                relevance_threshold=relevance_threshold
+            )
+            
+            # El smart collector ya incluye detección NNA mejorada
+            if 'menores_identificados' in self.df_original.columns:
+                nna_count = (self.df_original['menores_identificados'] == 'Si').sum()
+                print(f"🎯 {nna_count} noticias con menciones a NNA detectadas")
+            
+        else:
+            print("📰 Usando recolector tradicional")
+            self.df_original = collect_all_news()
+            
+            if len(self.df_original) == 0:
+                print("⚠️  No se recolectaron noticias. Verifique la configuración de RSS.")
+                return self.df_original
+            
+            print(f"✅ {len(self.df_original)} noticias recolectadas")
+            
+            # Detectar menciones a NNA
+            print("Detectando menciones a NNA...")
+            self.df_original['menores_identificados'] = self.df_original['contenido'].apply(detect_children_mentions)
+            nna_count = (self.df_original['menores_identificados'] == 'Si').sum()
+            print(f"🎯 {nna_count} noticias con menciones a NNA detectadas")
         
         return self.df_original
     

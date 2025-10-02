@@ -1,0 +1,77 @@
+{
+  "jornada": {
+    "name": "La Jornada",
+    "url": "https://www.jornada.com.mx/rss/edicion.xml",
+    "type": "rss",
+    "enabled": true,
+    "scraping_config": {
+      "technique": "requests",
+      "delay": 2,
+      "max_retries": 3,
+      "timeout": 30,
+      "error_count": 0,
+      "last_success": null,
+      "respect_robots_txt": true
+    }
+  },
+  "milenio": {
+    "name": "Milenio",
+    "url": "https://www.milenio.com/rss",
+    "type": "rss",
+    "enabled": true,
+    "scraping_config": {
+      "technique": "requests",
+      "delay": 2,
+      "max_retries": 3,
+      "timeout": 30,
+      "error_count": 0,
+      "last_success": null,
+      "respect_robots_txt": true
+    }
+  },
+  "universal": {
+    "name": "El Universal",
+    "url": "https://www.eluniversal.com.mx/seccion/1/rss.xml",
+    "type": "rss",
+    "enabled": true,
+    "scraping_config": {
+      "technique": "requests",
+      "delay": 2,
+      "max_retries": 3,
+      "timeout": 30,
+      "error_count": 0,
+      "last_success": null,
+      "respect_robots_txt": true
+    }
+  },
+  "reforma": {
+    "name": "Reforma",
+    "url": "https://www.reforma.com/rss/portada.xml",
+    "type": "rss",
+    "enabled": true,
+    "scraping_config": {
+      "technique": "delayed_requests",
+      "delay": 3,
+      "max_retries": 3,
+      "timeout": 30,
+      "error_count": 0,
+      "last_success": null,
+      "respect_robots_txt": true
+    }
+  },
+  "proceso": {
+    "name": "Proceso",
+    "url": "https://www.proceso.com.mx/rss",
+    "type": "rss",
+    "enabled": true,
+    "scraping_config": {
+      "technique": "requests",
+      "delay": 2,
+      "max_retries": 3,
+      "timeout": 30,
+      "error_count": 0,
+      "last_success": null,
+      "respect_robots_txt": true
+    }
+  }
+}

@@ -28,3 +28,39 @@
 2025-09-30 16:47:18,408 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 16:47:18] "GET /api/analyze HTTP/1.1" 200 -
 2025-09-30 16:47:18,419 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 16:47:18] "GET /api/stats HTTP/1.1" 200 -
 2025-09-30 16:47:18,428 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 16:47:18] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-09-30 17:07:20,911 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:07:20] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-09-30 17:07:21,580 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:07:21] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-09-30 17:07:21,898 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:07:21] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-09-30 17:07:22,758 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:07:22] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-09-30 17:07:24,405 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:07:24] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-09-30 17:09:06,496 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:09:06] "GET /api/search?q=feminicidio HTTP/1.1" 200 -
+2025-09-30 17:09:14,602 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:09:14] "GET /api/search?q=mexico HTTP/1.1" 200 -
+2025-09-30 17:09:36,573 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 17:09:36] "GET /api/search?q=niño HTTP/1.1" 200 -
+2025-10-02 13:44:17,702 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 13:44:17] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-10-02 16:17:59,953 - app_docker - INFO - Iniciando aplicación web NNA Sistema
+2025-10-02 16:17:59,959 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.3:5000
+2025-10-02 16:17:59,960 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-02 16:18:18,505 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:18] "GET / HTTP/1.1" 200 -
+2025-10-02 16:18:18,863 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:18] "GET /api/stats HTTP/1.1" 200 -
+2025-10-02 16:18:18,872 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:18] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-02 16:18:32,143 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:32] "GET /api/analyze HTTP/1.1" 200 -
+2025-10-02 16:18:32,156 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:32] "GET /api/stats HTTP/1.1" 200 -
+2025-10-02 16:18:32,169 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:32] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-02 16:18:38,209 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:38] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-02 16:18:39,672 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:39] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-10-02 16:18:40,715 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:40] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-02 16:18:42,077 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:18:42] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-10-02 16:20:16,764 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:20:16] "GET /api/search?q=alejandro HTTP/1.1" 200 -
+2025-10-02 16:20:32,620 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:20:32] "GET /api/analyze HTTP/1.1" 200 -
+2025-10-02 16:20:32,637 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:20:32] "GET /api/stats HTTP/1.1" 200 -
+2025-10-02 16:20:32,649 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:20:32] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-02 16:20:57,564 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:20:57] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-02 16:20:58,249 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 16:20:58] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-10-02 17:06:47,451 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 17:06:47] "GET / HTTP/1.1" 200 -
+2025-10-02 17:06:47,511 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 17:06:47] "[33mGET /api/sources HTTP/1.1[0m" 404 -
+2025-10-02 17:06:47,546 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 17:06:47] "[33mPOST /api/sources HTTP/1.1[0m" 404 -
+2025-10-02 17:06:47,577 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 17:06:47] "[33mDELETE /api/sources/test_docker HTTP/1.1[0m" 404 -
+2025-10-02 17:06:47,634 - werkzeug - INFO - 172.18.0.1 - - [02/Oct/2025 17:06:47] "[31m[1mPOST /api/analyze HTTP/1.1[0m" 405 -

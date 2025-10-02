@@ -67,10 +67,21 @@
                         <p class="text-muted">Identificación y Seguimiento de Casos</p>
                     </div>
                     <div>
-                        <button class="btn btn-primary btn-analyze" onclick="runAnalysis()">
-                            <i class="fas fa-play"></i> Ejecutar Análisis
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-info btn-analyze" onclick="collectData()">
+                                <i class="fas fa-download"></i> Recolectar Datos
+                            </button>
+                            <button class="btn btn-primary btn-analyze" onclick="runAnalysis()">
+                                <i class="fas fa-play"></i> Análisis Tradicional
+                            </button>
+                            <button class="btn btn-success btn-analyze" onclick="runSmartAnalysis()">
+                                <i class="fas fa-robot"></i> Análisis Inteligente
+                            </button>
+                        </div>
+                        <button class="btn btn-info" onclick="checkRobotsTxt()">
+                            <i class="fas fa-shield-alt"></i> Verificar robots.txt
                         </button>
-                        <button class="btn btn-success" onclick="exportData()">
+                        <button class="btn btn-secondary" onclick="exportData()">
                             <i class="fas fa-download"></i> Exportar CSV
                         </button>
                     </div>
@@ -136,15 +147,31 @@
             </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="row mb-4">
+        <!-- Robots.txt Status Card -->
+        <div class="row mb-4" id="robotsStatusCard" style="display: none;">
             <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-shield-alt"></i> Estado de robots.txt
+                        </h5>
+                    </div>
+                    <div class="card-body" id="robotsStatusContent">
+                        <!-- Robot status content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Analysis Options -->
+        <div class="row mb-4">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-search"></i> Búsqueda Inteligente
                         </h5>
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <input type="text" class="form-control search-box" 
                                    placeholder="Buscar noticias (ej: feminicidio, violencia, niños)..." 
                                    id="searchInput">
@@ -155,6 +182,45 @@
                         <small class="text-muted">
                             La búsqueda incluye sinónimos automáticamente (ej: "niños" encuentra también "menores", "NNA")
                         </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-cog"></i> Configuración Inteligente
+                        </h5>
+                        <div class="mb-3">
+                            <label for="relevanceThreshold" class="form-label">
+                                Umbral de Relevancia: <span id="thresholdValue">0.3</span>
+                            </label>
+                            <input type="range" class="form-range" id="relevanceThreshold" 
+                                   min="0.1" max="0.9" step="0.1" value="0.3" 
+                                   oninput="updateThreshold(this.value)">
+                            <small class="text-muted">Mayor valor = más estricto en la detección NNA</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sources Management -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rss"></i> Gestión de Fuentes RSS
+                        </h5>
+                        <button class="btn btn-primary btn-sm" onclick="showAddSourceModal()">
+                            <i class="fas fa-plus"></i> Agregar Fuente
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="sourcesContainer">
+                            <p class="text-muted text-center">Cargando fuentes...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,12 +236,17 @@
                             <span id="resultsTitle">Últimas Noticias</span>
                         </h5>
                         <div>
-                            <button class="btn btn-sm btn-outline-primary" onclick="loadNews(true)">
-                                Solo NNA
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadNews(false)">
-                                Todas
-                            </button>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-success" onclick="runAdvancedAnalysis()">
+                                    <i class="fas fa-cogs"></i> Análisis Avanzado
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="loadNews(true)">
+                                    Solo NNA
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="loadNews(false)">
+                                    Todas
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -187,6 +258,117 @@
                                 <!-- Pagination buttons will be inserted here -->
                             </ul>
                         </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Source Modal -->
+        <div class="modal fade" id="addSourceModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Nueva Fuente RSS</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addSourceForm">
+                            <div class="mb-3">
+                                <label for="sourceId" class="form-label">ID de la Fuente</label>
+                                <input type="text" class="form-control" id="sourceId" required 
+                                       placeholder="ej: milenio, reforma">
+                                <small class="text-muted">Identificador único para la fuente</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sourceName" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="sourceName" required 
+                                       placeholder="ej: Milenio Digital">
+                            </div>
+                            <div class="mb-3">
+                                <label for="sourceUrl" class="form-label">URL del RSS</label>
+                                <input type="url" class="form-control" id="sourceUrl" required 
+                                       placeholder="https://example.com/feed.xml">
+                            </div>
+                            <div class="mb-3">
+                                <label for="sourceDelay" class="form-label">Delay (segundos)</label>
+                                <input type="number" class="form-control" id="sourceDelay" value="2" min="1" max="30">
+                                <small class="text-muted">Tiempo de espera entre peticiones</small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="addNewSource()">
+                            <i class="fas fa-plus"></i> Agregar Fuente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Source Modal -->
+        <div class="modal fade" id="editSourceModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Configurar Fuente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editSourceForm">
+                            <input type="hidden" id="editSourceId">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="editSourceName" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="editSourceName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="editSourceEnabled" class="form-label">Estado</label>
+                                        <select class="form-select" id="editSourceEnabled">
+                                            <option value="true">Habilitado</option>
+                                            <option value="false">Deshabilitado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSourceUrl" class="form-label">URL</label>
+                                <input type="url" class="form-control" id="editSourceUrl" required>
+                            </div>
+                            <h6 class="mt-4">Configuración de Scraping</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="editSourceTechnique" class="form-label">Técnica</label>
+                                        <select class="form-select" id="editSourceTechnique">
+                                            <option value="requests">Requests (Estándar)</option>
+                                            <option value="delayed_requests">Requests con Delays</option>
+                                            <option value="rotating_ua">Rotación User-Agent</option>
+                                            <option value="selenium">Selenium (JavaScript)</option>
+                                            <option value="async_requests">Requests Asíncronos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="editSourceDelay" class="form-label">Delay (segundos)</label>
+                                        <input type="number" class="form-control" id="editSourceDelay" min="1" max="30">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-warning" onclick="testSource()">
+                            <i class="fas fa-flask"></i> Probar
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="updateSource()">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -352,7 +534,7 @@
             }
         });
 
-        // Ejecutar análisis
+        // Ejecutar análisis tradicional
         async function runAnalysis() {
             document.getElementById('loadingDiv').style.display = 'block';
             document.getElementById('statsRow').style.display = 'none';
@@ -365,13 +547,453 @@
                     // Recargar datos
                     await loadStats();
                     await loadNews();
-                    alert('Análisis completado exitosamente');
+                    alert('Análisis tradicional completado exitosamente');
                 } else {
                     alert('Error: ' + result.error);
                 }
             } catch (error) {
                 console.error('Error ejecutando análisis:', error);
                 alert('Error ejecutando análisis');
+            } finally {
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('statsRow').style.display = 'flex';
+            }
+        }
+
+        // Ejecutar análisis inteligente
+        async function runSmartAnalysis() {
+            const threshold = document.getElementById('relevanceThreshold').value;
+            
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('statsRow').style.display = 'none';
+            
+            try {
+                const response = await fetch(`/api/analyze/smart?threshold=${threshold}`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Recargar datos
+                    await loadStats();
+                    await loadNews();
+                    
+                    let message = 'Análisis inteligente completado exitosamente\n\n';
+                    message += `📊 Estadísticas:\n`;
+                    message += `• Total noticias: ${result.stats.total_noticias}\n`;
+                    message += `• Casos NNA: ${result.stats.noticias_nna}\n`;
+                    
+                    if (result.stats.eficiencia_red) {
+                        message += `• Eficiencia de red: ${result.stats.eficiencia_red}\n`;
+                    }
+                    
+                    if (result.stats.articulos_alta_relevancia) {
+                        message += `• Artículos alta relevancia: ${result.stats.articulos_alta_relevancia}\n`;
+                    }
+                    
+                    alert(message);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error ejecutando análisis inteligente:', error);
+                alert('Error ejecutando análisis inteligente');
+            } finally {
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('statsRow').style.display = 'flex';
+            }
+        }
+
+        // Recolectar datos únicamente
+        async function collectData() {
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('statsRow').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/collect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Recargar datos
+                    await loadStats();
+                    await loadNews();
+                    
+                    alert(result.message || 'Recolección de datos completada exitosamente');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error ejecutando recolección:', error);
+                alert('Error ejecutando recolección de datos');
+            } finally {
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('statsRow').style.display = 'flex';
+            }
+        }
+
+        // Verificar robots.txt
+        async function checkRobotsTxt() {
+            try {
+                const response = await fetch('/api/robots-check');
+                const result = await response.json();
+                
+                if (response.ok) {
+                    displayRobotsStatus(result);
+                } else {
+                    alert('Error verificando robots.txt: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error verificando robots.txt:', error);
+                alert('Error verificando robots.txt');
+            }
+        }
+
+        // Mostrar estado de robots.txt
+        function displayRobotsStatus(data) {
+            const card = document.getElementById('robotsStatusCard');
+            const content = document.getElementById('robotsStatusContent');
+            
+            let html = `
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="text-center p-3 border rounded">
+                            <h4 class="text-success">${data.summary.allowed_sources}</h4>
+                            <small class="text-muted">Fuentes permitidas</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-center p-3 border rounded">
+                            <h4 class="text-warning">${data.summary.blocked_sources}</h4>
+                            <small class="text-muted">Fuentes bloqueadas</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6>Estado detallado por fuente:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Dominio</th>
+                                        <th>Estado</th>
+                                        <th>Delay (s)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+            
+            data.sources.forEach(source => {
+                html += `
+                    <tr>
+                        <td><code>${source.domain}</code></td>
+                        <td>${source.status}</td>
+                        <td>${source.delay}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted">
+                            Tasa de cumplimiento: ${data.summary.compliance_rate}
+                        </small>
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            card.style.display = 'block';
+        }
+
+        // Actualizar umbral de relevancia
+        function updateThreshold(value) {
+            document.getElementById('thresholdValue').textContent = value;
+        }
+
+        // ===== FUNCIONES DE GESTIÓN DE FUENTES =====
+
+        // Cargar fuentes
+        async function loadSources() {
+            try {
+                const response = await fetch('/api/sources');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displaySources(data.sources);
+                } else {
+                    console.error('Error cargando fuentes:', data.error);
+                }
+            } catch (error) {
+                console.error('Error cargando fuentes:', error);
+            }
+        }
+
+        // Mostrar fuentes
+        function displaySources(sources) {
+            const container = document.getElementById('sourcesContainer');
+            
+            if (Object.keys(sources).length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">No hay fuentes configuradas</p>';
+                return;
+            }
+
+            let html = '<div class="row">';
+            
+            Object.entries(sources).forEach(([sourceId, source]) => {
+                const statusBadge = source.enabled ? 
+                    '<span class="badge bg-success">Activo</span>' : 
+                    '<span class="badge bg-secondary">Inactivo</span>';
+                
+                const errorBadge = source.stats.error_count > 0 ?
+                    `<span class="badge bg-warning">${source.stats.error_count} errores</span>` : '';
+                
+                const lastSuccess = source.stats.last_success ? 
+                    new Date(source.stats.last_success).toLocaleString() : 'Nunca';
+
+                html += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-left-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">${source.name}</h6>
+                                    <div>
+                                        ${statusBadge}
+                                        ${errorBadge}
+                                    </div>
+                                </div>
+                                <p class="card-text small text-muted">
+                                    <i class="fas fa-link"></i> ${source.url}
+                                </p>
+                                <p class="card-text small">
+                                    <i class="fas fa-clock"></i> Último éxito: ${lastSuccess}<br>
+                                    <i class="fas fa-cog"></i> Técnica: ${source.scraping_config?.technique || 'requests'}<br>
+                                    <i class="fas fa-hourglass"></i> Delay: ${source.scraping_config?.delay || 2}s
+                                </p>
+                                <div class="btn-group btn-group-sm w-100" role="group">
+                                    <button class="btn btn-outline-primary" onclick="editSource('${sourceId}')">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="testSourceById('${sourceId}')">
+                                        <i class="fas fa-flask"></i> Probar
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="deleteSource('${sourceId}')">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Mostrar modal para agregar fuente
+        function showAddSourceModal() {
+            document.getElementById('addSourceForm').reset();
+            const modal = new bootstrap.Modal(document.getElementById('addSourceModal'));
+            modal.show();
+        }
+
+        // Agregar nueva fuente
+        async function addNewSource() {
+            const form = document.getElementById('addSourceForm');
+            const formData = new FormData(form);
+            
+            const sourceData = {
+                source_id: document.getElementById('sourceId').value,
+                name: document.getElementById('sourceName').value,
+                url: document.getElementById('sourceUrl').value,
+                type: 'rss'
+            };
+
+            try {
+                const response = await fetch('/api/sources', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sourceData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Fuente agregada exitosamente');
+                    bootstrap.Modal.getInstance(document.getElementById('addSourceModal')).hide();
+                    await loadSources();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error agregando fuente:', error);
+                alert('Error agregando fuente');
+            }
+        }
+
+        // Editar fuente
+        async function editSource(sourceId) {
+            try {
+                const response = await fetch('/api/sources');
+                const data = await response.json();
+                
+                if (response.ok && data.sources[sourceId]) {
+                    const source = data.sources[sourceId];
+                    
+                    // Llenar formulario
+                    document.getElementById('editSourceId').value = sourceId;
+                    document.getElementById('editSourceName').value = source.name;
+                    document.getElementById('editSourceUrl').value = source.url;
+                    document.getElementById('editSourceEnabled').value = source.enabled.toString();
+                    document.getElementById('editSourceTechnique').value = source.scraping_config?.technique || 'requests';
+                    document.getElementById('editSourceDelay').value = source.scraping_config?.delay || 2;
+                    
+                    // Mostrar modal
+                    const modal = new bootstrap.Modal(document.getElementById('editSourceModal'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Error cargando fuente:', error);
+                alert('Error cargando datos de la fuente');
+            }
+        }
+
+        // Actualizar fuente
+        async function updateSource() {
+            const sourceId = document.getElementById('editSourceId').value;
+            
+            const updateData = {
+                name: document.getElementById('editSourceName').value,
+                url: document.getElementById('editSourceUrl').value,
+                enabled: document.getElementById('editSourceEnabled').value === 'true',
+                config_technique: document.getElementById('editSourceTechnique').value,
+                config_delay: parseInt(document.getElementById('editSourceDelay').value)
+            };
+
+            try {
+                const response = await fetch(`/api/sources/${sourceId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Fuente actualizada exitosamente');
+                    bootstrap.Modal.getInstance(document.getElementById('editSourceModal')).hide();
+                    await loadSources();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error actualizando fuente:', error);
+                alert('Error actualizando fuente');
+            }
+        }
+
+        // Probar fuente específica
+        async function testSourceById(sourceId) {
+            try {
+                const response = await fetch(`/api/sources/${sourceId}/test`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    let message = `Prueba completada:\n\n`;
+                    message += `📊 Artículos encontrados: ${result.articles_found}\n`;
+                    message += `🔄 Estado: ${result.source_status}\n`;
+                    
+                    if (result.sample_articles.length > 0) {
+                        message += `\n📋 Ejemplos:\n`;
+                        result.sample_articles.forEach((article, i) => {
+                            message += `${i + 1}. ${article.titulo.substring(0, 50)}...\n`;
+                        });
+                    }
+                    
+                    alert(message);
+                    await loadSources(); // Recargar para ver estadísticas actualizadas
+                } else {
+                    alert('Error probando fuente: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error probando fuente:', error);
+                alert('Error probando fuente');
+            }
+        }
+
+        // Probar fuente desde modal de edición
+        async function testSource() {
+            const sourceId = document.getElementById('editSourceId').value;
+            await testSourceById(sourceId);
+        }
+
+        // Eliminar fuente
+        async function deleteSource(sourceId) {
+            if (confirm('¿Está seguro de que desea eliminar esta fuente?')) {
+                try {
+                    const response = await fetch(`/api/sources/${sourceId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        alert('Fuente eliminada exitosamente');
+                        await loadSources();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error eliminando fuente:', error);
+                    alert('Error eliminando fuente');
+                }
+            }
+        }
+
+        // Ejecutar análisis avanzado
+        async function runAdvancedAnalysis() {
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('statsRow').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/analyze/advanced');
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Recargar datos
+                    await loadStats();
+                    await loadNews();
+                    await loadSources();
+                    
+                    let message = 'Análisis avanzado completado exitosamente\n\n';
+                    message += `📊 Estadísticas:\n`;
+                    message += `• Total noticias: ${result.stats.total_noticias}\n`;
+                    message += `• Casos NNA: ${result.stats.noticias_nna}\n`;
+                    
+                    if (result.sources_summary) {
+                        message += `• Fuentes activas: ${result.sources_summary.active}/${result.sources_summary.total}\n`;
+                    }
+                    
+                    alert(message);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error ejecutando análisis avanzado:', error);
+                alert('Error ejecutando análisis avanzado');
             } finally {
                 document.getElementById('loadingDiv').style.display = 'none';
                 document.getElementById('statsRow').style.display = 'flex';
@@ -387,6 +1009,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadStats();
             loadNews();
+            loadSources();
         });
     </script>
 </body>

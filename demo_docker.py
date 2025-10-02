@@ -1,143 +1,279 @@
 #!/usr/bin/env python3
 """
-Demo simplificado para contenedor Docker
-Sistema Inteligente para Identificación y Seguimiento de NNA
+Demostración del Sistema Avanzado en Docker
+Versión simplificada para contenedores
 """
-
-import os
 import sys
+import os
+sys.path.append(os.path.abspath('.'))
+
+import json
 import time
-import schedule
 from datetime import datetime
 
-# Agregar el directorio src al path
-sys.path.append('/app/src')
+def test_api_endpoints():
+    """Probar los endpoints de la API"""
+    print("🔗 PROBANDO ENDPOINTS DE LA API")
+    print("=" * 50)
+    
+    base_url = "http://localhost:5000"
+    
+    # Test 1: Página principal
+    print("📄 Probando página principal...")
+    try:
+        import requests
+        response = requests.get(f"{base_url}/", timeout=10)
+        if response.status_code == 200:
+            print("✅ Página principal accesible")
+        else:
+            print(f"❌ Error en página principal: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Error conectando: {e}")
+    
+    # Test 2: API de fuentes
+    print("\n� Probando API de fuentes...")
+    try:
+        import requests
+        response = requests.get(f"{base_url}/api/sources", timeout=10)
+        if response.status_code == 200:
+            sources = response.json()
+            print(f"✅ API de fuentes funcionando - {len(sources)} fuentes")
+            
+            # Mostrar algunas fuentes
+            for source_id, source in list(sources.items())[:3]:
+                status = "✅" if source.get('enabled', True) else "❌"
+                print(f"   {status} {source_id}: {source['name']}")
+        else:
+            print(f"❌ Error en API de fuentes: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Error en API: {e}")
+    
+    # Test 3: Agregar fuente de prueba
+    print("\n➕ Probando agregar nueva fuente...")
+    try:
+        import requests
+        new_source = {
+            "id": "test_docker",
+            "name": "Fuente de Prueba Docker",
+            "url": "https://www.excelsior.com.mx/rss.xml",
+            "type": "rss"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/sources",
+            json=new_source,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            print("✅ Fuente agregada exitosamente")
+            
+            # Verificar que se agregó
+            response = requests.get(f"{base_url}/api/sources", timeout=10)
+            if response.status_code == 200:
+                sources = response.json()
+                if "test_docker" in sources:
+                    print("✅ Fuente verificada en la lista")
+        else:
+            print(f"❌ Error agregando fuente: {response.status_code}")
+            
+    except Exception as e:
+        print(f"❌ Error agregando fuente: {e}")
+    
+    # Test 4: Eliminar fuente de prueba
+    print("\n🗑️ Limpiando fuente de prueba...")
+    try:
+        import requests
+        response = requests.delete(f"{base_url}/api/sources/test_docker", timeout=10)
+        if response.status_code == 200:
+            print("✅ Fuente de prueba eliminada")
+        else:
+            print(f"⚠️ Fuente de prueba no eliminada: {response.status_code}")
+    except Exception as e:
+        print(f"⚠️ Error eliminando fuente: {e}")
 
-from analysis.simplified_analyzer import SimplifiedNewsAnalyzer
-from collection.data_collector import collect_all_news
-import pandas as pd
+def test_scraping_basic():
+    """Probar funcionalidad básica de scraping"""
+    print("\n🕷️ PROBANDO SCRAPING BÁSICO")
+    print("=" * 50)
+    
+    base_url = "http://localhost:5000"
+    
+    try:
+        import requests
+        # Probar análisis básico
+        response = requests.post(
+            f"{base_url}/api/analyze",
+            json={"sources": ["jornada", "milenio"]},
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            print(f"✅ Análisis completado")
+            print(f"   📰 Artículos procesados: {result.get('total_articles', 0)}")
+            print(f"   🚨 Casos detectados: {result.get('casos_detectados', 0)}")
+            
+            # Mostrar algunos títulos si existen
+            if 'articulos' in result and result['articulos']:
+                print("\n📋 Ejemplos de artículos:")
+                for i, articulo in enumerate(result['articulos'][:3]):
+                    titulo = articulo.get('titulo', 'Sin título')[:60]
+                    print(f"   {i+1}. {titulo}...")
+        else:
+            print(f"❌ Error en análisis: {response.status_code}")
+            
+    except Exception as e:
+        print(f"❌ Error en scraping: {e}")
 
-class DockerDemo:
-    def __init__(self):
-        self.analyzer = SimplifiedNewsAnalyzer()
-        self.data_file = "/app/data/noticias.csv"
-        
-    def log(self, message):
-        """Log con timestamp"""
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{timestamp}] {message}")
-        
-    def collect_news(self):
-        """Recolecta noticias nuevas"""
+def check_docker_status():
+    """Verificar estado del contenedor Docker"""
+    print("🐳 VERIFICANDO ESTADO DEL CONTENEDOR")
+    print("=" * 50)
+    
+    # Verificar si estamos en Docker
+    if os.path.exists('/.dockerenv'):
+        print("✅ Ejecutándose dentro de contenedor Docker")
+    else:
+        print("⚠️ No se detectó entorno Docker")
+    
+    # Verificar archivos importantes
+    files_to_check = [
+        "app_docker.py",
+        "requirements.txt", 
+        "data/sources_config.json",
+        "src/collection/advanced_scraper.py"
+    ]
+    
+    print("\n📁 Verificando archivos del sistema:")
+    for file_path in files_to_check:
+        if os.path.exists(file_path):
+            print(f"✅ {file_path}")
+        else:
+            print(f"❌ {file_path} - No encontrado")
+    
+    # Verificar puerto de la aplicación
+    print(f"\n🌐 Aplicación debería estar en: http://localhost:5000")
+
+def show_docker_instructions():
+    """Mostrar instrucciones para Docker"""
+    print("\n🚀 INSTRUCCIONES PARA EJECUTAR CON DOCKER")
+    print("=" * 80)
+    
+    print("1️⃣ Construir la imagen Docker:")
+    print("   docker build -t nna-sistema-avanzado .")
+    print()
+    
+    print("2️⃣ Ejecutar el contenedor:")
+    print("   docker run -d --name nna-container -p 5000:5000 nna-sistema-avanzado")
+    print()
+    
+    print("3️⃣ Ver logs del contenedor:")
+    print("   docker logs -f nna-container")
+    print()
+    
+    print("4️⃣ Acceder al contenedor:")
+    print("   docker exec -it nna-container /bin/bash")
+    print()
+    
+    print("5️⃣ Detener el contenedor:")
+    print("   docker stop nna-container")
+    print()
+    
+    print("6️⃣ Acceder a la aplicación:")
+    print("   🌐 Dashboard: http://localhost:5000")
+    print("   📡 API: http://localhost:5000/api/sources")
+
+def demo_configuration_management():
+    """Demostración de gestión de configuraciones"""
+    print("\n⚙️ GESTIÓN DE CONFIGURACIONES EN DOCKER")
+    print("=" * 50)
+    
+    config_file = "data/sources_config.json"
+    
+    if os.path.exists(config_file):
         try:
-            self.log("🔍 Iniciando recolección de noticias...")
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
             
-            # Recolectar noticias
-            df_noticias = collect_all_news()
-            noticias = df_noticias.to_dict('records') if not df_noticias.empty else []
+            print(f"📋 Configuración cargada desde {config_file}")
+            print(f"   🔢 Total de fuentes: {len(config)}")
             
-            if noticias:
-                self.log(f"✅ Recolectadas {len(noticias)} noticias")
+            # Mostrar configuración de las fuentes
+            for source_id, source_data in list(config.items())[:5]:
+                name = source_data.get('name', 'Sin nombre')
+                enabled = source_data.get('enabled', True)
+                technique = source_data.get('scraping_config', {}).get('technique', 'requests')
+                delay = source_data.get('scraping_config', {}).get('delay', 2)
                 
-                # Guardar en CSV
-                df = pd.DataFrame(noticias)
-                
-                # Si el archivo existe, agregar las nuevas
-                if os.path.exists(self.data_file):
-                    df_existing = pd.read_csv(self.data_file)
-                    df = pd.concat([df_existing, df], ignore_index=True)
-                    df = df.drop_duplicates(subset=['titulo', 'contenido'], keep='last')
-                
-                df.to_csv(self.data_file, index=False)
-                self.log(f"💾 Datos guardados en {self.data_file}")
-                
-            else:
-                self.log("⚠️  No se recolectaron noticias nuevas")
-                
+                status = "✅" if enabled else "❌"
+                print(f"   {status} {source_id}: {name}")
+                print(f"      Técnica: {technique}, Delay: {delay}s")
+        
         except Exception as e:
-            self.log(f"❌ Error en recolección: {str(e)}")
-    
-    def analyze_news(self):
-        """Ejecuta análisis completo"""
-        try:
-            if not os.path.exists(self.data_file):
-                self.log("⚠️  No hay datos para analizar")
-                return
-                
-            self.log("🔬 Iniciando análisis completo...")
-            
-            # Ejecutar análisis completo (lee los datos automáticamente)
-            df_analyzed = self.analyzer.run_complete_analysis()
-            
-            if df_analyzed is not None and not df_analyzed.empty:
-                # Guardar resultados en el archivo principal
-                df_analyzed.to_csv(self.data_file, index=False)
-            
-            # Estadísticas
-            nna_count = len(df_analyzed[df_analyzed['menores_identificados'] == 'Si'])
-            nna_percentage = (nna_count / len(df_analyzed) * 100) if len(df_analyzed) > 0 else 0
-            
-            self.log(f"✅ Análisis completado:")
-            self.log(f"   📰 Total noticias: {len(df_analyzed)}")
-            self.log(f"   👶 Casos NNA: {nna_count} ({nna_percentage:.1f}%)")
-            self.log(f"   🏷️  Clusters: {df_analyzed['cluster'].nunique()}")
-            self.log(f"   🎯 Tópicos: {df_analyzed['topic_id'].nunique()}")
-            
-        except Exception as e:
-            self.log(f"❌ Error en análisis: {str(e)}")
-    
-    def run_full_cycle(self):
-        """Ejecuta un ciclo completo: recolección + análisis"""
-        self.log("🚀 Iniciando ciclo completo")
-        self.collect_news()
-        time.sleep(2)  # Pausa entre operaciones
-        self.analyze_news()
-        self.log("✅ Ciclo completo terminado")
-    
-    def start_scheduler(self):
-        """Inicia el planificador automático"""
-        self.log("⏰ Iniciando planificador automático")
-        
-        # Programar tareas
-        schedule.every(6).hours.do(self.collect_news)  # Cada 6 horas recolectar
-        schedule.every(12).hours.do(self.analyze_news)  # Cada 12 horas analizar
-        
-        # Ejecutar una vez al inicio
-        self.run_full_cycle()
-        
-        # Loop infinito
-        while True:
-            try:
-                schedule.run_pending()
-                time.sleep(60)  # Verificar cada minuto
-            except KeyboardInterrupt:
-                self.log("🛑 Deteniendo planificador...")
-                break
-            except Exception as e:
-                self.log(f"❌ Error en planificador: {str(e)}")
-                time.sleep(60)
+            print(f"❌ Error leyendo configuración: {e}")
+    else:
+        print(f"❌ Archivo de configuración no encontrado: {config_file}")
 
 def main():
-    """Función principal"""
-    demo = DockerDemo()
+    """Función principal de demostración Docker"""
+    print("🐳 DEMOSTRACIÓN DEL SISTEMA AVANZADO EN DOCKER")
+    print("🎯 Sistema de Web Scraping con Gestión Dinámica de Fuentes")
+    print("=" * 80)
+    print(f"⏰ Iniciado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print()
     
-    # Verificar argumentos
-    if len(sys.argv) > 1:
-        command = sys.argv[1]
-        if command == "collect":
-            demo.collect_news()
-        elif command == "analyze":
-            demo.analyze_news()
-        elif command == "full":
-            demo.run_full_cycle()
-        elif command == "schedule":
-            demo.start_scheduler()
-        else:
-            demo.log(f"❌ Comando desconocido: {command}")
-            demo.log("💡 Comandos disponibles: collect, analyze, full, schedule")
-    else:
-        # Por defecto, iniciar planificador
-        demo.start_scheduler()
+    # Verificar estado del Docker
+    check_docker_status()
+    
+    # Gestión de configuraciones
+    demo_configuration_management()
+    
+    # Mostrar instrucciones
+    show_docker_instructions()
+    
+    # Si la aplicación está corriendo, probar APIs
+    print("\n🔍 PROBANDO CONECTIVIDAD (requiere aplicación ejecutándose)")
+    print("=" * 50)
+    
+    try:
+        # Esperar un poco para que la aplicación inicie
+        print("⏳ Esperando que la aplicación inicie...")
+        time.sleep(3)
+        
+        # Probar endpoints
+        test_api_endpoints()
+        
+        # Probar scraping básico
+        test_scraping_basic()
+        
+    except Exception as e:
+        print(f"ℹ️ Pruebas de conectividad omitidas: {e}")
+        print("   Ejecutar después de 'docker run' para probar APIs")
+    
+    print(f"\n✨ CAPACIDADES DEL SISTEMA DOCKERIZADO")
+    print("=" * 80)
+    
+    capabilities = [
+        "🐳 Contenedor Docker completo con todas las dependencias",
+        "🔧 Gestión dinámica de fuentes RSS via API REST",
+        "🛠️ Múltiples técnicas de web scraping integradas",
+        "🌐 Interfaz web Bootstrap 5 completamente funcional",
+        "💾 Persistencia de datos en volúmenes Docker",
+        "📡 API REST completa para integración externa",
+        "🛡️ Scraping ético con verificación robots.txt",
+        "⚡ Procesamiento asíncrono y técnicas avanzadas",
+        "� Monitoreo y estadísticas en tiempo real",
+        "🔄 Auto-recuperación y manejo de errores"
+    ]
+    
+    for capability in capabilities:
+        print(f"   {capability}")
+    
+    print(f"\n⏰ Completado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("🎉 Sistema listo para producción con Docker!")
 
 if __name__ == "__main__":
     main()
