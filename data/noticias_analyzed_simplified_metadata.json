@@ -1,6 +1,6 @@
 {
-  "total_noticias": 144,
-  "noticias_con_nna": 50,
+  "total_noticias": 146,
+  "noticias_con_nna": 36,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -17,11 +17,11 @@
     "most_similar_doc_idx",
     "max_similarity"
   ],
-  "version": "simplified_analyzer_v1.0",
+  "version": "simplified_analyzer_v2.0",
   "algoritmos_usados": [
     "TF-IDF",
     "LDA (scikit-learn)",
-    "K-Means",
+    "DBSCAN",
     "Similitud Coseno"
   ]
 }

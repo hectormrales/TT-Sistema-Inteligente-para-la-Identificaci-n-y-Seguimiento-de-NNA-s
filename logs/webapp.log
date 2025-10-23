@@ -28,3 +28,20 @@
 2025-09-30 16:47:18,408 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 16:47:18] "GET /api/analyze HTTP/1.1" 200 -
 2025-09-30 16:47:18,419 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 16:47:18] "GET /api/stats HTTP/1.1" 200 -
 2025-09-30 16:47:18,428 - werkzeug - INFO - 172.18.0.1 - - [30/Sep/2025 16:47:18] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-23 17:07:34,139 - app_docker - INFO - Iniciando aplicación web NNA Sistema
+2025-10-23 17:07:34,141 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.3:5000
+2025-10-23 17:07:34,141 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-23 17:08:34,577 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:08:34] "[33mGET /api/cases HTTP/1.1[0m" 404 -
+2025-10-23 17:08:34,648 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:08:34] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-10-23 17:08:39,263 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:08:39] "GET / HTTP/1.1" 200 -
+2025-10-23 17:08:40,160 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:08:40] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-23 17:08:40,162 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:08:40] "GET /api/stats HTTP/1.1" 200 -
+2025-10-23 17:08:49,900 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:08:49] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2025-10-23 17:09:13,821 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:09:13] "GET /api/analyze HTTP/1.1" 200 -
+2025-10-23 17:09:13,837 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:09:13] "GET /api/stats HTTP/1.1" 200 -
+2025-10-23 17:09:13,845 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:09:13] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-23 17:09:21,664 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:09:21] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2025-10-23 17:09:22,477 - werkzeug - INFO - 172.19.0.1 - - [23/Oct/2025 17:09:22] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
