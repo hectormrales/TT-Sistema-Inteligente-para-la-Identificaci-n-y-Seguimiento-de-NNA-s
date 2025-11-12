@@ -1,6 +1,6 @@
 {
-  "total_noticias": 146,
-  "noticias_con_nna": 36,
+  "total_noticias": 68,
+  "noticias_con_nna": 4,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -8,6 +8,12 @@
     "fuente",
     "fecha",
     "cluster",
+    "es_feminicidio",
+    "tiene_nna",
+    "tiene_huerfanos",
+    "es_objetivo",
+    "confianza",
+    "prioridad",
     "menores_identificados",
     "titulo_limpio",
     "contenido_limpio",

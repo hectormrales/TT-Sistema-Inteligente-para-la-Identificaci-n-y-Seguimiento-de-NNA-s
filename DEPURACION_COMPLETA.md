@@ -1,90 +1,90 @@
-# 🔍 DEPURACIÓN COMPLETA DEL SISTEMA - Diagnóstico y Solución
+﻿#  DEPURACIN COMPLETA DEL SISTEMA - Diagnstico y Solucin
 
 **Fecha:** 11 de noviembre de 2025  
-**Solicitante:** Héctor Morales  
-**Objetivo del Proyecto:** Detectar víctimas indirectas (NNA huérfanos) de feminicidios en México
+**Solicitante:** Hctor Morales  
+**Objetivo del Proyecto:** Detectar vctimas indirectas (NNA hurfanos) de feminicidios en Mxico
 
 ---
 
-## 📋 RESUMEN EJECUTIVO
+##  RESUMEN EJECUTIVO
 
 ### Hallazgo Principal
 **0.0%** de las noticias actuales cumplen con el objetivo del proyecto.
 
 De 146 noticias recopiladas:
-- ✅ **2 noticias** (1.4%) mencionan feminicidios
-- ✅ **23 noticias** (15.8%) mencionan NNA
-- ❌ **0 noticias** (0.0%) mencionan **feminicidio + NNA (víctimas indirectas)**
+-  **2 noticias** (1.4%) mencionan feminicidios
+-  **23 noticias** (15.8%) mencionan NNA
+-  **0 noticias** (0.0%) mencionan **feminicidio + NNA (vctimas indirectas)**
 
 **Meta esperada:** >70% de noticias sobre feminicidios con NNA afectados
 
 ---
 
-## 🔬 METODOLOGÍA DE DEPURACIÓN
+##  METODOLOGA DE DEPURACIN
 
-### Fase 1: Creación de Detector Especializado
-Se creó `src/collection/feminicide_detector.py` con:
+### Fase 1: Creacin de Detector Especializado
+Se cre `src/collection/feminicide_detector.py` con:
 
 1. **Patrones de Feminicidio (12 patrones):**
-   - Términos directos: `feminicidio`, `femicidio`
+   - Trminos directos: `feminicidio`, `femicidio`
    - Contextos: `mujer asesinada`, `madre hallada muerta`, `homicidio de mujer`
-   - Investigación: `fiscalía feminicidio`, `alerta de género`
+   - Investigacin: `fiscala feminicidio`, `alerta de gnero`
 
 2. **Patrones de NNA (9 patrones):**
-   - `hijos`, `menores`, `niños`, `adolescentes`, `bebés`
-   - `infantes`, `recién nacidos`, `pequeños`, `críos`
+   - `hijos`, `menores`, `nios`, `adolescentes`, `bebs`
+   - `infantes`, `recin nacidos`, `pequeos`, `cros`
 
-3. **Patrones de Orfandad/Víctimas Indirectas (20+ patrones):**
-   - Orfandad directa: `huérfanos`, `orfandad`
+3. **Patrones de Orfandad/Vctimas Indirectas (20+ patrones):**
+   - Orfandad directa: `hurfanos`, `orfandad`
    - Contextos: `hijos quedan`, `sin madre`, `desamparados`
-   - Víctimas indirectas: `víctimas indirectas`, `víctimas colaterales`
+   - Vctimas indirectas: `vctimas indirectas`, `vctimas colaterales`
    - Custodia: `DIF se hace cargo`, `custodia de`, `albergue`
-   - Emocionales: `niños presenciaron`, `hijos traumatizados`
+   - Emocionales: `nios presenciaron`, `hijos traumatizados`
 
 4. **Sistema de Confianza:**
    ```
    Feminicidio = 40% base
    NNA = +20%
-   Huérfanos = +30% (más peso)
+   Hurfanos = +30% (ms peso)
    Contextos reforzadores = +10%
-   Combinación perfecta = +10% bonus
+   Combinacin perfecta = +10% bonus
    ```
 
 5. **Sistema de Prioridades:**
-   - **ALTA:** Feminicidio + huérfanos + confianza ≥70%
-   - **MEDIA:** Feminicidio + huérfanos (confianza baja)
-   - **BAJA:** Feminicidio sin huérfanos claros
+   - **ALTA:** Feminicidio + hurfanos + confianza 70%
+   - **MEDIA:** Feminicidio + hurfanos (confianza baja)
+   - **BAJA:** Feminicidio sin hurfanos claros
    - **IRRELEVANTE:** No es feminicidio
 
-### Fase 2: Validación del Detector
-Se probó con 3 casos de prueba:
+### Fase 2: Validacin del Detector
+Se prob con 3 casos de prueba:
 
 | Caso | Resultado | Estado |
 |------|-----------|--------|
-| "Feminicidio en Ecatepec deja tres hijos huérfanos" | 85% confianza, ALTA prioridad | ✅ CORRECTO |
-| "Menor gana premio de matemáticas" | 20% confianza, IRRELEVANTE | ✅ CORRECTO |
-| "Hallan muerta a madre de dos niños" | 60% confianza, MEDIA prioridad | ✅ CORRECTO |
+| "Feminicidio en Ecatepec deja tres hijos hurfanos" | 85% confianza, ALTA prioridad |  CORRECTO |
+| "Menor gana premio de matemticas" | 20% confianza, IRRELEVANTE |  CORRECTO |
+| "Hallan muerta a madre de dos nios" | 60% confianza, MEDIA prioridad |  CORRECTO |
 
-**Conclusión:** El detector funciona correctamente (100% precisión en pruebas).
+**Conclusin:** El detector funciona correctamente (100% precisin en pruebas).
 
-### Fase 3: Análisis de Datos Reales
-Se aplicó el detector a las 146 noticias existentes en `data/noticias.csv`.
+### Fase 3: Anlisis de Datos Reales
+Se aplic el detector a las 146 noticias existentes en `data/noticias.csv`.
 
 ---
 
-## 📊 RESULTADOS DEL ANÁLISIS
+##  RESULTADOS DEL ANLISIS
 
-### Detección General
+### Deteccin General
 ```
 Total de noticias: 146
 
 Feminicidios detectados:     2 (1.4%)
-Con mención de NNA:         23 (15.8%)
-Con mención de huérfanos:    1 (0.7%)
-NOTICIAS OBJETIVO:           0 (0.0%) ❌
+Con mencin de NNA:         23 (15.8%)
+Con mencin de hurfanos:    1 (0.7%)
+NOTICIAS OBJETIVO:           0 (0.0%) 
 ```
 
-### Distribución por Prioridad
+### Distribucin por Prioridad
 ```
 ALTA:         0 (0.0%)
 MEDIA:        0 (0.0%)
@@ -98,147 +98,147 @@ General: 3.1%
 Noticias objetivo: N/A (no hay ninguna)
 ```
 
-### Comparación: Sistema Original vs Nuevo Detector
+### Comparacin: Sistema Original vs Nuevo Detector
 
-| Métrica | Sistema Original (Genérico) | Nuevo Detector (Específico) | Diferencia |
+| Mtrica | Sistema Original (Genrico) | Nuevo Detector (Especfico) | Diferencia |
 |---------|----------------------------|----------------------------|------------|
-| **Criterio** | Cualquier mención de NNA | Feminicidio + NNA | - |
+| **Criterio** | Cualquier mencin de NNA | Feminicidio + NNA | - |
 | **Detecciones** | 36 noticias (24.7%) | 0 noticias (0.0%) | -36 |
-| **Interpretación** | ❌ 36 **FALSOS POSITIVOS** | ✅ 0 falsos positivos | 100% reducción |
+| **Interpretacin** |  36 **FALSOS POSITIVOS** |  0 falsos positivos | 100% reduccin |
 
-**Conclusión:** El 100% de las noticias que el sistema original marcaba como "relevantes" eran en realidad **falsos positivos** que no cumplían con el objetivo del proyecto.
+**Conclusin:** El 100% de las noticias que el sistema original marcaba como "relevantes" eran en realidad **falsos positivos** que no cumplan con el objetivo del proyecto.
 
 ---
 
-## 🔎 EJEMPLOS DE FALSOS POSITIVOS
+##  EJEMPLOS DE FALSOS POSITIVOS
 
-Estas noticias fueron detectadas por el sistema original (genérico) pero **NO cumplen** con el objetivo:
+Estas noticias fueron detectadas por el sistema original (genrico) pero **NO cumplen** con el objetivo:
 
-### Ejemplo 1: Noticia Política
-- **Título:** "Dan hasta 54 años de cárcel a 3 asesinos de agentes"
-- **Fuente:** La Jornada - Política
-- **Detección original:** ✅ (marcado como NNA)
-- **Detección nueva:** ❌ (NO es feminicidio con NNA)
-- **Razón:** No menciona feminicidio
+### Ejemplo 1: Noticia Poltica
+- **Ttulo:** "Dan hasta 54 aos de crcel a 3 asesinos de agentes"
+- **Fuente:** La Jornada - Poltica
+- **Deteccin original:**  (marcado como NNA)
+- **Deteccin nueva:**  (NO es feminicidio con NNA)
+- **Razn:** No menciona feminicidio
 
 ### Ejemplo 2: Noticia de Salud
-- **Título:** "Piden incluir en cuadro básico medicamentos para tratar la talla baja"
-- **Fuente:** La Jornada - Política
-- **Detección original:** ✅ (marcado como NNA)
-- **Detección nueva:** ❌ (NO es feminicidio con NNA)
-- **Razón:** No menciona feminicidio
+- **Ttulo:** "Piden incluir en cuadro bsico medicamentos para tratar la talla baja"
+- **Fuente:** La Jornada - Poltica
+- **Deteccin original:**  (marcado como NNA)
+- **Deteccin nueva:**  (NO es feminicidio con NNA)
+- **Razn:** No menciona feminicidio
 
 ### Ejemplo 3: Noticia Social
-- **Título:** "Viven en pobreza extrema 7.5% de menores, alerta Aldeas Infantiles"
-- **Fuente:** La Jornada - Política
-- **Detección original:** ✅ (marcado como NNA)
-- **Detección nueva:** ❌ (NO es feminicidio con NNA)
-- **Razón:** No menciona feminicidio
+- **Ttulo:** "Viven en pobreza extrema 7.5% de menores, alerta Aldeas Infantiles"
+- **Fuente:** La Jornada - Poltica
+- **Deteccin original:**  (marcado como NNA)
+- **Deteccin nueva:**  (NO es feminicidio con NNA)
+- **Razn:** No menciona feminicidio
 
-### Ejemplo 4: Noticia Económica
-- **Título:** "Peso se aprecia en medio de un salto de los precios del petróleo"
-- **Fuente:** Forbes México
-- **Detección original:** ✅ (marcado como NNA)
-- **Detección nueva:** ❌ (NO es feminicidio con NNA)
-- **Razón:** No menciona feminicidio (probablemente usa "menor" como término financiero)
+### Ejemplo 4: Noticia Econmica
+- **Ttulo:** "Peso se aprecia en medio de un salto de los precios del petrleo"
+- **Fuente:** Forbes Mxico
+- **Deteccin original:**  (marcado como NNA)
+- **Deteccin nueva:**  (NO es feminicidio con NNA)
+- **Razn:** No menciona feminicidio (probablemente usa "menor" como trmino financiero)
 
 ### Ejemplo 5: Noticia Deportiva
-- **Título:** "Gran Premio de México se prepara para celebrar su décimo aniversario"
-- **Fuente:** Forbes México
-- **Detección original:** ✅ (marcado como NNA)
-- **Detección nueva:** ❌ (NO es feminicidio con NNA)
-- **Razón:** No menciona feminicidio
+- **Ttulo:** "Gran Premio de Mxico se prepara para celebrar su dcimo aniversario"
+- **Fuente:** Forbes Mxico
+- **Deteccin original:**  (marcado como NNA)
+- **Deteccin nueva:**  (NO es feminicidio con NNA)
+- **Razn:** No menciona feminicidio
 
 ---
 
-## 🎯 DIAGNÓSTICO FINAL
+##  DIAGNSTICO FINAL
 
 ### Problemas Identificados
 
-#### 1. **Fuentes RSS Inadecuadas** (CRÍTICO)
+#### 1. **Fuentes RSS Inadecuadas** (CRTICO)
 Las 8 fuentes actuales en `config.py` son **NOTICIAS GENERALES**:
 
 ```python
 RSS_FEEDS = [
-    'https://www.jornada.com.mx/rss/politica.xml',      # Política
+    'https://www.jornada.com.mx/rss/politica.xml',      # Poltica
     'https://www.jornada.com.mx/rss/deportes.xml',      # Deportes
     'https://www.jornada.com.mx/rss/ciencias.xml',      # Ciencias
-    'https://www.forbes.com.mx/feed/',                  # Economía/Negocios
-    'https://www.elfinanciero.com.mx/rss/economia/',    # Economía
+    'https://www.forbes.com.mx/feed/',                  # Economa/Negocios
+    'https://www.elfinanciero.com.mx/rss/economia/',    # Economa
     # ... etc
 ]
 ```
 
-**Problema:** Estas fuentes NO cubren feminicidios ni violencia de género.
+**Problema:** Estas fuentes NO cubren feminicidios ni violencia de gnero.
 
 **Resultado:** Solo 1.4% de noticias mencionan feminicidios.
 
-#### 2. **Detección Demasiado Genérica** (CRÍTICO)
-`data_collector.py` usa `detect_children_mentions()` que detecta **CUALQUIER** mención de NNA:
+#### 2. **Deteccin Demasiado Genrica** (CRTICO)
+`data_collector.py` usa `detect_children_mentions()` que detecta **CUALQUIER** mencin de NNA:
 
 ```python
 def detect_children_mentions(self, text):
     patterns = [
         r'\bhij[oa]s?\b',
         r'\bmenor(?:es)?\b',
-        r'\bniñ?[oa]s?\b',
+        r'\bni?[oa]s?\b',
         # ... detecta TODO tipo de noticias
     ]
 ```
 
-**Problema:** Detecta "menor de edad gana premio", "niños regresan a clases", "hijos de políticos", etc.
+**Problema:** Detecta "menor de edad gana premio", "nios regresan a clases", "hijos de polticos", etc.
 
 **Resultado:** 36 falsos positivos (100% de las detecciones originales).
 
-#### 3. **Falta de Filtro de Feminicidios** (CRÍTICO)
-No existe función que verifique:
-- ¿La noticia trata sobre feminicidio?
-- ¿Los NNA mencionados son víctimas indirectas del feminicidio?
-- ¿Los NNA quedaron huérfanos?
+#### 3. **Falta de Filtro de Feminicidios** (CRTICO)
+No existe funcin que verifique:
+- La noticia trata sobre feminicidio?
+- Los NNA mencionados son vctimas indirectas del feminicidio?
+- Los NNA quedaron hurfanos?
 
-**Resultado:** Sistema detecta noticias irrelevantes (deportes, economía, política).
+**Resultado:** Sistema detecta noticias irrelevantes (deportes, economa, poltica).
 
-#### 4. **Parámetros TF-IDF Inadecuados** (ALTA)
+#### 4. **Parmetros TF-IDF Inadecuados** (ALTA)
 ```python
 TfidfVectorizer(
-    min_df=2,              # ❌ Elimina palabras únicas como "feminicidio"
-    strip_accents='unicode' # ❌ Causa "me xico" en vez de "méxico"
+    min_df=2,              #  Elimina palabras nicas como "feminicidio"
+    strip_accents='unicode' #  Causa "me xico" en vez de "mxico"
 )
 ```
 
-**Resultado:** Palabras clave eliminadas, vectorización incorrecta.
+**Resultado:** Palabras clave eliminadas, vectorizacin incorrecta.
 
 #### 5. **DBSCAN Muy Restrictivo** (MEDIA)
 ```python
-DBSCAN(eps=0.4, min_samples=3)  # ❌ Requiere 60% similitud + 3 docs
+DBSCAN(eps=0.4, min_samples=3)  #  Requiere 60% similitud + 3 docs
 ```
 
 **Resultado:** 100% de noticias marcadas como outliers (0 clusters).
 
 ---
 
-## ✅ SOLUCIÓN IMPLEMENTADA
+##  SOLUCIN IMPLEMENTADA
 
 ### Archivo Creado: `feminicide_detector.py`
 
-#### Características Principales
+#### Caractersticas Principales
 
-1. **Detección Multi-Criterio:**
-   - ✅ Debe mencionar feminicidio/asesinato de mujer
-   - ✅ Debe mencionar NNA
-   - ✅ Bonus si menciona huérfanos/víctimas indirectas
+1. **Deteccin Multi-Criterio:**
+   -  Debe mencionar feminicidio/asesinato de mujer
+   -  Debe mencionar NNA
+   -  Bonus si menciona hurfanos/vctimas indirectas
 
 2. **Sistema de Confianza Ponderado:**
    ```python
-   is_feminicide and has_orphans and confidence >= 0.7  → ALTA
-   is_feminicide and has_orphans                        → MEDIA
-   is_feminicide and confidence >= 0.5                  → MEDIA
-   is_feminicide                                        → BAJA
-   else                                                 → IRRELEVANTE
+   is_feminicide and has_orphans and confidence >= 0.7   ALTA
+   is_feminicide and has_orphans                         MEDIA
+   is_feminicide and confidence >= 0.5                   MEDIA
+   is_feminicide                                         BAJA
+   else                                                  IRRELEVANTE
    ```
 
-3. **Patrones de Exclusión:**
-   - Elimina noticias políticas, deportivas, económicas
+3. **Patrones de Exclusin:**
+   - Elimina noticias polticas, deportivas, econmicas
    - Reduce falsos positivos
 
 4. **Campos de Salida:**
@@ -247,7 +247,7 @@ DBSCAN(eps=0.4, min_samples=3)  # ❌ Requiere 60% similitud + 3 docs
        'is_feminicide': bool,
        'has_children': bool,
        'has_orphans': bool,
-       'is_target_news': bool,  # ← Filtro principal
+       'is_target_news': bool,  #  Filtro principal
        'confidence': float,
        'matched_patterns': dict,
        'priority': str
@@ -256,20 +256,20 @@ DBSCAN(eps=0.4, min_samples=3)  # ❌ Requiere 60% similitud + 3 docs
 
 ---
 
-## 📈 PRÓXIMOS PASOS REQUERIDOS
+##  PRXIMOS PASOS REQUERIDOS
 
 ### Fase 1: Cambiar Fuentes RSS (URGENTE)
 
-#### Acción Requerida
+#### Accin Requerida
 Reemplazar `config.py` RSS_FEEDS con fuentes especializadas:
 
 ```python
 RSS_FEEDS = [
-    # ESPECIALIZADAS EN GÉNERO Y FEMINICIDIOS
+    # ESPECIALIZADAS EN GNERO Y FEMINICIDIOS
     'https://cimacnoticias.com.mx/feed/',  # CIMAC Noticias
-    'https://www.semmexico.mx/feed/',      # SEM México
+    'https://www.semmexico.mx/feed/',      # SEM Mxico
     
-    # SECCIONES DE GÉNERO DE MEDIOS NACIONALES
+    # SECCIONES DE GNERO DE MEDIOS NACIONALES
     'https://www.jornada.com.mx/rss/estados.xml',  # Incluye casos locales
     'https://www.animalpolitico.com/category/seguridad/feed/',
     
@@ -279,7 +279,7 @@ RSS_FEEDS = [
 ]
 ```
 
-#### Validación
+#### Validacin
 Ejecutar scraping y verificar que >70% de noticias mencionen feminicidios.
 
 ### Fase 2: Integrar Nuevo Detector (ALTA PRIORIDAD)
@@ -294,16 +294,16 @@ from .feminicide_detector import FeminicideDetector
 **Cambio 2:** Inicializar en `__init__()`
 ```python
 def __init__(self):
-    # ... código existente
+    # ... cdigo existente
     self.feminicide_detector = FeminicideDetector()
 ```
 
 **Cambio 3:** Reemplazar `detect_children_mentions()` en `collect_news_from_rss()`
 ```python
-# ANTES (genérico):
+# ANTES (genrico):
 menores_identificados = self.detect_children_mentions(full_text)
 
-# DESPUÉS (específico):
+# DESPUS (especfico):
 detection = self.feminicide_detector.detect(full_text)
 
 news_data = {
@@ -316,7 +316,7 @@ news_data = {
     'es_feminicidio': detection['is_feminicide'],
     'tiene_nna': detection['has_children'],
     'tiene_huerfanos': detection['has_orphans'],
-    'es_objetivo': detection['is_target_news'],  # ← Campo principal
+    'es_objetivo': detection['is_target_news'],  #  Campo principal
     'confianza': detection['confidence'],
     'prioridad': detection['priority'],
     
@@ -333,15 +333,15 @@ all_news_df = pd.DataFrame(all_news)
 # FILTRAR: Solo guardar noticias objetivo
 target_news_df = all_news_df[all_news_df['es_objetivo'] == True]
 
-print(f"\n📊 Resumen de recolección:")
+print(f"\n Resumen de recoleccin:")
 print(f"   Total recopiladas: {len(all_news_df)}")
 print(f"   Noticias objetivo: {len(target_news_df)}")
 print(f"   Filtradas: {len(all_news_df) - len(target_news_df)}")
 
-return target_news_df  # ← Solo objetivo
+return target_news_df  #  Solo objetivo
 ```
 
-### Fase 3: Ajustar Parámetros TF-IDF (ALTA PRIORIDAD)
+### Fase 3: Ajustar Parmetros TF-IDF (ALTA PRIORIDAD)
 
 #### Modificar `simplified_analyzer.py`
 
@@ -350,42 +350,42 @@ return target_news_df  # ← Solo objetivo
 self.vectorizer = TfidfVectorizer(
     max_features=3000,
     ngram_range=(1, 2),
-    min_df=2,              # ❌ Muy restrictivo
+    min_df=2,              #  Muy restrictivo
     max_df=0.8,
-    strip_accents='unicode' # ❌ Causa problemas
+    strip_accents='unicode' #  Causa problemas
 )
 
-# DESPUÉS:
+# DESPUS:
 self.vectorizer = TfidfVectorizer(
     max_features=3000,
     ngram_range=(1, 2),
-    min_df=1,              # ✅ Permite palabras únicas
+    min_df=1,              #  Permite palabras nicas
     max_df=0.8,
-    strip_accents=None,    # ✅ Preserva acentos
-    stop_words=self._get_spanish_stopwords()  # ✅ Filtrar stopwords
+    strip_accents=None,    #  Preserva acentos
+    stop_words=self._get_spanish_stopwords()  #  Filtrar stopwords
 )
 
 def _get_spanish_stopwords(self):
-    """Retorna lista de stopwords en español."""
+    """Retorna lista de stopwords en espaol."""
     return [
         'el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'ser', 'se',
         'no', 'haber', 'por', 'con', 'su', 'para', 'como', 'estar',
-        'tener', 'le', 'lo', 'todo', 'pero', 'más', 'hacer', 'o',
+        'tener', 'le', 'lo', 'todo', 'pero', 'ms', 'hacer', 'o',
         'poder', 'decir', 'este', 'ir', 'otro', 'ese', 'la', 'si',
-        'me', 'ya', 'ver', 'porque', 'dar', 'cuando', 'él', 'muy',
-        'sin', 'vez', 'mucho', 'saber', 'qué', 'sobre', 'mi', 'alguno',
-        'mismo', 'yo', 'también', 'hasta', 'año', 'dos', 'querer',
-        'entre', 'así', 'primero', 'desde', 'grande', 'eso', 'ni',
-        'nos', 'llegar', 'pasar', 'tiempo', 'ella', 'sí', 'día',
+        'me', 'ya', 'ver', 'porque', 'dar', 'cuando', 'l', 'muy',
+        'sin', 'vez', 'mucho', 'saber', 'qu', 'sobre', 'mi', 'alguno',
+        'mismo', 'yo', 'tambin', 'hasta', 'ao', 'dos', 'querer',
+        'entre', 'as', 'primero', 'desde', 'grande', 'eso', 'ni',
+        'nos', 'llegar', 'pasar', 'tiempo', 'ella', 's', 'da',
         'uno', 'bien', 'poco', 'deber', 'entonces', 'poner', 'cosa',
         'tanto', 'hombre', 'parecer', 'nuestro', 'tan', 'donde',
-        'ahora', 'parte', 'después', 'vida', 'quedar', 'siempre',
+        'ahora', 'parte', 'despus', 'vida', 'quedar', 'siempre',
         'creer', 'hablar', 'llevar', 'dejar', 'nada', 'cada',
         'seguir', 'menos', 'nuevo', 'encontrar', 'algo', 'solo',
-        'decir', 'estos', 'trabajar', 'primero', 'último', 'largo',
+        'decir', 'estos', 'trabajar', 'primero', 'ltimo', 'largo',
         'poco', 'mismo', 'sentir', 'mano', 'tanto', 'venir', 'volver',
         'tomar', 'conocer', 'vivir', 'venir', 'pensar', 'salir',
-        'volver', 'mayor', 'tal', 'compañero', 'aunque'
+        'volver', 'mayor', 'tal', 'compaero', 'aunque'
     ]
 ```
 
@@ -394,15 +394,15 @@ def _get_spanish_stopwords(self):
 ```python
 # ANTES:
 self.dbscan = DBSCAN(
-    eps=0.4,        # ❌ Requiere 60% similitud
-    min_samples=3,  # ❌ Mínimo 3 docs
+    eps=0.4,        #  Requiere 60% similitud
+    min_samples=3,  #  Mnimo 3 docs
     metric='cosine'
 )
 
-# DESPUÉS:
+# DESPUS:
 self.dbscan = DBSCAN(
-    eps=0.6,        # ✅ Permite 40% similitud (más permisivo)
-    min_samples=2,  # ✅ Mínimo 2 docs (más permisivo)
+    eps=0.6,        #  Permite 40% similitud (ms permisivo)
+    min_samples=2,  #  Mnimo 2 docs (ms permisivo)
     metric='cosine'
 )
 ```
@@ -411,7 +411,7 @@ self.dbscan = DBSCAN(
 
 #### Modificar `templates/dashboard_docker.html`
 
-Agregar métricas específicas de feminicidios:
+Agregar mtricas especficas de feminicidios:
 
 ```html
 <div class="metric-card">
@@ -421,7 +421,7 @@ Agregar métricas específicas de feminicidios:
 </div>
 
 <div class="metric-card">
-    <h3>Víctimas Indirectas (NNA)</h3>
+    <h3>Vctimas Indirectas (NNA)</h3>
     <p class="metric-value">{{ orphans_count }}</p>
     <p class="metric-label">NNA afectados por feminicidios</p>
 </div>
@@ -429,7 +429,7 @@ Agregar métricas específicas de feminicidios:
 <div class="metric-card priority-high">
     <h3>Casos Prioritarios</h3>
     <p class="metric-value">{{ high_priority_count }}</p>
-    <p class="metric-label">Feminicidio + huérfanos (alta confianza)</p>
+    <p class="metric-label">Feminicidio + hurfanos (alta confianza)</p>
 </div>
 ```
 
@@ -454,16 +454,16 @@ def index():
 
 ---
 
-## 📊 RESULTADOS ESPERADOS DESPUÉS DE CORRECCIONES
+##  RESULTADOS ESPERADOS DESPUS DE CORRECCIONES
 
 ### Escenario Ideal (Con Fuentes Especializadas)
 
 ```
 Total de noticias: ~150
-Noticias de feminicidio: ~110 (73%)  ✅
-Con NNA mencionados: ~85 (57%)       ✅
-Con huérfanos específicos: ~45 (30%) ✅
-NOTICIAS OBJETIVO: ~80 (53%)         ✅
+Noticias de feminicidio: ~110 (73%)  
+Con NNA mencionados: ~85 (57%)       
+Con hurfanos especficos: ~45 (30%) 
+NOTICIAS OBJETIVO: ~80 (53%)         
 
 Prioridad ALTA: ~30 (20%)
 Prioridad MEDIA: ~50 (33%)
@@ -474,11 +474,11 @@ Confianza promedio general: ~45%
 Confianza noticias objetivo: ~68%
 ```
 
-### Comparación Antes/Después
+### Comparacin Antes/Despus
 
-| Métrica | ANTES (Actual) | DESPUÉS (Esperado) | Mejora |
+| Mtrica | ANTES (Actual) | DESPUS (Esperado) | Mejora |
 |---------|---------------|-------------------|--------|
-| **Noticias objetivo** | 0 (0.0%) | ~80 (53%) | +∞ |
+| **Noticias objetivo** | 0 (0.0%) | ~80 (53%) | + |
 | **Feminicidios detectados** | 2 (1.4%) | ~110 (73%) | +5214% |
 | **Confianza promedio** | 3.1% | ~45% | +1352% |
 | **Falsos positivos** | 36 (100%) | ~10 (11%) | -72% |
@@ -486,44 +486,44 @@ Confianza noticias objetivo: ~68%
 
 ---
 
-## 🎯 CRITERIOS DE ÉXITO
+##  CRITERIOS DE XITO
 
-### Métricas Mínimas Aceptables
-- ✅ **≥70%** de noticias mencionen feminicidios
-- ✅ **≥50%** de noticias sean objetivo (feminicidio + NNA)
-- ✅ **≥20%** mencionen huérfanos/víctimas indirectas
-- ✅ **<10%** de falsos positivos
-- ✅ **≥60%** confianza promedio en noticias objetivo
-- ✅ **≥20 noticias** de prioridad ALTA por mes
+### Mtricas Mnimas Aceptables
+-  **70%** de noticias mencionen feminicidios
+-  **50%** de noticias sean objetivo (feminicidio + NNA)
+-  **20%** mencionen hurfanos/vctimas indirectas
+-  **<10%** de falsos positivos
+-  **60%** confianza promedio en noticias objetivo
+-  **20 noticias** de prioridad ALTA por mes
 
-### Validación Manual Requerida
-Después de implementar cambios:
+### Validacin Manual Requerida
+Despus de implementar cambios:
 
 1. **Revisar muestra de 20 noticias** de prioridad ALTA
 2. **Validar manualmente** que cumplan criterios:
-   - ¿Menciona feminicidio? (Sí/No)
-   - ¿Menciona NNA afectados? (Sí/No)
-   - ¿Los NNA son víctimas indirectas? (Sí/No)
-3. **Calcular precisión:** (Correctas / 20) × 100
-4. **Meta:** ≥85% de precisión
+   - Menciona feminicidio? (S/No)
+   - Menciona NNA afectados? (S/No)
+   - Los NNA son vctimas indirectas? (S/No)
+3. **Calcular precisin:** (Correctas / 20)  100
+4. **Meta:** 85% de precisin
 
 ---
 
-## 📁 ARCHIVOS GENERADOS
+##  ARCHIVOS GENERADOS
 
-### Durante Depuración
+### Durante Depuracin
 1. **`src/collection/feminicide_detector.py`** (NUEVO)
    - Detector especializado de feminicidios con NNA
-   - 400+ líneas de código
+   - 400+ lneas de cdigo
    - Sistema de confianza y prioridades
 
 2. **`test_detector_on_real_data.py`** (NUEVO)
-   - Script de análisis de datos reales
-   - Genera estadísticas comparativas
+   - Script de anlisis de datos reales
+   - Genera estadsticas comparativas
    - Identifica falsos positivos
 
 3. **`data/noticias_analyzed_with_new_detector.csv`** (NUEVO)
-   - Resultados del análisis con nuevo detector
+   - Resultados del anlisis con nuevo detector
    - Incluye campos: is_feminicide, has_orphans, is_target_news, confidence, priority
 
 ### Por Implementar
@@ -537,80 +537,81 @@ Después de implementar cambios:
 
 6. **`src/analysis/simplified_analyzer.py`** (MODIFICAR)
    - Ajustar TfidfVectorizer (min_df=1, strip_accents=None)
-   - Agregar stopwords españolas
+   - Agregar stopwords espaolas
    - Recalibrar DBSCAN (eps=0.6, min_samples=2)
 
 7. **`app_docker.py`** (MODIFICAR)
-   - Agregar métricas de feminicidios
+   - Agregar mtricas de feminicidios
 
 8. **`templates/dashboard_docker.html`** (MODIFICAR)
-   - Agregar visualización de feminicidios y prioridades
+   - Agregar visualizacin de feminicidios y prioridades
 
 ---
 
-## 🔄 PLAN DE IMPLEMENTACIÓN
+##  PLAN DE IMPLEMENTACIN
 
-### Semana 1: Recolección de Datos (CRÍTICO)
-- [ ] Día 1-2: Investigar y validar URLs de RSS especializadas
-- [ ] Día 3: Actualizar `config.py` con nuevas fuentes
-- [ ] Día 4: Ejecutar scraping y verificar >70% feminicidios
-- [ ] Día 5: Ajustar fuentes si no se alcanza meta
+### Semana 1: Recoleccin de Datos (CRTICO)
+- [ ] Da 1-2: Investigar y validar URLs de RSS especializadas
+- [ ] Da 3: Actualizar `config.py` con nuevas fuentes
+- [ ] Da 4: Ejecutar scraping y verificar >70% feminicidios
+- [ ] Da 5: Ajustar fuentes si no se alcanza meta
 
-### Semana 2: Integración de Detector (ALTA)
-- [ ] Día 1-2: Modificar `data_collector.py`
-- [ ] Día 3: Actualizar esquema CSV con nuevos campos
-- [ ] Día 4: Ejecutar recolección completa con nuevo detector
-- [ ] Día 5: Validar manualmente 20 noticias de ALTA prioridad
+### Semana 2: Integracin de Detector (ALTA)
+- [ ] Da 1-2: Modificar `data_collector.py`
+- [ ] Da 3: Actualizar esquema CSV con nuevos campos
+- [ ] Da 4: Ejecutar recoleccin completa con nuevo detector
+- [ ] Da 5: Validar manualmente 20 noticias de ALTA prioridad
 
-### Semana 3: Optimización ML (MEDIA)
-- [ ] Día 1-2: Ajustar parámetros TF-IDF
-- [ ] Día 3: Recalibrar DBSCAN
-- [ ] Día 4: Ejecutar pipeline completo
-- [ ] Día 5: Analizar clusters generados
+### Semana 3: Optimizacin ML (MEDIA)
+- [ ] Da 1-2: Ajustar parmetros TF-IDF
+- [ ] Da 3: Recalibrar DBSCAN
+- [ ] Da 4: Ejecutar pipeline completo
+- [ ] Da 5: Analizar clusters generados
 
-### Semana 4: Dashboard y Validación (BAJA)
-- [ ] Día 1-2: Actualizar dashboard con métricas de feminicidios
-- [ ] Día 3: Crear visualizaciones específicas
-- [ ] Día 4-5: Pruebas finales y documentación
+### Semana 4: Dashboard y Validacin (BAJA)
+- [ ] Da 1-2: Actualizar dashboard con mtricas de feminicidios
+- [ ] Da 3: Crear visualizaciones especficas
+- [ ] Da 4-5: Pruebas finales y documentacin
 
 ---
 
-## ⚠️ RIESGOS Y MITIGACIONES
+##  RIESGOS Y MITIGACIONES
 
 ### Riesgo 1: Fuentes RSS No Disponibles
-**Mitigación:** Preparar lista de 15-20 fuentes alternativas
+**Mitigacin:** Preparar lista de 15-20 fuentes alternativas
 
 ### Riesgo 2: Scraping Bloqueado
-**Mitigación:** Implementar rate limiting, user-agents, proxies si es necesario
+**Mitigacin:** Implementar rate limiting, user-agents, proxies si es necesario
 
-### Riesgo 3: Aún Bajo Porcentaje de Noticias Objetivo
-**Mitigación:** Considerar scraping de sitios web completos (no solo RSS)
+### Riesgo 3: An Bajo Porcentaje de Noticias Objetivo
+**Mitigacin:** Considerar scraping de sitios web completos (no solo RSS)
 
 ### Riesgo 4: Falsos Positivos Persistentes
-**Mitigación:** Agregar más patrones de exclusión, ajustar pesos de confianza
+**Mitigacin:** Agregar ms patrones de exclusin, ajustar pesos de confianza
 
 ---
 
-## 📞 CONCLUSIÓN
+##  CONCLUSIN
 
 ### Estado Actual
-- ✅ **Detector especializado:** Creado y validado (100% precisión en pruebas)
-- ❌ **Datos reales:** 0% cumplen objetivo (problema de fuentes RSS)
-- ❌ **Falsos positivos:** 100% de detecciones originales eran incorrectas
+-  **Detector especializado:** Creado y validado (100% precisin en pruebas)
+-  **Datos reales:** 0% cumplen objetivo (problema de fuentes RSS)
+-  **Falsos positivos:** 100% de detecciones originales eran incorrectas
 
-### Acción Inmediata Requerida
-**CAMBIAR FUENTES RSS** es la prioridad #1. Sin fuentes especializadas, ninguna optimización de ML resolverá el problema.
+### Accin Inmediata Requerida
+**CAMBIAR FUENTES RSS** es la prioridad #1. Sin fuentes especializadas, ninguna optimizacin de ML resolver el problema.
 
-### Próximo Paso
-1. Validar que las fuentes RSS propuestas funcionen (CIMAC, SEM México)
-2. Si funcionan → implementar cambios en `config.py`
+### Prximo Paso
+1. Validar que las fuentes RSS propuestas funcionen (CIMAC, SEM Mxico)
+2. Si funcionan  implementar cambios en `config.py`
 3. Ejecutar scraping y verificar >70% de feminicidios
-4. Continuar con Fase 2 (integración de detector)
+4. Continuar con Fase 2 (integracin de detector)
 
 ---
 
 **Elaborado por:** GitHub Copilot  
 **Fecha:** 11 de noviembre de 2025  
 **Archivos generados:** 3 nuevos, 5 modificaciones pendientes  
-**Tiempo estimado de implementación:** 4 semanas  
-**Impacto esperado:** Incremento de 0% → 50%+ en noticias objetivo
+**Tiempo estimado de implementacin:** 4 semanas  
+**Impacto esperado:** Incremento de 0%  50%+ en noticias objetivo
+

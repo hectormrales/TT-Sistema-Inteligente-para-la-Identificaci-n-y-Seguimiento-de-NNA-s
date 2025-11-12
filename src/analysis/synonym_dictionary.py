@@ -1,4 +1,4 @@
-# src/analysis/synonym_dictionary.py
+﻿# src/analysis/synonym_dictionary.py
 import json
 import re
 from typing import Dict, List, Set
@@ -6,63 +6,63 @@ from pathlib import Path
 
 class SynonymDictionary:
     """
-    Diccionario de sinónimos especializado para términos relacionados con NNA,
-    violencia de género y feminicidios.
+    Diccionario de sinnimos especializado para trminos relacionados con NNA,
+    violencia de gnero y feminicidios.
     """
     
     def __init__(self):
         self.synonyms = {}
-        self.reverse_index = {}  # Para búsqueda rápida
+        self.reverse_index = {}  # Para bsqueda rpida
         self._load_default_synonyms()
     
     def _load_default_synonyms(self):
-        """Carga sinónimos por defecto basados en fuentes oficiales."""
-        # Términos relacionados con feminicidio
+        """Carga sinnimos por defecto basados en fuentes oficiales."""
+        # Trminos relacionados con feminicidio
         feminicide_terms = [
             "feminicidio", "femicidio", "asesinato de mujer", "homicidio de mujer",
-            "crimen de género", "violencia feminicida", "muerte violenta de mujer"
+            "crimen de gnero", "violencia feminicida", "muerte violenta de mujer"
         ]
         
-        # Términos relacionados con NNA
+        # Trminos relacionados con NNA
         children_terms = [
-            "niños", "niñas", "niña", "niño", "menores", "menor", "infantes", "infante",
-            "adolescentes", "adolescente", "jóvenes", "púberes", "NNA", "nna",
-            "hijos", "hijas", "hijo", "hija", "bebés", "bebé", "recién nacidos",
-            "neonatos", "lactantes", "pequeños", "chicos", "chicas", "muchachos",
-            "muchachas", "críos", "crías", "chavos", "chavas", "morritos", "morritas"
+            "nios", "nias", "nia", "nio", "menores", "menor", "infantes", "infante",
+            "adolescentes", "adolescente", "jvenes", "pberes", "NNA", "nna",
+            "hijos", "hijas", "hijo", "hija", "bebs", "beb", "recin nacidos",
+            "neonatos", "lactantes", "pequeos", "chicos", "chicas", "muchachos",
+            "muchachas", "cros", "cras", "chavos", "chavas", "morritos", "morritas"
         ]
         
-        # Términos relacionados con violencia
+        # Trminos relacionados con violencia
         violence_terms = [
-            "violencia", "agresión", "maltrato", "abuso", "lesiones", "golpes",
-            "violencia física", "violencia psicológica", "violencia sexual",
-            "violencia doméstica", "violencia familiar", "violencia intrafamiliar",
+            "violencia", "agresin", "maltrato", "abuso", "lesiones", "golpes",
+            "violencia fsica", "violencia psicolgica", "violencia sexual",
+            "violencia domstica", "violencia familiar", "violencia intrafamiliar",
             "tortura", "vejaciones", "acoso", "hostigamiento"
         ]
         
-        # Términos relacionados con orfandad
+        # Trminos relacionados con orfandad
         orphan_terms = [
-            "huérfanos", "huérfanas", "huérfano", "huérfana", "orfandad",
+            "hurfanos", "hurfanas", "hurfano", "hurfana", "orfandad",
             "sin padres", "sin madre", "sin padre", "abandonados", "desamparados",
-            "víctimas indirectas", "víctimas colaterales", "hijos de víctimas"
+            "vctimas indirectas", "vctimas colaterales", "hijos de vctimas"
         ]
         
-        # Términos relacionados con justicia
+        # Trminos relacionados con justicia
         justice_terms = [
             "justicia", "proceso legal", "juicio", "tribunal", "sentencia",
-            "condena", "absolución", "veredicto", "investigación", "denuncia",
-            "querella", "ministerio público", "fiscalía", "procuraduría",
-            "detención", "arresto", "captura", "orden de aprehensión"
+            "condena", "absolucin", "veredicto", "investigacin", "denuncia",
+            "querella", "ministerio pblico", "fiscala", "procuradura",
+            "detencin", "arresto", "captura", "orden de aprehensin"
         ]
         
-        # Términos relacionados con protección
+        # Trminos relacionados con proteccin
         protection_terms = [
-            "protección", "refugio", "albergue", "casa hogar", "DIF",
-            "asistencia social", "custodia", "tutela", "adopción",
-            "medidas cautelares", "orden de restricción", "alejamiento"
+            "proteccin", "refugio", "albergue", "casa hogar", "DIF",
+            "asistencia social", "custodia", "tutela", "adopcin",
+            "medidas cautelares", "orden de restriccin", "alejamiento"
         ]
         
-        # Agregar grupos de sinónimos
+        # Agregar grupos de sinnimos
         self.add_synonym_group(feminicide_terms)
         self.add_synonym_group(children_terms)
         self.add_synonym_group(violence_terms)
@@ -70,16 +70,16 @@ class SynonymDictionary:
         self.add_synonym_group(justice_terms)
         self.add_synonym_group(protection_terms)
         
-        # Sinónimos específicos adicionales
+        # Sinnimos especficos adicionales
         specific_synonyms = {
-            "madre": ["mamá", "progenitora", "genitora", "materna"],
-            "padre": ["papá", "progenitor", "genitor", "paterno"],
-            "familia": ["hogar", "núcleo familiar", "parientes", "familiares"],
-            "asesinato": ["homicidio", "crimen", "muerte violenta", "occisión"],
-            "víctima": ["afectada", "perjudicada", "damnificada", "lesionada"],
+            "madre": ["mam", "progenitora", "genitora", "materna"],
+            "padre": ["pap", "progenitor", "genitor", "paterno"],
+            "familia": ["hogar", "ncleo familiar", "parientes", "familiares"],
+            "asesinato": ["homicidio", "crimen", "muerte violenta", "occisin"],
+            "vctima": ["afectada", "perjudicada", "damnificada", "lesionada"],
             "agresor": ["atacante", "perpetrador", "victimario", "criminal"],
-            "denuncia": ["acusación", "reporte", "querella", "demanda"],
-            "investigación": ["pesquisa", "indagatoria", "averiguación"],
+            "denuncia": ["acusacin", "reporte", "querella", "demanda"],
+            "investigacin": ["pesquisa", "indagatoria", "averiguacin"],
             "evidencia": ["prueba", "indicio", "elemento probatorio"],
             "testigo": ["declarante", "deponente", "informante"]
         }
@@ -89,40 +89,40 @@ class SynonymDictionary:
     
     def add_synonym_group(self, terms: List[str]):
         """
-        Agrega un grupo de términos sinónimos.
+        Agrega un grupo de trminos sinnimos.
         
         Args:
-            terms: Lista de términos que son sinónimos entre sí
+            terms: Lista de trminos que son sinnimos entre s
         """
-        # Normalizar términos
+        # Normalizar trminos
         normalized_terms = [self._normalize_term(term) for term in terms]
         
-        # Cada término en el grupo es sinónimo de todos los demás
+        # Cada trmino en el grupo es sinnimo de todos los dems
         for term in normalized_terms:
             if term not in self.synonyms:
                 self.synonyms[term] = set()
             
-            # Agregar todos los otros términos como sinónimos
+            # Agregar todos los otros trminos como sinnimos
             for other_term in normalized_terms:
                 if other_term != term:
                     self.synonyms[term].add(other_term)
             
-            # Actualizar índice reverso
+            # Actualizar ndice reverso
             self.reverse_index[term] = term
     
     def _normalize_term(self, term: str) -> str:
-        """Normaliza un término para búsqueda consistente."""
+        """Normaliza un trmino para bsqueda consistente."""
         return term.lower().strip()
     
     def get_synonyms(self, term: str) -> Set[str]:
         """
-        Obtiene todos los sinónimos de un término.
+        Obtiene todos los sinnimos de un trmino.
         
         Args:
-            term: Término de búsqueda
+            term: Trmino de bsqueda
             
         Returns:
-            Conjunto de sinónimos (incluyendo el término original)
+            Conjunto de sinnimos (incluyendo el trmino original)
         """
         normalized_term = self._normalize_term(term)
         
@@ -135,13 +135,13 @@ class SynonymDictionary:
     
     def expand_search_query(self, query: str) -> str:
         """
-        Expande una consulta de búsqueda incluyendo sinónimos.
+        Expande una consulta de bsqueda incluyendo sinnimos.
         
         Args:
-            query: Consulta de búsqueda original
+            query: Consulta de bsqueda original
             
         Returns:
-            Consulta expandida con sinónimos
+            Consulta expandida con sinnimos
         """
         words = query.lower().split()
         expanded_terms = []
@@ -149,7 +149,7 @@ class SynonymDictionary:
         for word in words:
             synonyms = self.get_synonyms(word)
             if len(synonyms) > 1:
-                # Si hay sinónimos, crear una expresión OR
+                # Si hay sinnimos, crear una expresin OR
                 synonym_list = list(synonyms)
                 expanded_terms.append(f"({' OR '.join(synonym_list)})")
             else:
@@ -159,13 +159,13 @@ class SynonymDictionary:
     
     def find_terms_in_text(self, text: str) -> Dict[str, List[str]]:
         """
-        Encuentra términos conocidos y sus sinónimos en un texto.
+        Encuentra trminos conocidos y sus sinnimos en un texto.
         
         Args:
             text: Texto a analizar
             
         Returns:
-            Diccionario con términos encontrados y sus sinónimos
+            Diccionario con trminos encontrados y sus sinnimos
         """
         normalized_text = text.lower()
         found_terms = {}
@@ -179,7 +179,7 @@ class SynonymDictionary:
     
     def save_to_file(self, filepath: str):
         """Guarda el diccionario en un archivo JSON."""
-        # Convertir sets a listas para serialización JSON
+        # Convertir sets a listas para serializacin JSON
         serializable_synonyms = {
             term: list(synonyms) for term, synonyms in self.synonyms.items()
         }
@@ -198,28 +198,28 @@ class SynonymDictionary:
                 term: set(synonyms) for term, synonyms in data.items()
             }
             
-            # Reconstruir índice reverso
+            # Reconstruir ndice reverso
             self.reverse_index = {term: term for term in self.synonyms.keys()}
             
         except FileNotFoundError:
-            print(f"Archivo {filepath} no encontrado. Usando sinónimos por defecto.")
+            print(f"Archivo {filepath} no encontrado. Usando sinnimos por defecto.")
         except Exception as e:
-            print(f"Error cargando diccionario: {e}. Usando sinónimos por defecto.")
+            print(f"Error cargando diccionario: {e}. Usando sinnimos por defecto.")
 
-# Función de utilidad para búsqueda mejorada
+# Funcin de utilidad para bsqueda mejorada
 def enhanced_search(df, query: str, search_columns: List[str] = None):
     """
-    Realiza búsqueda mejorada usando sinónimos.
+    Realiza bsqueda mejorada usando sinnimos.
     
     Args:
         df: DataFrame a buscar
-        query: Consulta de búsqueda
+        query: Consulta de bsqueda
         search_columns: Columnas donde buscar (por defecto: titulo, contenido)
         
     Returns:
         DataFrame filtrado con resultados
     """
-    # Importar pandas localmente para evitar errores de importación
+    # Importar pandas localmente para evitar errores de importacin
     try:
         import pandas as pd
     except ImportError:
@@ -228,23 +228,23 @@ def enhanced_search(df, query: str, search_columns: List[str] = None):
     if search_columns is None:
         search_columns = ['titulo', 'contenido']
     
-    # Inicializar diccionario de sinónimos
+    # Inicializar diccionario de sinnimos
     synonym_dict = SynonymDictionary()
     
-    # Expandir consulta con sinónimos
+    # Expandir consulta con sinnimos
     expanded_query = synonym_dict.expand_search_query(query)
     
-    # Realizar búsqueda en las columnas especificadas
+    # Realizar bsqueda en las columnas especificadas
     mask = pd.Series([False] * len(df))
     
     for column in search_columns:
         if column in df.columns:
-            # Búsqueda simple por términos (se puede mejorar con regex)
+            # Bsqueda simple por trminos (se puede mejorar con regex)
             column_mask = df[column].str.contains(
                 query, case=False, na=False, regex=False
             )
             
-            # También buscar sinónimos
+            # Tambin buscar sinnimos
             for word in query.lower().split():
                 synonyms = synonym_dict.get_synonyms(word)
                 for synonym in synonyms:
@@ -257,10 +257,10 @@ def enhanced_search(df, query: str, search_columns: List[str] = None):
     
     return df[mask]
 
-# Importar pandas solo si está disponible
+# Importar pandas solo si est disponible
 try:
     import pandas as pd
 except ImportError:
-    print("Pandas no está instalado. La función enhanced_search no estará disponible.")
+    print("Pandas no est instalado. La funcin enhanced_search no estar disponible.")
     def enhanced_search(*args, **kwargs):
         raise ImportError("Pandas requerido para enhanced_search")
