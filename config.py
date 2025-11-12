@@ -1,15 +1,23 @@
 # config.py
 
 # Fuentes de noticias para la recolección
+# ACTUALIZADAS: Fuentes especializadas en género, feminicidios y violencia contra mujeres
 RSS_FEEDS = [
-    'https://www.jornada.com.mx/rss/politica.xml',
-    'https://www.proceso.com.mx/feed',
-    'https://aristeguinoticias.com/feed/',
-    'https://www.animalpolitico.com/feed/',
-    'https://www.sinembargo.mx/feed/',
-    'https://www.forbes.com.mx/feed/',
-    'https://www.elsoldemexico.com.mx/rss.xml',        
-    'https://www.elfinanciero.com.mx/rss/',
+    # === MEDIOS ESPECIALIZADOS EN GÉNERO Y FEMINICIDIOS ===
+    'https://cimacnoticias.com.mx/feed/',  # CIMAC - Comunicación e Información de la Mujer
+    'https://www.semmexico.mx/feed/',      # SEM México - Periodismo con perspectiva de género
+    
+    # === SECCIONES DE SEGURIDAD Y ESTADOS (incluyen feminicidios) ===
+    'https://www.jornada.com.mx/rss/estados.xml',      # La Jornada - Estados (casos locales)
+    'https://www.animalpolitico.com/category/seguridad/feed/',  # Animal Político - Seguridad
+    'https://www.proceso.com.mx/seccion/nacional/feed',  # Proceso - Nacional
+    
+    # === MEDIOS GENERALISTAS CON COBERTURA DE FEMINICIDIOS ===
+    'https://aristeguinoticias.com/feed/',  # Aristegui Noticias (buena cobertura)
+    'https://www.sinembargo.mx/feed/',      # Sin Embargo (cobertura social)
+    
+    # === BACKUP: Medio general ===
+    'https://www.jornada.com.mx/rss/politica.xml',  # La Jornada - Política (backup)
 ]
 
 # Rutas de archivos

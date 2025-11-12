@@ -61,6 +61,34 @@ class SimplifiedNewsAnalyzer:
         self.kmeans_model = None
         self.dbscan_model = None
         self.synonym_dict = SynonymDictionary()
+    
+    def _get_spanish_stopwords(self):
+        """
+        Retorna lista de stopwords en español.
+        Estas son palabras comunes sin valor semántico que deben filtrarse.
+        """
+        return [
+            'el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'ser', 'se',
+            'no', 'haber', 'por', 'con', 'su', 'para', 'como', 'estar',
+            'tener', 'le', 'lo', 'todo', 'pero', 'más', 'hacer', 'o',
+            'poder', 'decir', 'este', 'ir', 'otro', 'ese', 'la', 'si',
+            'me', 'ya', 'ver', 'porque', 'dar', 'cuando', 'él', 'muy',
+            'sin', 'vez', 'mucho', 'saber', 'qué', 'sobre', 'mi', 'alguno',
+            'mismo', 'yo', 'también', 'hasta', 'año', 'dos', 'querer',
+            'entre', 'así', 'primero', 'desde', 'grande', 'eso', 'ni',
+            'nos', 'llegar', 'pasar', 'tiempo', 'ella', 'sí', 'día',
+            'uno', 'bien', 'poco', 'deber', 'entonces', 'poner', 'cosa',
+            'tanto', 'hombre', 'parecer', 'nuestro', 'tan', 'donde',
+            'ahora', 'parte', 'después', 'vida', 'quedar', 'siempre',
+            'creer', 'hablar', 'llevar', 'dejar', 'nada', 'cada',
+            'seguir', 'menos', 'nuevo', 'encontrar', 'algo', 'solo',
+            'estos', 'trabajar', 'último', 'largo', 'sentir', 'mano',
+            'venir', 'volver', 'tomar', 'conocer', 'vivir', 'pensar',
+            'salir', 'mayor', 'tal', 'compañero', 'aunque', 'fue',
+            'sido', 'han', 'son', 'era', 'estaba', 'había', 'puede',
+            'pueden', 'debe', 'deben', 'hace', 'hacen', 'hizo', 'hicieron',
+            'va', 'van', 'iba', 'iban', 'sea', 'sean', 'tenga', 'tengan'
+        ]
         
     def step_1_collect_data(self) -> pd.DataFrame:
         """Paso 1: Recolección de datos desde RSS feeds."""
@@ -113,13 +141,15 @@ class SimplifiedNewsAnalyzer:
         print("Creando representación vectorial TF-IDF...")
         texts = self.df_processed['contenido_limpio'].fillna('').astype(str).tolist()
         
+        # CORRECCIÓN: Parámetros ajustados para feminicidios
         self.vectorizer = TfidfVectorizer(
             max_features=3000,
-            stop_words=None,
+            stop_words=self._get_spanish_stopwords(),  # ✅ Stopwords en español
             lowercase=True,
             ngram_range=(1, 2),
-            min_df=2,
-            max_df=0.8
+            min_df=1,           # ✅ Cambio: 2→1 (permite palabras únicas como "feminicidio")
+            max_df=0.8,
+            strip_accents=None  # ✅ Cambio: Preservar acentos (evita "me xico")
         )
         
         self.tfidf_matrix = self.vectorizer.fit_transform(texts)
@@ -202,8 +232,8 @@ class SimplifiedNewsAnalyzer:
             print(f"❌ Error en modelado de tópicos: {e}")
             return self.df_processed, None
     
-    def step_5_clustering(self, method: str = 'dbscan', eps: float = 0.4, 
-                         min_samples: int = 3, n_clusters: int = 5) -> Tuple[pd.DataFrame, Dict]:
+    def step_5_clustering(self, method: str = 'dbscan', eps: float = 0.6, 
+                         min_samples: int = 2, n_clusters: int = 5) -> Tuple[pd.DataFrame, Dict]:
         """
         Paso 5: Agrupación usando DBSCAN (recomendado) o K-Means.
         
@@ -242,18 +272,20 @@ class SimplifiedNewsAnalyzer:
             print(f"❌ Error en clustering: {e}")
             return self.df_processed, None
     
-    def _clustering_dbscan(self, eps: float = 0.4, min_samples: int = 3) -> Tuple[pd.DataFrame, Dict]:
+    def _clustering_dbscan(self, eps: float = 0.6, min_samples: int = 2) -> Tuple[pd.DataFrame, Dict]:
         """
         Clustering con DBSCAN (Density-Based Spatial Clustering of Applications with Noise).
         
-        Justificación técnica:
-        - eps=0.4: Con métrica coseno, distancia = 1 - similitud
-          → eps=0.4 requiere similitud > 0.6 (60%) para mismo cluster
-          → Calibrado para detectar noticias del mismo caso/evento
+        Justificación técnica CORREGIDA:
+        - eps=0.6 (ANTES 0.4): Con métrica coseno, distancia = 1 - similitud
+          → eps=0.6 requiere similitud > 0.4 (40%) para mismo cluster
+          → MÁS PERMISIVO: permite agrupar casos similares aunque no sean idénticos
+          → Calibrado para noticias de feminicidio que varían en redacción
         
-        - min_samples=3: Un "caso" debe tener al menos 3 noticias relacionadas
-          → Evita que ruido forme clusters
-          → Casos pequeños pero válidos no se pierden
+        - min_samples=2 (ANTES 3): Un "caso" necesita al menos 2 noticias relacionadas
+          → MENOS RESTRICTIVO: permite detectar casos con menor cobertura
+          → Útil cuando hay pocas noticias sobre el mismo evento
+          → Balance entre ruido y sensibilidad
         
         - metric='cosine': Mide similitud semántica entre vectores TF-IDF
           → Mejor que euclidean para texto
@@ -263,6 +295,7 @@ class SimplifiedNewsAnalyzer:
         from sklearn.metrics import silhouette_score
         
         print(f"Aplicando DBSCAN (eps={eps}, min_samples={min_samples})...")
+        print("⚙️  Parámetros AJUSTADOS para feminicidios (más permisivo)")
         
         # Convertir matriz dispersa a densa (DBSCAN lo requiere)
         tfidf_dense = self.tfidf_matrix.toarray()
@@ -555,8 +588,8 @@ class SimplifiedNewsAnalyzer:
     def run_complete_analysis(self, 
                             num_topics: int = 6,
                             clustering_method: str = 'dbscan',
-                            eps: float = 0.4,
-                            min_samples: int = 3,
+                            eps: float = 0.6,
+                            min_samples: int = 2,
                             n_clusters: int = 4,
                             save_intermediate: bool = True) -> pd.DataFrame:
         """

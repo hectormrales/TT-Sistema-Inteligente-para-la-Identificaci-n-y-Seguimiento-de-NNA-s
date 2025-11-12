@@ -6,9 +6,13 @@ from datetime import datetime
 from email.utils import parsedate_to_datetime
 from unicodedata import normalize
 import config
+from .feminicide_detector import FeminicideDetector
 
 def collect_news_from_rss(rss_url):
-    """Recolecta noticias desde un feed RSS."""
+    """Recolecta noticias desde un feed RSS y aplica detección de feminicidios."""
+    # Inicializar detector de feminicidios
+    detector = FeminicideDetector()
+    
     try:
         #Usar headers para evitar bloqueos
         headers = getattr(config, 'HTTP_HEADERS', {})
@@ -38,6 +42,14 @@ def collect_news_from_rss(rss_url):
                 else:
                     dt = datetime.utcnow()
                 
+                # === NUEVA DETECCIÓN ESPECIALIZADA ===
+                # Combinar título y contenido para análisis completo
+                full_text = f"{title.text.strip()} {desc_text}"
+                detection = detector.detect(full_text)
+                
+                # Mantener compatibilidad con código anterior
+                menores_identificados = 'Si' if detection['has_children'] else 'No'
+                
                 articles.append({ 
                     'titulo': title.text.strip(),
                     'contenido': desc_text,
@@ -45,7 +57,17 @@ def collect_news_from_rss(rss_url):
                     'fuente': rss_url,
                     'fecha': dt.isoformat(),
                     'cluster': 0, #Se asignará luego del análisis
-                    'menores_identificados': 'No determinado' #Se asignará luego del análisis
+                    
+                    # === CAMPOS NUEVOS DE DETECCIÓN ESPECIALIZADA ===
+                    'es_feminicidio': detection['is_feminicide'],
+                    'tiene_nna': detection['has_children'],
+                    'tiene_huerfanos': detection['has_orphans'],
+                    'es_objetivo': detection['is_target_news'],  # ← CAMPO PRINCIPAL
+                    'confianza': detection['confidence'],
+                    'prioridad': detection['priority'],
+                    
+                    # Mantener compatibilidad con código anterior
+                    'menores_identificados': menores_identificados
                 })
 
         return articles
@@ -58,12 +80,43 @@ def collect_all_news():
     """Recolecta noticias de todas las fuentes configuradas."""
     all_articles = []
     
+    print("="*80)
+    print("INICIANDO RECOLECCIÓN DE NOTICIAS CON DETECCIÓN ESPECIALIZADA")
+    print("="*80)
+    
     for rss_feed in config.RSS_FEEDS:
-        print(f"Recolectando noticias de: {rss_feed}")
+        print(f"\n📡 Recolectando de: {rss_feed}")
         articles = collect_news_from_rss(rss_feed)
+        print(f"   ✅ {len(articles)} noticias recolectadas")
         all_articles.extend(articles)
     
-    return pd.DataFrame(all_articles)
+    # Convertir a DataFrame
+    df = pd.DataFrame(all_articles)
+    
+    if len(df) > 0:
+        # Estadísticas de recolección
+        total = len(df)
+        feminicides = df['es_feminicidio'].sum() if 'es_feminicidio' in df.columns else 0
+        target_news = df['es_objetivo'].sum() if 'es_objetivo' in df.columns else 0
+        high_priority = len(df[df['prioridad'] == 'ALTA']) if 'prioridad' in df.columns else 0
+        
+        print("\n" + "="*80)
+        print("RESUMEN DE RECOLECCIÓN")
+        print("="*80)
+        print(f"\n📊 Total de noticias recolectadas: {total}")
+        print(f"📰 Noticias de feminicidio: {feminicides} ({feminicides/total*100:.1f}%)")
+        print(f"🎯 Noticias OBJETIVO (feminicidio+NNA): {target_news} ({target_news/total*100:.1f}%)")
+        print(f"⭐ Prioridad ALTA: {high_priority} ({high_priority/total*100:.1f}%)")
+        
+        # Advertencia si no hay suficientes noticias objetivo
+        if target_news / total < 0.30:  # Menos del 30%
+            print(f"\n⚠️  ADVERTENCIA: Solo {target_news/total*100:.1f}% son noticias objetivo")
+            print("   Se esperaba >50% de noticias sobre feminicidios con NNA")
+            print("   Considera agregar más fuentes especializadas en género/feminicidios")
+        else:
+            print(f"\n✅ Porcentaje de noticias objetivo aceptable: {target_news/total*100:.1f}%")
+    
+    return df
 
 def detect_children_mentions(text):
     """Detecta menciones de menores de edad en el texto."""
