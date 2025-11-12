@@ -197,6 +197,10 @@ def show_cluster_analysis(df):
         cluster_news = df[df['cluster'] == cluster_id]
         n_news = len(cluster_news)
         
+        # Saltar clusters vacios
+        if n_news == 0:
+            continue
+        
         print(f"\n Cluster {cluster_id}: {n_news} noticias")
         
         if 'es_objetivo' in df.columns:
