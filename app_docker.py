@@ -61,7 +61,7 @@ def load_data():
     data_file = DATA_DIR / 'noticias_analyzed_simplified.csv'
     if data_file.exists():
         try:
-            current_data = pd.read_csv(str(data_file))
+            current_data = pd.read_csv(str(data_file), encoding='utf-8-sig')
             app.logger.info(f"Datos cargados: {len(current_data)} noticias")
             return True
         except Exception as e:
@@ -74,12 +74,37 @@ def get_stats():
     if current_data is None:
         return None
     
+    # Calcular estadísticas de duplicados
+    duplicados = 0
+    noticias_unicas = len(current_data)
+    grupos_duplicados = 0
+    
+    if 'es_duplicado' in current_data.columns:
+        # Contar duplicados (True o 'True' como string)
+        duplicados = int(
+            ((current_data['es_duplicado'] == True) | 
+             (current_data['es_duplicado'] == 'True')).sum()
+        )
+        noticias_unicas = len(current_data) - duplicados
+        
+        # Contar grupos (valores >= 0 en grupo_duplicado)
+        if 'grupo_duplicado' in current_data.columns:
+            grupos_duplicados = int(
+                (current_data['grupo_duplicado'] >= 0).sum()
+            )
+            # Contar grupos únicos
+            if grupos_duplicados > 0:
+                grupos_duplicados = int(current_data[current_data['grupo_duplicado'] >= 0]['grupo_duplicado'].nunique())
+    
     return {
         'total_noticias': len(current_data),
         'noticias_nna': int((current_data['menores_identificados'] == 'Si').sum()),
         'clusters': int(current_data['cluster'].nunique()) if 'cluster' in current_data.columns else 0,
         'topics': int(current_data['topic_id'].nunique()) if 'topic_id' in current_data.columns else 0,
         'similitud_promedio': float(current_data['max_similarity'].mean()) if 'max_similarity' in current_data.columns else 0,
+        'duplicados': duplicados,
+        'noticias_unicas': noticias_unicas,
+        'grupos_duplicados': grupos_duplicados,
         'ultima_actualizacion': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
 
@@ -111,7 +136,18 @@ def api_noticias():
     # Filtrar datos
     data = current_data.copy()
     if only_nna:
-        data = data[data['menores_identificados'] == 'Si']
+        # Filtro mejorado: solo feminicidios con NNA (es_objetivo=True y menores_identificados=Si)
+        data = data[
+            (data['menores_identificados'] == 'Si') & 
+            ((data['es_objetivo'] == True) | (data['es_objetivo'] == 'True'))
+        ]
+    
+    # Ordenar por prioridad: ALTA > MEDIA > BAJA > IRRELEVANTE
+    if 'prioridad' in data.columns:
+        priority_order = {'ALTA': 0, 'MEDIA': 1, 'BAJA': 2, 'IRRELEVANTE': 3}
+        data['_priority_num'] = data['prioridad'].map(priority_order).fillna(4)
+        data = data.sort_values('_priority_num')
+        data = data.drop('_priority_num', axis=1)
     
     # Paginación
     start_idx = (page - 1) * per_page
@@ -122,18 +158,34 @@ def api_noticias():
     # Convertir a diccionario
     noticias = []
     for idx, row in paginated_data.iterrows():
-        noticia = {
-            'id': int(idx),
-            'titulo': row['titulo'],
-            'contenido': row['contenido'][:200] + '...' if len(row['contenido']) > 200 else row['contenido'],
-            'fecha': row['fecha'],
-            'fuente': row['fuente'],
-            'menores_identificados': row['menores_identificados'],
-            'cluster': int(row.get('cluster', -1)),
-            'topic_id': int(row.get('topic_id', -1)),
-            'similitud': float(row.get('max_similarity', 0))
-        }
-        noticias.append(noticia)
+        try:
+            # Manejo seguro de valores nulos y NaN
+            grupo_dup = row.get('grupo_duplicado', -1)
+            if pd.isna(grupo_dup) or grupo_dup == '':
+                grupo_dup = -1
+            
+            noticia = {
+                'id': int(idx),
+                'titulo': str(row.get('titulo', '')),
+                'contenido': str(row.get('contenido', ''))[:200] + '...' if len(str(row.get('contenido', ''))) > 200 else str(row.get('contenido', '')),
+                'fecha': str(row.get('fecha', '')),
+                'fuente': str(row.get('fuente', '')),
+                'menores_identificados': str(row.get('menores_identificados', 'No')),
+                'prioridad': str(row.get('prioridad', 'IRRELEVANTE')),
+                'es_feminicidio': bool(row.get('es_feminicidio', False)) if not pd.isna(row.get('es_feminicidio')) else False,
+                'es_objetivo': bool(row.get('es_objetivo', False)) if not pd.isna(row.get('es_objetivo')) else False,
+                'cluster': int(row.get('cluster', -1)) if not pd.isna(row.get('cluster')) else -1,
+                'topic_id': int(row.get('topic_id', -1)) if not pd.isna(row.get('topic_id')) else -1,
+                'similitud': float(row.get('max_similarity', 0)) if not pd.isna(row.get('max_similarity')) else 0.0,
+                'es_duplicado': bool(row.get('es_duplicado', False)) if not pd.isna(row.get('es_duplicado')) else False,
+                'grupo_duplicado': int(grupo_dup),
+                'titulo_original': str(row.get('titulo_original', '')) if not pd.isna(row.get('titulo_original')) else '',
+                'fuente_original': str(row.get('fuente_original', '')) if not pd.isna(row.get('fuente_original')) else ''
+            }
+            noticias.append(noticia)
+        except Exception as e:
+            logger.error(f"Error procesando noticia {idx}: {e}")
+            continue
     
     return jsonify({
         'noticias': noticias,
@@ -145,7 +197,10 @@ def api_noticias():
 
 @app.route('/api/search')
 def api_search():
-    """API para búsqueda de noticias."""
+    """
+    API para búsqueda inteligente de noticias.
+    Busca en: título, contenido, fuente, y usa sinónimos.
+    """
     if current_data is None:
         return jsonify({'error': 'No hay datos disponibles'}), 404
     
@@ -157,10 +212,11 @@ def api_search():
         # Usar diccionario de sinónimos para búsqueda
         synonym_dict = SynonymDictionary()
         
-        # Búsqueda en títulos y contenido
+        # Búsqueda en múltiples campos: título, contenido, fuente
         mask = (
             current_data['titulo'].str.contains(query, case=False, na=False) |
-            current_data['contenido'].str.contains(query, case=False, na=False)
+            current_data['contenido'].str.contains(query, case=False, na=False) |
+            current_data['fuente'].str.contains(query, case=False, na=False)
         )
         
         # Expandir búsqueda con sinónimos
@@ -174,21 +230,43 @@ def api_search():
         
         results = current_data[mask]
         
-        # Convertir resultados
+        # Ordenar por prioridad
+        if 'prioridad' in results.columns:
+            priority_order = {'ALTA': 0, 'MEDIA': 1, 'BAJA': 2, 'IRRELEVANTE': 3}
+            results['_priority_num'] = results['prioridad'].map(priority_order).fillna(4)
+            results = results.sort_values('_priority_num')
+            results = results.drop('_priority_num', axis=1)
+        
+        # Convertir resultados (limitar a 50)
         noticias = []
-        for idx, row in results.head(20).iterrows():  # Limitar a 20 resultados
-            noticia = {
-                'id': int(idx),
-                'titulo': row['titulo'],
-                'contenido': row['contenido'][:200] + '...' if len(row['contenido']) > 200 else row['contenido'],
-                'fecha': row['fecha'],
-                'fuente': row['fuente'],
-                'menores_identificados': row['menores_identificados'],
-                'cluster': int(row.get('cluster', -1)),
-                'topic_id': int(row.get('topic_id', -1)),
-                'similitud': float(row.get('max_similarity', 0))
-            }
-            noticias.append(noticia)
+        for idx, row in results.head(50).iterrows():
+            try:
+                grupo_dup = row.get('grupo_duplicado', -1)
+                if pd.isna(grupo_dup) or grupo_dup == '':
+                    grupo_dup = -1
+                
+                noticia = {
+                    'id': int(idx),
+                    'titulo': str(row.get('titulo', '')),
+                    'contenido': str(row.get('contenido', ''))[:200] + '...' if len(str(row.get('contenido', ''))) > 200 else str(row.get('contenido', '')),
+                    'fecha': str(row.get('fecha', '')),
+                    'fuente': str(row.get('fuente', '')),
+                    'menores_identificados': str(row.get('menores_identificados', 'No')),
+                    'prioridad': str(row.get('prioridad', 'IRRELEVANTE')),
+                    'es_feminicidio': bool(row.get('es_feminicidio', False)) if not pd.isna(row.get('es_feminicidio')) else False,
+                    'es_objetivo': bool(row.get('es_objetivo', False)) if not pd.isna(row.get('es_objetivo')) else False,
+                    'cluster': int(row.get('cluster', -1)) if not pd.isna(row.get('cluster')) else -1,
+                    'topic_id': int(row.get('topic_id', -1)) if not pd.isna(row.get('topic_id')) else -1,
+                    'similitud': float(row.get('max_similarity', 0)) if not pd.isna(row.get('max_similarity')) else 0.0,
+                    'es_duplicado': bool(row.get('es_duplicado', False)) if not pd.isna(row.get('es_duplicado')) else False,
+                    'grupo_duplicado': int(grupo_dup),
+                    'titulo_original': str(row.get('titulo_original', '')) if not pd.isna(row.get('titulo_original')) else '',
+                    'fuente_original': str(row.get('fuente_original', '')) if not pd.isna(row.get('fuente_original')) else ''
+                }
+                noticias.append(noticia)
+            except Exception as e:
+                app.logger.error(f"Error procesando noticia {idx} en búsqueda: {e}")
+                continue
         
         return jsonify({
             'query': query,
@@ -201,30 +279,67 @@ def api_search():
         app.logger.error(f"Error en búsqueda: {e}")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
-@app.route('/api/analyze')
+@app.route('/api/analyze', methods=['POST'])
 def api_analyze():
-    """API para ejecutar análisis."""
+    """API para ejecutar análisis completo."""
     try:
         global analyzer, current_data
         
-        # Crear analizador
-        analyzer = SimplifiedNewsAnalyzer()
+        app.logger.info("Iniciando análisis completo...")
         
-        # Ejecutar análisis
-        result_data = analyzer.run_complete_analysis(
-            num_topics=5,
-            n_clusters=4,
-            save_intermediate=False
+        # Importar colector de datos
+        from src.collection.data_collector import collect_all_news
+        
+        # Paso 1: Recolectar noticias
+        app.logger.info("Paso 1: Recolectando noticias...")
+        df_noticias = collect_all_news(
+            use_google_news=True,
+            use_historical=True
         )
         
-        # Recargar datos
+        if df_noticias is None or len(df_noticias) == 0:
+            return jsonify({
+                'status': 'error',
+                'message': 'No se pudieron recolectar noticias'
+            }), 500
+        
+        app.logger.info(f"Recolectadas {len(df_noticias)} noticias")
+        
+        # Guardar noticias crudas
+        raw_path = DATA_DIR / 'noticias.csv'
+        df_noticias.to_csv(str(raw_path), index=False, encoding='utf-8-sig')
+        
+        # Paso 2: Ejecutar análisis ML completo
+        app.logger.info("Paso 2: Ejecutando análisis ML...")
+        analyzer = SimplifiedNewsAnalyzer()
+        
+        result_data = analyzer.run_complete_analysis(
+            df_input=df_noticias,
+            num_topics=8,
+            eps=0.80,
+            min_samples=2,
+            save_intermediate=True
+        )
+        
+        app.logger.info("Análisis completado")
+        
+        # Paso 3: Recargar datos analizados
         if load_data():
+            stats = get_stats()
             return jsonify({
                 'status': 'success',
-                'message': 'Análisis completado exitosamente',
-                'stats': get_stats()
+                'message': f'Análisis completado: {len(df_noticias)} noticias recolectadas y analizadas',
+                'stats': stats,
+                'noticias_recolectadas': len(df_noticias),
+                'noticias_nna': stats.get('noticias_nna', 0),
+                'clusters': stats.get('clusters', 0),
+                'topics': stats.get('topics', 0)
             })
         else:
+            return jsonify({
+                'status': 'warning',
+                'message': 'Análisis completado pero error cargando datos'
+            }), 500
             return jsonify({'error': 'Análisis completado pero error cargando datos'}), 500
             
     except Exception as e:
@@ -239,7 +354,7 @@ def api_export_csv():
     
     try:
         output_path = DATA_DIR / 'export_noticias.csv'
-        current_data.to_csv(str(output_path), index=False, encoding='utf-8')
+        current_data.to_csv(str(output_path), index=False, encoding='utf-8-sig')
         return send_file(str(output_path), as_attachment=True, download_name='noticias_nna.csv')
     except Exception as e:
         return jsonify({'error': f'Error exportando: {str(e)}'}), 500

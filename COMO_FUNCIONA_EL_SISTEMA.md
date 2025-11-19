@@ -1,744 +1,1485 @@
-# 🔍 CÓMO FUNCIONA EL SISTEMA - Explicación Completa
+# 📖 Cómo Funciona el Sistema - Documentación Técnica# 🔍 CÓMO FUNCIONA EL SISTEMA - Explicación Completa
 
-**Sistema Inteligente para Identificación y Seguimiento de NNA's**  
+
+
+## 📑 Índice**Sistema Inteligente para Identificación y Seguimiento de NNA's**  
+
 **ESIME Zacatenco - IPN**  
-**Autor: Héctor Morales**  
-**Fecha: 18 de noviembre de 2025**
 
----
+1. [Visión General](#visión-general)**Autor: Héctor Morales**  
 
-## 📋 Índice
+2. [Arquitectura del Sistema](#arquitectura-del-sistema)**Fecha: 18 de noviembre de 2025**
+
+3. [Módulos Principales](#módulos-principales)
+
+4. [Pipeline de Machine Learning](#pipeline-de-machine-learning)---
+
+5. [Sistema de Detección](#sistema-de-detección)
+
+6. [API y Dashboard](#api-y-dashboard)## 📋 Índice
+
+7. [Deployment con Docker](#deployment-con-docker)
 
 1. [Introducción: ¿Qué hace este sistema?](#introducción)
-2. [PASO 1: Recolección de Noticias](#paso-1-recolección)
+
+---2. [PASO 1: Recolección de Noticias](#paso-1-recolección)
+
 3. [PASO 2: Detector de Feminicidios](#paso-2-detector)
-4. [PASO 3: Vectorización TF-IDF](#paso-3-vectorización)
+
+## 🎯 Visión General4. [PASO 3: Vectorización TF-IDF](#paso-3-vectorización)
+
 5. [PASO 4: Modelado de Tópicos (LDA)](#paso-4-tópicos)
-6. [PASO 5: Clustering (DBSCAN)](#paso-5-clustering)
+
+El sistema recolecta, analiza y clasifica **automáticamente** noticias sobre feminicidios que dejan a NNA (Niñas, Niños y Adolescentes) en situación de orfandad.6. [PASO 5: Clustering (DBSCAN)](#paso-5-clustering)
+
 7. [PASO 6: Análisis de Similitud](#paso-6-similitud)
-8. [Flujo Completo con Ejemplo](#flujo-completo)
+
+### Objetivos Principales8. [Flujo Completo con Ejemplo](#flujo-completo)
+
 9. [¿Qué palabras toma en cuenta?](#palabras-clave)
-10. [¿Cómo se calculan los valores?](#cálculo-valores)
-11. [¿Es necesario cada paso?](#necesidad-pasos)
-12. [¿Está dando resultados esperados?](#resultados-esperados)
-13. [Recomendaciones de Ajuste](#recomendaciones)
 
----
+1. **Recolección Automatizada**: Obtener noticias de múltiples fuentes confiables10. [¿Cómo se calculan los valores?](#cálculo-valores)
 
-## <a name="introducción"></a>🎯 Introducción: ¿Qué hace este sistema?
+2. **Detección Inteligente**: Identificar casos específicos de feminicidios con NNA11. [¿Es necesario cada paso?](#necesidad-pasos)
 
-### Objetivo Principal
+3. **Clasificación por Prioridad**: Determinar urgencia y relevancia de cada caso12. [¿Está dando resultados esperados?](#resultados-esperados)
+
+4. **Eliminación de Duplicados**: Detectar la misma noticia en diferentes medios13. [Recomendaciones de Ajuste](#recomendaciones)
+
+5. **Análisis ML**: Agrupar casos similares y descubrir tópicos
+
+6. **Visualización**: Dashboard web para consulta y análisis---
+
+
+
+---## <a name="introducción"></a>🎯 Introducción: ¿Qué hace este sistema?
+
+
+
+## 🏗️ Arquitectura del Sistema### Objetivo Principal
+
 Identificar **automáticamente** noticias sobre feminicidios que dejan niños huérfanos (NNA = Niñas, Niños y Adolescentes) en México.
 
+### Diagrama de Componentes
+
 ### ¿Por qué es importante?
-- **Problema social**: Cada feminicidio puede dejar NNA en situación vulnerable
-- **Volumen de información**: Miles de noticias diarias, imposible revisar manualmente
-- **Acción rápida**: Mientras más pronto se detecte un caso, más rápido se puede dar apoyo
 
-### ¿Cómo lo hace?
-Usa **6 pasos secuenciales**, cada uno con un propósito específico:
+```- **Problema social**: Cada feminicidio puede dejar NNA en situación vulnerable
 
-```
-Internet → [RECOLECCIÓN] → [DETECTOR] → [VECTORIZACIÓN] → [TÓPICOS] → [CLUSTERING] → [SIMILITUD] → Dashboard
-```
+┌─────────────────────────────────────────────────────┐- **Volumen de información**: Miles de noticias diarias, imposible revisar manualmente
 
----
+│                  FUENTES DE DATOS                   │- **Acción rápida**: Mientras más pronto se detecte un caso, más rápido se puede dar apoyo
 
-## <a name="paso-1-recolección"></a>📰 PASO 1: Recolección de Noticias
+├─────────────┬──────────────┬────────────────────────┤
 
-### ¿Qué hace?
-Busca y descarga noticias de **2 tipos de fuentes**:
-1. **RSS Feeds**: 8 medios especializados en temas de género
-2. **Google News**: Búsqueda específica con palabras clave
+│  RSS Feeds  │ Google News  │ Búsqueda Histórica     │### ¿Cómo lo hace?
 
-### ¿Por qué es necesario?
-**Sin noticias NO hay nada que analizar.** Este es el combustible del sistema.
+│  (10 feeds) │  (150 res)   │  (6 meses, 250 res)    │Usa **6 pasos secuenciales**, cada uno con un propósito específico:
 
-### Parámetros que usa
+└──────┬──────┴──────┬───────┴────────┬───────────────┘
 
-#### 🔹 RSS Feeds (8 fuentes configuradas)
-```python
-RSS_FEEDS = [
-    'https://cimacnoticias.com.mx/feed',              # CIMAC - Especializado en género
-    'https://semmexico.mx/feed',                       # SEM México - Feminismo
-    'https://www.jornada.com.mx/rss/edicion.xml',     # La Jornada - General
-    # ... 5 fuentes más
-]
-```
+       │             │                │```
 
-**¿Qué valores toma?**
-- **URL de cada feed**: Dirección del RSS
-- **Timeout**: 10 segundos por fuente
-- **Intentos**: 3 reintentos si falla
-- **User-Agent**: Simula navegador para evitar bloqueos
+       └─────────────┴────────────────┘Internet → [RECOLECCIÓN] → [DETECTOR] → [VECTORIZACIÓN] → [TÓPICOS] → [CLUSTERING] → [SIMILITUD] → Dashboard
 
-#### 🔹 Google News
-```python
-GOOGLE_NEWS_CONFIG = {
-    'query': 'feminicidio OR "violencia contra la mujer" OR "asesinato de mujer"',
-    'max_results': 30,
-    'language': 'es',
-    'region': 'MX'
-}
-```
+                     │```
 
-**¿Qué valores toma?**
-- **Query**: Palabras clave combinadas con OR
-- **max_results**: Máximo 30 noticias
-- **language**: Solo español
-- **region**: Solo México
+                     ▼
 
-### Ejemplo de Salida
+       ┌─────────────────────────┐---
 
-**Entrada**: URLs de RSS + Query de Google  
-**Salida**: DataFrame con ~50-100 noticias
+       │   DATA COLLECTOR        │
 
-```
-| titulo                                    | fuente    | contenido            | fecha      |
-|-------------------------------------------|-----------|----------------------|------------|
-| "Feminicidio en Edomex deja 3 huérfanos" | CIMAC     | "Una mujer de 35..." | 2025-11-15 |
+       │  - Unificación          │## <a name="paso-1-recolección"></a>📰 PASO 1: Recolección de Noticias
+
+       │  - Limpieza             │
+
+       │  - Deduplicación        │### ¿Qué hace?
+
+       └────────────┬────────────┘Busca y descarga noticias de **2 tipos de fuentes**:
+
+                    │1. **RSS Feeds**: 8 medios especializados en temas de género
+
+                    ▼2. **Google News**: Búsqueda específica con palabras clave
+
+       ┌─────────────────────────┐
+
+       │  FEMINICIDE DETECTOR    │### ¿Por qué es necesario?
+
+       │  - 40+ patrones regex   │**Sin noticias NO hay nada que analizar.** Este es el combustible del sistema.
+
+       │  - 17 exclusiones       │
+
+       │  - Cálculo confianza    │### Parámetros que usa
+
+       └────────────┬────────────┘
+
+                    │#### 🔹 RSS Feeds (8 fuentes configuradas)
+
+                    ▼```python
+
+       ┌─────────────────────────┐RSS_FEEDS = [
+
+       │   SIMPLIFIED ANALYZER   │    'https://cimacnoticias.com.mx/feed',              # CIMAC - Especializado en género
+
+       │  ┌──────────────────┐   │    'https://semmexico.mx/feed',                       # SEM México - Feminismo
+
+       │  │  1. TF-IDF       │   │    'https://www.jornada.com.mx/rss/edicion.xml',     # La Jornada - General
+
+       │  │     (3000 feat)  │   │    # ... 5 fuentes más
+
+       │  └────────┬─────────┘   │]
+
+       │           │             │```
+
+       │  ┌────────▼─────────┐   │
+
+       │  │  2. LDA          │   │**¿Qué valores toma?**
+
+       │  │     (8 topics)   │   │- **URL de cada feed**: Dirección del RSS
+
+       │  └────────┬─────────┘   │- **Timeout**: 10 segundos por fuente
+
+       │           │             │- **Intentos**: 3 reintentos si falla
+
+       │  ┌────────▼─────────┐   │- **User-Agent**: Simula navegador para evitar bloqueos
+
+       │  │  3. DBSCAN       │   │
+
+       │  │     (clustering) │   │#### 🔹 Google News
+
+       │  └────────┬─────────┘   │```python
+
+       │           │             │GOOGLE_NEWS_CONFIG = {
+
+       │  ┌────────▼─────────┐   │    'query': 'feminicidio OR "violencia contra la mujer" OR "asesinato de mujer"',
+
+       │  │  4. Similitud    │   │    'max_results': 30,
+
+       │  │     (duplicados) │   │    'language': 'es',
+
+       │  └────────┬─────────┘   │    'region': 'MX'
+
+       └───────────┼─────────────┘}
+
+                   │```
+
+                   ▼
+
+       ┌─────────────────────────┐**¿Qué valores toma?**
+
+       │   DATA STORAGE          │- **Query**: Palabras clave combinadas con OR
+
+       │  - noticias.csv         │- **max_results**: Máximo 30 noticias
+
+       │  - clusters_info.csv    │- **language**: Solo español
+
+       │  - synonym_dict.json    │- **region**: Solo México
+
+       └────────────┬────────────┘
+
+                    │### Ejemplo de Salida
+
+                    ▼
+
+       ┌─────────────────────────┐**Entrada**: URLs de RSS + Query de Google  
+
+       │   FLASK WEB APP         │**Salida**: DataFrame con ~50-100 noticias
+
+       │  - API REST             │
+
+       │  - Dashboard HTML       │```
+
+       │  - Búsqueda inteligente │| titulo                                    | fuente    | contenido            | fecha      |
+
+       └─────────────────────────┘|-------------------------------------------|-----------|----------------------|------------|
+
+```| "Feminicidio en Edomex deja 3 huérfanos" | CIMAC     | "Una mujer de 35..." | 2025-11-15 |
+
 | "Asesinan a madre en Puebla"             | La Jornada| "Autoridades..."     | 2025-11-16 |
-```
 
-### ¿Está dando resultados esperados?
+---```
 
-✅ **BIEN** si:
+
+
+## 📦 Módulos Principales### ¿Está dando resultados esperados?
+
+
+
+### 1. `data_collector.py` - Recolector de Datos✅ **BIEN** si:
+
 - Recolecta >50 noticias
-- Al menos 20% son sobre feminicidios
+
+**Función:** Centralizar la recolección desde múltiples fuentes- Al menos 20% son sobre feminicidios
+
 - Hay variedad de fuentes
 
-⚠️ **AJUSTAR** si:
-- <30 noticias → Agregar más fuentes RSS
-- <10% feminicidios → Ajustar query de Google News
+**Fuentes:**
+
+- **RSS Feeds (10)**: Medios especializados en género⚠️ **AJUSTAR** si:
+
+- **Google News (150)**: Noticias recientes- <30 noticias → Agregar más fuentes RSS
+
+- **Historical Scraper (250)**: 6 meses de historial- <10% feminicidios → Ajustar query de Google News
+
 - Todas de la misma fuente → Verificar que otros RSS funcionen
 
----
+**Proceso:**
 
-## <a name="paso-2-detector"></a>🔍 PASO 2: Detector de Feminicidios
+```python---
 
-### ¿Qué hace?
-Analiza **cada noticia** con **40+ patrones regex** para determinar:
-1. ¿Es sobre un feminicidio? ✓
-2. ¿Menciona hijos/NNA? ✓
-3. ¿Habla de huérfanos? ✓
+def collect_all_news():
 
-### ¿Por qué es necesario?
+    """## <a name="paso-2-detector"></a>🔍 PASO 2: Detector de Feminicidios
+
+    1. Recolecta desde RSS feeds
+
+    2. Complementa con Google News### ¿Qué hace?
+
+    3. Añade búsqueda histórica (opcional)Analiza **cada noticia** con **40+ patrones regex** para determinar:
+
+    4. Deduplica por URL1. ¿Es sobre un feminicidio? ✓
+
+    5. Detecta feminicidios + NNA2. ¿Menciona hijos/NNA? ✓
+
+    6. Retorna DataFrame limpio3. ¿Habla de huérfanos? ✓
+
+    """
+
+```### ¿Por qué es necesario?
+
 **Filtra el ruido.** De 100 noticias recolectadas, solo 10-20 son realmente relevantes.
 
-### Parámetros que usa
+**Salida:**
 
-#### 🔹 Patrones de Feminicidio (Peso: 40%)
+```csv### Parámetros que usa
+
+titulo,contenido,fecha,fuente,url,es_feminicidio,menores_identificados,confidence,prioridad
+
+```#### 🔹 Patrones de Feminicidio (Peso: 40%)
+
 ```python
-feminicide_patterns = [
+
+---feminicide_patterns = [
+
     r'\bfeminicidio\b',
-    r'\basesinat[oa]\b.*\bmujer\b',
+
+### 2. `feminicide_detector.py` - Detector Especializado    r'\basesinat[oa]\b.*\bmujer\b',
+
     r'\bmataron?\b.*\b(?:mujer|femenina)\b',
-    r'\bhallaron?\b.*\bcuerpo\b.*\bmujer\b',
+
+**Función:** Identificar casos de feminicidios con NNA y calcular prioridad    r'\bhallaron?\b.*\bcuerpo\b.*\bmujer\b',
+
     # ... 40+ patrones más
-]
+
+#### Patrones de Detección]
+
 ```
 
-**¿Qué palabras busca?**
-- feminicidio, asesinato, mataron, hallaron cuerpo
-- violencia de género, crimen machista
-- encontraron muerta, muerte violenta
+**A. Feminicidio (Peso: 40%)**
 
-#### 🔹 Patrones de NNA/Hijos (Peso: 20%)
-```python
-children_patterns = [
-    r'\bhijos?\b',
-    r'\bniñ[oa]s?\b',
+```python**¿Qué palabras busca?**
+
+feminicidio_patterns = [- feminicidio, asesinato, mataron, hallaron cuerpo
+
+    r'\bfeminicidio[s]?\b',- violencia de género, crimen machista
+
+    r'\bfemicidio[s]?\b',- encontraron muerta, muerte violenta
+
+    r'\bmujer\s+(asesinada|hallada\s+muerta)',
+
+    r'\bviolencia\s+feminicida',#### 🔹 Patrones de NNA/Hijos (Peso: 20%)
+
+    r'\bcrimen\s+de\s+g[eé]nero',```python
+
+    # ... 20+ patrones máschildren_patterns = [
+
+]    r'\bhijos?\b',
+
+```    r'\bniñ[oa]s?\b',
+
     r'\bmenor(?:es)?\b',
-    r'\badolescente\b',
-    # ...
-]
-```
 
-**¿Qué palabras busca?**
-- hijos, hijas, niños, niñas
-- menores, adolescentes, bebé
-- infantes, pequeños
+**B. Menciones NNA (Peso: 20%)**    r'\badolescente\b',
 
-#### 🔹 Patrones de Orfandad (Peso: 30% + 10% bonus)
-```python
+```python    # ...
+
+children_patterns = []
+
+    r'\bhijos?\b',```
+
+    r'\bni[ñn]os?\b',
+
+    r'\bni[ñn]as?\b',**¿Qué palabras busca?**
+
+    r'\badolescentes?\b',- hijos, hijas, niños, niñas
+
+    r'\bmenores?\s+de\s+edad',- menores, adolescentes, bebé
+
+    r'\bbeb[eé]s?\b',- infantes, pequeños
+
+    # ... 15+ patrones más
+
+]#### 🔹 Patrones de Orfandad (Peso: 30% + 10% bonus)
+
+``````python
+
 orphan_patterns = [
-    r'\bhu[eé]rfan[oa]s?\b',
-    r'\bquedar[oa]n?\b.*\bdesamparad[oa]s?\b',
-    r'\bsin\b.*\bmadre\b',
-    r'\babandon[oa](?:dos|das)\b',
-    # ...
-]
-```
 
-**¿Qué palabras busca?**
-- huérfanos, quedaron sin madre
-- desamparados, abandonados
-- apoyo a menores, custodia
+**C. Orfandad (Peso: 40%)**    r'\bhu[eé]rfan[oa]s?\b',
 
-### ¿Cómo calcula la puntuación?
+```python    r'\bquedar[oa]n?\b.*\bdesamparad[oa]s?\b',
 
-```python
+orphan_patterns = [    r'\bsin\b.*\bmadre\b',
+
+    r'\bhu[eé]rfanos?\b',    r'\babandon[oa](?:dos|das)\b',
+
+    r'\borfandad\b',    # ...
+
+    r'\bhijos?\s+quedan',]
+
+    r'\bsin\s+madre',```
+
+    r'\bv[ií]ctimas?\s+indirectas?',
+
+    r'\bDIF\s+se\s+hace\s+cargo',**¿Qué palabras busca?**
+
+    # ... 10+ patrones más- huérfanos, quedaron sin madre
+
+]- desamparados, abandonados
+
+```- apoyo a menores, custodia
+
+
+
+#### Patrones de Exclusión (17)### ¿Cómo calcula la puntuación?
+
+
+
+**Filtran noticias que NO son casos individuales:**```python
+
 # Ejemplo de noticia
-texto = "Feminicidio en Edomex deja 3 huérfanos"
 
-# 1. Cuenta coincidencias
-feminicidio_count = 1   # Encontró "feminicidio"
-nna_count = 0           # NO encontró "hijos", "niños", etc.
-orfandad_count = 1      # Encontró "huérfanos"
+```pythontexto = "Feminicidio en Edomex deja 3 huérfanos"
 
-# 2. Normaliza (divide entre número de patrones)
-feminicidio_score = 1 / 40 * 0.40 = 0.010
-nna_score = 0 / 15 * 0.20 = 0.000
-orfandad_score = 1 / 20 * 0.30 = 0.015
+exclusion_patterns = [
 
-# 3. Bonus si menciona huérfanos
-orfandad_bonus = 0.10
+    # Estadísticas# 1. Cuenta coincidencias
 
-# 4. Suma total
-confianza = 0.010 + 0.000 + 0.015 + 0.10 = 0.125 (12.5%)
+    r'\bconcentra\s+(la\s+)?cuarta\s+parte',feminicidio_count = 1   # Encontró "feminicidio"
+
+    r'\bestadística[s]?\s+(de|sobre|señala)',nna_count = 0           # NO encontró "hijos", "niños", etc.
+
+    r'\b\d+%\s+(de\s+las|son|corresponde)',orfandad_count = 1      # Encontró "huérfanos"
+
+    
+
+    # Datos oficiales# 2. Normaliza (divide entre número de patrones)
+
+    r'\bdatos?\s+(del|de\s+la)\s+(INEGI|gobierno)',feminicidio_score = 1 / 40 * 0.40 = 0.010
+
+    r'\bseg[uú]n\s+(el\s+)?INEGI',nna_score = 0 / 15 * 0.20 = 0.000
+
+    r'\bcifras?\s+(oficiales?|del\s+gobierno)',orfandad_score = 1 / 20 * 0.30 = 0.015
+
+    
+
+    # Trata de personas (categoría separada)# 3. Bonus si menciona huérfanos
+
+    r'\btrata\s+de\s+(personas|blancas)',orfandad_bonus = 0.10
+
+    r'\bv[i]ctima[s]?\s+de\s+trata',
+
+    # 4. Suma total
+
+    # Programas y políticasconfianza = 0.010 + 0.000 + 0.015 + 0.10 = 0.125 (12.5%)
+
+    r'\bprograma\s+(social|de\s+gobierno)',```
+
+    r'\bpol[i]tica\s+p[u]blica',
+
+    r'\biniciativa\s+de\s+ley',### Clasificación por Confianza
+
+    
+
+    # Campañas```python
+
+    r'\bcampa[ñ]a\s+(de\s+concientizaci[óo]n|social)',if confianza >= 0.70:
+
+    r'\bjornada\s+de\s+sensibilizaci[óo]n',    prioridad = "ALTA"      # ✅ Caso confirmado
+
+    elif confianza >= 0.40:
+
+    # ... 5 patrones más    prioridad = "MEDIA"     # ⚠️ Posible caso
+
+]else:
+
+```    prioridad = "BAJA"      # ⏸️ Poco probable
+
 ```
 
-### Clasificación por Confianza
-
-```python
-if confianza >= 0.70:
-    prioridad = "ALTA"      # ✅ Caso confirmado
-elif confianza >= 0.40:
-    prioridad = "MEDIA"     # ⚠️ Posible caso
-else:
-    prioridad = "BAJA"      # ⏸️ Poco probable
-```
+#### Cálculo de Confianza
 
 ### Ejemplo de Salida
 
-**Entrada**: "Feminicidio en Edomex deja 3 huérfanos"
+```python
 
-**Salida**:
-```json
-{
-    "is_feminicide": true,
-    "has_children": false,
-    "has_orphans": true,
-    "is_target_news": true,
-    "confidence": 0.125,
-    "priority": "BAJA",
-    "scores": {
-        "feminicide_score": 0.010,
-        "children_score": 0.000,
-        "orphan_score": 0.015
-    }
-}
+def _calculate_confidence(self, detection_results: dict) -> float:**Entrada**: "Feminicidio en Edomex deja 3 huérfanos"
+
+    """
+
+    Confidence = (Feminicidio × 0.4) + (NNA × 0.2) + (Orfandad × 0.3)**Salida**:
+
+    ```json
+
+    Bonus: +10% si tiene patrones de orfandad{
+
+    """    "is_feminicide": true,
+
+    confidence = (    "has_children": false,
+
+        detection_results['feminicide_score'] * 0.4 +    "has_orphans": true,
+
+        detection_results['children_score'] * 0.2 +    "is_target_news": true,
+
+        detection_results['orphan_score'] * 0.3    "confidence": 0.125,
+
+    )    "priority": "BAJA",
+
+        "scores": {
+
+    if detection_results['has_orphans']:        "feminicide_score": 0.010,
+
+        confidence += 0.1  # Bonus        "children_score": 0.000,
+
+            "orphan_score": 0.015
+
+    return min(confidence, 1.0)    }
+
+```}
+
 ```
+
+#### Sistema de Prioridades
 
 ### ¿Está dando resultados esperados?
 
-✅ **BIEN** si:
-- Detecta 15-30% de noticias como feminicidios
-- Al menos 10% son "OBJETIVO" (tiene NNA)
-- Confianza >70% para casos claros
+```python
 
-⚠️ **AJUSTAR** si:
-- <5% son objetivo → Patrones muy estrictos, reducir umbral de confianza
-- >50% son objetivo → Sobre-detectando, aumentar umbral
-- Falsos positivos → Agregar patrones de exclusión
+def _calculate_priority(self, detection_results: dict, confidence: float) -> str:✅ **BIEN** si:
 
----
+    """- Detecta 15-30% de noticias como feminicidios
 
-## <a name="paso-3-vectorización"></a>🔢 PASO 3: Vectorización TF-IDF
+    ALTA:        Feminicidio + NNA + Confianza ≥ 70%- Al menos 10% son "OBJETIVO" (tiene NNA)
 
-### ¿Qué hace?
-Convierte **texto en números** que los algoritmos de Machine Learning pueden procesar.
+    MEDIA:       Feminicidio + NNA + Confianza 40-69%- Confianza >70% para casos claros
 
-### ¿Por qué es necesario?
+    BAJA:        Algún indicador + Confianza 20-39%
+
+    IRRELEVANTE: Confianza < 20% o excluido⚠️ **AJUSTAR** si:
+
+    """- <5% son objetivo → Patrones muy estrictos, reducir umbral de confianza
+
+    if confidence >= 0.7 and detection_results['is_target_news']:- >50% son objetivo → Sobre-detectando, aumentar umbral
+
+        return 'ALTA'- Falsos positivos → Agregar patrones de exclusión
+
+    elif confidence >= 0.4:
+
+        return 'MEDIA'---
+
+    elif confidence >= 0.2:
+
+        return 'BAJA'## <a name="paso-3-vectorización"></a>🔢 PASO 3: Vectorización TF-IDF
+
+    else:
+
+        return 'IRRELEVANTE'### ¿Qué hace?
+
+```Convierte **texto en números** que los algoritmos de Machine Learning pueden procesar.
+
+
+
+---### ¿Por qué es necesario?
+
 **Los algoritmos ML NO entienden palabras, solo números.**
 
+### 3. `simplified_analyzer.py` - Pipeline ML
+
 **Ejemplo**:
-```
+
+**Función:** Análisis completo con Machine Learning```
+
 Texto: "Feminicidio en Edomex deja huérfanos"
-Vector: [0.8, 0.0, 0.6, 0.0, 0.4, ..., 0.0]
+
+#### Paso 1: Vectorización TF-IDFVector: [0.8, 0.0, 0.6, 0.0, 0.4, ..., 0.0]
+
          ↑         ↑         ↑
-    feminicidio  mujer   huérfanos
-```
 
-### Parámetros que usa
+```python    feminicidio  mujer   huérfanos
 
-```python
-TFIDF_CONFIG = {
-    'max_features': 1000,      # Solo las 1000 palabras más importantes
-    'min_df': 1,               # Palabra debe aparecer mínimo 1 vez
-    'max_df': 0.95,            # Ignora si aparece en >95% de documentos
+from sklearn.feature_extraction.text import TfidfVectorizer```
+
+
+
+tfidf = TfidfVectorizer(### Parámetros que usa
+
+    max_features=3000,      # 3000 características
+
+    min_df=1,               # Mínimo 1 documento```python
+
+    max_df=0.8,             # Máximo 80% documentosTFIDF_CONFIG = {
+
+    ngram_range=(1, 2),     # Unigramas y bigramas    'max_features': 1000,      # Solo las 1000 palabras más importantes
+
+    encoding='utf-8-sig'    'min_df': 1,               # Palabra debe aparecer mínimo 1 vez
+
+)    'max_df': 0.95,            # Ignora si aparece en >95% de documentos
+
     'ngram_range': (1, 2),     # Palabras individuales (1) y pares (2)
-    'strip_accents': None,     # Preserva acentos (feminicidio ≠ feminicido)
-    'lowercase': True,         # Todo a minúsculas
-    'stop_words': None         # NO elimina palabras comunes (español)
-}
-```
 
-### ¿Qué significan estos parámetros?
+tfidf_matrix = tfidf.fit_transform(textos_limpios)    'strip_accents': None,     # Preserva acentos (feminicidio ≠ feminicido)
+
+# Resultado: Matriz (N noticias, 3000 features)    'lowercase': True,         # Todo a minúsculas
+
+```    'stop_words': None         # NO elimina palabras comunes (español)
+
+}
+
+**¿Qué hace?**```
+
+- Convierte texto a números
+
+- Palabras más raras tienen mayor peso### ¿Qué significan estos parámetros?
+
+- Palabras muy comunes se ignoran
 
 #### 🔹 max_features = 1000
-**¿Qué hace?**: Solo guarda las 1000 palabras más relevantes
 
-**¿Por qué?**: 
-- Reduce dimensionalidad (memoria, velocidad)
+#### Paso 2: Topic Modeling (LDA)**¿Qué hace?**: Solo guarda las 1000 palabras más relevantes
+
+
+
+```python**¿Por qué?**: 
+
+from sklearn.decomposition import LatentDirichletAllocation- Reduce dimensionalidad (memoria, velocidad)
+
 - Elimina palabras raras que no aportan
 
-**Ejemplo**:
-```
-ANTES: 50,000 palabras únicas (incluye typos, nombres raros)
-DESPUÉS: 1,000 palabras más frecuentes/relevantes
+lda = LatentDirichletAllocation(
+
+    n_components=8,         # 8 tópicos**Ejemplo**:
+
+    random_state=42,```
+
+    max_iter=10ANTES: 50,000 palabras únicas (incluye typos, nombres raros)
+
+)DESPUÉS: 1,000 palabras más frecuentes/relevantes
+
 ```
 
-#### 🔹 min_df = 1
+topic_distribution = lda.fit_transform(tfidf_matrix)
+
+```#### 🔹 min_df = 1
+
 **¿Qué hace?**: Palabra debe aparecer en al menos 1 documento
 
-**¿Por qué?**: Con min_df=1 acepta todas las palabras (sin filtro mínimo)
+**Ejemplo de Tópicos Descubiertos:**
 
-**Si cambias a min_df=2**:
+```**¿Por qué?**: Con min_df=1 acepta todas las palabras (sin filtro mínimo)
+
+Tópico 0: feminicidio, país, animal político, violencia
+
+Tópico 1: feminicidio, marcha, hijos, mujer**Si cambias a min_df=2**:
+
+Tópico 2: ciudad, méxico, generación, crimen```
+
+Tópico 3: méxico, feminicidio, huérfanos, víctimas"feminicidio" aparece en 50 docs → ✅ Se incluye
+
+Tópico 4: feminicidio, infantil, niños, méxico"Edomex" aparece en 30 docs → ✅ Se incluye
+
+```"Zacatepec" aparece en 1 doc → ❌ Se elimina
+
 ```
-"feminicidio" aparece en 50 docs → ✅ Se incluye
-"Edomex" aparece en 30 docs → ✅ Se incluye
-"Zacatepec" aparece en 1 doc → ❌ Se elimina
-```
+
+#### Paso 3: Clustering (DBSCAN)
 
 #### 🔹 max_df = 0.95
-**¿Qué hace?**: Ignora palabras que aparecen en >95% de documentos
+
+```python**¿Qué hace?**: Ignora palabras que aparecen en >95% de documentos
+
+from sklearn.cluster import DBSCAN
 
 **¿Por qué?**: Palabras muy comunes no discriminan (ej: "de", "la", "que")
 
-**Ejemplo**:
-```
-"mujer" aparece en 98% docs → ❌ Eliminada (demasiado común)
-"feminicidio" aparece en 60% docs → ✅ Incluida
+dbscan = DBSCAN(
+
+    eps=0.8,                # Distancia máxima**Ejemplo**:
+
+    min_samples=2,          # Mínimo por cluster```
+
+    metric='cosine'         # Similitud coseno"mujer" aparece en 98% docs → ❌ Eliminada (demasiado común)
+
+)"feminicidio" aparece en 60% docs → ✅ Incluida
+
 ```
 
-#### 🔹 ngram_range = (1, 2)
+clusters = dbscan.fit_predict(tfidf_matrix)
+
+```#### 🔹 ngram_range = (1, 2)
+
 **¿Qué hace?**: Considera palabras solas (1) y pares (2)
 
-**¿Por qué?**: Captura contexto
+**¿Qué hace?**
 
-**Ejemplo**:
+- Agrupa noticias similares**¿Por qué?**: Captura contexto
+
+- eps=0.8 → similitud > 20%
+
+- No necesita definir # clusters previamente**Ejemplo**:
+
 ```
-Texto: "violencia de género"
 
-n=1 (unigrams): ["violencia", "de", "género"]
-n=2 (bigrams):  ["violencia de", "de género"]
+**Ejemplo de Resultado:**Texto: "violencia de género"
 
-AMBOS se incluyen → "violencia de género" vale más que solo "violencia"
 ```
+
+Cluster 0 (6 noticias): feminicidio, datos, polítican=1 (unigrams): ["violencia", "de", "género"]
+
+Cluster 1 (5 noticias): cimacnoticias, sem méxicon=2 (bigrams):  ["violencia de", "de género"]
+
+Outliers (214 noticias): Casos únicos
+
+```AMBOS se incluyen → "violencia de género" vale más que solo "violencia"
+
+```
+
+#### Paso 4: Detección de Duplicados
 
 ### ¿Cómo calcula TF-IDF?
 
-**TF-IDF = Term Frequency × Inverse Document Frequency**
+```python
 
-#### Ejemplo con la palabra "feminicidio":
+from sklearn.metrics.pairwise import cosine_similarity**TF-IDF = Term Frequency × Inverse Document Frequency**
+
+
+
+# Calcular similitud entre todas las noticias#### Ejemplo con la palabra "feminicidio":
+
+similarity_matrix = cosine_similarity(tfidf_matrix)
 
 ```
-Documento 1: "Feminicidio en Edomex deja 3 huérfanos"
-             └─ "feminicidio" aparece 1 vez en 7 palabras
 
-TF (Term Frequency) = 1 / 7 = 0.143
+# Encontrar duplicados (similitud > 75%)Documento 1: "Feminicidio en Edomex deja 3 huérfanos"
 
-Tenemos 100 documentos, "feminicidio" aparece en 60
-IDF (Inverse Document Frequency) = log(100 / 60) = 0.511
+for i in range(len(noticias)):             └─ "feminicidio" aparece 1 vez en 7 palabras
 
-TF-IDF = 0.143 × 0.511 = 0.073
+    for j in range(i+1, len(noticias)):
+
+        if similarity_matrix[i][j] >= 0.75:TF (Term Frequency) = 1 / 7 = 0.143
+
+            # Marcar como duplicado
+
+            noticias.at[j, 'es_duplicado'] = TrueTenemos 100 documentos, "feminicidio" aparece en 60
+
+            noticias.at[j, 'titulo_original'] = noticias.at[i, 'titulo']IDF (Inverse Document Frequency) = log(100 / 60) = 0.511
+
+            noticias.at[j, 'fuente_original'] = noticias.at[i, 'fuente']
+
+```TF-IDF = 0.143 × 0.511 = 0.073
+
 ```
+
+---
 
 **¿Qué significa?**
-- **TF-IDF alto** (>0.5): Palabra importante y específica de este documento
+
+### 4. `synonym_dictionary.py` - Búsqueda Inteligente- **TF-IDF alto** (>0.5): Palabra importante y específica de este documento
+
 - **TF-IDF medio** (0.1-0.5): Palabra relevante pero común
-- **TF-IDF bajo** (<0.1): Palabra poco relevante
 
-### Ejemplo de Salida
+**Función:** Expandir términos de búsqueda con sinónimos- **TF-IDF bajo** (<0.1): Palabra poco relevante
 
-**Entrada**: 100 noticias de texto
 
-**Salida**: Matriz de 100 × 1000
 
-```
-         feminicidio  mujer  hijos  edomex  ...  (1000 palabras)
-Noticia1    0.80      0.30   0.60   0.50   ...
-Noticia2    0.85      0.40   0.00   0.00   ...
-Noticia3    0.00      0.70   0.00   0.20   ...
-...
-Noticia100  0.75      0.35   0.55   0.45   ...
-```
+#### Diccionario (147 términos)### Ejemplo de Salida
 
-### ¿Qué palabras REALMENTE toma en cuenta?
 
-**Top 20 palabras con mayor peso** (ejemplo real):
-1. **feminicidio** (peso: 45.2)
-2. **mujer** (peso: 38.7)
-3. **hijos** (peso: 22.5)
-4. **edomex** (peso: 18.3)
-5. **asesinato** (peso: 16.9)
-6. **madre** (peso: 15.8)
-7. **huérfanos** (peso: 14.2)
-8. **violencia género** (peso: 12.3) ← bigram
-9. **niños** (peso: 11.5)
-10. **menores** (peso: 10.8)
-...
 
-### ¿Está dando resultados esperados?
+```python**Entrada**: 100 noticias de texto
 
-✅ **BIEN** si:
-- Matriz tiene dimensiones ~100 × 1000
+SYNONYM_DICT = {
+
+    "feminicidio": [**Salida**: Matriz de 100 × 1000
+
+        "femicidio",
+
+        "asesinato de mujer",```
+
+        "homicidio de mujer",         feminicidio  mujer  hijos  edomex  ...  (1000 palabras)
+
+        "crimen de género",Noticia1    0.80      0.30   0.60   0.50   ...
+
+        "violencia feminicida",Noticia2    0.85      0.40   0.00   0.00   ...
+
+        "muerte violenta de mujer"Noticia3    0.00      0.70   0.00   0.20   ...
+
+    ],...
+
+    Noticia100  0.75      0.35   0.55   0.45   ...
+
+    "niños": [```
+
+        "niñas",
+
+        "menores",### ¿Qué palabras REALMENTE toma en cuenta?
+
+        "NNA",
+
+        "infantes",**Top 20 palabras con mayor peso** (ejemplo real):
+
+        "adolescentes",1. **feminicidio** (peso: 45.2)
+
+        "pequeños",2. **mujer** (peso: 38.7)
+
+        "críos"3. **hijos** (peso: 22.5)
+
+    ],4. **edomex** (peso: 18.3)
+
+    5. **asesinato** (peso: 16.9)
+
+    "huérfanos": [6. **madre** (peso: 15.8)
+
+        "orfandad",7. **huérfanos** (peso: 14.2)
+
+        "sin madre",8. **violencia género** (peso: 12.3) ← bigram
+
+        "sin padres",9. **niños** (peso: 11.5)
+
+        "víctimas indirectas",10. **menores** (peso: 10.8)
+
+        "hijos quedan"...
+
+    ],
+
+    ### ¿Está dando resultados esperados?
+
+    # ... 144 términos más
+
+}✅ **BIEN** si:
+
+```- Matriz tiene dimensiones ~100 × 1000
+
 - Top palabras incluyen: feminicidio, mujer, hijos, huérfanos
-- >500 features (palabras únicas)
 
-⚠️ **AJUSTAR** si:
-- <500 features → Reducir max_df o aumentar max_features
-- Top palabras son genéricas ("de", "la", "que") → Agregar stopwords español
-- Faltan acentos → Verificar strip_accents=None
+#### Ejemplo de Uso- >500 features (palabras únicas)
 
----
 
-## <a name="paso-4-tópicos"></a>📊 PASO 4: Modelado de Tópicos (LDA)
 
-### ¿Qué hace?
+```python⚠️ **AJUSTAR** si:
+
+# Búsqueda: "feminicidio"- <500 features → Reducir max_df o aumentar max_features
+
+query = "feminicidio"- Top palabras son genéricas ("de", "la", "que") → Agregar stopwords español
+
+expanded_query = synonym_dict.expand_query(query)- Faltan acentos → Verificar strip_accents=None
+
+
+
+# Resultado:---
+
+# feminicidio|femicidio|asesinato de mujer|homicidio de mujer|...
+
+```## <a name="paso-4-tópicos"></a>📊 PASO 4: Modelado de Tópicos (LDA)
+
+
+
+---### ¿Qué hace?
+
 Encuentra **temas comunes** en las noticias usando **Latent Dirichlet Allocation (LDA)**.
 
-### ¿Por qué es necesario?
-**Agrupa noticias por tema**, no solo por palabras exactas.
+## 📊 API y Dashboard
 
-**Ejemplo de tópicos descubiertos**:
+### ¿Por qué es necesario?
+
+### Flask App (`app_docker.py`)**Agrupa noticias por tema**, no solo por palabras exactas.
+
+
+
+#### Endpoints Principales**Ejemplo de tópicos descubiertos**:
+
 - **Tópico 1**: feminicidio + edomex + asesinato + investigación
-- **Tópico 2**: apoyo + huérfanos + gobierno + custodia + albergue
+
+**1. GET `/api/stats`**- **Tópico 2**: apoyo + huérfanos + gobierno + custodia + albergue
+
 - **Tópico 3**: violencia + género + manifestación + justicia
 
-### Parámetros que usa
-
 ```python
-LDA_CONFIG = {
-    'n_components': 6,        # Buscar 6 temas diferentes
-    'random_state': 42,       # Semilla para reproducibilidad
-    'max_iter': 20,           # Iteraciones del algoritmo
-    'learning_method': 'online'  # Más rápido para datos grandes
-}
+
+@app.route('/api/stats')### Parámetros que usa
+
+def get_stats():
+
+    df = pd.read_csv('data/noticias.csv', encoding='utf-8-sig')```python
+
+    LDA_CONFIG = {
+
+    return {    'n_components': 6,        # Buscar 6 temas diferentes
+
+        'total_noticias': len(df),    'random_state': 42,       # Semilla para reproducibilidad
+
+        'noticias_nna': len(df[df['menores_identificados'] == 'Si']),    'max_iter': 20,           # Iteraciones del algoritmo
+
+        'clusters': df['cluster'].nunique(),    'learning_method': 'online'  # Más rápido para datos grandes
+
+        'topics': df['topic_id'].nunique(),}
+
+        'ultima_actualizacion': datetime.now().strftime('%Y-%m-%d %H:%M:%S')```
+
+    }
+
+```### ¿Qué significa n_components = 6?
+
+
+
+**2. GET `/api/noticias`****Le dice al algoritmo: "Encuentra 6 temas principales"**
+
+
+
+```python**¿Cómo decide qué temas?**
+
+@app.route('/api/noticias')El algoritmo LDA busca palabras que **co-ocurren frecuentemente**:
+
+def get_noticias():
+
+    page = int(request.args.get('page', 1))```
+
+    per_page = int(request.args.get('per_page', 10))Si "feminicidio", "edomex", "asesinato" aparecen juntas → Tópico 1
+
+    only_nna = request.args.get('only_nna', 'false') == 'true'Si "apoyo", "huérfanos", "gobierno" aparecen juntas → Tópico 2
+
+    ```
+
+    df = pd.read_csv('data/noticias.csv', encoding='utf-8-sig')
+
+    ### Ejemplo de Salida
+
+    # Filtrar por NNA si se solicita
+
+    if only_nna:**Entrada**: Matriz TF-IDF (100 × 1000)
+
+        df = df[
+
+            (df['menores_identificados'] == 'Si') & **Salida**: 6 tópicos con palabras clave
+
+            (df['es_objetivo'] == True)
+
+        ]```
+
+    Tópico 0: feminicidio, edomex, mujer, asesinato, investigación, fiscalía
+
+    # Ordenar por prioridadTópico 1: apoyo, huérfanos, gobierno, custodia, dif, albergue
+
+    priority_order = {'ALTA': 0, 'MEDIA': 1, 'BAJA': 2, 'IRRELEVANTE': 3}Tópico 2: violencia, género, manifestación, justicia, marcha, protesta
+
+    df['priority_num'] = df['prioridad'].map(priority_order)Tópico 3: madre, hijos, menores, niños, familia, abuela
+
+    df = df.sort_values('priority_num')Tópico 4: cuerpo, hallaron, localizado, abandonado, carretera
+
+    Tópico 5: pareja, ex, esposo, relación, celos, discusión
+
+    # Paginar```
+
+    start = (page - 1) * per_page
+
+    end = start + per_page**Asignación de noticias**:
+
+    noticias_page = df.iloc[start:end]```
+
+    Noticia 1: "Feminicidio en Edomex..." → Tópico 0 (70% prob)
+
+    return {Noticia 2: "DIF apoya a huérfanos..." → Tópico 1 (85% prob)
+
+        'noticias': noticias_page.to_dict('records'),Noticia 3: "Marcha por justicia..." → Tópico 2 (60% prob)
+
+        'page': page,```
+
+        'total_pages': math.ceil(len(df) / per_page),
+
+        'total': len(df)### ¿Cómo se calculan los valores?
+
+    }
+
+```**LDA usa probabilidades**:
+
+
+
+**3. GET `/api/search`**Cada noticia es una **mezcla de tópicos**:
+
 ```
 
-### ¿Qué significa n_components = 6?
+```pythonNoticia X:
 
-**Le dice al algoritmo: "Encuentra 6 temas principales"**
+@app.route('/api/search')  30% Tópico 0 (feminicidio)
 
-**¿Cómo decide qué temas?**
-El algoritmo LDA busca palabras que **co-ocurren frecuentemente**:
+def search_news():  50% Tópico 1 (apoyo huérfanos)  ← Tópico dominante
 
-```
-Si "feminicidio", "edomex", "asesinato" aparecen juntas → Tópico 1
-Si "apoyo", "huérfanos", "gobierno" aparecen juntas → Tópico 2
-```
+    query = request.args.get('q', '')  10% Tópico 3 (familia)
 
-### Ejemplo de Salida
+      10% Otros
 
-**Entrada**: Matriz TF-IDF (100 × 1000)
+    # Expandir con sinónimos```
 
-**Salida**: 6 tópicos con palabras clave
+    expanded_query = synonym_dict.expand_query(query)
 
-```
-Tópico 0: feminicidio, edomex, mujer, asesinato, investigación, fiscalía
-Tópico 1: apoyo, huérfanos, gobierno, custodia, dif, albergue
-Tópico 2: violencia, género, manifestación, justicia, marcha, protesta
-Tópico 3: madre, hijos, menores, niños, familia, abuela
-Tópico 4: cuerpo, hallaron, localizado, abandonado, carretera
-Tópico 5: pareja, ex, esposo, relación, celos, discusión
-```
+    **El sistema asigna la noticia al tópico con mayor probabilidad.**
 
-**Asignación de noticias**:
-```
-Noticia 1: "Feminicidio en Edomex..." → Tópico 0 (70% prob)
-Noticia 2: "DIF apoya a huérfanos..." → Tópico 1 (85% prob)
-Noticia 3: "Marcha por justicia..." → Tópico 2 (60% prob)
-```
+    df = pd.read_csv('data/noticias.csv', encoding='utf-8-sig')
 
-### ¿Cómo se calculan los valores?
+    ### ¿Está dando resultados esperados?
 
-**LDA usa probabilidades**:
+    # Buscar en título, contenido y fuente
 
-Cada noticia es una **mezcla de tópicos**:
-```
-Noticia X:
-  30% Tópico 0 (feminicidio)
-  50% Tópico 1 (apoyo huérfanos)  ← Tópico dominante
-  10% Tópico 3 (familia)
-  10% Otros
-```
+    mask = (✅ **BIEN** si:
 
-**El sistema asigna la noticia al tópico con mayor probabilidad.**
+        df['titulo'].str.contains(expanded_query, case=False, regex=True, na=False) |- Los 6 tópicos son **interpretables** (tienen sentido temático)
 
-### ¿Está dando resultados esperados?
+        df['contenido'].str.contains(expanded_query, case=False, regex=True, na=False) |- Distribución balanceada (cada tópico tiene ~15-20% de noticias)
 
-✅ **BIEN** si:
-- Los 6 tópicos son **interpretables** (tienen sentido temático)
-- Distribución balanceada (cada tópico tiene ~15-20% de noticias)
-- Perplexity <100 (métrica de calidad del modelo)
+        df['fuente'].str.contains(expanded_query, case=False, regex=True, na=False)- Perplexity <100 (métrica de calidad del modelo)
 
-⚠️ **AJUSTAR** si:
-- Tópicos no tienen sentido → Reducir n_components a 4-5
-- Un tópico tiene >50% noticias → Aumentar n_components a 8-10
-- Perplexity >150 → Aumentar max_iter o cambiar learning_method
+    )
 
----
+    ⚠️ **AJUSTAR** si:
 
-## <a name="paso-5-clustering"></a>🔗 PASO 5: Clustering (DBSCAN)
+    results = df[mask].head(50)- Tópicos no tienen sentido → Reducir n_components a 4-5
 
-### ¿Qué hace?
-Agrupa noticias **MUY similares** usando **DBSCAN** (Density-Based Spatial Clustering).
+    - Un tópico tiene >50% noticias → Aumentar n_components a 8-10
 
-### ¿Por qué es necesario?
+    # Ordenar por prioridad- Perplexity >150 → Aumentar max_iter o cambiar learning_method
+
+    priority_order = {'ALTA': 0, 'MEDIA': 1, 'BAJA': 2, 'IRRELEVANTE': 3}
+
+    results['priority_num'] = results['prioridad'].map(priority_order)---
+
+    results = results.sort_values('priority_num')
+
+    ## <a name="paso-5-clustering"></a>🔗 PASO 5: Clustering (DBSCAN)
+
+    return {
+
+        'noticias': results.to_dict('records'),### ¿Qué hace?
+
+        'resultados': len(results)Agrupa noticias **MUY similares** usando **DBSCAN** (Density-Based Spatial Clustering).
+
+    }
+
+```### ¿Por qué es necesario?
+
 **Identifica casos duplicados o relacionados** al mismo evento.
 
+**4. POST `/api/analyze`**
+
 **Diferencia con LDA (Paso 4)**:
-- **LDA**: Agrupa por TEMA general (ej: "apoyo huérfanos")
-- **DBSCAN**: Agrupa por SIMILITUD exacta (ej: "mismo feminicidio reportado 3 veces")
 
-### Parámetros que usa
+```python- **LDA**: Agrupa por TEMA general (ej: "apoyo huérfanos")
 
-```python
-DBSCAN_CONFIG = {
-    'eps': 0.6,                # Distancia máxima para agrupar
-    'min_samples': 2,          # Mínimo 2 noticias para cluster
-    'metric': 'cosine'         # Similitud coseno
-}
+@app.route('/api/analyze', methods=['POST'])- **DBSCAN**: Agrupa por SIMILITUD exacta (ej: "mismo feminicidio reportado 3 veces")
+
+def run_analysis():
+
+    try:### Parámetros que usa
+
+        # 1. Recolectar noticias
+
+        df_noticias = collect_all_news()```python
+
+        DBSCAN_CONFIG = {
+
+        # 2. Guardar datos crudos    'eps': 0.6,                # Distancia máxima para agrupar
+
+        df_noticias.to_csv('data/noticias.csv',     'min_samples': 2,          # Mínimo 2 noticias para cluster
+
+                          index=False,     'metric': 'cosine'         # Similitud coseno
+
+                          encoding='utf-8-sig')}
+
+        ```
+
+        # 3. Ejecutar análisis ML
+
+        analyzer = SimplifiedNewsAnalyzer()### ¿Qué significa eps = 0.6?
+
+        df_analyzed = analyzer.analyze_full_pipeline(df_noticias)
+
+        **eps** = **epsilon** = radio de vecindad
+
+        # 4. Guardar resultados
+
+        df_analyzed.to_csv('data/noticias_analyzed.csv', **En similitud coseno**:
+
+                          index=False, - eps=0.6 → Distancia ≤ 0.6 → **Similitud ≥ 40%**
+
+                          encoding='utf-8-sig')- eps=0.4 → Distancia ≤ 0.4 → **Similitud ≥ 60%** (más estricto)
+
+        - eps=0.8 → Distancia ≤ 0.8 → **Similitud ≥ 20%** (más permisivo)
+
+        return {
+
+            'success': True,**Ejemplo**:
+
+            'noticias_recolectadas': len(df_noticias),```
+
+            'noticias_nna': len(df_analyzed[df_analyzed['menores_identificados'] == 'Si']),Noticia A: "Feminicidio en Edomex deja 3 huérfanos"
+
+            'clusters': df_analyzed['cluster'].nunique(),Noticia B: "Asesinan mujer en Edomex, 3 niños quedan solos"
+
+            'topics': df_analyzed['topic_id'].nunique()
+
+        }Similitud = 75% → Distancia = 0.25 < 0.6 → ✅ MISMO CLUSTER
+
+        ```
+
+    except Exception as e:
+
+        return {'error': str(e)}, 500### ¿Qué significa min_samples = 2?
+
 ```
-
-### ¿Qué significa eps = 0.6?
-
-**eps** = **epsilon** = radio de vecindad
-
-**En similitud coseno**:
-- eps=0.6 → Distancia ≤ 0.6 → **Similitud ≥ 40%**
-- eps=0.4 → Distancia ≤ 0.4 → **Similitud ≥ 60%** (más estricto)
-- eps=0.8 → Distancia ≤ 0.8 → **Similitud ≥ 20%** (más permisivo)
-
-**Ejemplo**:
-```
-Noticia A: "Feminicidio en Edomex deja 3 huérfanos"
-Noticia B: "Asesinan mujer en Edomex, 3 niños quedan solos"
-
-Similitud = 75% → Distancia = 0.25 < 0.6 → ✅ MISMO CLUSTER
-```
-
-### ¿Qué significa min_samples = 2?
 
 **Para formar un cluster, necesita al menos 2 noticias.**
 
+---
+
 **Ejemplo**:
-```
+
+## 🐳 Deployment con Docker```
+
 Cluster 1:
-  • Noticia A (CNN)
+
+### docker-compose.yml  • Noticia A (CNN)
+
   • Noticia B (La Jornada)    } Mismo feminicidio, fuentes distintas
-  • Noticia C (Excélsior)
+
+```yaml  • Noticia C (Excélsior)
+
+version: '3.8'
 
 Outlier (cluster -1):
-  • Noticia D (caso único, sin similares)
-```
 
-### Ejemplo de Salida
+services:  • Noticia D (caso único, sin similares)
 
-**Entrada**: Matriz TF-IDF (100 × 1000)
+  nna-analyzer:```
 
-**Salida**: Clusters + Outliers
+    build: .
 
-```
-Cluster 0 (5 noticias):
-  Palabras clave: feminicidio, edomex, ecatepec, 35 años
-  • "Feminicidio en Ecatepec deja 3 huérfanos" (CIMAC)
-  • "Asesinan mujer en Edomex, niños quedan solos" (La Jornada)
-  • "Matan a madre de familia en Ecatepec" (Excélsior)
-  
-Cluster 1 (3 noticias):
-  Palabras clave: dif, apoyo, custodia, abuelos
-  • "DIF otorga custodia a abuelos de huérfanos" (Milenio)
-  • "Abuelos reciben apoyo para niños" (SEM México)
-  
-Outliers (-1): 92 noticias
-  • Casos únicos sin similitud suficiente
+    container_name: nna-analyzer### Ejemplo de Salida
+
+    volumes:
+
+      - ./data:/app/data**Entrada**: Matriz TF-IDF (100 × 1000)
+
+      - ./logs:/app/logs
+
+    environment:**Salida**: Clusters + Outliers
+
+      - ANALYSIS_MODE=scheduled
+
+      - INTERVAL_HOURS=24```
+
+    restart: alwaysCluster 0 (5 noticias):
+
+      Palabras clave: feminicidio, edomex, ecatepec, 35 años
+
+  nna-webapp:  • "Feminicidio en Ecatepec deja 3 huérfanos" (CIMAC)
+
+    build: .  • "Asesinan mujer en Edomex, niños quedan solos" (La Jornada)
+
+    container_name: nna-webapp  • "Matan a madre de familia en Ecatepec" (Excélsior)
+
+    ports:  
+
+      - "5000:5000"Cluster 1 (3 noticias):
+
+    volumes:  Palabras clave: dif, apoyo, custodia, abuelos
+
+      - ./data:/app/data  • "DIF otorga custodia a abuelos de huérfanos" (Milenio)
+
+      - ./logs:/app/logs  • "Abuelos reciben apoyo para niños" (SEM México)
+
+    depends_on:  
+
+      - nna-analyzerOutliers (-1): 92 noticias
+
+    restart: always  • Casos únicos sin similitud suficiente
+
+    command: python app_docker.py```
+
 ```
 
 ### ¿Cómo calcula la calidad del clustering?
 
+### Dockerfile
+
 **Silhouette Score** (entre -1 y 1):
-- **>0.5**: Excelente separación de clusters
-- **0.3-0.5**: Buena separación
+
+```dockerfile- **>0.5**: Excelente separación de clusters
+
+FROM python:3.11-slim- **0.3-0.5**: Buena separación
+
 - **<0.3**: Clusters mal definidos
 
-```python
+# Usuario no privilegiado
+
+RUN groupadd -r appuser && useradd -r -g appuser appuser```python
+
 silhouette_score = 0.42  # BUENO
-```
+
+# Instalar dependencias del sistema```
+
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 ### ¿Está dando resultados esperados?
 
-✅ **BIEN** si:
-- Silhouette >0.3
-- 10-40% de outliers (casos únicos)
-- Clusters tienen sentido temático
+WORKDIR /app
 
-⚠️ **AJUSTAR** si:
-- >90% outliers → **eps demasiado pequeño**, aumentar a 0.7-0.8
+✅ **BIEN** si:
+
+# Copiar requirements- Silhouette >0.3
+
+COPY requirements.txt .- 10-40% de outliers (casos únicos)
+
+RUN pip install --no-cache-dir -r requirements.txt- Clusters tienen sentido temático
+
+
+
+# Copiar código⚠️ **AJUSTAR** si:
+
+COPY . .- >90% outliers → **eps demasiado pequeño**, aumentar a 0.7-0.8
+
 - <10% outliers → **eps muy grande**, reducir a 0.4-0.5
-- Silhouette <0.3 → Ajustar eps o probar K-Means
+
+# Permisos- Silhouette <0.3 → Ajustar eps o probar K-Means
+
+RUN mkdir -p data logs && chown -R appuser:appuser /app
 
 **NOTA IMPORTANTE**: En noticias es **NORMAL** tener muchos outliers (70-85%) porque cada caso es único.
 
+USER appuser
+
 ---
 
-## <a name="paso-6-similitud"></a>🔄 PASO 6: Análisis de Similitud
+# Healthcheck
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \## <a name="paso-6-similitud"></a>🔄 PASO 6: Análisis de Similitud
+
+  CMD curl -f http://localhost:5000/ || exit 1
 
 ### ¿Qué hace?
-Calcula **similitud coseno** entre cada par de noticias.
+
+EXPOSE 5000Calcula **similitud coseno** entre cada par de noticias.
+
+```
 
 ### ¿Por qué es necesario?
-**Permite recomendar noticias relacionadas** y detectar duplicados.
 
-### ¿Cómo calcula la similitud?
+---**Permite recomendar noticias relacionadas** y detectar duplicados.
 
-**Similitud Coseno** = Coseno del ángulo entre dos vectores
 
-```
-Vector A = [0.8, 0.3, 0.6]  (feminicidio, mujer, hijos)
-Vector B = [0.9, 0.4, 0.5]  (similar)
 
-Similitud = cos(θ) = (A · B) / (|A| × |B|)
-          = 0.92  (92% similares)
-```
+## 🔄 Flujo Completo del Sistema### ¿Cómo calcula la similitud?
 
-### Ejemplo de Salida
 
-**Entrada**: Matriz TF-IDF (100 × 1000)
 
-**Salida**: Para cada noticia, su noticia más similar
+### Ciclo de Análisis (Cada 24 horas)**Similitud Coseno** = Coseno del ángulo entre dos vectores
 
-```
-Noticia 1: "Feminicidio en Edomex..."
-  → Más similar: Noticia 47 (similitud: 0.85)
-  
-Noticia 2: "DIF apoya huérfanos..."
-  → Más similar: Noticia 12 (similitud: 0.62)
-```
 
-### ¿Está dando resultados esperados?
 
-✅ **BIEN** si:
-- Similitud promedio: 0.15-0.35
-- Pares con similitud >0.7: 5-15% (posibles duplicados)
+``````
 
-⚠️ **REVISAR** si:
-- Similitud promedio <0.10 → Noticias muy diversas (normal)
-- Similitud promedio >0.50 → Muchos duplicados, filtrar en recolección
+1. INICIO (00:00 AM)Vector A = [0.8, 0.3, 0.6]  (feminicidio, mujer, hijos)
 
----
+   │Vector B = [0.9, 0.4, 0.5]  (similar)
 
-## <a name="flujo-completo"></a>🔄 Flujo Completo con Ejemplo
+   ├─> Recolectar RSS (10 feeds)           → ~60-70 noticias
 
-### Entrada: 1 Noticia Real
+   ├─> Recolectar Google News               → ~150 noticiasSimilitud = cos(θ) = (A · B) / (|A| × |B|)
 
-```
+   └─> Buscar Histórico (6 meses)          → ~250 noticias          = 0.92  (92% similares)
+
+   ```
+
+2. UNIFICACIÓN
+
+   │### Ejemplo de Salida
+
+   └─> Deduplicar por URL                   → ~280-300 noticias únicas
+
+   **Entrada**: Matriz TF-IDF (100 × 1000)
+
+3. DETECCIÓN
+
+   │**Salida**: Para cada noticia, su noticia más similar
+
+   ├─> Aplicar patrones de feminicidio
+
+   ├─> Aplicar patrones de NNA```
+
+   ├─> Aplicar patrones de exclusiónNoticia 1: "Feminicidio en Edomex..."
+
+   └─> Calcular confianza y prioridad       → ~126 casos NNA  → Más similar: Noticia 47 (similitud: 0.85)
+
+     
+
+4. ANÁLISIS MLNoticia 2: "DIF apoya huérfanos..."
+
+   │  → Más similar: Noticia 12 (similitud: 0.62)
+
+   ├─> TF-IDF Vectorization```
+
+   ├─> LDA Topic Modeling                   → 8 tópicos
+
+   ├─> DBSCAN Clustering                    → 6-7 clusters### ¿Está dando resultados esperados?
+
+   └─> Detección de duplicados (75%)        → ~6 duplicados
+
+   ✅ **BIEN** si:
+
+5. ALMACENAMIENTO- Similitud promedio: 0.15-0.35
+
+   │- Pares con similitud >0.7: 5-15% (posibles duplicados)
+
+   ├─> Guardar noticias.csv
+
+   ├─> Guardar clusters_info.csv⚠️ **REVISAR** si:
+
+   └─> Guardar synonym_dictionary.json- Similitud promedio <0.10 → Noticias muy diversas (normal)
+
+   - Similitud promedio >0.50 → Muchos duplicados, filtrar en recolección
+
+6. DISPONIBILIDAD
+
+   │---
+
+   └─> Dashboard actualizado en tiempo real
+
+```## <a name="flujo-completo"></a>🔄 Flujo Completo con Ejemplo
+
+
+
+---### Entrada: 1 Noticia Real
+
+
+
+## 📈 Ejemplo de Resultados```
+
 Título: "Feminicidio en Ecatepec deja tres menores huérfanos"
-Contenido: "Una mujer de 35 años fue asesinada en su domicilio de 
+
+### Caso Real: Análisis CompletoContenido: "Una mujer de 35 años fue asesinada en su domicilio de 
+
 Ecatepec, Estado de México. La víctima deja tres hijos menores de 
-edad en situación de orfandad. La fiscalía inició investigación por 
-feminicidio."
-```
+
+```edad en situación de orfandad. La fiscalía inició investigación por 
+
+═══════════════════════════════════════════════════════feminicidio."
+
+ ANÁLISIS COMPLETADO EXITOSAMENTE```
+
+═══════════════════════════════════════════════════════
 
 ### PASO 1: Recolección ✅
-```
-Fuente: CIMAC
-Fecha: 2025-11-18
-Status: ✓ Recolectada exitosamente
-```
 
-### PASO 2: Detector ✅
-```python
-Análisis del detector:
-  feminicidio: ✓ (encontrado 1 vez)
-  asesinato: ✓ (encontrado 1 vez)
-  mujer: ✓ (encontrado 2 veces)
-  menores: ✓ (encontrado 1 vez)
-  hijos: ✓ (encontrado 1 vez)
-  huérfanos: ✓ (encontrado 1 vez)
+📊 ESTADÍSTICAS GENERALES:```
+
+   • Total noticias recolectadas: 281Fuente: CIMAC
+
+   • Casos con menciones NNA: 126 (44.8%)Fecha: 2025-11-18
+
+   • Noticias objetivo (ALTA): 8 (2.8%)Status: ✓ Recolectada exitosamente
+
+   • Noticias duplicadas: 6```
+
+
+
+🏷️  TÓPICOS DESCUBIERTOS (LDA):### PASO 2: Detector ✅
+
+   Tópico 0: feminicidios, país, animal, político```python
+
+   Tópico 1: feminicidio, marcha, hijos, mujerAnálisis del detector:
+
+   Tópico 2: mundial, drogas, ataques, senado  feminicidio: ✓ (encontrado 1 vez)
+
+   Tópico 3: ciudad, méxico, feminicidio, generación  asesinato: ✓ (encontrado 1 vez)
+
+   Tópico 4: méxico, feminicidio, huérfanos, víctimas  mujer: ✓ (encontrado 2 veces)
+
+   Tópico 5: hernández, michoacán, plan, entidad  menores: ✓ (encontrado 1 vez)
+
+   Tópico 6: feminicidio, infantil, niños, méxico  hijos: ✓ (encontrado 1 vez)
+
+   Tópico 7: feminicidio, hijos, noticias, madre  huérfanos: ✓ (encontrado 1 vez)
+
   orfandad: ✓ (encontrado 1 vez)
 
-Puntuación:
-  feminicide_score: 2/40 * 0.40 = 0.020
-  children_score: 2/15 * 0.20 = 0.027
-  orphan_score: 2/20 * 0.30 = 0.030
-  orphan_bonus: 0.10
-  
-  TOTAL: 0.177 (17.7%)
+📦 CLUSTERS FORMADOS (DBSCAN):
 
-Resultado:
-  es_feminicidio: ✓
-  tiene_nna: ✓
-  es_objetivo: ✓
-  prioridad: BAJA (confianza 17.7%)
-```
+   • Cluster 0 (6 noticias): datos, política, blogPuntuación:
 
-### PASO 3: Vectorización ✅
-```python
-Vector TF-IDF (top 10 palabras):
+   • Cluster 1 (5 noticias): cimacnoticias, sem méxico  feminicide_score: 2/40 * 0.40 = 0.020
 
-feminicidio: 0.352
+   • Cluster 2 (3 noticias): madre, hijos, oaxaca  children_score: 2/15 * 0.20 = 0.027
+
+   • Cluster 3 (3 noticias): huérfanos, animal político  orphan_score: 2/20 * 0.30 = 0.030
+
+   • Cluster 4 (3 noticias): madres, víctimas  orphan_bonus: 0.10
+
+   • Cluster 5 (4 noticias): sol méxico, edomex  
+
+   • Outliers (214): Casos únicos  TOTAL: 0.177 (17.7%)
+
+
+
+🔄 DUPLICADOS DETECTADOS:Resultado:
+
+   Grupo 1: "Feminicidio de niñas y adolescentes en México"  es_feminicidio: ✓
+
+            → 6 versiones en diferentes fechas  tiene_nna: ✓
+
+     es_objetivo: ✓
+
+   Grupo 2: "Huérfanos por feminicidio en México"  prioridad: BAJA (confianza 17.7%)
+
+            → 2 versiones en diferentes medios```
+
+
+
+📊 MÉTRICAS ML:### PASO 3: Vectorización ✅
+
+   • Silhouette Score: 0.48 (Bueno)```python
+
+   • Perplexity LDA: 870,405Vector TF-IDF (top 10 palabras):
+
+   • Similitud promedio: 0.281
+
+   • Pares alta similitud (>50%): 27feminicidio: 0.352
+
 ecatepec: 0.298
-huérfanos: 0.275
-menores: 0.261
-asesinada: 0.248
-edomex: 0.234
-hijos: 0.221
+
+⏱️  TIEMPO DE EJECUCIÓN:huérfanos: 0.275
+
+   • Recolección: 22 minutosmenores: 0.261
+
+   • Análisis ML: 6 segundosasesinada: 0.248
+
+   • Total: 22 min 6 segedomex: 0.234
+
+```hijos: 0.221
+
 mujer: 0.198
-fiscalía: 0.187
+
+---fiscalía: 0.187
+
 investigación: 0.165
-... (990 palabras más con valores <0.15)
+
+## 🛠️ Troubleshooting... (990 palabras más con valores <0.15)
+
 ```
+
+### Problema: No se recolectan noticias
 
 ### PASO 4: Tópicos ✅
-```python
-Distribución por tópico:
 
-Tópico 0 (feminicidio edomex): 15%
+**Solución:**```python
+
+```bashDistribución por tópico:
+
+# Verificar logs
+
+docker-compose logs nna-analyzerTópico 0 (feminicidio edomex): 15%
+
 Tópico 1 (apoyo huérfanos): 70%  ← ASIGNADO
-Tópico 2 (violencia género): 5%
-Tópico 3 (familia niños): 8%
-Tópico 4 (hallazgo cuerpo): 1%
+
+# Revisar conectividadTópico 2 (violencia género): 5%
+
+docker exec nna-analyzer ping -c 3 cimacnoticias.com.mxTópico 3 (familia niños): 8%
+
+```Tópico 4 (hallazgo cuerpo): 1%
+
 Tópico 5 (pareja ex): 1%
 
-→ Asignada al Tópico 1 (apoyo huérfanos) con 70% probabilidad
-```
+### Problema: Error UTF-8 en CSV
 
-### PASO 5: Clustering ✅
+→ Asignada al Tópico 1 (apoyo huérfanos) con 70% probabilidad
+
+**Solución:**```
+
 ```python
-Análisis DBSCAN:
+
+# Siempre usar encoding='utf-8-sig'### PASO 5: Clustering ✅
+
+df.to_csv('archivo.csv', encoding='utf-8-sig')```python
+
+pd.read_csv('archivo.csv', encoding='utf-8-sig')Análisis DBSCAN:
+
+```
 
 Buscando vecinos con similitud >40% (eps=0.6)...
 
+### Problema: Dashboard no carga datos
+
 Encontradas 2 noticias similares:
-  • Noticia 47: "Asesinan mujer en Ecatepec, 3 niños solos" (sim: 0.78)
-  • Noticia 89: "Matan a madre en Edomex" (sim: 0.52)
 
-→ Asignada al Cluster 3 (3 noticias del mismo caso)
+**Solución:**  • Noticia 47: "Asesinan mujer en Ecatepec, 3 niños solos" (sim: 0.78)
+
+```bash  • Noticia 89: "Matan a madre en Edomex" (sim: 0.52)
+
+# Verificar archivos
+
+ls -lh data/→ Asignada al Cluster 3 (3 noticias del mismo caso)
+
 ```
 
-### PASO 6: Similitud ✅
-```python
-Noticia más similar:
-  ID: 47
+# Debe existir:
+
+# - noticias.csv### PASO 6: Similitud ✅
+
+# - clusters_info.csv```python
+
+# - synonym_dictionary.jsonNoticia más similar:
+
+```  ID: 47
+
   Título: "Asesinan mujer en Ecatepec, 3 niños quedan solos"
-  Similitud: 0.78 (78%)
+
+---  Similitud: 0.78 (78%)
+
   
-→ Probable duplicado o caso relacionado
+
+## 📚 Referencias→ Probable duplicado o caso relacionado
+
 ```
 
-### Salida Final
-```json
-{
-  "titulo": "Feminicidio en Ecatepec deja tres menores huérfanos",
-  "es_objetivo": true,
+- **scikit-learn**: https://scikit-learn.org/
+
+- **Flask**: https://flask.palletsprojects.com/### Salida Final
+
+- **Docker**: https://docs.docker.com/```json
+
+- **TF-IDF**: https://en.wikipedia.org/wiki/Tf%E2%80%93idf{
+
+- **LDA**: https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation  "titulo": "Feminicidio en Ecatepec deja tres menores huérfanos",
+
+- **DBSCAN**: https://en.wikipedia.org/wiki/DBSCAN  "es_objetivo": true,
+
   "prioridad": "BAJA",
-  "confianza": 0.177,
+
+---  "confianza": 0.177,
+
   "topic_id": 1,
-  "cluster": 3,
-  "max_similarity": 0.78,
+
+**Versión:** 3.0.0    "cluster": 3,
+
+**Última Actualización:** 19 de noviembre de 2025  "max_similarity": 0.78,
+
   "most_similar_doc_idx": 47
 }
 ```

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Configuración centralizada del Sistema NNA
-Trabajo Terminal 1 - ESIME Zacatenco IPN
+Trabajo Terminal 1 - ESCOM IPN
 """
 
 import os
@@ -35,22 +35,28 @@ RSS_FEEDS = [
     'https://cimacnoticias.com.mx/feed/',  # CIMAC - Comunicación e Información de la Mujer
     'https://www.semmexico.mx/feed/',      # SEM México - Periodismo con perspectiva de género
     
-    # === SECCIONES DE SEGURIDAD Y ESTADOS (incluyen feminicidios) ===
+    # === LA JORNADA (múltiples secciones para más cobertura) ===
     'https://www.jornada.com.mx/rss/estados.xml',      # La Jornada - Estados (casos locales)
-    # 'https://www.animalpolitico.com/category/seguridad/feed/',  # DESHABILITADO - 404 Error
-    # 'https://www.proceso.com.mx/seccion/nacional/feed',  # DESHABILITADO - 404 Error
+    'https://www.jornada.com.mx/rss/politica.xml',     # La Jornada - Política
+    'https://www.jornada.com.mx/rss/edicion.xml',      # La Jornada - Edición completa
+    'https://www.jornada.com.mx/rss/sociedad.xml',     # La Jornada - Sociedad
     
     # === MEDIOS GENERALISTAS CON COBERTURA DE FEMINICIDIOS ===
     'https://aristeguinoticias.com/feed/',  # Aristegui Noticias (buena cobertura)
     'https://www.sinembargo.mx/feed/',      # Sin Embargo (cobertura social)
     
-    # === MEDIOS ADICIONALES ===
-    'https://www.jornada.com.mx/rss/politica.xml',  # La Jornada - Política
-    'https://www.jornada.com.mx/rss/edicion.xml',   # La Jornada - Edición completa
-    'https://www.eluniversal.com.mx/rss/metropoli.xml',  # El Universal - Metrópoli (CDMX)
+    # === MEDIOS NACIONALES ADICIONALES ===
+    'https://www.excelsior.com.mx/rss.xml',            # Excélsior - General
     
-    # === MEDIOS LOCALES (Estado de México - zona con más feminicidios) ===
-    'https://www.milenio.com/rss/edo-de-mexico',  # Milenio - Edomex
+    # === MEDIOS REGIONALES (más cobertura local) ===
+    'https://www.reforma.com/rss/portada.xml',         # Reforma - Portada
+    
+    # ELIMINADOS (dan error 404):
+    # 'https://www.animalpolitico.com/category/seguridad/feed/',  # 404
+    # 'https://www.proceso.com.mx/seccion/nacional/feed',  # 404
+    # 'https://www.milenio.com/rss/policia',  # 404
+    # 'https://www.eluniversal.com.mx/rss/metropoli.xml',  # 404
+    # 'https://www.milenio.com/rss/edo-de-mexico',  # 404
 ]
 
 # ============================================================================
@@ -75,36 +81,48 @@ MAX_RETRIES = 3
 # NOTA IMPORTANTE: Los pasos de ML (TF-IDF, LDA, DBSCAN) solo son útiles con
 # cientos/miles de noticias. Con <100 noticias, el detector es suficiente.
 
-# TF-IDF Vectorization (Solo necesario si quieres similitud o temas)
+# TF-IDF Vectorization - Optimizado para dataset grande (500-1000 noticias)
+# Stopwords personalizadas para español mexicano
+CUSTOM_STOPWORDS = [
+    'del', 'los', 'las', 'una', 'sus', 'al', 'el', 'la', 'de', 'en', 
+    'que', 'por', 'con', 'para', 'un', 'lo', 'como', 'se', 'su',
+    'más', 'pero', 'si', 'no', 'o', 'este', 'esta', 'estos', 'estas',
+    'ese', 'esa', 'esos', 'esas', 'mi', 'tu', 'fue', 'ser', 'ha',
+    'han', 'son', 'está', 'están', 'sobre', 'entre', 'sin', 'muy',
+    'ya', 'también', 'hasta', 'desde', 'tras', 'así', 'año', 'años'
+]
+
 TFIDF_CONFIG = {
-    'max_features': 1500,      # Reducido de 3000 (más eficiente para pocos docs)
-    'min_df': 1,               # Frecuencia mínima (permite palabras únicas)
+    'max_features': 3000,      # ← AUMENTADO: 3000 features para dataset grande
+    'min_df': 2,               # ← Palabra debe aparecer en al menos 2 documentos
     'max_df': 0.85,            # Frecuencia máxima (85% de documentos)
-    'ngram_range': (1, 2),     # Unigramas y bigramas
+    'ngram_range': (1, 2),     # Unigramas y bigramas (captura contexto)
     'lowercase': True,
     'strip_accents': None,     # Preservar acentos para español
-    'stop_words': 'spanish'    # ← AGREGADO: Elimina palabras comunes (de, la, el, etc.)
+    'stop_words': None         # ← Se aplicarán stopwords personalizadas en el código
 }
 
-# LDA Topic Modeling (Solo útil con >200 noticias objetivo)
+# LDA Topic Modeling - Optimizado para dataset grande
 LDA_CONFIG = {
-    'n_components': 4,         # Reducido de 6 (mejor para pocos docs)
+    'n_components': 8,         # ← AUMENTADO de 4 a 8 (más tópicos para +500 docs)
     'random_state': 42,
-    'max_iter': 30,            # Aumentado de 20 (mejor convergencia)
+    'max_iter': 50,            # ← AUMENTADO: más iteraciones para convergencia
     'learning_method': 'online',
-    'learning_offset': 50.0
+    'learning_offset': 50.0,
+    'n_jobs': -1               # Usar todos los cores disponibles
 }
 
-# DBSCAN Clustering (Deshabilitado por defecto - no funciona con pocos docs)
+# DBSCAN Clustering - Optimizado para dataset mediano/pequeño
 DBSCAN_CONFIG = {
-    'eps': 0.75,               # Aumentado de 0.6 (más permisivo)
-    'min_samples': 2,          # Mínimo de noticias por cluster
-    'metric': 'cosine',        # Métrica de similitud
+    'eps': 0.80,               # ← MUY PERMISIVO: 0.80 = similitud ~20% (agrupa casos relacionados)
+    'min_samples': 2,          # ← Mínimo 2 (permite clusters pequeños, detecta duplicados)
+    'metric': 'cosine',        # Métrica de similitud para texto
     'n_jobs': -1               # Usar todos los cores
 }
 
-# Pipeline simplificado (recomendado para producción)
-PIPELINE_SIMPLE = True  # Si True, solo usa Recolección + Detector
+# Pipeline simplificado vs completo
+PIPELINE_SIMPLE = False  # ← CAMBIADO: False = Pipeline ML completo (TF-IDF + LDA + DBSCAN)
+                         # True = Solo Recolección + Detector (rápido pero sin ML)
 
 # K-Means Clustering (Legacy - para comparación)
 KMEANS_CONFIG = {
@@ -118,12 +136,37 @@ KMEANS_CONFIG = {
 # ============================================================================
 
 GOOGLE_NEWS_CONFIG = {
-    # Query mejorado con operadores booleanos
-    'query': '(feminicidio OR "violencia de género" OR "asesinato mujer") AND (hijos OR huérfanos OR menores OR niños) AND méxico',
-    'max_results': 50,         # Aumentado de 30 (más noticias)
+    # Query mejorado con operadores booleanos para mayor cobertura
+    'query': '(feminicidio OR "violencia de género" OR "asesinato mujer" OR "matan mujer") AND (hijos OR huérfanos OR menores OR niños OR "quedan solos") AND méxico',
+    'max_results': 150,        # ← AUMENTADO: 150 resultados para más cobertura
     'language': 'es-MX',
-    'country': 'MX'
+    'country': 'MX',
+    'period': '7d'             # últimos 7 días
 }
+
+# ============================================================================
+# CONFIGURACIÓN DE SCRAPING HISTÓRICO (Para ML robusto)
+# ============================================================================
+
+HISTORICAL_SCRAPING_CONFIG = {
+    # Recolectar noticias de los últimos meses para tener dataset grande (400+ noticias)
+    'enabled': True,                    # Habilitar scraping histórico
+    'months_back': 6,                   # ← AUMENTADO: 6 meses (más noticias históricas)
+    'queries': [
+        'feminicidio hijos méxico',
+        'feminicidio huérfanos méxico',
+        'asesinato mujer niños méxico',
+        'madre asesinada hijos méxico',
+        'violencia género menores méxico',  # ← AGREGADO: query adicional
+    ],                                  # ← AUMENTADO: 5 queries
+    'max_results_per_query': 50,        # ← AUMENTADO: 50 resultados por query (5×50=250)
+    'min_delay_seconds': 10,            # ← AUMENTADO: 10 segundos (evitar 429)
+    'max_delay_seconds': 20,            # ← AUMENTADO: 20 segundos (más conservador)
+}
+
+# Objetivo mejorado: Recolectar 400-600 noticias para ML robusto
+# RSS (~100-150) + Google News reciente (~150) + Histórico (~250-300) = 500-600 noticias
+# Tiempo estimado: 15-25 minutos (delays largos para evitar bloqueo HTTP 429)
 
 # ============================================================================
 # CONFIGURACIÓN DE LOGGING

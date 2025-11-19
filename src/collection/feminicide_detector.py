@@ -141,7 +141,81 @@ class FeminicideDetector:
             r'\bpremio\s+(nobel|oscar|grammy)',
             r'\bfestival\s+de\s+(cine|m[u]sica)',
             r'\bconcierto\s+de',
+            
+            # Estadísticas y reportes generales (NUEVO - casos NO individuales)
+            r'\bconcentra\s+(la\s+)?cuarta\s+parte',
+            r'\bestadística[s]?\s+(de|sobre|señala|revela)',
+            r'\bporcentaje\s+(de|del)',
+            r'\b\d+%\s+(de\s+las|son|corresponde)',
+            r'\bdatos?\s+(del|de\s+la)\s+(INEGI|gobierno)',
+            r'\breporte\s+(nacional|anual|trimestral)',
+            r'\bregistr[oa]\s+oficial',
+            r'\bcifras?\s+(oficial[es]?|nacional[es]?)',
+            r'\bsegún\s+(el\s+)?INEGI',
+            r'\bsegún\s+(las\s+)?cifras',
+            r'\btrata\s+de\s+(personas|blancas)',  # Trata != feminicidio directo
+            r'\bv[i]ctima[s]?\s+de\s+trata',
+            
+            # Noticias sobre programas/políticas (no casos individuales)
+            r'\bprograma\s+(social|de\s+gobierno)',
+            r'\bpol[i]tica\s+p[u]blica',
+            r'\biniciativa\s+de\s+ley',
+            r'\breforma\s+(legal|constitucional)',
+            r'\bcampa[ñ]a\s+(de\s+concientizaci[óo]n|social)',
         ]
+        
+        # PATRONES DE MÉXICO (para filtrar solo noticias de México)
+        self.mexico_patterns = [
+            r'\bm[eé]xico\b',
+            r'\bmexican[oa]s?\b',
+            r'\bcdmx\b',
+            r'\bciudad\s+de\s+m[eé]xico\b',
+            # Estados de México
+            r'\baguascalientes\b', r'\bbaja\s+california\b', r'\bcampeche\b',
+            r'\bchiapas\b', r'\bchihuahua\b', r'\bcoahuila\b', r'\bcolima\b',
+            r'\bdurango\b', r'\bguanajuato\b', r'\bguerrero\b', r'\bhidalgo\b',
+            r'\bjalisco\b', r'\bedomex\b', r'\bestado\s+de\s+m[eé]xico\b',
+            r'\bmichoac[aá]n\b', r'\bmorelos\b', r'\bnayarit\b', r'\bnuevo\s+le[oó]n\b',
+            r'\boaxaca\b', r'\bpuebla\b', r'\bquer[eé]taro\b', r'\bquintana\s+roo\b',
+            r'\bsan\s+luis\s+potos[ií]\b', r'\bsinaloa\b', r'\bsonora\b',
+            r'\btabasco\b', r'\btamaulipas\b', r'\btlaxcala\b', r'\bveracruz\b',
+            r'\byucat[aá]n\b', r'\bzacatecas\b',
+        ]
+        
+        # PATRONES DE OTROS PAÍSES (para excluir noticias de fuera de México)
+        self.other_countries_patterns = [
+            r'\bargentina\b', r'\bbolivia\b', r'\bbrasil\b', r'\bchile\b',
+            r'\bcolombia\b', r'\bcosta\s+rica\b', r'\bcuba\b', r'\becuador\b',
+            r'\bel\s+salvador\b', r'\bespa[ñn]a\b', r'\bguatemala\b', r'\bhonduras\b',
+            r'\bnicaragua\b', r'\bpanam[aá]\b', r'\bparaguay\b', r'\bper[uú]\b',
+            r'\bpuerto\s+rico\b', r'\brepública\s+dominicana\b', r'\buruguay\b',
+            r'\bvenezuela\b', r'\bestados\s+unidos\b', r'\busa\b', r'\bu\.s\.\b',
+            r'\bcanad[aá]\b', r'\blondres\b', r'\bpar[ií]s\b', r'\bmadrid\b',
+        ]
+    
+    def is_from_mexico(self, text: str) -> bool:
+        """
+        Verifica si la noticia es de México.
+        
+        Args:
+            text: Texto de la noticia
+            
+        Returns:
+            True si menciona México o sus estados, False si menciona otros países
+        """
+        if not text or not isinstance(text, str):
+            return False
+            
+        text_lower = text.lower()
+        
+        # Verificar si menciona otros países (excluir)
+        has_other_country = self._find_matches(text_lower, self.other_countries_patterns)
+        if has_other_country:
+            return False
+        
+        # Verificar si menciona México
+        has_mexico = self._find_matches(text_lower, self.mexico_patterns)
+        return len(has_mexico) > 0
     
     def detect(self, text: str) -> Dict[str, any]:
         """
@@ -273,17 +347,32 @@ class FeminicideDetector:
         """
         Calcula prioridad de la noticia.
         
+        PRIORIDAD ALTA: Solo casos individuales de feminicidio con huérfanos/NNA
+        - Debe mencionar feminicidio
+        - Debe mencionar huérfanos/NNA afectados
+        - Alta confianza (>= 0.7)
+        - NO debe ser estadística o reporte general
+        
         Returns:
             'ALTA', 'MEDIA', 'BAJA', 'IRRELEVANTE'
         """
+        # ALTA: Feminicidio + hurfanos + confianza alta (caso individual)
         if is_fem and has_orph and confidence >= 0.7:
-            return 'ALTA'  # Feminicidio + hurfanos + confianza alta
+            return 'ALTA'
+        
+        # MEDIA: Feminicidio + hurfanos pero menos confianza
         elif is_fem and has_orph:
-            return 'MEDIA'  # Feminicidio + hurfanos pero confianza baja
+            return 'MEDIA'
+        
+        # MEDIA: Feminicidio sin mencin clara de hurfanos pero relevante
         elif is_fem and confidence >= 0.5:
-            return 'MEDIA'  # Feminicidio sin mencin clara de hurfanos
+            return 'MEDIA'
+        
+        # BAJA: Feminicidio pero poca certeza
         elif is_fem:
-            return 'BAJA'  # Feminicidio pero poca certeza
+            return 'BAJA'
+        
+        # IRRELEVANTE: No trata sobre feminicidio
         else:
             return 'IRRELEVANTE'  # No es feminicidio
     

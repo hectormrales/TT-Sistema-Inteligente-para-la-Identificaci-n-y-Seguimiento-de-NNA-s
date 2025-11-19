@@ -10,11 +10,12 @@ from typing import Dict, List, Tuple, Optional
 import os
 import sys
 
-# Agregar el directorio raz al path para importaciones
+# Agregar el directorio raíz al path para importaciones
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from src.collection.data_collector import collect_all_news, detect_children_mentions
 from src.analysis.synonym_dictionary import SynonymDictionary, enhanced_search
+import config  # ← AGREGAR: Importar config para usar CUSTOM_STOPWORDS
 
 # Importaciones de ML que s funcionan
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -26,18 +27,17 @@ import unicodedata
 
 def clean_and_lemmatize_series(text_series):
     """
-    Funcin simplificada de limpieza de texto.
+    Función simplificada de limpieza de texto que PRESERVA acentos.
     """
     def clean_text(text):
         if pd.isna(text):
             return ""
-        # Normalizar unicode
-        text = unicodedata.normalize('NFKD', str(text))
-        # Convertir a minsculas
-        text = text.lower()
-        # Eliminar caracteres especiales, mantener solo letras, nmeros y espacios
-        text = re.sub(r'[^\w\s]', ' ', text)
-        # Eliminar espacios mltiples
+        # Convertir a string y minúsculas (SIN normalizar unicode para preservar acentos)
+        text = str(text).lower()
+        # Eliminar caracteres especiales EXCEPTO letras con acentos
+        # Mantener: a-z, á, é, í, ó, ú, ñ, números y espacios
+        text = re.sub(r'[^a-záéíóúüñ\s0-9]', ' ', text)
+        # Eliminar espacios múltiples
         text = re.sub(r'\s+', ' ', text)
         # Eliminar espacios al inicio y final
         text = text.strip()
@@ -64,31 +64,40 @@ class SimplifiedNewsAnalyzer:
     
     def _get_spanish_stopwords(self):
         """
-        Retorna lista de stopwords en espaol.
-        Estas son palabras comunes sin valor semntico que deben filtrarse.
+        Retorna lista combinada de stopwords en español.
+        Usa las stopwords personalizadas de config.py + las estándar.
         """
-        return [
+        # Combinar stopwords estándar + personalizadas
+        standard_stopwords = [
             'el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'ser', 'se',
             'no', 'haber', 'por', 'con', 'su', 'para', 'como', 'estar',
-            'tener', 'le', 'lo', 'todo', 'pero', 'ms', 'hacer', 'o',
+            'tener', 'le', 'lo', 'todo', 'pero', 'más', 'hacer', 'o',
             'poder', 'decir', 'este', 'ir', 'otro', 'ese', 'la', 'si',
-            'me', 'ya', 'ver', 'porque', 'dar', 'cuando', 'l', 'muy',
-            'sin', 'vez', 'mucho', 'saber', 'qu', 'sobre', 'mi', 'alguno',
-            'mismo', 'yo', 'tambin', 'hasta', 'ao', 'dos', 'querer',
-            'entre', 'as', 'primero', 'desde', 'grande', 'eso', 'ni',
-            'nos', 'llegar', 'pasar', 'tiempo', 'ella', 's', 'da',
+            'me', 'ya', 'ver', 'porque', 'dar', 'cuando', 'él', 'muy',
+            'sin', 'vez', 'mucho', 'saber', 'qué', 'sobre', 'mi', 'alguno',
+            'mismo', 'yo', 'también', 'hasta', 'año', 'dos', 'querer',
+            'entre', 'así', 'primero', 'desde', 'grande', 'eso', 'ni',
+            'nos', 'llegar', 'pasar', 'tiempo', 'ella', 'sí', 'día',
             'uno', 'bien', 'poco', 'deber', 'entonces', 'poner', 'cosa',
             'tanto', 'hombre', 'parecer', 'nuestro', 'tan', 'donde',
-            'ahora', 'parte', 'despus', 'vida', 'quedar', 'siempre',
+            'ahora', 'parte', 'después', 'vida', 'quedar', 'siempre',
             'creer', 'hablar', 'llevar', 'dejar', 'nada', 'cada',
             'seguir', 'menos', 'nuevo', 'encontrar', 'algo', 'solo',
-            'estos', 'trabajar', 'ltimo', 'largo', 'sentir', 'mano',
+            'estos', 'trabajar', 'último', 'largo', 'sentir', 'mano',
             'venir', 'volver', 'tomar', 'conocer', 'vivir', 'pensar',
-            'salir', 'mayor', 'tal', 'compaero', 'aunque', 'fue',
-            'sido', 'han', 'son', 'era', 'estaba', 'haba', 'puede',
+            'salir', 'mayor', 'tal', 'compañero', 'aunque', 'fue',
+            'sido', 'han', 'son', 'era', 'estaba', 'había', 'puede',
             'pueden', 'debe', 'deben', 'hace', 'hacen', 'hizo', 'hicieron',
             'va', 'van', 'iba', 'iban', 'sea', 'sean', 'tenga', 'tengan'
         ]
+        
+        # Agregar stopwords personalizadas de config.py
+        if hasattr(config, 'CUSTOM_STOPWORDS'):
+            combined = list(set(standard_stopwords + config.CUSTOM_STOPWORDS))
+        else:
+            combined = standard_stopwords
+            
+        return combined
         
     def step_1_collect_data(self) -> pd.DataFrame:
         """Paso 1: Recoleccin de datos desde RSS feeds."""
@@ -119,8 +128,8 @@ class SimplifiedNewsAnalyzer:
             raise ValueError("Debe ejecutar step_1_collect_data() primero")
         
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        self.df_original.to_csv(filepath, index=False, encoding='utf-8')
-        print(f" Datos guardados en: {filepath}")
+        self.df_original.to_csv(filepath, index=False, encoding='utf-8-sig')
+        print(f"✅ Dataset guardado en: {filepath}")
         print(f" Total de noticias: {len(self.df_original)}")
     
     def step_3_vectorize_text(self) -> pd.DataFrame:
@@ -492,8 +501,8 @@ class SimplifiedNewsAnalyzer:
         df_clusters = pd.DataFrame(cluster_info_list)
         output_path = "data/clusters_info.csv"
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        df_clusters.to_csv(output_path, index=False, encoding='utf-8')
-        print(f" Informacin detallada guardada en: {output_path}")
+        df_clusters.to_csv(output_path, index=False, encoding='utf-8-sig')
+        print(f"  ℹ️  Información de clusters guardada en: {output_path}")
     
     def step_6_similarity_analysis(self) -> pd.DataFrame:
         """Paso 6: Anlisis de similitud coseno."""
@@ -533,10 +542,89 @@ class SimplifiedNewsAnalyzer:
             print(f" Similitud promedio: {avg_similarity:.3f}")
             print(f" Pares con alta similitud (>0.5): {high_similarity_count}")
             
+            # ← NUEVO: Detectar duplicados (misma noticia de diferentes fuentes)
+            self._detect_duplicates(similarity_matrix, threshold=0.75)
+            
         except Exception as e:
-            print(f" Error en anlisis de similitud: {e}")
+            print(f" Error en análisis de similitud: {e}")
         
         return self.df_processed
+    
+    def _detect_duplicates(self, similarity_matrix, threshold=0.75):
+        """
+        Detecta noticias duplicadas (misma noticia de diferentes fuentes).
+        
+        Usa similitud coseno para identificar cuando dos noticias son prácticamente
+        iguales (>75% similitud), indicando que son la misma noticia de fuentes diferentes.
+        
+        Args:
+            similarity_matrix: Matriz de similitud coseno
+            threshold: Umbral de similitud (default: 0.75 = 75%)
+        """
+        print(f"\n  Detectando duplicados (umbral: {threshold*100:.0f}% similitud)...")
+        
+        # Marcar todas como únicas inicialmente
+        self.df_processed['es_duplicado'] = False
+        self.df_processed['grupo_duplicado'] = -1
+        self.df_processed['titulo_original'] = ''
+        self.df_processed['fuente_original'] = ''
+        
+        n = len(similarity_matrix)
+        duplicate_groups = []
+        processed = set()
+        
+        for i in range(n):
+            if i in processed:
+                continue
+                
+            # Encontrar documentos muy similares
+            similar_docs = []
+            for j in range(i+1, n):
+                if similarity_matrix[i, j] >= threshold:
+                    similar_docs.append(j)
+            
+            if similar_docs:
+                # Grupo de duplicados encontrado
+                group = [i] + similar_docs
+                duplicate_groups.append(group)
+                
+                # Obtener título y fuente del original (primera noticia)
+                titulo_original = self.df_processed.iloc[i]['titulo']
+                fuente_original = self.df_processed.iloc[i]['fuente']
+                
+                # Marcar todos excepto el primero como duplicados
+                for doc_idx in similar_docs:
+                    self.df_processed.loc[doc_idx, 'es_duplicado'] = True
+                    self.df_processed.loc[doc_idx, 'grupo_duplicado'] = len(duplicate_groups) - 1
+                    self.df_processed.loc[doc_idx, 'titulo_original'] = titulo_original
+                    self.df_processed.loc[doc_idx, 'fuente_original'] = fuente_original
+                    processed.add(doc_idx)
+                
+                # Marcar el original con su grupo (pero no es duplicado)
+                self.df_processed.loc[i, 'grupo_duplicado'] = len(duplicate_groups) - 1
+                self.df_processed.loc[i, 'titulo_original'] = titulo_original
+                self.df_processed.loc[i, 'fuente_original'] = fuente_original
+                processed.add(i)
+        
+        n_duplicates = self.df_processed['es_duplicado'].sum()
+        n_unique = len(self.df_processed) - n_duplicates
+        
+        print(f"  ✅ Noticias únicas: {n_unique}")
+        print(f"  🔄 Duplicados detectados: {n_duplicates}")
+        print(f"  📦 Grupos de duplicados: {len(duplicate_groups)}")
+        
+        # Mostrar ejemplos detallados
+        if len(duplicate_groups) > 0:
+            print(f"\n  Ejemplos de duplicados (misma noticia en diferentes medios):")
+            for i, group in enumerate(duplicate_groups[:5]):  # Mostrar primeros 5 grupos
+                print(f"\n    📰 Grupo {i+1}: {len(group)} versiones de la misma noticia")
+                for idx in group:
+                    fuente = self.df_processed.iloc[idx]['fuente']
+                    titulo = self.df_processed.iloc[idx]['titulo'][:70]
+                    es_dup = "DUPLICADO" if self.df_processed.iloc[idx]['es_duplicado'] else "ORIGINAL"
+                    print(f"      [{es_dup}] [{fuente}] {titulo}...")
+        
+        return duplicate_groups
     
     def step_7_enhanced_search_setup(self) -> SynonymDictionary:
         """Paso 7: Configuracin de bsqueda mejorada."""
@@ -564,8 +652,8 @@ class SimplifiedNewsAnalyzer:
             raise ValueError("Debe completar el anlisis primero")
         
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        self.df_processed.to_csv(filepath, index=False, encoding='utf-8')
-        print(f" Resultados guardados en: {filepath}")
+        self.df_processed.to_csv(filepath, index=False, encoding='utf-8-sig')
+        print(f"✅ Resultados guardados en: {filepath}")
         
         # Guardar metadatos
         clustering_method = 'DBSCAN' if self.dbscan_model is not None else 'K-Means'
@@ -586,36 +674,45 @@ class SimplifiedNewsAnalyzer:
         self.df_analyzed = self.df_processed
     
     def run_complete_analysis(self, 
-                            num_topics: int = 6,
+                            df_input: pd.DataFrame = None,
+                            num_topics: int = 8,
                             clustering_method: str = 'dbscan',
-                            eps: float = 0.6,
-                            min_samples: int = 2,
+                            eps: float = 0.55,
+                            min_samples: int = 3,
                             n_clusters: int = 4,
                             save_intermediate: bool = True) -> pd.DataFrame:
         """
-        Ejecuta el pipeline completo de anlisis.
+        Ejecuta el pipeline completo de análisis.
         
-        Parmetros:
-            num_topics: Nmero de tpicos para LDA
+        Parámetros:
+            df_input: DataFrame con noticias ya recolectadas (opcional). Si se proporciona, 
+                     se usa en lugar de recolectar nuevas noticias.
+            num_topics: Número de tópicos para LDA (default: 8 para datasets grandes)
             clustering_method: 'dbscan' (recomendado) o 'kmeans'
-            eps: Parmetro epsilon para DBSCAN (solo si method='dbscan')
-            min_samples: Mnimo de muestras para DBSCAN (solo si method='dbscan')
-            n_clusters: Nmero de clusters para K-Means (solo si method='kmeans')
+            eps: Parámetro epsilon para DBSCAN (default: 0.55 = similitud ~45%)
+            min_samples: Mínimo de muestras para DBSCAN (default: 3)
+            n_clusters: Número de clusters para K-Means (solo si method='kmeans')
             save_intermediate: Si guardar archivos intermedios
         """
-        print(" INICIANDO ANLISIS COMPLETO SIMPLIFICADO")
+        print(" INICIANDO ANÁLISIS COMPLETO SIMPLIFICADO")
         print("=" * 60)
         
         try:
-            # Ejecutar todos los pasos
-            self.step_1_collect_data()
+            # Si se proporciona DataFrame, usarlo en lugar de recolectar
+            if df_input is not None:
+                print(f"=== USANDO DATASET PROPORCIONADO ({len(df_input)} noticias) ===")
+                self.df_original = df_input
+            else:
+                # Ejecutar recolección normal
+                self.step_1_collect_data()
+                
             if save_intermediate:
                 self.step_2_save_initial_data()
             
             self.step_3_vectorize_text()
             self.step_4_topic_modeling(num_topics=num_topics)
             
-            # Clustering con mtodo seleccionado
+            # Clustering con método seleccionado
             if clustering_method.lower() == 'dbscan':
                 self.step_5_clustering(method='dbscan', eps=eps, min_samples=min_samples)
             else:
@@ -628,10 +725,10 @@ class SimplifiedNewsAnalyzer:
             self.save_final_results()
             
             print("\n" + "=" * 60)
-            print(" ANLISIS COMPLETADO EXITOSAMENTE")
+            print(" ANÁLISIS COMPLETADO EXITOSAMENTE")
             print(f" {len(self.df_analyzed)} noticias analizadas")
-            print(f" Mtodo de clustering: {clustering_method.upper()}")
-            print(" Todos los mtodos implementados sin dependencias problemticas")
+            print(f" Método de clustering: {clustering_method.upper()}")
+            print(" Todos los métodos implementados sin dependencias problemáticas")
             
             return self.df_analyzed
             

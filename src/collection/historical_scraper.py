@@ -2,6 +2,9 @@
 """
 Scraper histórico para buscar noticias de feminicidios específicamente.
 Complementa el RSS scraper buscando en archivos y búsquedas de sitios.
+
+MEJORA PARA TITULACIÓN: Recolecta noticias de los últimos 6 meses
+para tener dataset robusto (500-1000 noticias) necesario para ML efectivo.
 """
 
 import requests
@@ -10,7 +13,168 @@ import pandas as pd
 from datetime import datetime, timedelta
 import time
 import re
+import logging
+from typing import List, Dict
 from .feminicide_detector import FeminicideDetector
+
+# Importar configuración
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+import config
+
+logger = logging.getLogger(__name__)
+
+
+def collect_historical_news(months_back: int = None, max_total: int = None) -> List[Dict]:
+    """
+    Función principal para recolección histórica masiva.
+    
+    Esta función recolecta noticias de los últimos meses usando Google News
+    con múltiples queries para maximizar cobertura.
+    
+    Args:
+        months_back: Meses hacia atrás (default: config.HISTORICAL_SCRAPING_CONFIG)
+        max_total: Máximo total de noticias (default: config)
+        
+    Returns:
+        Lista de diccionarios con noticias
+        
+    Ejemplo:
+        # Recolectar últimos 6 meses
+        noticias = collect_historical_news(months_back=6, max_total=500)
+        print(f"Recolectadas: {len(noticias)} noticias históricas")
+    """
+    hist_config = getattr(config, 'HISTORICAL_SCRAPING_CONFIG', {})
+    
+    if not hist_config.get('enabled', False):
+        logger.info("Scraping histórico deshabilitado en config")
+        return []
+    
+    months_back = months_back or hist_config.get('months_back', 6)
+    max_per_query = hist_config.get('max_results_per_query', 50)
+    queries = hist_config.get('queries', ['feminicidio hijos méxico'])
+    min_delay = hist_config.get('min_delay_seconds', 2)
+    max_delay = hist_config.get('max_delay_seconds', 5)
+    
+    all_articles = []
+    detector = FeminicideDetector()
+    
+    logger.info(f"Recolectando noticias de últimos {months_back} meses")
+    logger.info(f"Queries configuradas: {len(queries)}")
+    
+    # Dividir tiempo en periodos mensuales
+    from dateutil.relativedelta import relativedelta
+    end_date = datetime.now()
+    
+    for month_offset in range(months_back):
+        period_end = end_date - relativedelta(months=month_offset)
+        period_start = period_end - relativedelta(months=1)
+        
+        logger.info(f"\nPeriodo: {period_start.strftime('%Y-%m')} ({period_start.strftime('%d/%m')} - {period_end.strftime('%d/%m')})")
+        
+        for query in queries:
+            logger.info(f"  Query: {query[:40]}...")
+            
+            try:
+                # Usar Google News RSS con fecha
+                articles = _search_google_news_period(
+                    query=query,
+                    start_date=period_start,
+                    end_date=period_end,
+                    max_results=max_per_query,
+                    detector=detector
+                )
+                
+                logger.info(f"    → {len(articles)} noticias encontradas")
+                all_articles.extend(articles)
+                
+                # Delay para evitar rate limiting
+                import random
+                time.sleep(random.uniform(min_delay, max_delay))
+                
+            except Exception as e:
+                logger.error(f"    Error: {e}")
+                continue
+    
+    logger.info(f"\nTotal histórico recolectado: {len(all_articles)} noticias")
+    return all_articles
+
+
+def _search_google_news_period(
+    query: str,
+    start_date: datetime,
+    end_date: datetime,
+    max_results: int,
+    detector: FeminicideDetector
+) -> List[Dict]:
+    """
+    Busca en Google News para un periodo específico.
+    
+    Args:
+        query: Términos de búsqueda
+        start_date: Fecha inicio
+        end_date: Fecha fin  
+        max_results: Máximo resultados
+        detector: Instancia del detector
+        
+    Returns:
+        Lista de artículos detectados
+    """
+    from GoogleNews import GoogleNews
+    
+    articles = []
+    
+    try:
+        googlenews = GoogleNews(lang='es', region='MX')
+        googlenews.set_time_range(
+            start_date.strftime('%m/%d/%Y'),
+            end_date.strftime('%m/%d/%Y')
+        )
+        googlenews.search(query)
+        
+        results = googlenews.results()[:max_results]
+        
+        for item in results:
+            title = item.get('title', '')
+            desc = item.get('desc', '')
+            link = item.get('link', '')
+            date_str = item.get('date', '')
+            
+            # Parsear fecha
+            try:
+                pub_date = datetime.strptime(date_str, '%b %d, %Y') if date_str else end_date
+            except:
+                pub_date = end_date
+            
+            # Aplicar detector
+            full_text = f"{title} {desc}"
+            detection = detector.detect(full_text)
+            
+            # Solo guardar feminicidios
+            if detection['is_feminicide']:
+                articles.append({
+                    'titulo': title,
+                    'contenido': desc,
+                    'enlace': link,
+                    'fuente': 'Google News (Histórico)',
+                    'fecha': pub_date.isoformat(),
+                    'cluster': 0,
+                    'es_feminicidio': detection['is_feminicide'],
+                    'tiene_nna': detection['has_children'],
+                    'tiene_huerfanos': detection['has_orphans'],
+                    'es_objetivo': detection['is_target_news'],
+                    'confianza': detection['confidence'],
+                    'prioridad': detection['priority'],
+                    'menores_identificados': 'Si' if detection['has_children'] else 'No'
+                })
+        
+        googlenews.clear()
+        
+    except Exception as e:
+        logger.error(f"Error en búsqueda histórica: {e}")
+    
+    return articles
 
 class HistoricalFeminicideScraper:
     """Scraper especializado para buscar noticias de feminicidios en archivos históricos."""

@@ -1,6 +1,6 @@
 {
-  "total_noticias": 95,
-  "noticias_con_nna": 53,
+  "total_noticias": 304,
+  "noticias_con_nna": 51,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -8,6 +8,7 @@
     "fuente",
     "fecha",
     "cluster",
+    "pais_mexico",
     "es_feminicidio",
     "tiene_nna",
     "tiene_huerfanos",
@@ -21,7 +22,11 @@
     "topic_probability",
     "topic_description",
     "most_similar_doc_idx",
-    "max_similarity"
+    "max_similarity",
+    "es_duplicado",
+    "grupo_duplicado",
+    "titulo_original",
+    "fuente_original"
   ],
   "version": "simplified_analyzer_v2.0",
   "algoritmos_usados": [

@@ -34,6 +34,22 @@
         .badge-nna {
             background-color: #f5576c;
         }
+        .badge-priority-alta {
+            background-color: #dc3545;
+            color: white;
+        }
+        .badge-priority-media {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .badge-priority-baja {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .badge-priority-irrelevante {
+            background-color: #6c757d;
+            color: white;
+        }
         .search-box {
             border-radius: 25px;
             border: 2px solid #667eea;
@@ -50,6 +66,25 @@
         .container-fluid {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
+        }
+        .progress-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .progress-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
         }
     </style>
 </head>
@@ -68,13 +103,33 @@
                     </div>
                     <div>
                         <button class="btn btn-primary btn-analyze" onclick="runAnalysis()">
-                            <i class="fas fa-play"></i> Ejecutar Análisis
+                            <i class="fas fa-brain"></i> Ejecutar Análisis Completo
                         </button>
                         <button class="btn btn-success" onclick="exportData()">
                             <i class="fas fa-download"></i> Exportar CSV
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-content">
+                <div class="spinner-border text-primary mb-3" style="width: 4rem; height: 4rem;" role="status">
+                    <span class="visually-hidden">Procesando...</span>
+                </div>
+                <h4 id="progressTitle">Ejecutando Análisis Completo</h4>
+                <p class="text-muted" id="progressMessage">Esto puede tardar varios minutos...</p>
+                <div class="progress mt-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: 100%"></div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-info-circle"></i> 
+                    Recolectando noticias y aplicando ML (TF-IDF, LDA, DBSCAN)
+                </small>
             </div>
         </div>
 
@@ -88,9 +143,9 @@
             </div>
         </div>
 
-        <!-- Statistics Cards -->
-        <div class="row" id="statsRow">
-            <div class="col-md-3">
+        <!-- Statistics Cards - Simplificadas (Solo Total y NNA) -->
+        <div class="row mb-4" id="statsRow">
+            <div class="col-md-6">
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -101,7 +156,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="stat-card nna">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -112,31 +167,46 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card clusters">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="clusters">-</h3>
-                            <p class="mb-0">Clusters</p>
+        </div>
+
+        <!-- Botón para mostrar detalles del análisis -->
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <button class="btn btn-outline-primary" onclick="toggleAnalysisDetails()">
+                    <i class="fas fa-chart-bar"></i> Detalles del Análisis
+                </button>
+            </div>
+        </div>
+
+        <!-- Detalles del Análisis (Ocultos por defecto) -->
+        <div id="analysisDetails" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="stat-card clusters">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="mb-0" id="clusters">-</h3>
+                                <p class="mb-0">Clusters Detectados</p>
+                            </div>
+                            <i class="fas fa-project-diagram fa-2x opacity-75"></i>
                         </div>
-                        <i class="fas fa-project-diagram fa-2x opacity-75"></i>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card topics">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="topics">-</h3>
-                            <p class="mb-0">Tópicos</p>
+                <div class="col-md-6">
+                    <div class="stat-card topics">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="mb-0" id="topics">-</h3>
+                                <p class="mb-0">Tópicos Descubiertos</p>
+                            </div>
+                            <i class="fas fa-tags fa-2x opacity-75"></i>
                         </div>
-                        <i class="fas fa-tags fa-2x opacity-75"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Búsqueda Inteligente Mejorada -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -144,16 +214,21 @@
                         <h5 class="card-title">
                             <i class="fas fa-search"></i> Búsqueda Inteligente
                         </h5>
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <input type="text" class="form-control search-box" 
-                                   placeholder="Buscar noticias (ej: feminicidio, violencia, niños)..." 
+                                   placeholder="Buscar por nombre, palabra clave, ubicación, fuente..." 
                                    id="searchInput">
                             <button class="btn btn-primary" onclick="searchNews()">
-                                <i class="fas fa-search"></i>
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearSearch()">
+                                <i class="fas fa-times"></i> Limpiar
                             </button>
                         </div>
                         <small class="text-muted">
-                            La búsqueda incluye sinónimos automáticamente (ej: "niños" encuentra también "menores", "NNA")
+                            <i class="fas fa-lightbulb"></i> 
+                            Busca en título, contenido y fuente. Incluye sinónimos automáticamente (ej: "niños" también busca "menores", "NNA").
+                            Puedes buscar por nombres de víctimas, ubicaciones (CDMX, Oaxaca), fuentes (Infobae, SemMéxico), etc.
                         </small>
                     </div>
                 </div>
@@ -210,6 +285,24 @@
         let currentPage = 1;
         let onlyNNA = false;
 
+        // Mostrar/Ocultar detalles del análisis
+        function toggleAnalysisDetails() {
+            const details = document.getElementById('analysisDetails');
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+        }
+
+        // Limpiar búsqueda
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            loadNews(onlyNNA, 1);
+            document.getElementById('resultsTitle').textContent = 
+                onlyNNA ? 'Casos NNA' : 'Últimas Noticias';
+        }
+
         // Cargar estadísticas
         async function loadStats() {
             try {
@@ -261,18 +354,44 @@
 
             let html = '';
             noticias.forEach(noticia => {
+                // Badge de prioridad
+                const prioridad = noticia.prioridad || 'IRRELEVANTE';
+                const badgePrioridad = `<span class="badge badge-priority-${prioridad.toLowerCase()}">${prioridad}</span>`;
+                
                 const badgeNNA = noticia.menores_identificados === 'Si' ? 
-                    '<span class="badge badge-nna">NNA</span>' : '';
+                    '<span class="badge badge-nna ms-1">NNA</span>' : '';
+                
+                // Badge de duplicado
+                const badgeDuplicado = noticia.es_duplicado === true || noticia.es_duplicado === 'True' ?
+                    '<span class="badge bg-warning text-dark ms-1">DUPLICADO</span>' : '';
+                
+                // Información de duplicado
+                let duplicadoInfo = '';
+                if (noticia.es_duplicado === true || noticia.es_duplicado === 'True') {
+                    duplicadoInfo = `
+                        <div class="alert alert-warning alert-sm mt-2 mb-0">
+                            <small>
+                                <i class="fas fa-copy"></i> 
+                                <strong>Es duplicado de:</strong> [${noticia.fuente_original || 'N/A'}] ${(noticia.titulo_original || '').substring(0, 60)}...
+                            </small>
+                        </div>
+                    `;
+                }
                 
                 html += `
                     <div class="news-card card mb-3">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h6 class="card-title mb-0">${noticia.titulo}</h6>
-                                ${badgeNNA}
+                                <div>
+                                    ${badgePrioridad}
+                                    ${badgeNNA}
+                                    ${badgeDuplicado}
+                                </div>
                             </div>
                             <p class="card-text text-muted small">${noticia.contenido}</p>
-                            <div class="d-flex justify-content-between align-items-center">
+                            ${duplicadoInfo}
+                            <div class="d-flex justify-content-between align-items-center mt-2">
                                 <small class="text-muted">
                                     <i class="fas fa-calendar"></i> ${noticia.fecha} | 
                                     <i class="fas fa-link"></i> ${noticia.fuente}
@@ -354,25 +473,48 @@
 
         // Ejecutar análisis
         async function runAnalysis() {
+            // Mostrar indicador de progreso
+            document.getElementById('progressContainer').style.display = 'flex';
+            document.getElementById('progressTitle').textContent = 'Análisis en Progreso';
+            document.getElementById('progressMessage').textContent = 'Recolectando noticias de múltiples fuentes...';
+            
+            // Ocultar estadísticas mientras se ejecuta
             document.getElementById('loadingDiv').style.display = 'block';
             document.getElementById('statsRow').style.display = 'none';
             
             try {
-                const response = await fetch('/api/analyze');
+                // Cambiar a POST para ejecutar análisis completo
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const result = await response.json();
                 
                 if (response.ok) {
+                    // Actualizar mensaje de progreso
+                    document.getElementById('progressMessage').textContent = 'Recargando datos...';
+                    
                     // Recargar datos
                     await loadStats();
                     await loadNews();
-                    alert('Análisis completado exitosamente');
+                    
+                    // Mostrar resumen del análisis
+                    alert(`✅ Análisis completado exitosamente!\n\n` +
+                          `📰 Noticias recolectadas: ${result.noticias_recolectadas || 0}\n` +
+                          `👥 Casos NNA identificados: ${result.noticias_nna || 0}\n` +
+                          `📊 Clusters formados: ${result.clusters || 0}\n` +
+                          `🏷️ Tópicos encontrados: ${result.topics || 0}`);
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('❌ Error: ' + result.error);
                 }
             } catch (error) {
                 console.error('Error ejecutando análisis:', error);
-                alert('Error ejecutando análisis');
+                alert('❌ Error ejecutando análisis. Por favor revise la consola para más detalles.');
             } finally {
+                // Ocultar indicador de progreso
+                document.getElementById('progressContainer').style.display = 'none';
                 document.getElementById('loadingDiv').style.display = 'none';
                 document.getElementById('statsRow').style.display = 'flex';
             }

@@ -98,6 +98,9 @@ def _parse_rss_item(item: BeautifulSoup, source_url: str, detector: FeminicideDe
     full_text = f"{title.text.strip()} {desc_text}"
     detection = detector.detect(full_text)
     
+    # Verificar si es de México (para marcar origen)
+    is_mexico = detector.is_from_mexico(full_text)
+    
     return {
         'titulo': title.text.strip(),
         'contenido': desc_text,
@@ -105,6 +108,7 @@ def _parse_rss_item(item: BeautifulSoup, source_url: str, detector: FeminicideDe
         'fuente': source_url,
         'fecha': dt.isoformat(),
         'cluster': 0,
+        'pais_mexico': is_mexico,  # ← NUEVO: Marcar si es de México (no filtrar)
         
         # Campos de detección
         'es_feminicidio': detection['is_feminicide'],
@@ -228,13 +232,15 @@ def _parse_google_news_item(item: BeautifulSoup, detector: FeminicideDetector) -
         'menores_identificados': 'Si' if detection['has_children'] else 'No'
     }
 
-def collect_all_news(use_google_news: bool = True) -> pd.DataFrame:
+def collect_all_news(use_google_news: bool = True, use_historical: bool = False) -> pd.DataFrame:
     """
     Recolecta noticias de todas las fuentes configuradas.
     
     Args:
         use_google_news: Si es True, también busca en Google News (recomendado)
-        
+        use_historical: Si es True, recolecta noticias históricas (últimos 6 meses)
+                       RECOMENDADO para tener dataset grande (500-1000 noticias)
+                       
     Returns:
         DataFrame con todas las noticias recolectadas
     """
@@ -246,18 +252,36 @@ def collect_all_news(use_google_news: bool = True) -> pd.DataFrame:
     
     # 1. Recolectar de RSS feeds configurados
     rss_feeds = getattr(config, 'RSS_FEEDS', [])
+    logger.info(f"Fuentes RSS configuradas: {len(rss_feeds)}")
     for rss_feed in rss_feeds:
         logger.info(f"Recolectando de: {rss_feed}")
         articles = collect_news_from_rss(rss_feed)
         logger.info(f"  → {len(articles)} noticias recolectadas")
         all_articles.extend(articles)
     
-    # 2. Complementar con Google News
+    # 2. Complementar con Google News (noticias recientes)
     if use_google_news:
         logger.info("Complementando con Google News (búsqueda específica)...")
         google_articles = collect_from_google_news()
         logger.info(f"  → {len(google_articles)} noticias de feminicidios encontradas")
         all_articles.extend(google_articles)
+    
+    # 3. NUEVO: Recolección histórica (últimos 6 meses)
+    if use_historical:
+        logger.info("")
+        logger.info("="*80)
+        logger.info("INICIANDO RECOLECCIÓN HISTÓRICA (Últimos 6 meses)")
+        logger.info("="*80)
+        
+        try:
+            from .historical_scraper import collect_historical_news
+            historical_articles = collect_historical_news()
+            logger.info(f"  → {len(historical_articles)} noticias históricas recolectadas")
+            all_articles.extend(historical_articles)
+        except ImportError:
+            logger.warning("Módulo historical_scraper no disponible")
+        except Exception as e:
+            logger.error(f"Error en recolección histórica: {e}")
     
     # Convertir a DataFrame
     df = pd.DataFrame(all_articles)
