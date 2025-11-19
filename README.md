@@ -1,499 +1,427 @@
-﻿# Sistema Inteligente para Deteccion de Feminicidios con NNA# Sistema Inteligente para Identificacin y Seguimiento de NNA
+# Sistema Inteligente para la Identificación y Seguimiento de NNA
 
+**Trabajo Terminal 1**  
+**ESIME Zacatenco - Instituto Politécnico Nacional**
 
-
-**Universidad:** Instituto Politecnico Nacional - ESIME Zacatenco  ##  **Descripcin del Proyecto**
-
-**Programa:** Trabajo Terminal 1  
-
-**Autor:** Hector Morales  Sistema automatizado para detectar y analizar menciones de **Nios, Nias y Adolescentes (NNA)** en medios digitales mexicanos, utilizando tcnicas de Machine Learning y procesamiento de lenguaje natural.
-
-**Fecha:** Noviembre 2025
-
-##  **Inicio Rpido con Docker**
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Versión](https://img.shields.io/badge/version-2.0.0-green.svg)]()
+[![Estado](https://img.shields.io/badge/estado-producción-brightgreen.svg)]()
 
 ---
 
-### **Prerrequisitos**
+## 📋 Descripción
 
-## Descripcion del Proyecto- Docker Desktop instalado
+Sistema de análisis de noticias para identificar y monitorear casos de **feminicidios que dejan a niñas, niños y adolescentes (NNA) en situación de orfandad** en México. Utiliza técnicas de Machine Learning y NLP para:
 
-- Puerto 5000 disponible
+- ✅ Recolección automatizada de noticias desde medios especializados
+- ✅ Detección especializada de feminicidios con víctimas indirectas (NNA)
+- ✅ Análisis de texto con TF-IDF, LDA y DBSCAN
+- ✅ Clasificación por prioridad y confianza
+- ✅ Dashboard web para visualización de resultados
 
-Sistema de Machine Learning para la deteccion y analisis de noticias sobre feminicidios con victimas indirectas (NNA - Ninas, Ninos y Adolescentes huerfanos) en Mexico.
+---
 
-### **Ejecutar Sistema**
+## ✨ Novedades v2.0.0 (Noviembre 2025)
 
-El sistema recopila automaticamente noticias de fuentes especializadas en genero y seguridad, aplica algoritmos de deteccion de patrones especificos, y agrupa casos similares para facilitar el analisis y seguimiento de victimas indirectas.```bash
+### Mejoras de Calidad de Código
+- **Type hints** en ~60% del código (antes ~5%)
+- **Logging profesional** con módulo `logging` 
+- **Manejo robusto de errores** con retry logic (3 intentos)
+- **Imports opcionales** con graceful degradation
+- **Rutas multiplataforma** compatible Windows/Linux/Docker
+- **Configuración centralizada** en `config.py` (130+ líneas)
+- **Suite de tests** consolidada en `tests/`
+- **Documentación completa** con docstrings
 
-# Clonar e ingresar al directorio
+### Funcionalidades Core Preservadas
+- ✅ 8 RSS feeds especializados en género y feminicidios
+- ✅ Búsqueda complementaria en Google News
+- ✅ Detector con 40+ patrones regex
+- ✅ Análisis ML: TF-IDF → LDA → DBSCAN
+- ✅ Dashboard Flask con API REST
+- ✅ Exportación CSV
 
----cd /ruta/del/proyecto
+---
 
+## 🚀 Inicio Rápido
 
+### Opción 1: Docker (Recomendado)
 
-## Caracteristicas Principales# Iniciar sistema completo
+```bash
+# Clonar repositorio
+git clone https://github.com/hectormrales/TT-1-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s.git
+cd TT-1-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s
 
+# Iniciar con Docker
 docker-compose up -d
 
-### 1. Recoleccion Inteligente
-
-- Scraping automatico de RSS feeds especializados (CIMAC, SEM Mexico, etc.)# Verificar estado
-
-- Detector especializado con mas de 40 patrones de feminicidio, NNA y orfandaddocker-compose ps
-
-- Sistema de confianza y priorizacion (ALTA, MEDIA, BAJA, IRRELEVANTE)
+# Verificar estado
+docker-compose ps
 
 # Acceder al dashboard
-
-### 2. Analisis con Machine Learning# Abrir: http://localhost:5000
-
-- **TF-IDF** optimizado para preservar palabras clave unicas```
-
-- **LDA** para modelado de topicos (6 temas principales)
-
-- **DBSCAN** para clustering automatico de casos similares### **Comandos tiles**
-
-- Analisis de similitud coseno entre documentos```bash
-
-# Ver logs en vivo
-
-### 3. Busqueda Mejoradadocker-compose logs -f
-
-- Diccionario de sinonimos especializado (143+ terminos)
-
-- Expansion automatica de consultas# Detener sistema
-
-- Deteccion de terminos relacionados en textodocker-compose down
-
-
-
----# Reiniciar con reconstruccin
-
-docker-compose up --build -d
-
-## Estructura del Proyecto```
-
-
-
-```##  **Funcionalidades**
-
-TT-1-Sistema/
-
-├── config.py                      # Configuracion (RSS feeds)###  **Anlisis Automtico**
-
-├── requirements.txt               # Dependencias Python- **Recoleccin RSS** de 8 fuentes mexicanas cada 6 horas
-
-├── test_sistema_mejorado.py       # Script de pruebas completo- **Procesamiento NLP** completo con 7 etapas
-
-│- **Deteccin NNA** con diccionario de sinnimos especializado
-
-├── src/- **Clustering** automtico de noticias similares
-
-│   ├── collection/- **Anlisis de tpicos** con LDA
-
-│   │   ├── data_collector.py      # Recoleccion de noticias
-
-│   │   └── feminicide_detector.py # Detector especializado###  **Interfaz Web**
-
-│   │- **Dashboard interactivo** con Bootstrap
-
-│   └── analysis/- **Bsqueda inteligente** con expansin de sinnimos
-
-│       ├── simplified_analyzer.py # Pipeline ML completo- **Estadsticas en tiempo real**
-
-│       └── synonym_dictionary.py  # Diccionario de sinonimos- **Exportacin CSV** de resultados
-
-│- **Paginacin** automtica de noticias
-
-├── data/
-
-│   ├── noticias_raw.csv           # Datos originales###  **API REST**
-
-│   ├── noticias.csv               # Datos procesados```bash
-
-│   └── clusters_info.csv          # Informacion de clustersGET  /api/stats           # Estadsticas generales
-
-│GET  /api/noticias        # Lista paginada de noticias
-
-├── app/GET  /api/search?q=texto  # Bsqueda con sinnimos
-
-│   └── templates/POST /api/analyze         # Ejecutar anlisis completo
-
-│       └── dashboard_docker.html  # Dashboard webGET  /api/export/csv      # Descargar datos CSV
-
-│GET  /api/health          # Estado del sistema
-
-└── docs/```
-
-    ├── DEPURACION_COMPLETA.md     # Diagnostico del sistema
-
-    ├── IMPLEMENTACION_COMPLETA.md # Guia tecnica##  **Arquitectura del Sistema**
-
-    └── MEJORA_1_PROCESO.md        # Documentacion de mejoras
-
-```### **Componentes Docker**
-
+# http://localhost:5000
 ```
 
---- Sistema Multi-Container
+### Opción 2: Instalación Local
 
-  nna-analyzer    # Anlisis automtico en background
+```bash
+# Crear entorno virtual
+python -m venv venv
 
-## Instalacion  nna-webapp      # Interfaz web (puerto 5000)
+# Activar entorno (Windows)
+venv\Scripts\activate
 
-  nna-network     # Red interna Docker
+# Activar entorno (Linux/Mac)
+source venv/bin/activate
 
-### Requisitos```
-
-- Python 3.9+
-
-- pip### **Pipeline de Anlisis (7 Etapas)**
-
-```
-
-### Pasos1 Recoleccin RSS      Feeds de noticias mexicanas
-
-2 Almacenamiento CSV   Persistencia de datos
-
-1. Clonar el repositorio:3 Vectorizacin TF-IDF  Representacin numrica
-
-```bash4 Modelado LDA         Identificacin de tpicos
-
-git clone https://github.com/hectormrales/TT-1-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s.git5 Clustering DBSCAN    Agrupacin automtica + deteccin de outliers  NUEVO
-
-cd TT-1-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s6 Anlisis Similitud   Clculo de distancias
-
-```7 Deteccin NNA        Clasificacin especializada
-
-```
-
-2. Instalar dependencias:
-
-```bash### ** Mejora Reciente: Migracin a DBSCAN**
-
+# Instalar dependencias
 pip install -r requirements.txt
 
-```El sistema ahora utiliza **DBSCAN** (Density-Based Spatial Clustering) en lugar de K-Means:
+# Ejecutar dashboard
+python app_docker.py
 
-
-
----**Ventajas:**
-
--  **Deteccin automtica** del nmero de clusters (no ms k=4 arbitrario)
-
-## Uso-  **Identificacin de outliers** (casos atpicos nicos)
-
--  **Mejora +21%** en Silhouette Score
-
-### Ejecutar analisis completo-  **Robusto ante ruido** (duplicados, errores scraping)
-
-
-
-```bash**Uso:**
-
-python test_sistema_mejorado.py```python
-
-```# Mtodo recomendado (DBSCAN)
-
-analyzer.run_complete_analysis(clustering_method='dbscan')
-
-Este script:
-
-1. Recolecta noticias de fuentes RSS# Mtodo legacy (K-Means) para comparacin
-
-2. Aplica detector de feminicidiosanalyzer.run_complete_analysis(clustering_method='kmeans')
-
-3. Ejecuta pipeline de ML (TF-IDF, LDA, DBSCAN)```
-
-4. Genera estadisticas y reportes
-
-5. Guarda resultados en `data/`**Archivos generados:**
-
-- `data/clusters_info.csv` - Informacin detallada de cada cluster
-
-### Usar el analizador en codigo- Outliers marcados como cluster `-1` (casos nicos)
-
-
-
-```python##  **Estructura del Proyecto**
-
-from src.analysis.simplified_analyzer import SimplifiedNewsAnalyzer
-
+# Acceder a: http://localhost:5000
 ```
-
-# Inicializar sistema-nna/
-
-analyzer = SimplifiedNewsAnalyzer()  docker-compose.yml      # Orquestacin de contenedores
-
-  Dockerfile              # Configuracin de imagen
-
-# Ejecutar pipeline completo   app_docker.py           # Aplicacin web Flask
-
-df_result = analyzer.run_complete_analysis(  demo_docker.py           # Analizador automtico
-
-    num_topics=6,   config.py               # Configuracin del sistema
-
-    clustering_method='dbscan',  requirements.txt         # Dependencias Python
-
-    eps=0.6,  src/
-
-    min_samples=2,    analysis/
-
-    save_intermediate=True       simplified_analyzer.py    # Motor de anlisis principal
-
-)       synonym_dictionary.py     # Diccionario NNA especializado
-
-    collection/
-
-# Filtrar noticias objetivo        data_collector.py         # Recolector RSS
-
-objetivo = df_result[df_result['es_objetivo'] == True]  app/
-
-alta_prioridad = df_result[df_result['prioridad'] == 'ALTA']    __init__.py
-
-    templates/
-
-print(f"Noticias objetivo: {len(objetivo)}")        dashboard_docker.html     # Interfaz web moderna
-
-print(f"Alta prioridad: {len(alta_prioridad)}")  data/
-
-```     noticias.csv             # Datos procesados
-
-     synonym_dictionary.json  # Diccionario de sinnimos
-
-### Usar el detector de feminicidios```
-
-
-
-```python##  **Tecnologas Utilizadas**
-
-from src.collection.feminicide_detector import FeminicideDetector
-
-### **Core Analysis**
-
-detector = FeminicideDetector()- **pandas 2.2.2** - Manipulacin de datos
-
-- **scikit-learn 1.4.2** - Machine Learning (TF-IDF, LDA, K-Means)
-
-texto = "Feminicidio en Ecatepec deja dos ninos huerfanos"- **numpy** - Clculos numricos
-
-result = detector.detect(texto)
-
-### **Web Scraping**
-
-print(f"Es feminicidio: {result['is_feminicide']}")- **requests 2.31.0** - Peticiones HTTP
-
-print(f"Tiene NNA: {result['has_children']}")- **beautifulsoup4 4.12.2** - Parsing HTML/XML
-
-print(f"Es objetivo: {result['is_target_news']}")- **lxml 5.3.0** - Procesador XML rpido
-
-print(f"Confianza: {result['confidence']:.1%}")
-
-print(f"Prioridad: {result['priority']}")### **Web Application**
-
-```- **Flask 3.0.3** - Framework web
-
-- **Flask-CORS 4.0.1** - Cross-origin requests
 
 ---
 
-### **Automation**
+## 🧪 Ejecutar Tests
 
-## Campos en CSV de Salida- **schedule 1.2.2** - Tareas programadas
+```bash
+# Tests de recolección
+python tests/test_collector.py
 
-- **Docker** - Containerizacin
+# Tests de análisis ML
+python tests/test_analyzer.py
 
-### Campos de Identificacion
+# Ejecutar todos los tests
+python -m pytest tests/  # (requiere pytest instalado)
+```
 
-- `titulo`: Titulo de la noticia##  **Resultados del Anlisis**
+**Resultado esperado:**
+```
+✓ TEST: Detector de Feminicidios
+✓ TEST: Recolección desde RSS Feeds (10 noticias)
+✓ TEST: Recolección desde Google News (28 noticias)
+✓ TEST: Recolección Completa (95 noticias)
+  - 29.5% feminicidios
+  - 14.7% noticias objetivo
+  - 1 noticia ALTA prioridad
+```
 
-- `contenido`: Cuerpo completo
+---
 
-- `enlace`: URL original### **Mtricas Actuales**
+## 📁 Estructura del Proyecto
 
-- `fuente`: RSS feed de origen-  **146 noticias** recolectadas y procesadas
+```
+TT-1-Sistema-NNA/
+├── app/
+│   └── templates/
+│       └── dashboard_docker.html       # Template del dashboard
+├── src/
+│   ├── collection/
+│   │   ├── data_collector.py          # Recolección RSS + Google News
+│   │   ├── feminicide_detector.py     # Detector especializado (40+ patrones)
+│   │   └── historical_scraper.py      # Scraper histórico (opcional)
+│   └── analysis/
+│       ├── simplified_analyzer.py     # Pipeline ML completo
+│       └── synonym_dictionary.py      # Diccionario de sinónimos
+├── tests/
+│   ├── test_collector.py              # Tests de recolección
+│   └── test_analyzer.py               # Tests de análisis ML
+├── data/                               # Datos generados
+├── logs/                               # Logs del sistema
+├── config.py                           # ⭐ Configuración centralizada
+├── app_docker.py                       # Flask dashboard
+├── demo_docker.py                      # Demo containerizado
+├── requirements.txt                    # Dependencias Python
+├── docker-compose.yml                  # Configuración Docker
+├── Dockerfile                          # Imagen Docker
+└── README.md                           # Este archivo
+```
 
-- `fecha`: Fecha de publicacion (ISO 8601)-  **41 casos NNA** detectados (28.1% tasa de deteccin)
+---
 
--   **4 clusters** de noticias similares generados
+## ⚙️ Configuración
 
-### Campos de Deteccion (NUEVOS)-  **5 tpicos** principales identificados
+### Archivo `config.py`
 
-- `es_feminicidio` (bool): Es feminicidio?
-
-- `tiene_nna` (bool): Menciona NNA?### **Fuentes RSS Monitoreadas**
-
-- `tiene_huerfanos` (bool): Menciona huerfanos?- La Jornada (Poltica)
-
-- **`es_objetivo` (bool)**: Es noticia objetivo? (feminicidio + NNA)- Proceso
-
-- `confianza` (float): Nivel de confianza (0.0-1.0)- Aristegui Noticias
-
-- `prioridad` (str): ALTA | MEDIA | BAJA | IRRELEVANTE- Animal Poltico
-
-- Sin Embargo
-
-### Campos de Analisis ML- Forbes Mxico
-
-- `cluster`: ID del cluster DBSCAN (-1 = outlier)- El Sol de Mxico
-
-- `topic_id`: Topico LDA dominante- El Financiero
-
-- `topic_probability`: Probabilidad del topico
-
-- `most_similar_doc_idx`: Documento mas similar##  **Diccionario NNA Especializado**
-
-- `max_similarity`: Similitud maxima (0.0-1.0)
-
-Basado en vocabularios oficiales:
-
----- **UN Women** - Glosario de gnero
-
-- **CEPAL** - Terminologa especializada
-
-## Parametros Clave- **INMUJERES** - Vocabulario institucional
-
-- **143 trminos** relacionados con NNA y violencia de gnero
-
-### TF-IDF
-
-```python##  **Solucin de Problemas**
-
-TfidfVectorizer(
-
-    max_features=3000,### **Error: Puerto 5000 ocupado**
-
-    stop_words=spanish_stopwords,  # 80+ palabras```bash
-
-    min_df=1,           # Incluye palabras unicas# Encontrar proceso usando el puerto
-
-    max_df=0.8,netstat -ano | findstr :5000
-
-    strip_accents=None  # Preserva acentos
-
-)# Cambiar puerto en docker-compose.yml
-
-```ports:
-
-  - "5001:5000"  # Usar puerto 5001 en su lugar
-
-### DBSCAN```
+Configuración centralizada de todos los parámetros del sistema:
 
 ```python
+# RSS Feeds especializados
+RSS_FEEDS = [
+    'https://cimacnoticias.com.mx/feed/',      # CIMAC
+    'https://www.semmexico.mx/feed/',          # SEM México
+    'https://www.jornada.com.mx/rss/estados.xml',  # La Jornada
+    # ... 5 feeds más
+]
 
-DBSCAN(### **Error: Docker no responde**
+# Parámetros de Machine Learning
+TFIDF_CONFIG = {
+    'max_features': 3000,
+    'min_df': 1,
+    'max_df': 0.8,
+    'ngram_range': (1, 2)
+}
 
-    eps=0.6,        # Distancia maxima (similitud > 40%)```bash
+DBSCAN_CONFIG = {
+    'eps': 0.6,              # Similitud > 40%
+    'min_samples': 2,
+    'metric': 'cosine'
+}
 
-    min_samples=2,  # Minimo 2 noticias por cluster# Reiniciar Docker Desktop
-
-    metric='cosine'# Verificar que est ejecutndose
-
-)docker --version
-
+LDA_CONFIG = {
+    'n_components': 6,       # 6 tópicos
+    'random_state': 42
+}
 ```
 
-# Limpiar contenedores
+### Variables de Entorno (Opcional)
 
-### LDAdocker-compose down --volumes
-
-```pythondocker system prune -f
-
-LatentDirichletAllocation(```
-
-    n_components=6,      # 6 topicos
-
-    random_state=42,### **Ver logs detallados**
-
-    max_iter=20,```bash
-
-    learning_method='online'# Logs del analizador
-
-)docker-compose logs nna-analyzer
-
+```bash
+# Para deployment en producción
+export FLASK_PORT=5000
+export FLASK_HOST=0.0.0.0
+export FLASK_DEBUG=False
 ```
 
-# Logs de la webapp
+---
 
----docker-compose logs nna-webapp
+## 🔍 Detector de Feminicidios
 
+### Categorías de Patrones
 
+El detector (`FeminicideDetector`) utiliza **40+ patrones regex** en 3 categorías:
 
-## Mejoras Implementadas (v2.0)# Todos los logs
+#### 1. **Patrones de Feminicidio** (peso: 40%)
+```
+feminicidio, mujer asesinada, madre hallada muerta,
+violencia feminicida, crimen de género, etc.
+```
 
-docker-compose logs
+#### 2. **Patrones de NNA** (peso: 20%)
+```
+hijos, menores de edad, niños, adolescentes, bebés,
+infantes, recién nacidos, etc.
+```
 
-### Problema Original```
+#### 3. **Patrones de Orfandad** (peso: 30% + 10% bonus)
+```
+huérfanos, orfandad, hijos quedan, sin madre,
+víctimas indirectas, DIF se hace cargo, etc.
+```
 
-- 0.0% de noticias cumplian objetivo del proyecto
+### Sistema de Clasificación
 
-- Fuentes RSS genericas (politica, economia)---
+```python
+# Ejemplo de resultado
+{
+    'is_feminicide': True,
+    'has_children': True,
+    'has_orphans': True,
+    'is_target_news': True,      # ⭐ Noticia objetivo
+    'confidence': 0.80,          # 80% confianza
+    'priority': 'ALTA'           # ALTA/MEDIA/BAJA/IRRELEVANTE
+}
+```
 
-- Detector generico con 100% falsos positivos
-
-- Parametros ML inadecuados##  **Sistema completamente automatizado y listo para produccin**
-
-
-
-### SolucionesPara soporte tcnico, verificar logs del sistema y estado de contenedores Docker.
-
-1. **RSS Feeds Especializados**: CIMAC, SEM Mexico, secciones de seguridad
-2. **Detector Especifico**: 40+ patrones de feminicidio/NNA/orfandad
-3. **TF-IDF Optimizado**: min_df=1, stopwords espanol, preservar acentos
-4. **DBSCAN Recalibrado**: eps=0.6, min_samples=2 (mas permisivo)
-
-### Resultados Esperados
-- Noticias objetivo: 0% -> 50-60%
-- Noticias feminicidio: 1.4% -> 60-70%
-- Falsos positivos: 100% -> ~7%
-- Clusters DBSCAN: 0 -> 5-8
+**Prioridades:**
+- **ALTA** (≥70%): Feminicidio confirmado + NNA + orfandad explícita
+- **MEDIA** (≥40%): Feminicidio + NNA, sin orfandad explícita
+- **BAJA** (≥20%): Indicios de feminicidio o NNA
+- **IRRELEVANTE** (<20%): No relacionado
 
 ---
 
-## Documentacion Tecnica
+## 🧠 Pipeline de Análisis ML
 
-- **DEPURACION_COMPLETA.md**: Diagnostico detallado del sistema original
-- **IMPLEMENTACION_COMPLETA.md**: Guia tecnica de todas las correcciones
-- **MEJORA_1_PROCESO.md**: Documentacion visual con diagramas
-
----
-
-## Tecnologias Utilizadas
-
-- **Python 3.9+**
-- **scikit-learn 1.4.2**: TF-IDF, LDA, DBSCAN
-- **pandas 2.2.2**: Manipulacion de datos
-- **BeautifulSoup4**: Web scraping
-- **requests**: HTTP requests
-- **numpy**: Operaciones numericas
-
----
-
-## Licencia
-
-Proyecto academico - Instituto Politecnico Nacional
-
----
-
-## Contacto
-
-**Autor**: Hector Morales  
-**Institucion**: ESIME Zacatenco - IPN  
-**Ano**: 2025
+```
+1. Recolección
+   ├─ RSS Feeds (8 fuentes) → 60-70 noticias
+   └─ Google News          → 25-30 noticias
+          ↓
+2. Detección (FeminicideDetector)
+   └─ 40+ patrones regex → Filtrado
+          ↓
+3. Vectorización (TF-IDF)
+   └─ 3000 features → Matriz (N, 3000)
+          ↓
+4. Modelado de Tópicos (LDA)
+   └─ 6 tópicos → Clasificación temática
+          ↓
+5. Clustering (DBSCAN)
+   └─ eps=0.6, min_samples=2 → Grupos
+          ↓
+6. Similitud Coseno
+   └─ Matriz de similitud → Casos relacionados
+          ↓
+7. Exportación
+   └─ CSV + Dashboard Web
+```
 
 ---
 
-## Notas de Desarrollo
+## 📊 API REST
 
-### Proximos Pasos
-- Validacion manual de 20 noticias de ALTA prioridad
-- Ajuste fino de umbrales de confianza
-- Dashboard interactivo con graficas
-- API REST para consultas
-- Alertas automaticas para prioridad ALTA
+### Endpoints Disponibles
 
-### Problemas Conocidos
-- Algunas fuentes RSS pueden devolver 0 noticias (problemas de conexion)
-- Se requieren fuentes especializadas adicionales para mejor cobertura
-- Sistema depende de calidad y disponibilidad de feeds RSS
+```bash
+# Estadísticas generales
+GET /api/stats
+Response: {
+  "total_noticias": 95,
+  "noticias_nna": 14,
+  "clusters": 1,
+  "topics": 6,
+  "similitud_promedio": 0.154
+}
+
+# Listado de noticias (con paginación)
+GET /api/noticias?page=1&per_page=10&only_nna=true
+
+# Búsqueda con sinónimos
+GET /api/search?q=feminicidio
+
+# Exportar CSV
+GET /api/export/csv
+```
+
+---
+
+## 🐳 Docker
+
+### Servicios
+
+```yaml
+services:
+  nna-analyzer:    # Procesador de análisis
+    build: .
+    command: python demo_docker.py full
+    
+  nna-webapp:      # Dashboard web
+    build: .
+    command: python app_docker.py
+    ports:
+      - "5000:5000"
+```
+
+### Comandos Útiles
+
+```bash
+# Ver logs
+docker-compose logs -f nna-webapp
+
+# Reiniciar servicios
+docker-compose restart
+
+# Detener sistema
+docker-compose down
+
+# Reconstruir contenedores
+docker-compose up -d --build
+```
+
+---
+
+## 📈 Resultados Esperados
+
+### Métricas de Prueba (Test Real)
+
+```
+Total noticias: 95
+├─ Feminicidios: 28 (29.5%)
+├─ Noticias objetivo: 14 (14.7%)
+└─ Prioridad ALTA: 1
+
+Clustering:
+├─ Método: DBSCAN
+├─ Clusters: 1
+├─ Outliers: 92
+└─ Silhouette: 0.15
+
+Topics LDA: 6 tópicos descubiertos
+Similitud promedio: 0.154
+```
+
+### Ejemplo de Noticia ALTA Prioridad
+
+```
+Título: "Edomex otorga apoyo económico a niños y adolescentes 
+         en orfandad por feminicidio"
+         
+Fuente: Google News
+Confianza: 80%
+Prioridad: ALTA
+Motivo: ✅ Feminicidio + ✅ NNA + ✅ Orfandad explícita
+```
+
+---
+
+## ⚠️ Limitaciones Conocidas
+
+### Feeds RSS con Problemas
+- ❌ `animalpolitico.com/category/seguridad/feed/` - Error 404
+- ❌ `proceso.com.mx/seccion/nacional/feed` - Error 404
+
+**Solución implementada:** Retry logic (3 intentos) + logging de errores
+
+### Imports Opcionales
+- `schedule` - Requerido solo para modo planificador
+- `flask_cors` - Opcional, CORS se habilita si está disponible
+
+**No afectan funcionalidad principal.**
+
+---
+
+## 🤝 Contribuir
+
+```bash
+# Fork del repositorio
+git clone https://github.com/TU_USUARIO/TT-1-Sistema-NNA.git
+
+# Crear rama de feature
+git checkout -b feature/nueva-funcionalidad
+
+# Hacer commits
+git commit -am "Descripción del cambio"
+
+# Push y Pull Request
+git push origin feature/nueva-funcionalidad
+```
+
+---
+
+## 📚 Documentación Adicional
+
+- **[DEPURACION_OPTIMIZACION.md](./DEPURACION_OPTIMIZACION.md)** - Análisis detallado de mejoras v2.0
+- **[RESUMEN_DEPURACION.md](./RESUMEN_DEPURACION.md)** - Resumen ejecutivo de cambios
+- **[EXPLICACION_TECNICA_SISTEMA.md](./EXPLICACION_TECNICA_SISTEMA.md)** - Explicación técnica completa (150+ páginas)
+
+---
+
+## 📄 Licencia
+
+Este proyecto es parte de un Trabajo Terminal académico del IPN.
+
+---
+
+## 👥 Autores
+
+**Héctor Morales**  
+Trabajo Terminal 1  
+ESIME Zacatenco - Instituto Politécnico Nacional
+
+---
+
+## 📞 Contacto
+
+Para dudas o sugerencias sobre este Trabajo Terminal:
+- Email: [Contacto IPN]
+- GitHub: [@hectormrales](https://github.com/hectormrales)
+
+---
+
+**Versión**: 2.0.0  
+**Última actualización**: Noviembre 2025  
+**Estado**: ✅ Producción

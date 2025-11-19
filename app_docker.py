@@ -1,4 +1,5 @@
 # app_docker.py - Aplicación Flask optimizada para Docker
+# -*- coding: utf-8 -*-
 """
 Aplicación web Flask containerizada para el Sistema NNA.
 Interfaz web para visualizar resultados del análisis.
@@ -7,20 +8,37 @@ Interfaz web para visualizar resultados del análisis.
 import os
 import json
 import pandas as pd
+from pathlib import Path
 from flask import Flask, render_template, jsonify, request, send_file
-from flask_cors import CORS
 from datetime import datetime
 import sys
+import logging
+
+# Determinar el directorio base (Docker vs Local)
+IS_DOCKER = os.path.exists('/app')
+BASE_DIR = Path('/app') if IS_DOCKER else Path(__file__).resolve().parent
 
 # Agregar el directorio actual al path
-sys.path.append('/app')
+sys.path.insert(0, str(BASE_DIR))
+
+# Intentar importar CORS, continuar si no está disponible
+try:
+    from flask_cors import CORS
+    CORS_AVAILABLE = True
+except ImportError:
+    CORS_AVAILABLE = False
+    print("⚠️  flask-cors no instalado. CORS no habilitado.")
 
 from src.analysis.simplified_analyzer import SimplifiedNewsAnalyzer
 from src.analysis.synonym_dictionary import SynonymDictionary
 
 # Crear aplicación Flask
-app = Flask(__name__, template_folder='/app/app/templates')
-CORS(app)
+template_folder = str(BASE_DIR / 'app' / 'templates')
+app = Flask(__name__, template_folder=template_folder)
+
+# Habilitar CORS si está disponible
+if CORS_AVAILABLE:
+    CORS(app)
 
 # Configuración
 app.config['SECRET_KEY'] = 'nna-sistema-seguro-2024'
@@ -29,15 +47,22 @@ app.config['JSON_AS_ASCII'] = False
 # Variables globales
 analyzer = None
 current_data = None
+DATA_DIR = BASE_DIR / 'data'
+LOGS_DIR = BASE_DIR / 'logs'
+
+# Crear directorios si no existen
+DATA_DIR.mkdir(exist_ok=True)
+LOGS_DIR.mkdir(exist_ok=True)
 
 def load_data():
     """Cargar datos si existen."""
     global current_data
     
-    data_file = '/app/data/noticias_analyzed_simplified.csv'
-    if os.path.exists(data_file):
+    data_file = DATA_DIR / 'noticias_analyzed_simplified.csv'
+    if data_file.exists():
         try:
-            current_data = pd.read_csv(data_file)
+            current_data = pd.read_csv(str(data_file))
+            app.logger.info(f"Datos cargados: {len(current_data)} noticias")
             return True
         except Exception as e:
             app.logger.error(f"Error cargando datos: {e}")
@@ -213,9 +238,9 @@ def api_export_csv():
         return jsonify({'error': 'No hay datos disponibles'}), 404
     
     try:
-        output_path = '/app/data/export_noticias.csv'
-        current_data.to_csv(output_path, index=False, encoding='utf-8')
-        return send_file(output_path, as_attachment=True, download_name='noticias_nna.csv')
+        output_path = DATA_DIR / 'export_noticias.csv'
+        current_data.to_csv(str(output_path), index=False, encoding='utf-8')
+        return send_file(str(output_path), as_attachment=True, download_name='noticias_nna.csv')
     except Exception as e:
         return jsonify({'error': f'Error exportando: {str(e)}'}), 500
 
@@ -243,17 +268,19 @@ if __name__ == '__main__':
     load_data()
     
     # Configurar logging
-    import logging
+    log_file = LOGS_DIR / 'webapp.log'
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler('/app/logs/webapp.log'),
+            logging.FileHandler(str(log_file)),
             logging.StreamHandler()
         ]
     )
     
     app.logger.info("Iniciando aplicación web NNA Sistema")
+    app.logger.info(f"Modo: {'Docker' if IS_DOCKER else 'Local'}")
+    app.logger.info(f"BASE_DIR: {BASE_DIR}")
     
     # Ejecutar aplicación
     app.run(

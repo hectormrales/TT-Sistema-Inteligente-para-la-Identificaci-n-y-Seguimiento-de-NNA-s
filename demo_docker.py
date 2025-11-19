@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Demo simplificado para contenedor Docker
 Sistema Inteligente para Identificación y Seguimiento de NNA
@@ -7,11 +8,16 @@ Sistema Inteligente para Identificación y Seguimiento de NNA
 import os
 import sys
 import time
-import schedule
 from datetime import datetime
+from pathlib import Path
+
+# Determinar si estamos en Docker o en entorno local
+BASE_DIR = Path(__file__).resolve().parent
+IS_DOCKER = os.path.exists('/app')
+APP_DIR = Path('/app') if IS_DOCKER else BASE_DIR
 
 # Agregar el directorio src al path
-sys.path.append('/app/src')
+sys.path.insert(0, str(APP_DIR / 'src') if IS_DOCKER else str(BASE_DIR / 'src'))
 
 from analysis.simplified_analyzer import SimplifiedNewsAnalyzer
 from collection.data_collector import collect_all_news
@@ -20,7 +26,10 @@ import pandas as pd
 class DockerDemo:
     def __init__(self):
         self.analyzer = SimplifiedNewsAnalyzer()
-        self.data_file = "/app/data/noticias.csv"
+        # Ruta compatible con Docker y entorno local
+        self.data_dir = APP_DIR / 'data'
+        self.data_dir.mkdir(exist_ok=True)
+        self.data_file = str(self.data_dir / 'noticias.csv')
         
     def log(self, message):
         """Log con timestamp"""
@@ -95,7 +104,17 @@ class DockerDemo:
         self.log("✅ Ciclo completo terminado")
     
     def start_scheduler(self):
-        """Inicia el planificador automático"""
+        """
+        Inicia el planificador automático.
+        NOTA: Requiere 'schedule' instalado (pip install schedule)
+        """
+        try:
+            import schedule
+        except ImportError:
+            self.log("⚠️  Módulo 'schedule' no encontrado. Ejecutando ciclo único...")
+            self.run_full_cycle()
+            return
+        
         self.log("⏰ Iniciando planificador automático")
         
         # Programar tareas
