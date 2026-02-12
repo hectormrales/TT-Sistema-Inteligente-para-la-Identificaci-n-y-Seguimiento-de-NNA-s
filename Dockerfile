@@ -16,10 +16,11 @@ ENV PYTHONUNBUFFERED=1 \
 # Crear usuario no-root para seguridad
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Instalar dependencias del sistema
+# Instalar dependencias del sistema (incluye libpq para psycopg2)
 RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     curl \
+    libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -43,7 +44,7 @@ RUN mkdir -p data logs && \
 USER appuser
 
 # Verificar que las dependencias están instaladas correctamente
-RUN python -c "import pandas, sklearn, requests, bs4; print('✅ Todas las dependencias importadas correctamente')"
+RUN python -c "import pandas, sklearn, requests, bs4, flask_login, flask_sqlalchemy, argon2; print('✅ Todas las dependencias importadas correctamente')"
 
 # Puerto por defecto
 EXPOSE 5000
