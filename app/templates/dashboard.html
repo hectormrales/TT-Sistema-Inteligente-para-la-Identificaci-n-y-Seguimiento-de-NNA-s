@@ -112,31 +112,42 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h3 class="mb-0" id="noticiasNNA">-</h3>
-                            <p class="mb-0">Casos NNA</p>
+                            <p class="mb-0">Mencionan NNA</p>
                         </div>
                         <i class="fas fa-child fa-2x opacity-75"></i>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+                <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0" id="altaRelevancia">-</h3>
+                            <p class="mb-0">Alta Rel.</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
                 <div class="stat-card clusters">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0" id="mediaRelevancia">-</h3>
+                            <p class="mb-0">Media Rel.</p>
+                        </div>
+                        <i class="fas fa-info-circle fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stat-card topics">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h3 class="mb-0" id="clusters">-</h3>
                             <p class="mb-0">Clusters</p>
                         </div>
                         <i class="fas fa-project-diagram fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card topics">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="topics">-</h3>
-                            <p class="mb-0">Tópicos</p>
-                        </div>
-                        <i class="fas fa-tags fa-2x opacity-75"></i>
                     </div>
                 </div>
             </div>
@@ -176,6 +187,12 @@
                             <span id="resultsTitle">Últimas Noticias</span>
                         </h5>
                         <div>
+                            <button class="btn btn-sm btn-danger" onclick="loadNews(false, 1, 'Alta')" title="Solo alta relevancia">
+                                Alta Rel.
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="loadNews(false, 1, 'Media')" title="Solo media relevancia">
+                                Media Rel.
+                            </button>
                             <button class="btn btn-sm btn-outline-primary" onclick="loadNews(true)">
                                 Solo NNA
                             </button>
@@ -215,6 +232,7 @@
     <script>
         let currentPage = 1;
         let onlyNNA = false;
+        let currentClasificacion = '';
 
         // Cargar estadísticas
         async function loadStats() {
@@ -224,8 +242,9 @@
                     const stats = await response.json();
                     document.getElementById('totalNoticias').textContent = stats.total_noticias;
                     document.getElementById('noticiasNNA').textContent = stats.noticias_nna;
+                    document.getElementById('altaRelevancia').textContent = stats.alta_relevancia || 0;
+                    document.getElementById('mediaRelevancia').textContent = stats.media_relevancia || 0;
                     document.getElementById('clusters').textContent = stats.clusters;
-                    document.getElementById('topics').textContent = stats.topics;
                     document.getElementById('lastUpdate').textContent = stats.ultima_actualizacion;
                 }
             } catch (error) {
@@ -234,25 +253,48 @@
         }
 
         // Cargar noticias
-        async function loadNews(nnaOnly = false, page = 1) {
+        async function loadNews(nnaOnly = false, page = 1, clasificacion = '') {
             onlyNNA = nnaOnly;
             currentPage = page;
+            currentClasificacion = clasificacion;
             
             try {
-                const url = `/api/noticias?page=${page}&per_page=10&only_nna=${nnaOnly}`;
+                let url = `/api/noticias?page=${page}&per_page=10&only_nna=${nnaOnly}`;
+                if (clasificacion) {
+                    url += `&clasificacion=${encodeURIComponent(clasificacion)}`;
+                }
                 const response = await fetch(url);
                 
                 if (response.ok) {
                     const data = await response.json();
                     displayNews(data.noticias);
                     displayPagination(data);
+
+                    let title = 'Todas las Noticias';
+                    if (clasificacion) title = `Relevancia ${clasificacion}`;
+                    else if (nnaOnly) title = 'Casos con NNA';
                     document.getElementById('resultsTitle').textContent = 
-                        nnaOnly ? `Casos NNA (${data.total})` : `Todas las Noticias (${data.total})`;
+                        `${title} (${data.total})`;
                 }
             } catch (error) {
                 console.error('Error cargando noticias:', error);
                 document.getElementById('newsContainer').innerHTML = 
                     '<p class="text-danger">Error cargando noticias</p>';
+            }
+        }
+
+        // Color de badge según clasificación
+        function getRelevanceBadge(clasificacion, score) {
+            const pct = (score * 100).toFixed(0);
+            switch(clasificacion) {
+                case 'Alta':
+                    return `<span class="badge bg-danger">Alta ${pct}%</span>`;
+                case 'Media':
+                    return `<span class="badge bg-warning text-dark">Media ${pct}%</span>`;
+                case 'Baja':
+                    return `<span class="badge bg-secondary">Baja ${pct}%</span>`;
+                default:
+                    return `<span class="badge bg-light text-dark">${pct}%</span>`;
             }
         }
 
@@ -268,26 +310,39 @@
             let html = '';
             noticias.forEach(noticia => {
                 const badgeNNA = noticia.menores_identificados === 'Si' ? 
-                    '<span class="badge badge-nna">NNA</span>' : '';
+                    '<span class="badge badge-nna ms-1">NNA</span>' : '';
+                const relevanceBadge = getRelevanceBadge(
+                    noticia.clasificacion, 
+                    noticia.relevancia_final || noticia.score_compuesto || 0
+                );
+
+                // Color del borde según relevancia
+                let borderColor = '#667eea';
+                if (noticia.clasificacion === 'Alta') borderColor = '#e74c3c';
+                else if (noticia.clasificacion === 'Media') borderColor = '#f39c12';
                 
                 html += `
-                    <div class="news-card card mb-3">
+                    <div class="news-card card mb-3" style="border-left-color: ${borderColor};">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h6 class="card-title mb-0">${noticia.titulo}</h6>
-                                ${badgeNNA}
+                                <div class="text-nowrap ms-2">
+                                    ${relevanceBadge}${badgeNNA}
+                                </div>
                             </div>
                             <p class="card-text text-muted small">${noticia.contenido}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
                                     <i class="fas fa-calendar"></i> ${noticia.fecha} | 
-                                    <i class="fas fa-link"></i> ${noticia.fuente}
+                                    ${noticia.enlace ? 
+                                        `<a href="${noticia.enlace}" target="_blank"><i class="fas fa-link"></i> Ver fuente</a>` : 
+                                        `<i class="fas fa-link"></i> ${noticia.fuente}`}
                                 </small>
                                 <div class="text-end">
                                     <small class="text-muted">
-                                        Cluster: ${noticia.cluster} | 
-                                        Tópico: ${noticia.topic_id} | 
-                                        Similitud: ${(noticia.similitud * 100).toFixed(1)}%
+                                        Fem: ${(noticia.score_feminicidio * 100).toFixed(0)}% | 
+                                        NNA: ${(noticia.score_nna * 100).toFixed(0)}% | 
+                                        Cluster: ${noticia.cluster}
                                     </small>
                                 </div>
                             </div>
@@ -313,19 +368,19 @@
             
             // Previous button
             html += `<li class="page-item ${data.page <= 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page - 1})">Anterior</a>
+                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page - 1}, '${currentClasificacion}')">Anterior</a>
             </li>`;
             
             // Page numbers
             for (let i = 1; i <= Math.min(data.total_pages, 5); i++) {
                 html += `<li class="page-item ${i === data.page ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${i})">${i}</a>
+                    <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${i}, '${currentClasificacion}')">${i}</a>
                 </li>`;
             }
             
             // Next button
             html += `<li class="page-item ${data.page >= data.total_pages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page + 1})">Siguiente</a>
+                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page + 1}, '${currentClasificacion}')">Siguiente</a>
             </li>`;
             
             ul.innerHTML = html;

@@ -1,12 +1,7 @@
 # config.py — Configuración centralizada del Sistema NNA
 """
 Toda la configuración sensible se lee de variables de entorno.
-En Docker, estas se inyectan desde el archivo .env vía docker-compose.
-
-IMPORTANTE: La clase Config se define DESPUÉS de las variables de nivel
-de módulo (RSS_FEEDS, HTTP_HEADERS, etc.) para que los servicios que solo
-necesitan esas constantes (ej. nna-analyzer) puedan hacer `import config`
-sin requerir SECRET_KEY ni PostgreSQL.
+En Docker se inyectan desde .env vía docker-compose.
 """
 
 import os
@@ -15,52 +10,77 @@ from urllib.parse import quote_plus
 
 
 # ============================================================
-# Configuración de Recolección de Noticias (nivel de módulo)
+# Recolección de noticias (usado por src/collection)
 # ============================================================
 
-# Fuentes de noticias para la recolección
+# ── Feeds RSS: secciones de seguridad/justicia/sociedad
+#    + Google News queries para feminicidios con NNA ──────────
 RSS_FEEDS = [
+    # ── Medios mexicanos (generales y de seguridad) ─────────
     'https://www.jornada.com.mx/rss/politica.xml',
+    'https://www.jornada.com.mx/rss/estados.xml',
     'https://www.proceso.com.mx/feed',
     'https://aristeguinoticias.com/feed/',
     'https://www.animalpolitico.com/feed/',
     'https://www.sinembargo.mx/feed/',
-    'https://www.forbes.com.mx/feed/',
     'https://www.elsoldemexico.com.mx/rss.xml',
     'https://www.elfinanciero.com.mx/rss/',
+    'https://www.eluniversal.com.mx/rss.xml',
+    'https://www.milenio.com/rss',
+    'https://www.excelsior.com.mx/rss.xml',
+    'https://www.reporteindigo.com/feed/',
+    'https://piedepagina.mx/feed/',
+    'https://www.contralinea.com.mx/feed/',
+    # ── Medios especializados en género ─────────────────────
+    'https://cimacnoticias.com.mx/feed/',
+    'https://luchadoras.mx/feed/',
+    # ── Google News queries (feminicidio + NNA) ─────────────
+    'https://news.google.com/rss/search?q=feminicidio+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+ni%C3%B1os+ni%C3%B1as&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=orfandad+feminicidio+menores&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+feminicidio&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+menores+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
 ]
 
-# Rutas de archivos
-DATA_PATH = 'data/noticias.csv'
-
-# Headers para evitar bloqueos por User-Agent
 HTTP_HEADERS = {
     'User-Agent': (
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
         'AppleWebKit/537.36 (KHTML, like Gecko) '
         'Chrome/124.0.0.0 Safari/537.36'
-    )
+    ),
 }
 
-# Parámetros para los modelos de ML
+# ============================================================
+# Scoring de relevancia (dual-axis)
+# ============================================================
+
+# Pesos para la puntuación compuesta
+RELEVANCE_WEIGHT_FEMINICIDIO = 0.55   # eje feminicidio
+RELEVANCE_WEIGHT_NNA = 0.45           # eje NNA / víctimas indirectas
+
+# Umbral mínimo para considerar una noticia "relevante"
+RELEVANCE_THRESHOLD = 0.25
+
+# Multiplicador cuando el keyword match está en el título
+TITLE_BOOST = 3.0
+
+# Parámetros de ML
 KMEANS_CLUSTERS = 5
 LDA_TOPICS = 6
 TFIDF_MAX_FEATURES = 5000
 
 
 # ============================================================
-# Configuración Flask y Seguridad (clase Config)
+# Configuración Flask + Seguridad
 # ============================================================
-# Se define al final para que `import config` no falle en servicios
-# que no necesitan autenticación (ej. nna-analyzer).
 
 class Config:
-    """Configuración base — se usa en producción (Docker)."""
+    """Configuración base para la aplicación Flask."""
 
-    # --- Clave secreta (se valida en create_app(), no aquí) ---
     SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
-    # --- Base de datos PostgreSQL ---
+    # --- PostgreSQL ---
     _PG_USER = os.environ.get('POSTGRES_USER', 'nna_admin')
     _PG_PASS = quote_plus(os.environ.get('POSTGRES_PASSWORD', ''))
     _PG_HOST = os.environ.get('POSTGRES_HOST', 'nna-postgres')
@@ -72,15 +92,15 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,       # Verifica conexión antes de usarla
-        'pool_recycle': 300,         # Recicla conexiones cada 5 min
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
         'pool_size': 5,
         'max_overflow': 10,
     }
 
-    # --- Sesiones seguras ---
-    SESSION_COOKIE_HTTPONLY = True    # JS no puede leer la cookie
-    SESSION_COOKIE_SAMESITE = 'Lax'  # Protección CSRF implícita
+    # --- Sesiones ---
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
     SESSION_COOKIE_SECURE = os.environ.get('FLASK_ENV') == 'production'
     PERMANENT_SESSION_LIFETIME = timedelta(
         minutes=int(os.environ.get('SESSION_LIFETIME_MINUTES', 60))
@@ -89,7 +109,7 @@ class Config:
 
     # --- CSRF ---
     WTF_CSRF_ENABLED = True
-    WTF_CSRF_TIME_LIMIT = 3600      # Token válido por 1 hora
+    WTF_CSRF_TIME_LIMIT = 3600
 
     # --- Otras ---
     JSON_AS_ASCII = False

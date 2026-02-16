@@ -7,45 +7,22 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
 
 # Virtual environments
 venv/
-ENV/
-env/
 .venv/
 
-# PyCharm
+# IDEs
 .idea/
-
-# VS Code
 .vscode/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
 
 # Environment variables
 .env
 .env.local
-.env.production
 
 # OS
 .DS_Store
@@ -55,20 +32,13 @@ Thumbs.db
 .git/
 .gitignore
 
-# Documentation
+# Documentation (no se necesita en la imagen)
+docs/
 README.md
-*.md
-!docker-compose.yml
 
-# Scripts de setup local
-setup.ps1
-start.ps1
-run.py
-
-# Archivos temporales
-*.tmp
-*.log
+# Logs
 logs/
+*.log
 
-# Node modules (si hubiera)
+# Node
 node_modules/

@@ -1,7 +1,5 @@
 services:
-  # ──────────────────────────────────────────────
-  # Base de datos PostgreSQL (solo autenticación)
-  # ──────────────────────────────────────────────
+  # ── Base de datos PostgreSQL ──────────────────────────────
   nna-postgres:
     image: postgres:16-alpine
     container_name: nna-postgres
@@ -22,9 +20,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # ──────────────────────────────────────────────
-  # Servicio de Análisis de datos
-  # ──────────────────────────────────────────────
+  # ── Servicio de análisis programado ───────────────────────
   nna-analyzer:
     build: .
     container_name: nna-analyzer
@@ -34,14 +30,14 @@ services:
       - ./logs:/app/logs
     environment:
       - PYTHONPATH=/app
+      - DATA_DIR=/app/data
+      - LOGS_DIR=/app/logs
       - TZ=America/Mexico_City
     networks:
       - nna-network
-    command: ["python", "demo_docker.py", "schedule"]
+    command: ["python", "scheduler.py", "schedule"]
 
-  # ──────────────────────────────────────────────
-  # Servicio Web — Interfaz Flask + Auth
-  # ──────────────────────────────────────────────
+  # ── Aplicación web Flask ──────────────────────────────────
   nna-webapp:
     build: .
     container_name: nna-webapp
@@ -54,9 +50,11 @@ services:
     env_file:
       - .env
     environment:
-      - FLASK_APP=app_docker.py
+      - FLASK_APP=wsgi.py
       - FLASK_ENV=production
       - PYTHONPATH=/app
+      - DATA_DIR=/app/data
+      - LOGS_DIR=/app/logs
       - TZ=America/Mexico_City
       - POSTGRES_HOST=nna-postgres
     networks:
@@ -66,7 +64,7 @@ services:
         condition: service_healthy
       nna-analyzer:
         condition: service_started
-    command: ["python", "app_docker.py"]
+    command: ["python", "wsgi.py"]
 
 networks:
   nna-network:
@@ -75,5 +73,3 @@ networks:
 volumes:
   pgdata:
     driver: local
-  nna-data:
-  nna-logs:

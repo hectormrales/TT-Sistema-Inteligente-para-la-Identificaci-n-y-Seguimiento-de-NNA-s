@@ -64,3 +64,69 @@
 2026-02-12 17:09:35,897 - app_docker - INFO - Logout: hectormorales
 2026-02-12 17:09:35,900 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:09:35] "[32mGET /logout HTTP/1.1[0m" 302 -
 2026-02-12 17:09:35,911 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:09:35] "GET /login HTTP/1.1" 200 -
+2026-02-12 17:46:40,698 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-02-12 17:46:40,701 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.4:5000
+2026-02-12 17:46:40,701 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-12 17:46:49,601 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:46:49] "[32mGET / HTTP/1.1[0m" 302 -
+2026-02-12 17:46:49,646 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:46:49] "GET /login?next=/ HTTP/1.1" 200 -
+2026-02-12 17:46:53,903 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-02-12 17:46:53,906 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:46:53] "[32mPOST /login?next=/ HTTP/1.1[0m" 302 -
+2026-02-12 17:46:53,933 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:46:53] "GET / HTTP/1.1" 200 -
+2026-02-12 17:46:54,022 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:46:54] "GET /api/stats HTTP/1.1" 200 -
+2026-02-12 17:46:54,037 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:46:54] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:47:03,297 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:03] "GET /api/analyze HTTP/1.1" 200 -
+2026-02-12 17:47:03,313 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:03] "GET /api/stats HTTP/1.1" 200 -
+2026-02-12 17:47:03,335 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:03] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:47:07,010 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:07] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-12 17:47:07,882 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:07] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:47:08,396 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:08] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-12 17:47:15,465 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:15] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:47:16,156 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:16] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-12 17:47:17,037 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:17] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:47:20,661 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:20] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-12 17:47:27,173 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:27] "GET /api/analyze HTTP/1.1" 200 -
+2026-02-12 17:47:27,186 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:27] "GET /api/stats HTTP/1.1" 200 -
+2026-02-12 17:47:27,204 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:27] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:47:30,511 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:30] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-12 17:47:31,062 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:47:31] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-12 17:49:06,141 - app - INFO - Logout: hectormorales
+2026-02-12 17:49:06,147 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:49:06] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-02-12 17:49:06,165 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:49:06] "GET /login HTTP/1.1" 200 -
+2026-02-12 17:49:09,591 - app - WARNING - Login fallido para 'hectormorales' desde 172.19.0.1
+2026-02-12 17:49:09,594 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:49:09] "POST /login HTTP/1.1" 200 -
+2026-02-12 17:49:17,050 - app - WARNING - Login fallido para 'hectormorale' desde 172.19.0.1
+2026-02-12 17:49:17,053 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:49:17] "POST /login HTTP/1.1" 200 -
+2026-02-12 17:49:18,652 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:49:18] "POST /login HTTP/1.1" 200 -
+2026-02-12 17:49:20,753 - werkzeug - INFO - 172.19.0.1 - - [12/Feb/2026 17:49:20] "GET /register HTTP/1.1" 200 -
+2026-02-16 14:27:20,044 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-02-16 14:27:20,047 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.4:5000
+2026-02-16 14:27:20,047 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-16 14:28:25,666 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:25] "[32mGET / HTTP/1.1[0m" 302 -
+2026-02-16 14:28:25,696 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:25] "GET /login?next=/ HTTP/1.1" 200 -
+2026-02-16 14:28:25,976 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:25] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-16 14:28:29,137 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-02-16 14:28:29,139 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:29] "[32mPOST /login?next=/ HTTP/1.1[0m" 302 -
+2026-02-16 14:28:29,156 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:29] "GET / HTTP/1.1" 200 -
+2026-02-16 14:28:29,199 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:29] "GET /api/stats HTTP/1.1" 200 -
+2026-02-16 14:28:29,208 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:29] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 14:28:44,467 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:44] "GET /api/analyze HTTP/1.1" 200 -
+2026-02-16 14:28:44,699 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:44] "GET /api/stats HTTP/1.1" 200 -
+2026-02-16 14:28:44,712 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:44] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 14:28:52,629 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:52] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-16 14:28:54,023 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:28:54] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-16 14:29:07,841 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:07] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-16 14:29:08,676 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:08] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 14:29:09,246 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:09] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-16 14:29:09,896 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:09] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-16 14:29:11,256 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:11] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-16 14:29:44,975 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:44] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-16 14:29:45,765 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:45] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 14:29:49,072 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:49] "GET /api/noticias?page=5&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 14:29:51,729 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:29:51] "GET /api/noticias?page=3&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 14:49:57,353 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 14:49:57] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
