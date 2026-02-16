@@ -66,3 +66,61 @@ class User(UserMixin, db.Model):
 
     def __repr__(self) -> str:
         return f'<User {self.username}>'
+
+
+class NewsSource(db.Model):
+    """Modelo para fuentes de noticias gestionadas por el usuario."""
+
+    __tablename__ = 'news_sources'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(200), nullable=False)
+    url = db.Column(db.String(500), unique=True, nullable=False)
+    source_type = db.Column(
+        db.String(20), nullable=False, default='auto',
+        comment='auto | rss | sitemap | html',
+    )
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_predefined = db.Column(db.Boolean, default=False, nullable=False)
+    added_by = db.Column(
+        db.Integer, db.ForeignKey('users.id'), nullable=True,
+    )
+    created_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    last_scraped = db.Column(db.DateTime, nullable=True)
+    last_status = db.Column(
+        db.String(30), default='pending',
+        comment='pending | ok | error | blocked',
+    )
+    last_error = db.Column(db.Text, nullable=True)
+    articles_found = db.Column(db.Integer, default=0)
+    crawl_delay = db.Column(db.Float, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+
+    # Relación con usuario
+    owner = db.relationship('User', backref=db.backref('sources', lazy='dynamic'))
+
+    def to_dict(self) -> dict:
+        """Serializa la fuente a diccionario."""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'url': self.url,
+            'source_type': self.source_type,
+            'is_active': self.is_active,
+            'is_predefined': self.is_predefined,
+            'added_by': self.added_by,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'last_scraped': self.last_scraped.isoformat() if self.last_scraped else None,
+            'last_status': self.last_status,
+            'last_error': self.last_error,
+            'articles_found': self.articles_found,
+            'crawl_delay': self.crawl_delay,
+            'notes': self.notes,
+        }
+
+    def __repr__(self) -> str:
+        return f'<NewsSource {self.name} ({self.source_type})>'

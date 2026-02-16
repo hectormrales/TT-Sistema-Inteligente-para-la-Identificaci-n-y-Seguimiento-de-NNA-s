@@ -4,188 +4,285 @@
 
 Sistema automatizado para detectar y analizar noticias sobre **feminicidios** que mencionen **víctimas indirectas (Niños, Niñas y Adolescentes — NNA)** en medios digitales mexicanos, utilizando Machine Learning y procesamiento de lenguaje natural.
 
-El sistema recopila noticias de múltiples fuentes, aplica un **scoring de relevancia dual** (eje feminicidio + eje NNA), filtra automáticamente las noticias no relevantes, y presenta los resultados en un dashboard interactivo.
+El sistema recopila noticias de múltiples fuentes (RSS + web scraping dinámico), aplica un **scoring de relevancia dual** (eje feminicidio + eje NNA), **deduplica** automáticamente noticias de diferentes sitios, filtra las noticias no relevantes, y presenta los resultados en un dashboard interactivo con gestión de fuentes.
 
 ---
 
-## Cambios Realizados (v3.0 — Reestructurado)
+## Cambios v4.0 — Web Scraping Dinámico + Deduplicación + Gestión de Fuentes
 
-### Problema detectado en la versión anterior
+### Nuevas funcionalidades
 
-La versión anterior del sistema **no filtraba por tema**: recolectaba TODAS las noticias de feeds RSS generales (política, economía, deportes, etc.) y solo post-hoc buscaba menciones de NNA. Esto causaba que la gran mayoría de noticias recolectadas fueran irrelevantes — no hablaban de feminicidios ni de víctimas indirectas.
+| Funcionalidad | Descripción |
+|---------------|-------------|
+| **Web Scraping Dinámico** | El sistema detecta automáticamente el tipo de cada fuente (RSS, HTML, Sitemap) leyendo `robots.txt` y adaptando la técnica de extracción. Respeta `Crawl-delay` y aplica rate limiting por dominio. |
+| **Deduplicación Cross-Site** | Pipeline de 4 fases: hash exacto de título → Jaccard de títulos (≥0.70) → SimHash de contenido (Hamming ≤8) → TF-IDF cosine similarity (≥0.80). Elimina noticias repetidas entre diferentes medios. |
+| **Gestión de Fuentes (UI)** | Nueva página `/fuentes` donde se pueden agregar, editar, probar, activar/desactivar y eliminar fuentes de noticias. Cada fuente se guarda en PostgreSQL. |
+| **Sondeo de URL** | Botón "Sondear" que analiza una URL antes de agregarla: verifica robots.txt, detecta feeds RSS automáticamente, muestra crawl delay y tipo recomendado. |
+| **Prueba de Fuente** | Botón "Probar" que ejecuta el scraping real de una fuente y muestra artículos de muestra para verificar que funciona correctamente. |
+| **Mayor volumen** | ~45 feeds RSS (31 medios + 14 queries Google News) + fuentes dinámicas ilimitadas desde la UI. |
 
-**Problemas específicos:**
-1. Los feeds RSS eran 100% generales (La Jornada política, Forbes, etc.) — ninguno especializado en género o seguridad.
-2. No existía filtrado por feminicidio — se guardaba todo sin importar el tema.
-3. La detección de NNA era unidimensional — solo buscaba si había menores, sin validar la condición dual (feminicidio + NNA).
-4. TF-IDF, LDA y K-Means se aplicaban pero **no influían en la clasificación de relevancia**.
-5. No había scoring numérico — solo un "Sí/No" binario para NNA.
+### Archivos nuevos
 
-### Qué se cambió y por qué
+| Archivo | Propósito |
+|---------|-----------|
+| `src/collection/scraper.py` | Scraper dinámico: `RobotsChecker` + `DynamicScraper` — sondeo, rate limiting, extracción HTML/RSS/Sitemap |
+| `src/analysis/dedup.py` | `NewsDeduplicator` — deduplicación en cascada (hash, Jaccard, SimHash, TF-IDF cosine) |
+| `app/sources/__init__.py` | Blueprint de gestión de fuentes |
+| `app/sources/routes.py` | API REST completa (CRUD + probe + test) para fuentes |
+| `app/templates/sources.html` | Interfaz de gestión de fuentes con Bootstrap 5 |
 
-| Archivo | Cambio | Por qué mejora |
-|---------|--------|----------------|
-| **config.py** | +16 feeds RSS (medios de género + 6 queries Google News de "feminicidio + NNA"). Parámetros de scoring configurables. | Google News busca directamente "feminicidio niños huérfanos", trayendo noticias objetivo desde la fuente. Se eliminó Forbes (no publica notas de violencia de género) y se agregaron CIMAC Noticias y Luchadoras (especializados en género). |
-| **collector.py** | Sistema de **scoring heurístico dual** con ~35 patrones regex ponderados. Cada noticia recibe `score_feminicidio` (0-1) y `score_nna` (0-1). Se filtran automáticamente noticias con score < 0.25. | Antes se guardaba TODO sin filtrar. Ahora se aplican patrones con pesos diferenciados (ej: "feminicidio" pesa 1.0, "violencia doméstica" pesa 0.5). Bonus multiplicativo ×1.35 cuando AMBOS ejes tienen señal, priorizando noticias que hablan de feminicidio Y mencionan NNA. |
-| **analyzer.py** | Nuevo paso 7: **reclasificación TF-IDF**. Construye un "documento ideal" con vocabulario de dominio y calcula similitud coseno contra cada noticia. Score final = 60% heurístico + 40% TF-IDF. TF-IDF mejorado con n-gramas 1-3, `sublinear_tf`, stop words en español, vocabulario domain-boosted. | Antes el TF-IDF no influía en la clasificación. Ahora el score estadístico refuerza o corrige al heurístico. Los trigramas capturan frases como "violencia de género" o "menores de edad" que los unigramas pierden. `sublinear_tf` evita que palabras muy frecuentes dominen el vector. |
-| **synonyms.py** | Diccionario expandido a 200+ términos en 8 categorías (orfandad, alertas de género, actores judiciales). Búsqueda con ranking por coincidencias ponderadas (título ×3). | La búsqueda ahora ordena por relevancia real en vez de devolver resultados desordenados. Nuevos términos capturan más variantes del lenguaje periodístico mexicano. |
-| **routes.py** | API expone `score_feminicidio`, `score_nna`, `relevancia_final`, `clasificacion`. Nuevo filtro `/api/noticias?clasificacion=Alta`. | El dashboard puede filtrar por nivel de relevancia, mostrando primero las noticias más importantes. |
-| **dashboard.html** | Tarjetas de Alta/Media relevancia, badges con color por nivel, desglose de scores (Fem%/NNA%), botones de filtro por clasificación, enlaces a fuente original. | El usuario ve de un vistazo qué tan relevante es cada noticia y puede filtrar por nivel. Las noticias de alta relevancia tienen borde rojo. |
+### Archivos modificados
 
-### Algoritmos utilizados
+| Archivo | Cambio |
+|---------|--------|
+| `config.py` | ~45 RSS feeds (de 22 a ~45). 13 medios nuevos + 8 queries Google News adicionales. Medios regionales y especializados en DDHH. |
+| `collector.py` | Integración con `DynamicScraper` y `NewsDeduplicator`. `collect_all_news()` scrapea fuentes de la DB además de las estáticas. Actualiza estado de fuentes en DB tras cada scraping. |
+| `analyzer.py` | Paso 6 incluye deduplicación semántica post-clustering. Versión actualizada a v4.0. |
+| `scheduler.py` | `collect_news()` usa `NewsDeduplicator` en vez de `drop_duplicates()` simple. |
+| `app/models.py` | Nuevo modelo `NewsSource` (id, name, url, source_type, is_active, last_scraped, last_status, crawl_delay, etc.). |
+| `app/__init__.py` | Registra `sources_bp` blueprint. |
+| `app/templates/dashboard.html` | Botón "Fuentes" en el header que lleva a `/fuentes`. |
 
-| Algoritmo | Uso en el sistema |
-|-----------|-------------------|
-| **Scoring heurístico dual ponderado** | ~35 patrones regex con pesos [0-1] por eje (feminicidio/NNA). Función sigmoide `1 - 1/(1+w)` para normalizar acumulaciones. Bonus ×1.35 cuando ambos ejes tienen señal. Score compuesto: 55% feminicidio + 45% NNA. |
-| **TF-IDF (sublinear, n-grams 1-3, domain-boosted)** | Vectorización con `sublinear_tf=True` para atenuar frecuencias extremas. N-gramas hasta trigramas capturan frases compuestas. Vocabulario inyectado con términos de dominio como documentos ficticios. Stop words en español personalizadas. |
-| **Reclasificación TF-IDF (documento ideal)** | Se construye un documento artificial con los términos de dominio y se calcula similitud coseno contra cada noticia. Score final = 60% heurístico + 40% TF-IDF. Esto usa la estadística del corpus para refinar la clasificación heurística. |
-| **LDA (Latent Dirichlet Allocation)** | Modelado de tópicos latentes para descubrir temas en el corpus filtrado. |
-| **K-Means** | Clustering para agrupar noticias similares. Auto-ajuste del número de clusters según tamaño del corpus. |
-| **Similitud coseno** | Detección de noticias duplicadas o relacionadas entre sí. |
-| **Expansión de sinónimos** | Búsqueda con 200+ sinónimos en 8 categorías, con ranking por coincidencias ponderadas. |
+---
 
-### Pipeline de análisis (8 pasos)
+## Cambios v3.0 — Scoring de Relevancia Dual
+
+### Problema resuelto
+
+La versión anterior no filtraba por tema; recolectaba TODAS las noticias sin importar si hablaban de feminicidios o NNA.
+
+### Resumen de cambios v3.0
+
+- **Scoring dual heurístico** con ~35 patrones regex ponderados (eje feminicidio + eje NNA).
+- **Reclasificación TF-IDF** con documento ideal (60% heurístico + 40% TF-IDF).
+- **Diccionario ampliado** a 200+ sinónimos en 8 categorías.
+- **Dashboard mejorado** con badges de relevancia y filtros por clasificación.
+
+---
+
+## Arquitectura del Sistema
 
 ```
-1. Recolección RSS (22 fuentes + Google News)
-       ↓
-2. Scoring dual por noticia (Feminicidio × NNA)
-       ↓
-3. Filtrado (descarta score < 0.25)
-       ↓
-4. Almacenamiento CSV intermedio
-       ↓
-5. TF-IDF (domain-boosted, n-grams 1-3, sublinear)
-       ↓
-6. LDA (modelado de tópicos)
-       ↓
-7. K-Means (clustering)
-       ↓
-8. Similitud coseno (duplicados)
-       ↓
-9. Reclasificación TF-IDF (doc ideal) → relevancia_final
-       ↓
-10. Resultados ordenados por relevancia final
+┌──────────────────────────────────────────────────────────────┐
+│                    FUENTES DE DATOS                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐   │
+│  │ RSS (31) │  │ Google   │  │ HTML     │  │ Fuentes    │   │
+│  │ Feeds    │  │ News (14)│  │ Scraping │  │ DB (usr)   │   │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └─────┬──────┘   │
+│       └──────────────┴──────────────┴───────────────┘         │
+│                           │                                  │
+│                    robots.txt check                          │
+│                    rate limiting                             │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │    SCORING DUAL         │
+              │  Feminicidio (0.55)     │
+              │  NNA (0.45)             │
+              │  Bonus dual ×1.35       │
+              └────────────┬────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │   DEDUPLICACIÓN (4fx)   │
+              │  1. Hash exacto título  │
+              │  2. Jaccard ≥ 0.70      │
+              │  3. SimHash (H ≤ 8)     │
+              │  4. TF-IDF cosine ≥0.80 │
+              └────────────┬────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │    PIPELINE NLP         │
+              │  TF-IDF (domain-boost)  │
+              │  LDA (6 tópicos)        │
+              │  K-Means (clusters)     │
+              │  Cosine Similarity      │
+              │  Rescore TF-IDF (ideal) │
+              └────────────┬────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │     DASHBOARD           │
+              │  Stats · Filtros        │
+              │  Búsqueda + sinónimos   │
+              │  Gestión de fuentes     │
+              └─────────────────────────┘
 ```
 
 ---
 
-## Inicio Rápido (Docker)
+## Tecnologías
 
-### Prerrequisitos
-- Docker Desktop
-- Puerto 5000 disponible
+| Categoría | Tecnología |
+|-----------|------------|
+| Backend | Python 3.12, Flask 3.0.3 |
+| Base de Datos | PostgreSQL 16 (Docker) |
+| ML/NLP | scikit-learn 1.4.2 (TF-IDF, LDA, K-Means, cosine similarity) |
+| Scraping | BeautifulSoup4, lxml, requests, urllib.robotparser |
+| Deduplicación | SimHash, Jaccard, TF-IDF coseno |
+| Auth | Argon2id (OWASP), Flask-Login |
+| Frontend | Bootstrap 5, Font Awesome 6 |
+| Deploy | Docker Compose (3 servicios) |
 
-### Ejecutar
+---
 
+## Instalación
+
+### Pre-requisitos
+- Docker + Docker Compose
+- Python 3.11+ (para desarrollo local)
+
+### Con Docker (producción)
 ```bash
-# 1. Copiar y configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus valores (SECRET_KEY, POSTGRES_PASSWORD)
-
-# 2. Iniciar todo el sistema
-docker-compose up -d --build
-
-# 3. Acceder al dashboard
-# http://localhost:5000
-# Usuario: admin / Admin_NNA_2026!
+docker-compose up --build
 ```
+Acceder a `http://localhost:5000` — usuario: `admin` / contraseña: `Admin_NNA_2026!`
 
-### Comandos útiles
-
+### Desarrollo local
 ```bash
-docker-compose logs -f           # Logs en vivo
-docker-compose ps                # Estado de servicios
-docker-compose down              # Detener
-docker-compose up --build -d     # Reconstruir e iniciar
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Variables de entorno
+export SECRET_KEY='tu-clave-secreta-aqui'
+export POSTGRES_HOST='localhost'
+export POSTGRES_PASSWORD='tu-password'
+
+# Ejecutar
+python wsgi.py             # App web
+python scheduler.py full   # Recolección + análisis
 ```
 
-## API REST
-
-| Método | Endpoint                           | Descripción                            |
-|--------|------------------------------------|----------------------------------------|
-| GET    | `/api/stats`                       | Estadísticas generales + relevancia    |
-| GET    | `/api/noticias`                    | Listado paginado (ordenado por score)  |
-| GET    | `/api/noticias?clasificacion=Alta` | Filtrar por relevancia Alta/Media/Baja |
-| GET    | `/api/noticias?only_nna=true`      | Solo noticias que mencionan NNA        |
-| GET    | `/api/search?q=…`                  | Búsqueda con sinónimos                 |
-| GET    | `/api/analyze`                     | Ejecutar análisis completo             |
-| GET    | `/api/export/csv`                  | Descargar datos                        |
-| GET    | `/health`                          | Estado del sistema                     |
-
-## Arquitectura
-
-```
-docker-compose
-├── nna-postgres   → PostgreSQL 16 (autenticación)
-├── nna-analyzer   → Recolección y análisis programado
-└── nna-webapp     → Interfaz web Flask (puerto 5000)
-```
+---
 
 ## Estructura del Proyecto
 
 ```
-├── app/                        # Aplicación web Flask
-│   ├── __init__.py             # Factory create_app()
-│   ├── models.py               # Modelo User (Argon2id)
-│   ├── auth/                   # Blueprint de autenticación
-│   │   ├── forms.py            # Formularios WTForms
-│   │   └── routes.py           # Login / registro / logout
-│   ├── main/                   # Blueprint principal
-│   │   └── routes.py           # Dashboard + API REST
+├── app/
+│   ├── __init__.py              # Factory: crea Flask app
+│   ├── models.py                # User + NewsSource (SQLAlchemy)
+│   ├── auth/                    # Blueprint autenticación
+│   │   ├── forms.py
+│   │   └── routes.py
+│   ├── main/                    # Blueprint dashboard + API
+│   │   └── routes.py
+│   ├── sources/                 # Blueprint gestión de fuentes (v4.0)
+│   │   └── routes.py
 │   └── templates/
-│       ├── dashboard.html      # Dashboard interactivo
+│       ├── dashboard.html       # Dashboard principal
+│       ├── sources.html         # Gestión de fuentes (v4.0)
 │       └── auth/
 │           ├── login.html
 │           └── register.html
-├── src/                        # Lógica de análisis
-│   ├── analysis/
-│   │   ├── analyzer.py         # Pipeline NLP (8 pasos + scoring dual)
-│   │   └── synonyms.py         # Diccionario sinónimos (200+ términos)
-│   └── collection/
-│       └── collector.py        # Recolector RSS + scoring dual
-├── config.py                   # Configuración + parámetros de scoring
-├── wsgi.py                     # Punto de entrada Flask
-├── scheduler.py                # Servicio de recolección programada
-├── data/                       # Datos CSV y metadatos
-├── logs/                       # Logs de aplicación
-├── docs/                       # Documentación del desarrollo
+├── src/
+│   ├── collection/
+│   │   ├── collector.py         # Recolección RSS + scoring dual
+│   │   └── scraper.py           # Web scraping dinámico (v4.0)
+│   └── analysis/
+│       ├── analyzer.py          # Pipeline NLP (8 pasos)
+│       ├── synonyms.py          # Diccionario 200+ sinónimos
+│       └── dedup.py             # Deduplicación avanzada (v4.0)
+├── data/                        # CSV, JSON (generados)
+├── config.py                    # Configuración centralizada
+├── scheduler.py                 # Servicio programado
+├── wsgi.py                      # Punto de entrada web
 ├── docker-compose.yml
 ├── Dockerfile
-├── requirements.txt
-├── .env.example
-└── README.md
+└── requirements.txt
 ```
 
-## Tecnologías
+---
 
-| Categoría        | Tecnologías                                        |
-|------------------|----------------------------------------------------|
-| Análisis / ML    | pandas, scikit-learn, numpy                        |
-| Web Scraping     | requests, beautifulsoup4, lxml                     |
-| Web App          | Flask, Flask-Login, Flask-WTF, Flask-SQLAlchemy    |
-| Seguridad        | Argon2-cffi, CSRF, sesiones seguras                |
-| Base de datos    | PostgreSQL 16, SQLAlchemy                          |
-| Infraestructura  | Docker, docker-compose                             |
-| Automatización   | schedule                                           |
+## API Endpoints
 
-## Fuentes RSS Monitoreadas (22 fuentes)
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/` | Dashboard principal |
+| GET | `/fuentes/` | Gestión de fuentes |
+| GET | `/api/stats` | Estadísticas resumidas |
+| GET | `/api/noticias` | Listado paginado (filtros: `only_nna`, `clasificacion`) |
+| GET | `/api/search?q=` | Búsqueda con sinónimos |
+| GET | `/api/analyze` | Ejecuta pipeline completo |
+| GET | `/api/export/csv` | Exporta datos |
+| GET | `/health` | Health check |
+| GET | `/fuentes/api/sources` | Lista fuentes |
+| POST | `/fuentes/api/sources` | Agregar fuente |
+| PUT | `/fuentes/api/sources/<id>` | Editar fuente |
+| DELETE | `/fuentes/api/sources/<id>` | Eliminar fuente |
+| POST | `/fuentes/api/sources/<id>/toggle` | Activar/desactivar |
+| POST | `/fuentes/api/sources/<id>/test` | Probar fuente |
+| POST | `/fuentes/api/sources/probe` | Sondear URL |
 
-**Medios generales (14):**
-La Jornada (Política + Estados), Proceso, Aristegui Noticias, Animal Político,
-Sin Embargo, El Sol de México, El Financiero, El Universal, Milenio,
-Excélsior, Reporte Índigo, Pie de Página, Contralínea
+---
 
-**Medios especializados en género (2):**
-CIMAC Noticias, Luchadoras
+## Web Scraping Dinámico (v4.0)
 
-**Google News — queries específicas (6):**
-- feminicidio México
-- feminicidio hijos huérfanos
-- feminicidio niños niñas
-- orfandad feminicidio menores
-- "víctimas indirectas" feminicidio
-- feminicidio menores huérfanos
+El módulo `src/collection/scraper.py` implementa un scraping inteligente que se adapta a cada sitio:
+
+1. **Lectura de robots.txt** — Verifica si el scraping está permitido usando `urllib.robotparser`. Si el sitio lo bloquea, la fuente se marca como "bloqueada".
+
+2. **Detección automática del tipo de fuente:**
+   - Si la URL contiene `/rss`, `/feed`, `.xml` → **RSS**
+   - Si la página HTML tiene `<link rel="alternate" type="application/rss+xml">` → **RSS** (se extrae automáticamente el feed)
+   - Si robots.txt declara sitemaps → **Sitemap**
+   - Si no hay feed disponible → **HTML scraping** directo
+
+3. **Extracción de contenido HTML:**
+   - Prueba 16+ selectores CSS comunes (`article`, `.entry-content`, `.nota-body`, etc.)
+   - Fallback a `meta[property="og:description"]`
+   - Elimina scripts, ads, navigation antes de extraer texto
+
+4. **Rate limiting:**
+   - Respeta `Crawl-delay` de robots.txt
+   - Default 1.5s entre requests al mismo dominio
+   - Caché de robots.txt por dominio
+
+---
+
+## Deduplicación Cross-Site (v4.0)
+
+El módulo `src/analysis/dedup.py` detecta noticias duplicadas o cuasi-duplicadas en cascada:
+
+| Fase | Técnica | Complejidad | Descripción |
+|------|---------|-------------|-------------|
+| 1 | Hash MD5 de título | O(n) | Detecta títulos idénticos |
+| 2 | Jaccard ≥ 0.70 | O(n²) | Detecta títulos similares |
+| 3 | SimHash (Hamming ≤ 8) | O(n²) | Detecta contenido cuasi-idéntico |
+| 4 | TF-IDF cosine ≥ 0.80 | O(n² × v) | Detecta parafraseo semántico |
+
+Se conserva la noticia con mayor `score_compuesto` de cada grupo de duplicados.
+
+---
+
+## Algoritmos utilizados
+
+| Algoritmo | Uso en el sistema |
+|-----------|-------------------|
+| **Scoring heurístico dual** | ~35 patrones regex ponderados. Sigmoide `1 - 1/(1+w)`. Bonus ×1.35 dual. 55%/45%. |
+| **TF-IDF (domain-boosted)** | `sublinear_tf=True`, n-gramas 1-3, stop words español, vocabulario inyectado. |
+| **Reclasificación TF-IDF** | Documento ideal + cosine similarity. Score final = 60% heurístico + 40% TF-IDF. |
+| **LDA** | Modelado de tópicos latentes. |
+| **K-Means** | Clustering temático con auto-ajuste. |
+| **SimHash + Jaccard** | Deduplicación eficiente cross-site. |
+| **Cosine Similarity** | Detección de duplicados semánticos. |
+| **Expansión de sinónimos** | 200+ sinónimos en 8 categorías con ranking ponderado. |
+
+---
+
+## Fuentes RSS Monitoreadas (~45 fuentes)
+
+**Medios generales (27):**
+La Jornada (Política + Estados + Sociedad), Proceso, Aristegui Noticias, Animal Político, Sin Embargo, El Sol de México, El Financiero, El Universal, Milenio, Excélsior, Reporte Índigo, Pie de Página, Contralínea, SDP Noticias, El Debate, La Razón, El Heraldo, Informador, Zócalo, La Jornada de Oriente
+
+**Medios especializados en género/DDHH (5):**
+CIMAC Noticias, Luchadoras, El Economista, El País México, BBC Mundo México
+
+**Medios regionales (4):**
+El Sol de Toluca, El Sol de Puebla, Diario de Xalapa, Noroeste
+
+**Google News queries específicas (14):**
+feminicidio México, feminicidio hijos huérfanos, feminicidio niños niñas, orfandad feminicidio menores, víctimas indirectas feminicidio, feminicidio menores huérfanos, feminicidio hijos menores México, violencia feminicida niños, asesinato mujer hijos quedaron, alerta de género menores, orfandad violencia genero, DIF custodia feminicidio, violencia contra mujer menores huérfanos, feminicidio NNA víctimas indirectas
+
+---
 
 ## Solución de Problemas
 
@@ -201,4 +298,10 @@ docker-compose logs nna-analyzer
 # Reset completo
 docker-compose down --volumes
 docker-compose up --build -d
+
+# Solo recolección manual
+python scheduler.py collect
+
+# Solo análisis manual
+python scheduler.py analyze
 ```

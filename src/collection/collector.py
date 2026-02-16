@@ -1,13 +1,15 @@
 # src/collection/collector.py — Recolector de noticias con scoring de relevancia
 """
-Recolecta noticias desde feeds RSS y aplica un scoring dual:
+Recolecta noticias desde feeds RSS, fuentes dinámicas (DB) y web scraping:
   • Eje 1 – Feminicidio: ¿la noticia habla de feminicidio / violencia feminicida?
   • Eje 2 – NNA: ¿menciona víctimas indirectas (niños, niñas, adolescentes)?
 
+Incluye deduplicación avanzada cross-site (v4.0).
 Solo se conservan noticias que superan el umbral de relevancia compuesto.
 """
 
 import re
+import logging
 from datetime import datetime, timezone
 from unicodedata import normalize
 from typing import Tuple
@@ -18,6 +20,10 @@ from bs4 import BeautifulSoup
 from email.utils import parsedate_to_datetime
 
 import config
+from src.collection.scraper import DynamicScraper
+from src.analysis.dedup import NewsDeduplicator
+
+logger = logging.getLogger(__name__)
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Diccionarios de keywords ponderados por importancia
@@ -230,21 +236,74 @@ def collect_news_from_rss(rss_url: str) -> list[dict]:
 
 def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
     """
-    Recolecta noticias de todas las fuentes configuradas.
+    Recolecta noticias de todas las fuentes activas.
+
+    Prioridad:
+      1. Si hay contexto Flask → lee fuentes desde la DB (incluye predeterminadas).
+      2. Si no hay contexto   → fallback a config.RSS_FEEDS.
 
     Args:
         keep_all: Si True, conserva TODOS los artículos (para depuración).
                   Si False (default), descarta los "No relevante".
     Returns:
-        DataFrame con noticias filtradas y scored.
+        DataFrame con noticias filtradas, scored y deduplicadas.
     """
     threshold = getattr(config, 'RELEVANCE_THRESHOLD', 0.25)
     all_articles = []
 
-    for feed in config.RSS_FEEDS:
-        feed_label = feed[:70] + '…' if len(feed) > 70 else feed
-        print(f"  RSS: {feed_label}")
-        all_articles.extend(collect_news_from_rss(feed))
+    # ── Intentar obtener fuentes desde la DB ────────────────
+    db_sources = _get_db_sources()
+
+    if db_sources:
+        print(f"  ── {len(db_sources)} fuentes activas desde DB ──")
+        scraper = DynamicScraper(respect_robots=True, default_delay=2.0)
+
+        for source in db_sources:
+            src_label = f"{source['name']} ({source['source_type']})"
+            print(f"  [{source['source_type'].upper()}] {src_label}")
+
+            try:
+                if source['source_type'] == 'rss':
+                    # Usar el recolector RSS nativo (más rápido)
+                    articles = collect_news_from_rss(source['url'])
+                    # Sobreescribir fuente con nombre legible
+                    for art in articles:
+                        art['fuente'] = source['name']
+                    all_articles.extend(articles)
+                    _update_db_source_status(
+                        source['id'], 'ok', len(articles)
+                    )
+                    print(f"    → {len(articles)} artículos")
+                else:
+                    # Usar scraper dinámico para HTML/sitemap/auto
+                    raw_articles = scraper.scrape_source(
+                        source['url'],
+                        method=source['source_type'],
+                        max_articles=30,
+                    )
+                    for art in raw_articles:
+                        rel = score_relevance(art['titulo'], art['contenido'])
+                        art.update(rel)
+                        art['fuente'] = source['name']
+                        art.setdefault('cluster', 0)
+                    all_articles.extend(raw_articles)
+                    _update_db_source_status(
+                        source['id'], 'ok', len(raw_articles)
+                    )
+                    print(f"    → {len(raw_articles)} artículos")
+
+            except Exception as e:
+                logger.warning(f"Error scraping {source['name']}: {e}")
+                _update_db_source_status(
+                    source['id'], 'error', 0, str(e)[:200]
+                )
+    else:
+        # ── Fallback: sin DB, usar config.RSS_FEEDS ─────────
+        print("  ── Fuentes RSS desde config (sin contexto DB) ──")
+        for feed in config.RSS_FEEDS:
+            feed_label = feed[:70] + '…' if len(feed) > 70 else feed
+            print(f"  RSS: {feed_label}")
+            all_articles.extend(collect_news_from_rss(feed))
 
     if not all_articles:
         print("  [!] No se recolectaron artículos de ninguna fuente.")
@@ -252,8 +311,20 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
 
     df = pd.DataFrame(all_articles)
 
-    # Deduplicar por título similar
-    df = df.drop_duplicates(subset=['titulo'], keep='first')
+    # ── 3. Deduplicación avanzada (cross-site) ──────────────
+    print("  ── Deduplicación avanzada ──")
+    pre_dedup = len(df)
+
+    deduplicator = NewsDeduplicator(
+        title_threshold=0.70,
+        content_threshold=0.80,
+        simhash_max_distance=8,
+    )
+    df = deduplicator.deduplicate(df, keep='best')
+
+    post_dedup = len(df)
+    removed = pre_dedup - post_dedup
+    print(f"  Duplicados eliminados: {removed} ({pre_dedup} → {post_dedup})")
 
     total = len(df)
     if not keep_all:
@@ -271,6 +342,52 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
         df = df.sort_values('score_compuesto', ascending=False).reset_index(drop=True)
 
     return df
+
+
+def _get_db_sources() -> list[dict]:
+    """
+    Obtiene fuentes activas de la base de datos.
+    Retorna lista vacía si la DB no está disponible.
+    """
+    try:
+        from app.models import NewsSource
+        from flask import current_app
+        # Solo funciona si hay un app context activo
+        if current_app:
+            sources = NewsSource.query.filter_by(is_active=True).all()
+            return [
+                {
+                    'id': s.id,
+                    'name': s.name,
+                    'url': s.url,
+                    'source_type': s.source_type,
+                }
+                for s in sources
+            ]
+    except Exception:
+        # Si no hay Flask context (ejecución standalone), ignorar
+        pass
+    return []
+
+
+def _update_db_source_status(
+    source_id: int,
+    status: str,
+    articles_found: int,
+    error: str | None = None,
+):
+    """Actualiza el estado de una fuente en la DB después del scraping."""
+    try:
+        from app.models import db, NewsSource
+        source = db.session.get(NewsSource, source_id)
+        if source:
+            source.last_status = status
+            source.last_scraped = datetime.now(timezone.utc)
+            source.articles_found = articles_found
+            source.last_error = error
+            db.session.commit()
+    except Exception:
+        pass
 
 
 def detect_children_mentions(text: str) -> str:

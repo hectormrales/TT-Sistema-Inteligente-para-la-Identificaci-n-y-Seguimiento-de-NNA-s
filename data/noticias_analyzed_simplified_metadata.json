@@ -1,8 +1,8 @@
 {
-  "total_noticias": 316,
-  "noticias_con_nna": 133,
+  "total_noticias": 367,
+  "noticias_con_nna": 154,
   "alta_relevancia": 0,
-  "media_relevancia": 125,
+  "media_relevancia": 141,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -27,13 +27,15 @@
     "relevancia_final",
     "clasificacion_final"
   ],
-  "version": "relevance_analyzer_v3.0",
+  "version": "relevance_analyzer_v4.0",
   "algoritmos_usados": [
     "Scoring Dual Heurístico (Feminicidio × NNA)",
     "TF-IDF (domain-boosted, sublinear, n-grams 1-3)",
     "LDA (topic modeling)",
     "K-Means (clustering)",
-    "Similitud Coseno",
-    "Reclasificación TF-IDF (doc ideal)"
+    "Similitud Coseno + Deduplicación Semántica",
+    "Reclasificación TF-IDF (doc ideal)",
+    "Web Scraping Dinámico (robots.txt)",
+    "Dedup Cross-Site (Hash + Jaccard + SimHash + TF-IDF)"
   ]
 }

@@ -19,6 +19,7 @@ import schedule
 
 from src.analysis.analyzer import SimplifiedNewsAnalyzer
 from src.collection.collector import collect_all_news
+from src.analysis.dedup import NewsDeduplicator
 
 
 DATA_DIR = os.environ.get('DATA_DIR', 'data')
@@ -46,7 +47,16 @@ def collect_news():
         if os.path.exists(DATA_FILE):
             df_existing = pd.read_csv(DATA_FILE)
             df_new = pd.concat([df_existing, df_new], ignore_index=True)
-            df_new.drop_duplicates(subset=['titulo', 'contenido'], keep='last', inplace=True)
+
+            # Deduplicación avanzada cross-site
+            dedup = NewsDeduplicator(
+                title_threshold=0.70,
+                content_threshold=0.80,
+            )
+            pre = len(df_new)
+            df_new = dedup.deduplicate(df_new, keep='best')
+            post = len(df_new)
+            _log(f"Deduplicación: {pre} → {post} ({pre - post} eliminados)")
 
         os.makedirs(DATA_DIR, exist_ok=True)
         df_new.to_csv(DATA_FILE, index=False)

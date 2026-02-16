@@ -19,6 +19,7 @@ RSS_FEEDS = [
     # ── Medios mexicanos (generales y de seguridad) ─────────
     'https://www.jornada.com.mx/rss/politica.xml',
     'https://www.jornada.com.mx/rss/estados.xml',
+    'https://www.jornada.com.mx/rss/sociedad.xml',
     'https://www.proceso.com.mx/feed',
     'https://aristeguinoticias.com/feed/',
     'https://www.animalpolitico.com/feed/',
@@ -31,9 +32,24 @@ RSS_FEEDS = [
     'https://www.reporteindigo.com/feed/',
     'https://piedepagina.mx/feed/',
     'https://www.contralinea.com.mx/feed/',
-    # ── Medios especializados en género ─────────────────────
+    'https://www.sdpnoticias.com/feed',
+    'https://www.debate.com.mx/rss/rss.xml',
+    'https://www.razon.com.mx/feed/',
+    'https://www.elheraldodemexico.com/rss.xml',
+    'https://www.informador.mx/rss/ultimas-noticias.xml',
+    'https://www.zocalo.com.mx/rss.xml',
+    'https://www.lajornadadeoriente.com.mx/feed/',
+    # ── Medios especializados en género y DDHH ──────────────
     'https://cimacnoticias.com.mx/feed/',
     'https://luchadoras.mx/feed/',
+    'https://www.eleconomista.com.mx/rss/',
+    'https://elpais.com/mexico/rss/',
+    'https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml',
+    # ── Medios estatales / regionales ───────────────────────
+    'https://www.elsoldetoluca.com.mx/rss.xml',
+    'https://www.elsoldepuebla.com.mx/rss.xml',
+    'https://www.diariodexalapa.com.mx/rss.xml',
+    'https://www.noroeste.com.mx/rss.xml',
     # ── Google News queries (feminicidio + NNA) ─────────────
     'https://news.google.com/rss/search?q=feminicidio+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
@@ -41,6 +57,15 @@ RSS_FEEDS = [
     'https://news.google.com/rss/search?q=orfandad+feminicidio+menores&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+feminicidio&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+menores+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
+    # ── Google News queries adicionales (v4.0) ──────────────
+    'https://news.google.com/rss/search?q=feminicidio+hijos+menores+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22violencia+feminicida%22+ni%C3%B1os&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22alerta+de+g%C3%A9nero%22+menores&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=orfandad+violencia+genero+Mexico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22violencia+contra+la+mujer%22+menores+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+NNA+victimas+indirectas&hl=es-419&gl=MX&ceid=MX:es-419',
 ]
 
 HTTP_HEADERS = {

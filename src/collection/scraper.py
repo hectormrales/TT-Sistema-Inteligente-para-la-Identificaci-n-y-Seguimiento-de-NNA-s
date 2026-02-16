@@ -1,0 +1,705 @@
+# src/collection/scraper.py — Web Scraper Dinámico con detección de robots.txt
+"""
+Scraper inteligente que adapta la técnica de extracción según el sitio:
+
+  1. Lee robots.txt para determinar si el scraping está permitido.
+  2. Detecta si el sitio ofrece RSS/Atom, sitemap, o solo HTML.
+  3. Aplica la técnica apropiada:
+     • RSS/Atom  → parse XML (más rápido y respetuoso)
+     • Sitemap   → sigue URLs del sitemap.xml
+     • HTML      → extrae article/main body
+  4. Respeta Crawl-delay y aplica rate-limiting.
+
+Uso:
+    scraper = DynamicScraper()
+    result = scraper.probe_url('https://ejemplo.com')
+    articles = scraper.scrape_source(url, method='auto')
+"""
+
+import re
+import time
+import hashlib
+import logging
+from datetime import datetime, timezone
+from typing import Optional
+from urllib.parse import urlparse, urljoin
+from urllib.robotparser import RobotFileParser
+
+import requests
+from bs4 import BeautifulSoup
+
+import config
+
+logger = logging.getLogger(__name__)
+
+# ── User-Agent para robots.txt ──────────────────────────────
+
+BOT_USER_AGENT = 'NNA-Analyzer-Bot/4.0'
+
+HEADERS = getattr(config, 'HTTP_HEADERS', {
+    'User-Agent': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/124.0.0.0 Safari/537.36'
+    ),
+})
+
+# ── Selectores CSS comunes para extraer contenido de artículos ──
+
+ARTICLE_SELECTORS = [
+    'article',
+    '[role="article"]',
+    '.article-body',
+    '.article-content',
+    '.entry-content',
+    '.post-content',
+    '.story-body',
+    '.nota-body',
+    '.content-body',
+    '#article-body',
+    '.field-name-body',
+    '.text-article',
+    '.detail-body',
+    'main .content',
+    '.nota_contenido',
+    '.cuerpo-nota',
+]
+
+TITLE_SELECTORS = [
+    'h1.article-title',
+    'h1.entry-title',
+    'h1.post-title',
+    'h1.nota-title',
+    'article h1',
+    'main h1',
+    '.headline h1',
+    'h1',
+]
+
+DATE_SELECTORS = [
+    'time[datetime]',
+    'meta[property="article:published_time"]',
+    'meta[name="date"]',
+    'meta[name="pubdate"]',
+    '.article-date',
+    '.entry-date',
+    '.post-date',
+    '.fecha',
+    '.date',
+]
+
+# ── Keywords para detectar enlaces a noticias ───────────────
+
+NEWS_PATH_PATTERNS = [
+    r'/nota/', r'/noticia/', r'/noticias/',
+    r'/articulo/', r'/article/',
+    r'/\d{4}/\d{2}/\d{2}/',        # fechas en URL
+    r'/\d{4}/\d{2}/',
+    r'/seguridad/', r'/justicia/', r'/sociedad/',
+    r'/estados/', r'/nacional/',
+    r'/policiaca/', r'/sucesos/',
+]
+
+
+class RobotsChecker:
+    """Verifica permisos en robots.txt con caché."""
+
+    _cache: dict[str, dict] = {}
+
+    @classmethod
+    def check(cls, url: str) -> dict:
+        """
+        Analiza robots.txt del dominio.
+
+        Returns:
+            dict con:
+            - allowed (bool): Si se permite scrapear la URL.
+            - crawl_delay (float|None): Retardo recomendado.
+            - sitemaps (list[str]): URLs de sitemaps encontrados.
+            - has_robots (bool): Si el sitio tiene robots.txt.
+        """
+        parsed = urlparse(url)
+        domain = f"{parsed.scheme}://{parsed.netloc}"
+
+        if domain in cls._cache:
+            cached = cls._cache[domain]
+            # Verificar permiso para esta URL específica
+            cached_copy = cached.copy()
+            if cached.get('_parser'):
+                cached_copy['allowed'] = cached['_parser'].can_fetch(
+                    BOT_USER_AGENT, url
+                )
+            return cached_copy
+
+        robots_url = f"{domain}/robots.txt"
+        result = {
+            'allowed': True,
+            'crawl_delay': None,
+            'sitemaps': [],
+            'has_robots': False,
+            '_parser': None,
+        }
+
+        try:
+            rp = RobotFileParser()
+            rp.set_url(robots_url)
+
+            # Timeout manual con requests
+            resp = requests.get(robots_url, timeout=10, headers=HEADERS)
+            if resp.status_code == 200:
+                rp.parse(resp.text.splitlines())
+                result['has_robots'] = True
+                result['allowed'] = rp.can_fetch(BOT_USER_AGENT, url)
+                result['_parser'] = rp
+
+                # Crawl delay
+                try:
+                    delay = rp.crawl_delay(BOT_USER_AGENT)
+                    if delay:
+                        result['crawl_delay'] = float(delay)
+                except Exception:
+                    pass
+
+                # Sitemaps
+                sitemaps = []
+                for line in resp.text.splitlines():
+                    if line.strip().lower().startswith('sitemap:'):
+                        sitemap_url = line.split(':', 1)[1].strip()
+                        sitemaps.append(sitemap_url)
+                result['sitemaps'] = sitemaps
+            else:
+                # Sin robots.txt → todo permitido
+                result['has_robots'] = False
+                result['allowed'] = True
+
+        except Exception as e:
+            logger.debug(f"No se pudo leer robots.txt de {domain}: {e}")
+            result['allowed'] = True  # Fallback permisivo
+
+        cls._cache[domain] = result
+        return result
+
+    @classmethod
+    def clear_cache(cls):
+        cls._cache.clear()
+
+
+class DynamicScraper:
+    """
+    Scraper que adapta su técnica según el sitio objetivo.
+
+    Flujo:
+      1. probe_url() → detecta tipo de fuente (rss, sitemap, html)
+      2. scrape_source() → aplica la técnica apropiada
+    """
+
+    def __init__(self, respect_robots: bool = True, default_delay: float = 1.5):
+        self.respect_robots = respect_robots
+        self.default_delay = default_delay
+        self._last_request_time: dict[str, float] = {}
+
+    # ── Rate limiting ─────────────────────────────────────────
+
+    def _rate_limit(self, domain: str, delay: float | None = None):
+        """Espera antes de hacer otra request al mismo dominio."""
+        actual_delay = delay or self.default_delay
+        now = time.time()
+        last = self._last_request_time.get(domain, 0)
+        wait = actual_delay - (now - last)
+        if wait > 0:
+            time.sleep(wait)
+        self._last_request_time[domain] = time.time()
+
+    def _get(self, url: str, crawl_delay: float | None = None) -> requests.Response | None:
+        """GET con rate limiting y manejo de errores."""
+        parsed = urlparse(url)
+        domain = parsed.netloc
+        self._rate_limit(domain, crawl_delay)
+
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=20)
+            resp.raise_for_status()
+            return resp
+        except requests.RequestException as e:
+            logger.warning(f"Error HTTP en {url[:80]}: {e}")
+            return None
+
+    # ── Detección de tipo de fuente ─────────────────────────
+
+    def probe_url(self, url: str) -> dict:
+        """
+        Analiza una URL para determinar la mejor técnica de scraping.
+
+        Returns:
+            dict con:
+            - url (str): URL original
+            - domain (str): dominio
+            - robots (dict): resultado de robots.txt
+            - source_type (str): 'rss' | 'sitemap' | 'html' | 'blocked'
+            - rss_feeds (list): feeds RSS/Atom detectados
+            - sitemaps (list): sitemaps encontrados
+            - can_scrape (bool): si se permite el scraping
+            - recommended_method (str): método recomendado
+            - crawl_delay (float|None): retardo recomendado
+        """
+        parsed = urlparse(url)
+        domain = parsed.netloc
+
+        result = {
+            'url': url,
+            'domain': domain,
+            'robots': {},
+            'source_type': 'unknown',
+            'rss_feeds': [],
+            'sitemaps': [],
+            'can_scrape': True,
+            'recommended_method': 'html',
+            'crawl_delay': None,
+        }
+
+        # 1. Verificar robots.txt
+        if self.respect_robots:
+            robots_info = RobotsChecker.check(url)
+            result['robots'] = {
+                k: v for k, v in robots_info.items() if k != '_parser'
+            }
+            result['can_scrape'] = robots_info['allowed']
+            result['crawl_delay'] = robots_info.get('crawl_delay')
+            result['sitemaps'] = robots_info.get('sitemaps', [])
+
+            if not robots_info['allowed']:
+                result['source_type'] = 'blocked'
+                result['recommended_method'] = 'none'
+                return result
+
+        # 2. Intentar detectar si la URL ya es un feed RSS/Atom
+        if self._is_rss_url(url):
+            result['source_type'] = 'rss'
+            result['rss_feeds'] = [url]
+            result['recommended_method'] = 'rss'
+            return result
+
+        # 3. Cargar la página y buscar feeds RSS en <link>
+        resp = self._get(url, result.get('crawl_delay'))
+        if resp is None:
+            result['source_type'] = 'error'
+            result['recommended_method'] = 'none'
+            return result
+
+        content_type = resp.headers.get('Content-Type', '')
+
+        # Si el content type indica XML/RSS
+        if any(ct in content_type for ct in ['xml', 'rss', 'atom']):
+            result['source_type'] = 'rss'
+            result['rss_feeds'] = [url]
+            result['recommended_method'] = 'rss'
+            return result
+
+        # 4. Parsear HTML para encontrar feeds alternativos
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        rss_links = self._find_rss_links(soup, url)
+
+        if rss_links:
+            result['rss_feeds'] = rss_links
+            result['source_type'] = 'rss'
+            result['recommended_method'] = 'rss'
+        elif result['sitemaps']:
+            result['source_type'] = 'sitemap'
+            result['recommended_method'] = 'sitemap'
+        else:
+            result['source_type'] = 'html'
+            result['recommended_method'] = 'html'
+
+        return result
+
+    def _is_rss_url(self, url: str) -> bool:
+        """Heurística para detectar si una URL es un feed RSS."""
+        lower = url.lower()
+        rss_indicators = [
+            '/rss', '/feed', '/atom', '.xml', '/syndication',
+            'format=rss', 'output=rss', 'type=rss',
+        ]
+        return any(indicator in lower for indicator in rss_indicators)
+
+    def _find_rss_links(self, soup: BeautifulSoup, base_url: str) -> list[str]:
+        """Encuentra feeds RSS/Atom en los <link> de una página HTML."""
+        feeds = []
+        link_types = [
+            'application/rss+xml',
+            'application/atom+xml',
+            'application/xml',
+            'text/xml',
+        ]
+        for link in soup.find_all('link', rel='alternate'):
+            link_type = link.get('type', '')
+            if link_type in link_types:
+                href = link.get('href', '')
+                if href:
+                    feeds.append(urljoin(base_url, href))
+
+        # Buscar también links <a> con texto "RSS" o "Feed"
+        for a_tag in soup.find_all('a', href=True):
+            text = (a_tag.get_text() or '').strip().lower()
+            href = a_tag['href'].lower()
+            if any(kw in text for kw in ['rss', 'feed', 'xml']):
+                feeds.append(urljoin(base_url, a_tag['href']))
+            elif any(kw in href for kw in ['/rss', '/feed', '.xml']):
+                feeds.append(urljoin(base_url, a_tag['href']))
+
+        # Deduplicar
+        seen = set()
+        unique = []
+        for f in feeds:
+            if f not in seen:
+                seen.add(f)
+                unique.append(f)
+        return unique
+
+    # ── Scraping por tipo ───────────────────────────────────
+
+    def scrape_source(
+        self,
+        url: str,
+        method: str = 'auto',
+        max_articles: int = 50,
+    ) -> list[dict]:
+        """
+        Scrapea una fuente usando el método indicado o auto-detectado.
+
+        Args:
+            url: URL de la fuente.
+            method: 'auto', 'rss', 'sitemap', 'html'.
+            max_articles: máximo de artículos a extraer.
+
+        Returns:
+            Lista de dicts con: titulo, contenido, enlace, fuente, fecha.
+        """
+        if method == 'auto':
+            probe = self.probe_url(url)
+            if not probe['can_scrape']:
+                logger.warning(f"Bloqueado por robots.txt: {url}")
+                return []
+            method = probe['recommended_method']
+            crawl_delay = probe.get('crawl_delay')
+            rss_feeds = probe.get('rss_feeds', [])
+        else:
+            crawl_delay = None
+            rss_feeds = [url] if method == 'rss' else []
+
+        if method == 'rss':
+            return self._scrape_rss(
+                rss_feeds or [url], max_articles, crawl_delay
+            )
+        elif method == 'sitemap':
+            return self._scrape_sitemap(url, max_articles, crawl_delay)
+        elif method == 'html':
+            return self._scrape_html_listing(url, max_articles, crawl_delay)
+        else:
+            logger.warning(f"Método no soportado: {method}")
+            return []
+
+    def _scrape_rss(
+        self, feeds: list[str], max_articles: int, crawl_delay: float | None
+    ) -> list[dict]:
+        """Extrae artículos desde feeds RSS/Atom."""
+        articles = []
+
+        for feed_url in feeds:
+            if len(articles) >= max_articles:
+                break
+
+            resp = self._get(feed_url, crawl_delay)
+            if resp is None:
+                continue
+
+            soup = BeautifulSoup(resp.content, 'xml')
+
+            for item in soup.find_all(['item', 'entry']):
+                if len(articles) >= max_articles:
+                    break
+
+                title = item.find('title')
+                title_text = title.get_text(strip=True) if title else ''
+                if not title_text:
+                    continue
+
+                # Contenido
+                content = (
+                    item.find('content:encoded')
+                    or item.find('content')
+                    or item.find('description')
+                    or item.find('summary')
+                )
+                content_html = content.get_text() if content else ''
+                content_text = BeautifulSoup(
+                    content_html, 'html.parser'
+                ).get_text(' ', strip=True)
+
+                # Enlace
+                link = item.find('link')
+                if link:
+                    link_text = link.get('href') or link.get_text(strip=True)
+                else:
+                    guid = item.find('guid')
+                    link_text = guid.get_text(strip=True) if guid else ''
+
+                # Fecha
+                date_tag = (
+                    item.find('pubDate')
+                    or item.find('published')
+                    or item.find('updated')
+                    or item.find('dc:date')
+                )
+                if date_tag and date_tag.get_text(strip=True):
+                    try:
+                        from email.utils import parsedate_to_datetime
+                        dt = parsedate_to_datetime(date_tag.get_text(strip=True))
+                    except Exception:
+                        try:
+                            from dateutil import parser as dateparser
+                            dt = dateparser.parse(date_tag.get_text(strip=True))
+                        except Exception:
+                            dt = datetime.now(timezone.utc)
+                else:
+                    dt = datetime.now(timezone.utc)
+
+                articles.append({
+                    'titulo': title_text,
+                    'contenido': content_text,
+                    'enlace': link_text,
+                    'fuente': feed_url,
+                    'fecha': dt.isoformat() if dt else '',
+                    'scrape_method': 'rss',
+                })
+
+        return articles
+
+    def _scrape_sitemap(
+        self, base_url: str, max_articles: int, crawl_delay: float | None
+    ) -> list[dict]:
+        """Extrae artículos siguiendo enlaces del sitemap."""
+        articles = []
+        robots_info = RobotsChecker.check(base_url)
+        sitemaps = robots_info.get('sitemaps', [])
+
+        if not sitemaps:
+            # Intentar sitemap por defecto
+            parsed = urlparse(base_url)
+            sitemaps = [f"{parsed.scheme}://{parsed.netloc}/sitemap.xml"]
+
+        article_urls = []
+
+        for sitemap_url in sitemaps[:3]:  # Máx 3 sitemaps
+            resp = self._get(sitemap_url, crawl_delay)
+            if resp is None:
+                continue
+
+            soup = BeautifulSoup(resp.content, 'xml')
+
+            # Sitemap index → sub-sitemaps
+            for sm in soup.find_all('sitemap'):
+                loc = sm.find('loc')
+                if loc:
+                    sub_resp = self._get(loc.get_text(strip=True), crawl_delay)
+                    if sub_resp:
+                        sub_soup = BeautifulSoup(sub_resp.content, 'xml')
+                        for url_tag in sub_soup.find_all('url'):
+                            loc2 = url_tag.find('loc')
+                            if loc2:
+                                u = loc2.get_text(strip=True)
+                                if self._looks_like_article(u):
+                                    article_urls.append(u)
+                            if len(article_urls) >= max_articles * 2:
+                                break
+
+            # URLs directas
+            for url_tag in soup.find_all('url'):
+                loc = url_tag.find('loc')
+                if loc:
+                    u = loc.get_text(strip=True)
+                    if self._looks_like_article(u):
+                        article_urls.append(u)
+                if len(article_urls) >= max_articles * 2:
+                    break
+
+        # Scrapear las URLs más recientes (tomar últimas N)
+        for article_url in article_urls[-max_articles:]:
+            if len(articles) >= max_articles:
+                break
+            article = self._extract_article(article_url, crawl_delay)
+            if article:
+                articles.append(article)
+
+        return articles
+
+    def _scrape_html_listing(
+        self, url: str, max_articles: int, crawl_delay: float | None
+    ) -> list[dict]:
+        """
+        Scrapea una página HTML que lista noticias.
+        Extrae enlaces a artículos y luego scrapea cada uno.
+        """
+        articles = []
+
+        resp = self._get(url, crawl_delay)
+        if resp is None:
+            return articles
+
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        parsed_base = urlparse(url)
+        base_domain = parsed_base.netloc
+
+        # Encontrar enlaces a artículos
+        article_urls = []
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href']
+            full_url = urljoin(url, href)
+            parsed_href = urlparse(full_url)
+
+            # Solo enlaces del mismo dominio
+            if parsed_href.netloc != base_domain:
+                continue
+
+            if self._looks_like_article(full_url):
+                # Verificar que el texto del enlace no sea vacío o muy corto
+                text = a_tag.get_text(strip=True)
+                if len(text) > 15:
+                    article_urls.append((full_url, text))
+
+        # Deduplicar preservando orden
+        seen = set()
+        unique_urls = []
+        for u, t in article_urls:
+            if u not in seen:
+                seen.add(u)
+                unique_urls.append((u, t))
+
+        # Extraer contenido de cada artículo
+        for article_url, _ in unique_urls[:max_articles]:
+            if len(articles) >= max_articles:
+                break
+
+            # Verificar robots.txt para cada URL
+            if self.respect_robots:
+                check = RobotsChecker.check(article_url)
+                if not check['allowed']:
+                    continue
+
+            article = self._extract_article(article_url, crawl_delay)
+            if article:
+                articles.append(article)
+
+        return articles
+
+    def _looks_like_article(self, url: str) -> bool:
+        """Determina si una URL parece ser un artículo de noticias."""
+        for pattern in NEWS_PATH_PATTERNS:
+            if re.search(pattern, url, re.IGNORECASE):
+                return True
+        return False
+
+    def _extract_article(
+        self, url: str, crawl_delay: float | None = None
+    ) -> dict | None:
+        """
+        Extrae título, contenido y fecha de una página de artículo.
+        Prueba múltiples selectores CSS para adaptarse a diferentes sitios.
+        """
+        resp = self._get(url, crawl_delay)
+        if resp is None:
+            return None
+
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        # ── Título ──
+        title = ''
+        for sel in TITLE_SELECTORS:
+            tag = soup.select_one(sel)
+            if tag:
+                title = tag.get_text(strip=True)
+                break
+        if not title:
+            og_title = soup.find('meta', property='og:title')
+            if og_title:
+                title = og_title.get('content', '')
+        if not title:
+            title_tag = soup.find('title')
+            if title_tag:
+                title = title_tag.get_text(strip=True)
+
+        if not title or len(title) < 10:
+            return None
+
+        # ── Contenido ──
+        content = ''
+        for sel in ARTICLE_SELECTORS:
+            container = soup.select_one(sel)
+            if container:
+                # Eliminar scripts, styles, nav, ads
+                for tag in container.find_all(
+                    ['script', 'style', 'nav', 'aside', 'iframe',
+                     'noscript', 'footer', 'header']
+                ):
+                    tag.decompose()
+
+                paragraphs = container.find_all('p')
+                if paragraphs:
+                    content = ' '.join(
+                        p.get_text(' ', strip=True) for p in paragraphs
+                    )
+                else:
+                    content = container.get_text(' ', strip=True)
+                break
+
+        if not content:
+            # Fallback: meta description
+            meta_desc = soup.find('meta', attrs={'name': 'description'})
+            if meta_desc:
+                content = meta_desc.get('content', '')
+            if not content:
+                og_desc = soup.find('meta', property='og:description')
+                if og_desc:
+                    content = og_desc.get('content', '')
+
+        if not content or len(content) < 50:
+            return None
+
+        # ── Fecha ──
+        date_str = ''
+        dt = datetime.now(timezone.utc)
+
+        for sel in DATE_SELECTORS:
+            if sel.startswith('meta'):
+                tag = soup.select_one(sel)
+                if tag:
+                    date_str = tag.get('content', '')
+                    break
+            else:
+                tag = soup.select_one(sel)
+                if tag:
+                    date_str = tag.get('datetime') or tag.get_text(strip=True)
+                    break
+
+        if date_str:
+            try:
+                from dateutil import parser as dateparser
+                dt = dateparser.parse(date_str)
+            except Exception:
+                dt = datetime.now(timezone.utc)
+
+        return {
+            'titulo': title,
+            'contenido': content[:3000],  # Limitar a 3000 chars
+            'enlace': url,
+            'fuente': urlparse(url).netloc,
+            'fecha': dt.isoformat() if dt else '',
+            'scrape_method': 'html',
+        }
+
+    # ── Utilidades ──────────────────────────────────────────
+
+    @staticmethod
+    def content_hash(title: str, content: str) -> str:
+        """Genera un hash del contenido para detección de duplicados."""
+        text = f"{title.strip().lower()}|{content.strip().lower()[:500]}"
+        return hashlib.md5(text.encode('utf-8')).hexdigest()

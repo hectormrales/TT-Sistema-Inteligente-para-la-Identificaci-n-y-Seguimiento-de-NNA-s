@@ -34,6 +34,7 @@ from sklearn.metrics import silhouette_score
 
 from src.collection.collector import collect_all_news, detect_children_mentions
 from src.analysis.synonyms import SynonymDictionary, enhanced_search
+from src.analysis.dedup import NewsDeduplicator
 
 
 # ── Vocabulario de dominio para inyectar al TF-IDF ──────────
@@ -263,8 +264,8 @@ class SimplifiedNewsAnalyzer:
             return self.df_processed, None
 
     def step_6_similarity_analysis(self) -> pd.DataFrame:
-        """Análisis de similitud coseno entre documentos."""
-        print("=== PASO 6: SIMILITUD COSENO ===")
+        """Análisis de similitud coseno entre documentos + deduplicación semántica."""
+        print("=== PASO 6: SIMILITUD COSENO + DEDUPLICACIÓN ===")
         assert self.tfidf_matrix is not None, "Ejecute step_3 primero"
 
         try:
@@ -283,8 +284,28 @@ class SimplifiedNewsAnalyzer:
             avg = np.mean(max_sims)
             high = sum(1 for s in max_sims if s > 0.5)
             print(f"  Similitud promedio: {avg:.3f} | Pares > 0.5: {high}")
+
+            # Deduplicación semántica post-análisis
+            pre = len(self.df_processed)
+            dedup = NewsDeduplicator(
+                title_threshold=0.70,
+                content_threshold=0.85,
+                simhash_max_distance=6,
+            )
+            self.df_processed = dedup.deduplicate(
+                self.df_processed, keep='best'
+            )
+            post = len(self.df_processed)
+            if pre > post:
+                # Reconstruir TF-IDF matrix para los docs restantes
+                texts = self.df_processed['texto_combinado'].fillna('').astype(str).tolist()
+                domain_docs = [' '.join(DOMAIN_TERMS)] * 2
+                all_texts = texts + domain_docs
+                full_matrix = self.vectorizer.fit_transform(all_texts)
+                self.tfidf_matrix = full_matrix[:len(texts)]
+                print(f"  Duplicados semánticos eliminados: {pre - post}")
         except Exception as e:
-            print(f"  Error similitud: {e}")
+            print(f"  Error similitud/dedup: {e}")
         return self.df_processed
 
     def step_7_tfidf_rescore(self) -> pd.DataFrame:
@@ -377,14 +398,16 @@ class SimplifiedNewsAnalyzer:
             'alta_relevancia': alta,
             'media_relevancia': media,
             'columnas_disponibles': list(self.df_processed.columns),
-            'version': 'relevance_analyzer_v3.0',
+            'version': 'relevance_analyzer_v4.0',
             'algoritmos_usados': [
                 'Scoring Dual Heurístico (Feminicidio × NNA)',
                 'TF-IDF (domain-boosted, sublinear, n-grams 1-3)',
                 'LDA (topic modeling)',
                 'K-Means (clustering)',
-                'Similitud Coseno',
+                'Similitud Coseno + Deduplicación Semántica',
                 'Reclasificación TF-IDF (doc ideal)',
+                'Web Scraping Dinámico (robots.txt)',
+                'Dedup Cross-Site (Hash + Jaccard + SimHash + TF-IDF)',
             ],
         }
         meta_path = filepath.replace('.csv', '_metadata.json')
@@ -406,7 +429,7 @@ class SimplifiedNewsAnalyzer:
     ) -> pd.DataFrame:
         """Ejecuta los 8 pasos del pipeline de análisis."""
         print("=" * 60)
-        print("  PIPELINE DE ANÁLISIS v3.0 — RELEVANCIA DUAL")
+        print("  PIPELINE DE ANÁLISIS v4.0 — RELEVANCIA DUAL + DEDUP")
         print("=" * 60)
 
         self.step_1_collect_data()
