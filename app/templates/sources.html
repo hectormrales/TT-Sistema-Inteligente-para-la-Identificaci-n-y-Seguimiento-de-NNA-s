@@ -565,10 +565,14 @@
 
                 if (data.status === 'success') {
                     const p = data.probe;
+                    const stealthActive = p.stealth_mode;
+                    const alertClass = data.articles_found > 0 ? 'alert-success' : 'alert-warning';
+                    const alertIcon = data.articles_found > 0 ? 'fa-check-circle' : 'fa-exclamation-triangle';
                     let html = `
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i>
+                        <div class="alert ${alertClass}">
+                            <i class="fas ${alertIcon}"></i>
                             Prueba exitosa — ${data.articles_found} artículo(s) encontrado(s)
+                            ${stealthActive ? '<br><small class="text-info"><i class="fas fa-user-secret"></i> Modo stealth activado (robots.txt bloqueaba, se aplicaron técnicas anti-bloqueo)</small>' : ''}
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -578,6 +582,7 @@
                             <div class="col-md-6">
                                 <p><strong>Método:</strong> ${p.recommended_method}</p>
                                 <p><strong>Crawl delay:</strong> ${p.crawl_delay ? p.crawl_delay + 's' : 'No especificado'}</p>
+                                ${stealthActive ? '<p><strong>Stealth:</strong> <span class="badge bg-info"><i class="fas fa-user-secret"></i> Activo</span></p>' : ''}
                             </div>
                         </div>`;
 

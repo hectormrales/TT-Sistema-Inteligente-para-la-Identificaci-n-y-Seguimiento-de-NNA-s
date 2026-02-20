@@ -335,12 +335,13 @@ class SimplifiedNewsAnalyzer:
             self.df_processed['relevancia_final'] = np.round(combined, 4)
 
             # Re-clasificar con el score combinado
+            # v4.1: Umbrales ajustados para ser más sensibles
             def _classify(score):
-                if score >= 0.50:
+                if score >= 0.38:
                     return 'Alta'
-                elif score >= 0.30:
+                elif score >= 0.22:
                     return 'Media'
-                elif score >= 0.15:
+                elif score >= 0.12:
                     return 'Baja'
                 return 'No relevante'
 
@@ -379,10 +380,25 @@ class SimplifiedNewsAnalyzer:
 
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-        # Ordenar por relevancia final descendente
-        self.df_processed = self.df_processed.sort_values(
-            'relevancia_final', ascending=False
-        ).reset_index(drop=True)
+        # Ordenar por fecha descendente (más reciente primero)
+        if 'fecha' in self.df_processed.columns:
+            try:
+                self.df_processed['_fecha_sort'] = pd.to_datetime(
+                    self.df_processed['fecha'], errors='coerce'
+                )
+                self.df_processed = self.df_processed.sort_values(
+                    '_fecha_sort', ascending=False, na_position='last'
+                ).reset_index(drop=True)
+                self.df_processed = self.df_processed.drop(columns=['_fecha_sort'])
+            except Exception:
+                # Fallback: ordenar por relevancia
+                self.df_processed = self.df_processed.sort_values(
+                    'relevancia_final', ascending=False
+                ).reset_index(drop=True)
+        else:
+            self.df_processed = self.df_processed.sort_values(
+                'relevancia_final', ascending=False
+            ).reset_index(drop=True)
 
         self.df_processed.to_csv(filepath, index=False, encoding='utf-8')
 

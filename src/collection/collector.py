@@ -85,6 +85,126 @@ NNA_KEYWORDS: list[Tuple[str, float]] = [
 ]
 
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Filtro geográfico: Solo noticias de México
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Estados y ciudades de México (para detectar contexto mexicano)
+MEXICO_INDICATORS = [
+    # País
+    r'\bm[eé]xico\b', r'\bmexican[oa]s?\b', r'\brepública\s+mexicana\b',
+    # Estados
+    r'\baguascalientes\b', r'\bbaja\s+california\b', r'\bcampeche\b',
+    r'\bchiapas\b', r'\bchihuahua\b', r'\bcoahuila\b', r'\bcolima\b',
+    r'\bdurango\b', r'\bguanajuato\b', r'\bguerrero\b', r'\bhidalgo\b',
+    r'\bjalisco\b', r'\bmichoacán\b', r'\bmorelos\b', r'\bnayarit\b',
+    r'\bnuevo\s+le[oó]n\b', r'\boaxaca\b', r'\bpuebla\b', r'\bquer[eé]taro\b',
+    r'\bquintana\s+roo\b', r'\bsan\s+luis\s+potos[ií]\b', r'\bsinaloa\b',
+    r'\bsonora\b', r'\btabasco\b', r'\btamaulipas\b', r'\btlaxcala\b',
+    r'\bveracruz\b', r'\byucat[aá]n\b', r'\bzacatecas\b',
+    r'\bestado\s+de\s+m[eé]xico\b', r'\bcdmx\b', r'\bciudad\s+de\s+m[eé]xico\b',
+    # Ciudades principales
+    r'\bguadalajara\b', r'\bmonterrey\b', r'\btijuana\b', r'\bjuárez\b',
+    r'\bju[aá]rez\b', r'\ble[oó]n\b', r'\becatepec\b', r'\bneza\b',
+    r'\btoluca\b', r'\bculiac[aá]n\b', r'\bcancún\b', r'\bacapulco\b',
+    r'\bmerida\b', r'\bm[eé]rida\b', r'\bvillahermosa\b', r'\bhermosillo\b',
+    r'\bsaltillo\b', r'\btuxtla\b', r'\bxalapa\b', r'\btorreón\b',
+    r'\bmatamoros\b', r'\breynosa\b', r'\bplaya\s+del\s+carmen\b',
+    r'\biztapalapa\b', r'\bnaucalpan\b', r'\btlalnepantla\b',
+    # Instituciones mexicanas
+    r'\bfisca[il]ía\b', r'\bfgr\b', r'\bfgj\b', r'\bsemefo\b',
+    r'\bDIF\b', r'\bSEP\b', r'\bIMSS\b', r'\bcndh\b',
+    r'\bconavim\b', r'\binmujeres\b', r'\bsspc\b',
+    r'\bguardia\s+nacional\b', r'\bprocuradur[ií]a\b',
+    r'\balerta\s+de\s+(?:violencia\s+de\s+)?g[eé]nero\b',
+    r'\bcódigo?\s+rojo\b', r'\bministerio\s+p[uú]blico\b',
+]
+
+# Indicadores de que la noticia NO es de México
+NON_MEXICO_INDICATORS = [
+    r'\bargentina\b', r'\bbuenos\s+aires\b', r'\bcolombia\b', r'\bbogot[aá]\b',
+    r'\bper[uú]\b', r'\blima\b', r'\bchile\b', r'\bsantiago\b',
+    r'\bvenezuela\b', r'\bcaracas\b', r'\becuador\b', r'\bquito\b',
+    r'\bbolivia\b', r'\bla\s+paz\b', r'\bparaguay\b', r'\basunci[oó]n\b',
+    r'\buruguay\b', r'\bmontevideo\b', r'\bbrasil\b', r'\bsão\s+paulo\b',
+    r'\bespaña\b', r'\bmadrid\b', r'\bbarcelona\b',
+    r'\bestados\s+unidos\b', r'\bnew\s+york\b', r'\bwashington\b',
+    r'\bel\s+salvador\b', r'\bguatemala\b', r'\bhonduras\b',
+    r'\bnicaragua\b', r'\bcosta\s+rica\b', r'\bpanam[aá]\b',
+    r'\brepública\s+dominicana\b', r'\bcuba\b', r'\bhaití\b',
+    r'\bpuerto\s+rico\b',
+]
+
+# Dominios de medios mexicanos conocidos (siempre pasan el filtro)
+MEXICAN_DOMAINS = {
+    'jornada.com.mx', 'proceso.com.mx', 'aristeguinoticias.com',
+    'animalpolitico.com', 'sinembargo.mx', 'elsoldemexico.com.mx',
+    'elfinanciero.com.mx', 'eluniversal.com.mx', 'milenio.com',
+    'excelsior.com.mx', 'reporteindigo.com', 'piedepagina.mx',
+    'contralinea.com.mx', 'sdpnoticias.com', 'debate.com.mx',
+    'razon.com.mx', 'elheraldodemexico.com', 'informador.mx',
+    'zocalo.com.mx', 'lajornadadeoriente.com.mx', 'cimacnoticias.com.mx',
+    'luchadoras.mx', 'eleconomista.com.mx', 'unotv.com', 'televisa.com',
+    'elsoldetoluca.com.mx', 'elsoldepuebla.com.mx', 'diariodexalapa.com.mx',
+    'noroeste.com.mx', 'elsiglodetorreon.com.mx', 'lasillarota.com',
+    'expansion.mx', 'forbes.com.mx', 'nmas.com.mx', 'infobae.com',
+    'news.google.com',  # Los queries de Google News ya son de México
+}
+
+
+def _is_mexico_news(title: str, content: str, source_url: str = '') -> bool:
+    """
+    Determina si una noticia es de México.
+    
+    Lógica:
+      1. Si la fuente es un dominio mexicano conocido → True
+      2. Si el texto tiene indicadores de otro país → False
+      3. Si el texto tiene indicadores de México → True
+      4. Si la fuente tiene dominio .mx → True
+      5. Sin indicadores claros → True (beneficio de la duda para fuentes configuradas)
+    """
+    # 1. Dominio mexicano conocido
+    if source_url:
+        from urllib.parse import urlparse
+        domain = urlparse(source_url).netloc.replace('www.', '')
+        if domain in MEXICAN_DOMAINS or domain.endswith('.mx'):
+            return True
+    
+    text_combined = f"{title} {content}".lower()
+    
+    # 2. Indicadores de otro país (descartar)
+    non_mexico_count = 0
+    for pattern in NON_MEXICO_INDICATORS:
+        if re.search(pattern, text_combined, re.IGNORECASE):
+            non_mexico_count += 1
+    
+    # 3. Indicadores de México
+    mexico_count = 0
+    for pattern in MEXICO_INDICATORS:
+        if re.search(pattern, text_combined, re.IGNORECASE):
+            mexico_count += 1
+    
+    # Si hay más indicadores de otro país que de México, descartar
+    if non_mexico_count > 0 and mexico_count == 0:
+        return False
+    
+    if non_mexico_count > mexico_count:
+        return False
+    
+    # Si hay al menos un indicador de México, aceptar
+    if mexico_count > 0:
+        return True
+    
+    # Sin indicadores claros: aceptar si es de dominio .mx
+    if source_url:
+        domain = urlparse(source_url).netloc
+        if '.mx' in domain:
+            return True
+    
+    # Beneficio de la duda para fuentes configuradas manualmente
+    return True
+
+
 def _normalize_text(text: str) -> str:
     """Normaliza texto: NFKD + minúsculas, conserva ñ/acentos para regex."""
     if not isinstance(text, str):
@@ -101,13 +221,25 @@ def _score_axis(text_norm: str, keywords: list[Tuple[str, float]]) -> float:
 
     La fórmula final es:  score = 1 - 1 / (1 + accumulated_weight)
     Con esto, más coincidencias → score más alto, pero nunca > 1.
+    
+    v4.1: Factor de acumulación aumentado para que múltiples coincidencias
+    tengan más impacto y se acerquen más rápido al tope.
     """
     total = 0.0
+    matches_count = 0
     for pattern, weight in keywords:
         matches = re.findall(pattern, text_norm, re.IGNORECASE)
         if matches:
-            # Cada aparición contribuye peso, con rendimientos decrecientes
-            total += weight * min(len(matches), 3)
+            n = min(len(matches), 3)
+            total += weight * n
+            matches_count += 1
+    
+    # Bonus por diversidad: si hay muchos keywords distintos, boost
+    if matches_count >= 3:
+        total *= 1.15
+    if matches_count >= 5:
+        total *= 1.10
+    
     # Sigmoide suave
     return 1.0 - 1.0 / (1.0 + total)
 
@@ -145,13 +277,35 @@ def score_relevance(title: str, content: str) -> dict:
     score_comp = w_fem * score_fem + w_nna * score_nna
 
     # Bonus: si AMBOS ejes tienen señal, boost multiplicativo
-    if score_fem > 0.15 and score_nna > 0.15:
-        score_comp = min(1.0, score_comp * 1.35)
+    # v4.1: Boost más agresivo para capturar noticias realmente relevantes
+    if score_fem > 0.10 and score_nna > 0.10:
+        # Cuanto más fuertes ambos ejes, mayor el boost
+        dual_strength = min(score_fem, score_nna)
+        if dual_strength > 0.30:
+            score_comp = min(1.0, score_comp * 1.55)
+        elif dual_strength > 0.15:
+            score_comp = min(1.0, score_comp * 1.45)
+        else:
+            score_comp = min(1.0, score_comp * 1.35)
 
-    # Clasificación
-    if score_comp >= 0.60:
+    # Bonus adicional: si el título menciona directamente feminicidio/NNA
+    direct_fem_title = bool(re.search(
+        r'\bfeminicidio|femicidio|violencia\s+feminicida|asesinato\s+de\s+(?:una\s+)?mujer\b',
+        title_norm, re.IGNORECASE
+    ))
+    direct_nna_title = bool(re.search(
+        r'\bhu[eé]rfan|orfandad|hijos?|hijas?|menores?|ni[\u00f1n][oa]s?|NNA|v[ií]ctimas?\s+indirectas?\b',
+        title_norm, re.IGNORECASE
+    ))
+    if direct_fem_title and direct_nna_title:
+        score_comp = min(1.0, score_comp * 1.20)
+    elif direct_fem_title:
+        score_comp = min(1.0, score_comp * 1.10)
+
+    # Clasificación — v4.1: Umbrales ajustados para capturar más noticias relevantes
+    if score_comp >= 0.45:
         clasificacion = 'Alta'
-    elif score_comp >= 0.40:
+    elif score_comp >= 0.30:
         clasificacion = 'Media'
     elif score_comp >= threshold:
         clasificacion = 'Baja'
@@ -212,7 +366,10 @@ def collect_news_from_rss(rss_url: str) -> list[dict]:
 
             # ── Scoring de relevancia ───────────────────────
             rel = score_relevance(title_text, desc_text)
-
+            # ── Filtro geográfico: solo México ─────────────
+            enlace_text = link.text.strip() if link else rss_url
+            if not _is_mexico_news(title_text, desc_text, enlace_text):
+                continue
             articles.append({
                 'titulo': title_text,
                 'contenido': desc_text,
@@ -282,11 +439,18 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
                         max_articles=30,
                     )
                     for art in raw_articles:
+                        # Filtro geográfico: solo México
+                        if not _is_mexico_news(
+                            art.get('titulo', ''),
+                            art.get('contenido', ''),
+                            art.get('enlace', source['url']),
+                        ):
+                            continue
                         rel = score_relevance(art['titulo'], art['contenido'])
                         art.update(rel)
                         art['fuente'] = source['name']
                         art.setdefault('cluster', 0)
-                    all_articles.extend(raw_articles)
+                        all_articles.append(art)
                     _update_db_source_status(
                         source['id'], 'ok', len(raw_articles)
                     )
@@ -337,9 +501,16 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
     print(f"  Relevantes (score >= {threshold}): {relevant}")
     print(f"  Con mención a NNA: {nna}")
 
-    # Ordenar por relevancia descendente
+    # Ordenar por fecha descendente (más reciente primero)
     if not df.empty:
-        df = df.sort_values('score_compuesto', ascending=False).reset_index(drop=True)
+        try:
+            df['_fecha_sort'] = pd.to_datetime(df['fecha'], errors='coerce')
+            df = df.sort_values(
+                '_fecha_sort', ascending=False, na_position='last'
+            ).reset_index(drop=True)
+            df = df.drop(columns=['_fecha_sort'])
+        except Exception:
+            df = df.sort_values('score_compuesto', ascending=False).reset_index(drop=True)
 
     return df
 

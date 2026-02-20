@@ -428,3 +428,240 @@
 2026-02-16 17:12:55,290 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/rss/: 403 Client Error: Forbidden for url: https://www.eleconomista.com.mx/rss/
 2026-02-16 17:12:55,299 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:12:55] "POST /fuentes/api/sources/25/test HTTP/1.1" 200 -
 2026-02-16 17:12:55,314 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:12:55] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:16:31,868 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:31] "GET / HTTP/1.1" 200 -
+2026-02-16 17:16:31,944 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:31] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-16 17:16:31,961 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:31] "GET /api/stats HTTP/1.1" 200 -
+2026-02-16 17:16:32,760 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:32] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-16 17:16:32,809 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:32] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:16:52,687 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:52] "POST /fuentes/api/sources/45/test HTTP/1.1" 200 -
+2026-02-16 17:16:52,704 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:16:52] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:06,890 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:06] "POST /fuentes/api/sources/43/test HTTP/1.1" 200 -
+2026-02-16 17:17:06,902 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:06] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:13,613 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:13] "POST /fuentes/api/sources/44/test HTTP/1.1" 200 -
+2026-02-16 17:17:13,628 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:13] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:25,383 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:25] "POST /fuentes/api/sources/41/test HTTP/1.1" 200 -
+2026-02-16 17:17:25,396 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:25] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:33,643 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:33] "POST /fuentes/api/sources/42/test HTTP/1.1" 200 -
+2026-02-16 17:17:33,659 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:33] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:40,021 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:40] "POST /fuentes/api/sources/36/test HTTP/1.1" 200 -
+2026-02-16 17:17:40,037 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:40] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:44,699 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:44] "POST /fuentes/api/sources/37/test HTTP/1.1" 200 -
+2026-02-16 17:17:44,710 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:44] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:51,866 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-02-16 17:17:51,875 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:51] "POST /fuentes/api/sources/31/test HTTP/1.1" 200 -
+2026-02-16 17:17:51,889 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:51] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:17:57,798 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:57] "POST /fuentes/api/sources/32/test HTTP/1.1" 200 -
+2026-02-16 17:17:57,813 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:17:57] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:04,875 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodexalapa.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/rss.xml/
+2026-02-16 17:18:04,891 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:04] "POST /fuentes/api/sources/30/test HTTP/1.1" 200 -
+2026-02-16 17:18:04,904 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:04] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:09,972 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldepuebla.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/rss.xml/
+2026-02-16 17:18:09,985 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:09] "POST /fuentes/api/sources/29/test HTTP/1.1" 200 -
+2026-02-16 17:18:09,998 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:09] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:18,691 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldetoluca.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.elsoldetoluca.com.mx/rss.xml/
+2026-02-16 17:18:18,699 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:18] "POST /fuentes/api/sources/28/test HTTP/1.1" 200 -
+2026-02-16 17:18:18,712 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:18] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:22,443 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-02-16 17:18:22,456 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:22] "POST /fuentes/api/sources/27/test HTTP/1.1" 200 -
+2026-02-16 17:18:22,475 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:22] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:26,790 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-02-16 17:18:26,807 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:26] "POST /fuentes/api/sources/26/test HTTP/1.1" 200 -
+2026-02-16 17:18:26,820 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:26] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:32,136 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:32] "POST /fuentes/api/sources/24/test HTTP/1.1" 200 -
+2026-02-16 17:18:32,152 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:32] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:39,713 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:39] "POST /fuentes/api/sources/23/test HTTP/1.1" 200 -
+2026-02-16 17:18:39,727 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:39] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:44,687 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:44] "POST /fuentes/api/sources/1/test HTTP/1.1" 200 -
+2026-02-16 17:18:44,698 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:44] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:48,269 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:48] "POST /fuentes/api/sources/2/test HTTP/1.1" 200 -
+2026-02-16 17:18:48,283 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:48] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:51,063 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:51] "POST /fuentes/api/sources/3/test HTTP/1.1" 200 -
+2026-02-16 17:18:51,079 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:51] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:55,302 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-02-16 17:18:55,309 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:55] "POST /fuentes/api/sources/4/test HTTP/1.1" 200 -
+2026-02-16 17:18:55,321 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:55] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:18:59,021 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/: 404 Client Error: Not Found for url: https://www.animalpolitico.com/feed
+2026-02-16 17:18:59,031 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:59] "POST /fuentes/api/sources/6/test HTTP/1.1" 200 -
+2026-02-16 17:18:59,046 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:18:59] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:19:03,382 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:03] "POST /fuentes/api/sources/5/test HTTP/1.1" 200 -
+2026-02-16 17:19:03,397 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:03] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:19:10,366 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:10] "POST /fuentes/api/sources/7/test HTTP/1.1" 200 -
+2026-02-16 17:19:10,380 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:10] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:19:15,323 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldemexico.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.elsoldemexico.com.mx/rss.xml/
+2026-02-16 17:19:15,333 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:15] "POST /fuentes/api/sources/8/test HTTP/1.1" 200 -
+2026-02-16 17:19:15,349 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:15] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:19:18,535 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:18] "POST /fuentes/api/sources/9/test HTTP/1.1" 200 -
+2026-02-16 17:19:18,547 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:18] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-16 17:19:32,564 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:32] "GET / HTTP/1.1" 200 -
+2026-02-16 17:19:32,608 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:32] "GET /api/stats HTTP/1.1" 200 -
+2026-02-16 17:19:32,611 - werkzeug - INFO - 172.19.0.1 - - [16/Feb/2026 17:19:32] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:11:42,378 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-02-20 16:11:42,381 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.4:5000
+2026-02-20 16:11:42,381 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 16:14:32,218 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:32] "[32mGET / HTTP/1.1[0m" 302 -
+2026-02-20 16:14:32,249 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:32] "GET /login?next=/ HTTP/1.1" 200 -
+2026-02-20 16:14:32,395 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:32] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-20 16:14:36,250 - app - WARNING - Login fallido para 'hectormorales' desde 172.19.0.1
+2026-02-20 16:14:36,252 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:36] "POST /login?next=/ HTTP/1.1" 200 -
+2026-02-20 16:14:39,907 - app - WARNING - Login fallido para 'hectormorales' desde 172.19.0.1
+2026-02-20 16:14:39,912 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:39] "POST /login?next=/ HTTP/1.1" 200 -
+2026-02-20 16:14:42,684 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-02-20 16:14:42,685 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:42] "[32mPOST /login?next=/ HTTP/1.1[0m" 302 -
+2026-02-20 16:14:42,701 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:42] "GET / HTTP/1.1" 200 -
+2026-02-20 16:14:42,737 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:42] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:14:42,749 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:14:42] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:15:18,385 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:15:18] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-20 16:15:19,379 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:15:19] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:15:20,061 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:15:20] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-20 16:15:20,748 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:15:20] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:15:21,886 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:15:21] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-20 16:15:23,112 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:15:23] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:16:30,275 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:16:30] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-20 16:16:30,338 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:16:30] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:16:44,503 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:16:44] "GET / HTTP/1.1" 200 -
+2026-02-20 16:16:44,546 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:16:44] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:16:44,551 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:16:44] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:17:50,873 - src.analysis.dedup - INFO - Deduplicación: 30 noticias de entrada
+2026-02-20 16:17:50,881 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-02-20 16:17:50,885 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-02-20 16:17:50,913 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-02-20 16:17:50,931 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-02-20 16:17:50,933 - src.analysis.dedup - INFO -   Resultado: 30 → 30 únicos (0 duplicados eliminados)
+2026-02-20 16:17:50,963 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:17:50] "GET /api/analyze HTTP/1.1" 200 -
+2026-02-20 16:17:50,978 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:17:50] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:17:50,989 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:17:50] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:22:30,113 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:22:30] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-20 16:22:30,174 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:22:30] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:22:58,568 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:22:58] "GET / HTTP/1.1" 200 -
+2026-02-20 16:22:58,637 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:22:58] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:22:58,640 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:22:58] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:23:35,106 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:23:35] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-20 16:23:35,153 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:23:35] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:23:48,319 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:23:48] "POST /fuentes/api/sources/26/toggle HTTP/1.1" 200 -
+2026-02-20 16:23:48,333 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:23:48] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:23:52,023 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-02-20 16:23:52,039 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:23:52] "POST /fuentes/api/sources/26/test HTTP/1.1" 200 -
+2026-02-20 16:23:52,054 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:23:52] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:32:27,313 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:32:27] "GET / HTTP/1.1" 200 -
+2026-02-20 16:32:27,362 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:32:27] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:32:27,376 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:32:27] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:43:04,169 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-02-20 16:43:04,171 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.4:5000
+2026-02-20 16:43:04,171 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 16:44:00,260 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:00] "GET / HTTP/1.1" 200 -
+2026-02-20 16:44:00,419 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:00] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:44:00,436 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:00] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:44:03,419 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:03] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-20 16:44:06,043 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:06] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:44:25,154 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:25] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-20 16:44:28,372 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:28] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:44:29,255 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:29] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-20 16:44:34,252 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:34] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:44:46,618 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:46] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-20 16:44:47,024 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:47] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:44:52,155 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:52] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-20 16:44:53,221 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:53] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-20 16:44:53,282 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:44:53] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:45:22,354 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:22] "POST /fuentes/api/sources/31/toggle HTTP/1.1" 200 -
+2026-02-20 16:45:22,366 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:22] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:45:23,895 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-02-20 16:45:23,904 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:23] "POST /fuentes/api/sources/31/test HTTP/1.1" 200 -
+2026-02-20 16:45:23,917 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:23] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:45:42,007 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/rss/: 403 Client Error: Forbidden for url: https://www.eleconomista.com.mx/rss/
+2026-02-20 16:45:42,038 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:42] "POST /fuentes/api/sources/25/test HTTP/1.1" 200 -
+2026-02-20 16:45:42,067 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:42] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:45:57,253 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:57] "POST /fuentes/api/sources/46/test HTTP/1.1" 200 -
+2026-02-20 16:45:57,269 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:45:57] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:46:08,482 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:08] "POST /fuentes/api/sources/46/test HTTP/1.1" 200 -
+2026-02-20 16:46:08,499 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:08] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:46:14,900 - src.collection.scraper - INFO - robots.txt bloquea news.google.com → activando modo stealth (delays 12-25s, UA rotation, cookies persistentes)
+2026-02-20 16:46:15,690 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:15] "POST /fuentes/api/sources/40/test HTTP/1.1" 200 -
+2026-02-20 16:46:15,708 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:15] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:46:33,248 - app.sources.routes - INFO - Fuente eliminada: unotv.com por hectorm11
+2026-02-20 16:46:33,249 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:33] "DELETE /fuentes/api/sources/46 HTTP/1.1" 200 -
+2026-02-20 16:46:33,261 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:33] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:46:35,872 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:35] "POST /fuentes/api/sources/probe HTTP/1.1" 200 -
+2026-02-20 16:46:47,323 - app.sources.routes - INFO - Fuente agregada: unotv.com (https://www.unotv.com/) por hectorm11
+2026-02-20 16:46:47,325 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:47] "[35m[1mPOST /fuentes/api/sources HTTP/1.1[0m" 201 -
+2026-02-20 16:46:48,573 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:48] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:46:55,863 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:55] "POST /fuentes/api/sources/47/test HTTP/1.1" 200 -
+2026-02-20 16:46:55,878 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:46:55] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:47:27,826 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:47:27] "GET / HTTP/1.1" 200 -
+2026-02-20 16:47:27,875 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:47:27] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:47:27,896 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:47:27] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:55:50,318 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-02-20 16:55:50,321 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.4:5000
+2026-02-20 16:55:50,322 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-20 16:56:29,686 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:29] "GET / HTTP/1.1" 200 -
+2026-02-20 16:56:29,866 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:29] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:56:29,887 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:29] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:56:34,713 - src.collection.scraper - INFO - Método sitemap sin resultados, intentando sitemap: https://www.unotv.com/…
+2026-02-20 16:56:40,675 - src.collection.scraper - INFO - Métodos ['sitemap'] sin resultados, intentando HTML: https://www.unotv.com/…
+2026-02-20 16:56:42,730 - src.collection.scraper - INFO - HTML listing: 0 enlaces a artículos en https://www.unotv.com/…
+2026-02-20 16:56:42,732 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.unotv.com/… (métodos intentados: ['sitemap', 'html'])
+2026-02-20 16:56:42,770 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:42] "GET /api/analyze HTTP/1.1" 200 -
+2026-02-20 16:56:42,783 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:42] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:56:42,798 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:42] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:56:48,582 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:48] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-02-20 16:56:53,551 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:56:53] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-02-20 16:57:14,997 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:57:14] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-20 16:57:15,053 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:57:15] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:57:20,258 - src.collection.scraper - INFO - Método sitemap sin resultados, intentando sitemap: https://www.unotv.com/…
+2026-02-20 16:57:24,714 - src.collection.scraper - INFO - Métodos ['sitemap'] sin resultados, intentando HTML: https://www.unotv.com/…
+2026-02-20 16:57:26,270 - src.collection.scraper - INFO - HTML listing: 0 enlaces a artículos en https://www.unotv.com/…
+2026-02-20 16:57:26,272 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.unotv.com/… (métodos intentados: ['sitemap', 'html'])
+2026-02-20 16:57:26,279 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:57:26] "POST /fuentes/api/sources/47/test HTTP/1.1" 200 -
+2026-02-20 16:57:26,293 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:57:26] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:57:40,939 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-02-20 16:57:40,941 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…
+2026-02-20 16:57:56,030 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:57:56] "POST /fuentes/api/sources/27/test HTTP/1.1" 200 -
+2026-02-20 16:57:56,045 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:57:56] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:58:14,556 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:58:14] "POST /fuentes/api/sources/24/test HTTP/1.1" 200 -
+2026-02-20 16:58:14,568 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:58:14] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:58:20,547 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/rss/: 403 Client Error: Forbidden for url: https://www.eleconomista.com.mx/rss/
+2026-02-20 16:58:20,548 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.eleconomista.com.mx/rss/…
+2026-02-20 16:58:22,142 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/sitemap.xml: 404 Client Error: Not Found for url: https://www.eleconomista.com.mx/sitemap.xml
+2026-02-20 16:58:23,623 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/sitemap_index.xml: 404 Client Error: Not Found for url: https://www.eleconomista.com.mx/sitemap_index.xml
+2026-02-20 16:58:25,087 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/sitemap-news.xml: 403 Client Error: Forbidden for url: https://www.eleconomista.com.mx/sitemap-news.xml
+2026-02-20 16:58:26,651 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/news-sitemap.xml: 404 Client Error: Not Found for url: https://www.eleconomista.com.mx/news-sitemap.xml
+2026-02-20 16:58:26,652 - src.collection.scraper - INFO - Métodos ['rss', 'sitemap'] sin resultados, intentando HTML: https://www.eleconomista.com.mx/rss/…
+2026-02-20 16:58:28,041 - src.collection.scraper - WARNING - Error HTTP en https://www.eleconomista.com.mx/rss/: 403 Client Error: Forbidden for url: https://www.eleconomista.com.mx/rss/
+2026-02-20 16:58:28,044 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/rss/… (métodos intentados: ['rss', 'sitemap', 'html'])
+2026-02-20 16:58:28,053 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:58:28] "POST /fuentes/api/sources/25/test HTTP/1.1" 200 -
+2026-02-20 16:58:28,069 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:58:28] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:58:42,043 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-02-20 16:58:42,045 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.elheraldodemexico.com/rss.xml…
+2026-02-20 16:58:44,059 - src.collection.scraper - INFO - Métodos ['rss', 'sitemap'] sin resultados, intentando HTML: https://www.elheraldodemexico.com/rss.xml…
+2026-02-20 16:58:44,546 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-02-20 16:58:44,553 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elheraldodemexico.com/rss.xml… (métodos intentados: ['rss', 'sitemap', 'html'])
+2026-02-20 16:58:44,574 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:58:44] "POST /fuentes/api/sources/19/test HTTP/1.1" 200 -
+2026-02-20 16:58:44,592 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:58:44] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:58:57,216 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-02-20 16:58:57,218 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.sdpnoticias.com/feed…
+2026-02-20 16:59:07,800 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:07] "POST /fuentes/api/sources/16/test HTTP/1.1" 200 -
+2026-02-20 16:59:07,812 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:07] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:17,297 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:17] "POST /fuentes/api/sources/16/toggle HTTP/1.1" 200 -
+2026-02-20 16:59:17,308 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:17] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:20,083 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:20] "GET /fuentes/ HTTP/1.1" 200 -
+2026-02-20 16:59:20,118 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:20] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:24,520 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:24] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:25,744 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:25] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:26,391 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:26] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:29,169 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:29] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:29,773 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:29] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:30,368 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:30] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-02-20 16:59:51,985 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:51] "GET / HTTP/1.1" 200 -
+2026-02-20 16:59:52,028 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:52] "GET /api/stats HTTP/1.1" 200 -
+2026-02-20 16:59:52,038 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:52] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:59:53,752 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:53] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
+2026-02-20 16:59:57,009 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:57] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-02-20 16:59:57,817 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:57] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -

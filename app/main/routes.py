@@ -145,9 +145,18 @@ def api_noticias():
         if col in data.columns:
             data = data[data[col] == clasificacion]
 
-    # Ordenar por relevancia
-    sort_col = 'relevancia_final' if 'relevancia_final' in data.columns else 'score_compuesto'
-    if sort_col in data.columns:
+    # Ordenar por fecha (más reciente primero)
+    if 'fecha' in data.columns:
+        try:
+            data['_fecha_sort'] = pd.to_datetime(data['fecha'], errors='coerce')
+            data = data.sort_values('_fecha_sort', ascending=False, na_position='last')
+            data = data.drop(columns=['_fecha_sort'])
+        except Exception:
+            # Fallback: ordenar por relevancia si la fecha falla
+            sort_col = 'relevancia_final' if 'relevancia_final' in data.columns else 'score_compuesto'
+            if sort_col in data.columns:
+                data = data.sort_values(sort_col, ascending=False)
+    elif sort_col in data.columns:
         data = data.sort_values(sort_col, ascending=False)
 
     start = (page - 1) * per_page

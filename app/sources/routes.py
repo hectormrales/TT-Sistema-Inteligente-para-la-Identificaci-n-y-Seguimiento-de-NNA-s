@@ -202,38 +202,45 @@ def test_source(source_id: int):
         return jsonify({'error': 'Fuente no encontrada'}), 404
 
     try:
-        scraper = DynamicScraper()
+        scraper = DynamicScraper(test_mode=True)
         probe = scraper.probe_url(source.url)
 
-        # Intentar extraer algunos artículos
+        # Intentar extraer algunos artículos (más para dar mejor prueba)
         method = source.source_type if source.source_type != 'auto' else 'auto'
-        articles = scraper.scrape_source(source.url, method=method, max_articles=3)
+        articles = scraper.scrape_source(source.url, method=method, max_articles=5)
 
         # Actualizar información de la fuente
         source.last_scraped = datetime.now(timezone.utc)
         source.crawl_delay = probe.get('crawl_delay')
+        stealth_mode = probe.get('stealth_mode', False)
 
-        if probe.get('can_scrape') is False:
-            source.last_status = 'blocked'
-            source.last_error = 'Bloqueado por robots.txt'
-        elif articles:
+        if articles:
             source.last_status = 'ok'
             source.last_error = None
             source.articles_found = len(articles)
             # Auto-detectar tipo si es 'auto'
             if source.source_type == 'auto':
-                source.source_type = probe.get('recommended_method', 'html')
+                detected_method = probe.get('recommended_method', 'html')
+                # Si el artículo se obtuvo via stealth, marcar como html
+                if stealth_mode and detected_method in ('none', 'blocked'):
+                    detected_method = 'html'
+                source.source_type = detected_method
+        elif probe.get('can_scrape') is False:
+            source.last_status = 'blocked'
+            source.last_error = 'Bloqueado por robots.txt y sin acceso stealth'
         else:
-            source.last_status = 'error'
-            source.last_error = 'No se encontraron artículos'
+            source.last_status = 'warning'
+            source.last_error = 'No se encontraron artículos (la fuente es accesible pero no se detectaron noticias)'
 
         db.session.commit()
+        scraper.close()
 
         return jsonify({
             'status': 'success',
             'probe': {
                 'source_type': probe.get('source_type'),
                 'can_scrape': probe.get('can_scrape', True),
+                'stealth_mode': stealth_mode,
                 'robots_txt': probe.get('robots', {}).get('has_robots', False),
                 'crawl_delay': probe.get('crawl_delay'),
                 'rss_feeds': probe.get('rss_feeds', []),

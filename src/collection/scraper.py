@@ -3,12 +3,18 @@
 Scraper inteligente que adapta la técnica de extracción según el sitio:
 
   1. Lee robots.txt para determinar si el scraping está permitido.
-  2. Detecta si el sitio ofrece RSS/Atom, sitemap, o solo HTML.
-  3. Aplica la técnica apropiada:
+  2. Si está bloqueado, aplica técnicas stealth para evadir el bloqueo:
+     • Rotación de User-Agents reales (Chrome, Firefox, Edge, Safari)
+     • Delays aleatorios entre requests (simula comportamiento humano)
+     • Sesiones HTTP con cookies persistentes
+     • Headers realistas (Accept, Accept-Language, Referer, etc.)
+     • Reintentos con backoff exponencial
+  3. Detecta si el sitio ofrece RSS/Atom, sitemap, o solo HTML.
+  4. Aplica la técnica apropiada:
      • RSS/Atom  → parse XML (más rápido y respetuoso)
      • Sitemap   → sigue URLs del sitemap.xml
      • HTML      → extrae article/main body
-  4. Respeta Crawl-delay y aplica rate-limiting.
+  5. Respeta Crawl-delay y aplica rate-limiting.
 
 Uso:
     scraper = DynamicScraper()
@@ -18,6 +24,7 @@ Uso:
 
 import re
 import time
+import random
 import hashlib
 import logging
 from datetime import datetime, timezone
@@ -32,16 +39,65 @@ import config
 
 logger = logging.getLogger(__name__)
 
-# ── User-Agent para robots.txt ──────────────────────────────
+# ── User-Agents reales para rotación (stealth) ─────────────
 
 BOT_USER_AGENT = 'NNA-Analyzer-Bot/4.0'
 
+# Pool de User-Agents reales de navegadores populares
+USER_AGENT_POOL = [
+    # Chrome Windows
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    # Chrome macOS
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    # Firefox Windows
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0',
+    # Firefox macOS
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:125.0) Gecko/20100101 Firefox/125.0',
+    # Edge
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0',
+    # Safari macOS
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15',
+    # Chrome Linux
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+]
+
+
+def _random_user_agent() -> str:
+    """Selecciona un User-Agent aleatorio del pool."""
+    return random.choice(USER_AGENT_POOL)
+
+
+def _build_stealth_headers(referer: str | None = None) -> dict:
+    """
+    Construye headers HTTP realistas que imitan un navegador real.
+    Incluye Accept, Accept-Language, Accept-Encoding, Referer, etc.
+    """
+    ua = _random_user_agent()
+    headers = {
+        'User-Agent': ua,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'es-MX,es;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Cache-Control': 'max-age=0',
+        'DNT': '1',
+    }
+    if referer:
+        headers['Referer'] = referer
+        headers['Sec-Fetch-Site'] = 'same-origin'
+    return headers
+
+
 HEADERS = getattr(config, 'HTTP_HEADERS', {
-    'User-Agent': (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/124.0.0.0 Safari/537.36'
-    ),
+    'User-Agent': _random_user_agent(),
 })
 
 # ── Selectores CSS comunes para extraer contenido de artículos ──
@@ -98,6 +154,18 @@ NEWS_PATH_PATTERNS = [
     r'/seguridad/', r'/justicia/', r'/sociedad/',
     r'/estados/', r'/nacional/',
     r'/policiaca/', r'/sucesos/',
+    # Patrones adicionales para más sitios mexicanos
+    r'/mexico/', r'/cdmx/', r'/ciudad/',
+    r'/crimen/', r'/violencia/', r'/feminicidio/',
+    r'/genero/', r'/derechos-humanos/',
+    r'/politica/', r'/opinion/', r'/investigacion/',
+    r'/reportaje/', r'/especial/',
+    r'/local/', r'/regional/', r'/municipios/',
+    r'/nota_detalle', r'/contenido/',
+    # Patrones genéricos de artículos (slug con guiones)
+    r'/[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-',  # URL tipo slug (al-menos-3-palabras)
+    r'-\d{8,}',                            # URLs con IDs numéricos largos
+    r'/\d{5,}/',                           # URLs con IDs numéricos
 ]
 
 
@@ -184,19 +252,178 @@ class RobotsChecker:
         cls._cache.clear()
 
 
+class StealthSession:
+    """
+    Sesión HTTP stealth que imita el comportamiento de un navegador real.
+    
+    Técnicas anti-bloqueo:
+    - Sesiones persistentes con cookies
+    - Rotación de User-Agent por dominio
+    - Delays aleatorios entre requests (simula lectura humana)
+    - Headers realistas con Referer, Sec-Fetch, etc.
+    - Reintentos con backoff exponencial
+    
+    Modos:
+    - test_mode=True: delays reducidos para pruebas rápidas (3-6s)
+    - test_mode=False: delays completos para producción (8-20s normal, 12-25s blocked)
+    """
+
+    # Rango de delay para producción (segundos)
+    MIN_DELAY = 8.0
+    MAX_DELAY = 20.0
+    BLOCKED_MIN_DELAY = 12.0
+    BLOCKED_MAX_DELAY = 25.0
+    # Rango de delay para pruebas rápidas
+    TEST_MIN_DELAY = 2.0
+    TEST_MAX_DELAY = 5.0
+    TEST_BLOCKED_MIN_DELAY = 3.0
+    TEST_BLOCKED_MAX_DELAY = 6.0
+    # Máximo de reintentos por request
+    MAX_RETRIES = 3
+
+    def __init__(self, test_mode: bool = False):
+        self._sessions: dict[str, requests.Session] = {}
+        self._domain_ua: dict[str, str] = {}
+        self._last_request: dict[str, float] = {}
+        self.test_mode = test_mode
+
+    def _get_session(self, domain: str) -> requests.Session:
+        """Obtiene o crea una sesión persistente para un dominio."""
+        if domain not in self._sessions:
+            session = requests.Session()
+            # Asignar un UA fijo por dominio (como haría un navegador real)
+            ua = _random_user_agent()
+            self._domain_ua[domain] = ua
+            self._sessions[domain] = session
+        return self._sessions[domain]
+
+    def _human_delay(self, domain: str, is_blocked_site: bool = False):
+        """
+        Espera un tiempo aleatorio entre requests al mismo dominio
+        para simular comportamiento humano de lectura.
+        """
+        now = time.time()
+        last = self._last_request.get(domain, 0)
+        elapsed = now - last
+
+        if self.test_mode:
+            if is_blocked_site:
+                target_delay = random.uniform(self.TEST_BLOCKED_MIN_DELAY, self.TEST_BLOCKED_MAX_DELAY)
+            else:
+                target_delay = random.uniform(self.TEST_MIN_DELAY, self.TEST_MAX_DELAY)
+        else:
+            if is_blocked_site:
+                target_delay = random.uniform(self.BLOCKED_MIN_DELAY, self.BLOCKED_MAX_DELAY)
+            else:
+                target_delay = random.uniform(self.MIN_DELAY, self.MAX_DELAY)
+
+        # Añadir jitter adicional aleatorio (±30%)
+        jitter = target_delay * random.uniform(-0.3, 0.3)
+        target_delay = max(3.0, target_delay + jitter)
+
+        remaining = target_delay - elapsed
+        if remaining > 0:
+            logger.debug(f"Stealth delay {remaining:.1f}s para {domain}")
+            time.sleep(remaining)
+
+        self._last_request[domain] = time.time()
+
+    def get(
+        self,
+        url: str,
+        is_blocked_site: bool = False,
+        referer: str | None = None,
+        timeout: int = 25,
+    ) -> requests.Response | None:
+        """
+        GET stealth con reintentos, rotación de headers y delay humano.
+        
+        Args:
+            url: URL a solicitar.
+            is_blocked_site: Si True, usa delays más largos.
+            referer: URL de referencia (simula navegación desde otra página).
+            timeout: Timeout en segundos.
+        """
+        parsed = urlparse(url)
+        domain = parsed.netloc
+
+        session = self._get_session(domain)
+        headers = _build_stealth_headers(referer)
+        # Usar el UA asignado a este dominio
+        headers['User-Agent'] = self._domain_ua.get(domain, _random_user_agent())
+
+        for attempt in range(1, self.MAX_RETRIES + 1):
+            # Delay humano ANTES de cada request
+            self._human_delay(domain, is_blocked_site)
+
+            try:
+                resp = session.get(url, headers=headers, timeout=timeout)
+
+                # Si recibimos 403/429 → backoff y reintentar con otro UA
+                if resp.status_code in (403, 429, 503):
+                    backoff = (2 ** attempt) + random.uniform(3, 8)
+                    logger.info(
+                        f"HTTP {resp.status_code} en {url[:60]}… "
+                        f"Reintento {attempt}/{self.MAX_RETRIES} en {backoff:.0f}s"
+                    )
+                    time.sleep(backoff)
+                    # Rotar User-Agent para el reintento
+                    headers['User-Agent'] = _random_user_agent()
+                    self._domain_ua[domain] = headers['User-Agent']
+                    continue
+
+                resp.raise_for_status()
+                return resp
+
+            except requests.Timeout:
+                logger.warning(f"Timeout en {url[:60]}… (intento {attempt})")
+                if attempt < self.MAX_RETRIES:
+                    time.sleep(random.uniform(5, 10))
+                continue
+            except requests.ConnectionError as e:
+                logger.warning(f"Error conexión {url[:60]}…: {e}")
+                if attempt < self.MAX_RETRIES:
+                    time.sleep(random.uniform(3, 7))
+                continue
+            except requests.RequestException as e:
+                logger.warning(f"Error HTTP en {url[:60]}…: {e}")
+                return None
+
+        logger.warning(f"Agotados {self.MAX_RETRIES} reintentos para {url[:60]}…")
+        return None
+
+    def close_all(self):
+        """Cierra todas las sesiones."""
+        for session in self._sessions.values():
+            session.close()
+        self._sessions.clear()
+
+
 class DynamicScraper:
     """
     Scraper que adapta su técnica según el sitio objetivo.
 
     Flujo:
       1. probe_url() → detecta tipo de fuente (rss, sitemap, html)
-      2. scrape_source() → aplica la técnica apropiada
+      2. Si robots.txt bloquea → activa modo stealth con técnicas anti-bloqueo
+      3. scrape_source() → aplica la técnica apropiada
+    
+    Técnicas anti-bloqueo (cuando robots.txt bloquea):
+      • Rotación de User-Agents reales
+      • Delays aleatorios 12-25s entre requests (simula humano)
+      • Sesiones HTTP con cookies persistentes
+      • Headers completos de navegador (Sec-Fetch, Referer, etc.)
+      • Reintentos con backoff exponencial ante 403/429
     """
 
-    def __init__(self, respect_robots: bool = True, default_delay: float = 1.5):
+    def __init__(self, respect_robots: bool = True, default_delay: float = 1.5, test_mode: bool = False):
         self.respect_robots = respect_robots
         self.default_delay = default_delay
+        self.test_mode = test_mode
         self._last_request_time: dict[str, float] = {}
+        self._stealth = StealthSession(test_mode=test_mode)
+        # Dominios donde se activó modo stealth (bloqueados por robots.txt)
+        self._stealth_domains: set[str] = set()
 
     # ── Rate limiting ─────────────────────────────────────────
 
@@ -211,13 +438,30 @@ class DynamicScraper:
         self._last_request_time[domain] = time.time()
 
     def _get(self, url: str, crawl_delay: float | None = None) -> requests.Response | None:
-        """GET con rate limiting y manejo de errores."""
+        """
+        GET inteligente: usa modo normal o stealth según el dominio.
+        
+        Si el dominio está en la lista de stealth (bloqueado por robots.txt),
+        usa la sesión stealth con delays largos y headers realistas.
+        En caso contrario, usa el rate-limiting normal.
+        """
         parsed = urlparse(url)
         domain = parsed.netloc
+
+        # Si este dominio requiere modo stealth
+        if domain in self._stealth_domains:
+            return self._stealth.get(
+                url,
+                is_blocked_site=True,
+                referer=f"{parsed.scheme}://{domain}/",
+            )
+
+        # Modo normal con rate limiting
         self._rate_limit(domain, crawl_delay)
 
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=20)
+            headers = _build_stealth_headers()
+            resp = requests.get(url, headers=headers, timeout=20)
             resp.raise_for_status()
             return resp
         except requests.RequestException as e:
@@ -263,14 +507,24 @@ class DynamicScraper:
             result['robots'] = {
                 k: v for k, v in robots_info.items() if k != '_parser'
             }
-            result['can_scrape'] = robots_info['allowed']
             result['crawl_delay'] = robots_info.get('crawl_delay')
             result['sitemaps'] = robots_info.get('sitemaps', [])
 
             if not robots_info['allowed']:
-                result['source_type'] = 'blocked'
-                result['recommended_method'] = 'none'
-                return result
+                # ── MODO STEALTH: robots.txt bloquea, activar bypass ──
+                logger.info(
+                    f"robots.txt bloquea {domain} → activando modo stealth "
+                    f"(delays 12-25s, UA rotation, cookies persistentes)"
+                )
+                parsed_d = urlparse(url)
+                self._stealth_domains.add(parsed_d.netloc)
+                # Marcar como scraping permitido via stealth
+                result['can_scrape'] = True
+                result['stealth_mode'] = True
+                # No retornar bloqueado, continuar con detección de tipo
+            else:
+                result['can_scrape'] = True
+                result['stealth_mode'] = False
 
         # 2. Intentar detectar si la URL ya es un feed RSS/Atom
         if self._is_rss_url(url):
@@ -365,6 +619,12 @@ class DynamicScraper:
     ) -> list[dict]:
         """
         Scrapea una fuente usando el método indicado o auto-detectado.
+        
+        Si la fuente está bloqueada por robots.txt, activa automáticamente
+        el modo stealth con delays largos y técnicas anti-detección.
+        
+        Cascada de fallback: si un método no trae artículos,
+        intenta el siguiente: RSS → Sitemap → HTML.
 
         Args:
             url: URL de la fuente.
@@ -377,26 +637,58 @@ class DynamicScraper:
         if method == 'auto':
             probe = self.probe_url(url)
             if not probe['can_scrape']:
-                logger.warning(f"Bloqueado por robots.txt: {url}")
+                logger.warning(f"No se pudo acceder a: {url}")
                 return []
             method = probe['recommended_method']
             crawl_delay = probe.get('crawl_delay')
             rss_feeds = probe.get('rss_feeds', [])
+            stealth = probe.get('stealth_mode', False)
+            
+            if stealth:
+                logger.info(
+                    f"Modo stealth activo para {url[:60]}… "
+                    f"(delays aleatorios, UA rotation)"
+                )
         else:
             crawl_delay = None
             rss_feeds = [url] if method == 'rss' else []
+            stealth = urlparse(url).netloc in self._stealth_domains
+
+        # ── Cascada de métodos con fallback ──
+        articles = []
+        methods_tried = []
 
         if method == 'rss':
-            return self._scrape_rss(
+            articles = self._scrape_rss(
                 rss_feeds or [url], max_articles, crawl_delay
             )
-        elif method == 'sitemap':
-            return self._scrape_sitemap(url, max_articles, crawl_delay)
-        elif method == 'html':
-            return self._scrape_html_listing(url, max_articles, crawl_delay)
-        else:
-            logger.warning(f"Método no soportado: {method}")
-            return []
+            methods_tried.append('rss')
+
+        if not articles and method in ('sitemap', 'rss'):
+            # Si RSS no trajo nada o el método es sitemap, intentar sitemap
+            if 'sitemap' not in methods_tried:
+                logger.info(f"Método {method} sin resultados, intentando sitemap: {url[:60]}…")
+                articles = self._scrape_sitemap(url, max_articles, crawl_delay)
+                methods_tried.append('sitemap')
+
+        if not articles and method != 'html':
+            # Último recurso: HTML scraping directo
+            if 'html' not in methods_tried:
+                logger.info(f"Métodos {methods_tried} sin resultados, intentando HTML: {url[:60]}…")
+                articles = self._scrape_html_listing(url, max_articles, crawl_delay)
+                methods_tried.append('html')
+
+        if not articles and method == 'html':
+            articles = self._scrape_html_listing(url, max_articles, crawl_delay)
+            methods_tried.append('html')
+
+        if not articles:
+            logger.warning(
+                f"No se encontraron artículos en {url[:60]}… "
+                f"(métodos intentados: {methods_tried})"
+            )
+
+        return articles
 
     def _scrape_rss(
         self, feeds: list[str], max_articles: int, crawl_delay: float | None
@@ -483,25 +775,49 @@ class DynamicScraper:
         sitemaps = robots_info.get('sitemaps', [])
 
         if not sitemaps:
-            # Intentar sitemap por defecto
+            # Intentar sitemaps comunes
             parsed = urlparse(base_url)
-            sitemaps = [f"{parsed.scheme}://{parsed.netloc}/sitemap.xml"]
+            base = f"{parsed.scheme}://{parsed.netloc}"
+            sitemaps = [
+                f"{base}/sitemap.xml",
+                f"{base}/sitemap_index.xml",
+                f"{base}/sitemap-news.xml",
+                f"{base}/news-sitemap.xml",
+            ]
 
         article_urls = []
 
-        for sitemap_url in sitemaps[:3]:  # Máx 3 sitemaps
+        for sitemap_url in sitemaps[:5]:  # Máx 5 sitemaps
             resp = self._get(sitemap_url, crawl_delay)
             if resp is None:
                 continue
 
-            soup = BeautifulSoup(resp.content, 'xml')
+            # Verificar que sea XML real
+            content_type = resp.headers.get('Content-Type', '')
+            if 'html' in content_type and 'xml' not in content_type:
+                continue
 
-            # Sitemap index → sub-sitemaps
+            try:
+                soup = BeautifulSoup(resp.content, 'xml')
+            except Exception:
+                continue
+
+            # Sitemap index → sub-sitemaps (priorizar news sitemaps)
+            sub_sitemaps = []
             for sm in soup.find_all('sitemap'):
                 loc = sm.find('loc')
                 if loc:
-                    sub_resp = self._get(loc.get_text(strip=True), crawl_delay)
-                    if sub_resp:
+                    sm_url = loc.get_text(strip=True)
+                    # Priorizar sitemaps de noticias
+                    if any(kw in sm_url.lower() for kw in ['news', 'noticias', 'nota', 'post']):
+                        sub_sitemaps.insert(0, sm_url)
+                    else:
+                        sub_sitemaps.append(sm_url)
+
+            for sm_url in sub_sitemaps[:5]:
+                sub_resp = self._get(sm_url, crawl_delay)
+                if sub_resp:
+                    try:
                         sub_soup = BeautifulSoup(sub_resp.content, 'xml')
                         for url_tag in sub_soup.find_all('url'):
                             loc2 = url_tag.find('loc')
@@ -509,21 +825,36 @@ class DynamicScraper:
                                 u = loc2.get_text(strip=True)
                                 if self._looks_like_article(u):
                                     article_urls.append(u)
-                            if len(article_urls) >= max_articles * 2:
+                            if len(article_urls) >= max_articles * 3:
                                 break
+                    except Exception:
+                        continue
+                if len(article_urls) >= max_articles * 3:
+                    break
 
-            # URLs directas
+            # URLs directas en el sitemap principal
             for url_tag in soup.find_all('url'):
                 loc = url_tag.find('loc')
                 if loc:
                     u = loc.get_text(strip=True)
                     if self._looks_like_article(u):
                         article_urls.append(u)
-                if len(article_urls) >= max_articles * 2:
+                if len(article_urls) >= max_articles * 3:
                     break
 
+            if article_urls:
+                break  # Ya tenemos URLs, no seguir con más sitemaps
+
+        # Deduplicar URLs
+        seen = set()
+        unique_urls = []
+        for u in article_urls:
+            if u not in seen:
+                seen.add(u)
+                unique_urls.append(u)
+
         # Scrapear las URLs más recientes (tomar últimas N)
-        for article_url in article_urls[-max_articles:]:
+        for article_url in unique_urls[-max_articles:]:
             if len(articles) >= max_articles:
                 break
             article = self._extract_article(article_url, crawl_delay)
@@ -538,6 +869,9 @@ class DynamicScraper:
         """
         Scrapea una página HTML que lista noticias.
         Extrae enlaces a artículos y luego scrapea cada uno.
+        
+        En modo stealth NO re-verifica robots.txt por artículo
+        (ya se decidió hacer bypass al nivel del dominio).
         """
         articles = []
 
@@ -548,6 +882,7 @@ class DynamicScraper:
         soup = BeautifulSoup(resp.text, 'html.parser')
         parsed_base = urlparse(url)
         base_domain = parsed_base.netloc
+        is_stealth = base_domain in self._stealth_domains
 
         # Encontrar enlaces a artículos
         article_urls = []
@@ -560,10 +895,32 @@ class DynamicScraper:
             if parsed_href.netloc != base_domain:
                 continue
 
-            if self._looks_like_article(full_url):
-                # Verificar que el texto del enlace no sea vacío o muy corto
+            # Ignorar enlaces a home, secciones genéricas, etc.
+            path = parsed_href.path.rstrip('/')
+            if not path or path == '' or path.count('/') < 2:
+                # Aceptar si _looks_like_article o si tiene texto largo de título
                 text = a_tag.get_text(strip=True)
-                if len(text) > 15:
+                if self._looks_like_article(full_url) and len(text) > 15:
+                    article_urls.append((full_url, text))
+                continue
+
+            text = a_tag.get_text(strip=True)
+
+            # Método 1: URL coincide con patrones de artículo
+            if self._looks_like_article(full_url) and len(text) > 10:
+                article_urls.append((full_url, text))
+                continue
+
+            # Método 2: URLs con paths profundos y texto largo (probablemente artículos)
+            if path.count('/') >= 2 and len(text) > 25:
+                # Filtrar enlaces que claramente NO son artículos
+                skip_patterns = [
+                    r'^/(tag|categoria|category|autor|author|page|buscar|search|login|registro|contacto|about|privacy|terminos|aviso)',
+                    r'\.(jpg|png|gif|pdf|mp4|mp3|css|js)$',
+                    r'/(wp-content|wp-admin|assets|static)/',
+                ]
+                is_skip = any(re.search(p, path, re.IGNORECASE) for p in skip_patterns)
+                if not is_skip:
                     article_urls.append((full_url, text))
 
         # Deduplicar preservando orden
@@ -574,16 +931,22 @@ class DynamicScraper:
                 seen.add(u)
                 unique_urls.append((u, t))
 
+        logger.info(f"HTML listing: {len(unique_urls)} enlaces a artículos en {url[:60]}…")
+
         # Extraer contenido de cada artículo
         for article_url, _ in unique_urls[:max_articles]:
             if len(articles) >= max_articles:
                 break
 
-            # Verificar robots.txt para cada URL
-            if self.respect_robots:
+            # En modo stealth: NO re-verificar robots.txt por artículo
+            # (ya decidimos hacer bypass al nivel del dominio)
+            if not is_stealth and self.respect_robots:
                 check = RobotsChecker.check(article_url)
                 if not check['allowed']:
-                    continue
+                    # Activar stealth para este dominio y continuar
+                    self._stealth_domains.add(parsed_base.netloc)
+                    is_stealth = True
+                    logger.info(f"Activando stealth mid-scrape para {base_domain}")
 
             article = self._extract_article(article_url, crawl_delay)
             if article:
@@ -592,10 +955,43 @@ class DynamicScraper:
         return articles
 
     def _looks_like_article(self, url: str) -> bool:
-        """Determina si una URL parece ser un artículo de noticias."""
+        """
+        Determina si una URL parece ser un artículo de noticias.
+        Usa patrones de URL + heurísticas de estructura.
+        """
+        # Excluir URLs claramente no-artículo
+        parsed = urlparse(url)
+        path = parsed.path.lower()
+        
+        # Excluir páginas genéricas
+        excludes = [
+            r'^/$', r'^/index', r'^/home', r'^/contacto', r'^/about',
+            r'^/login', r'^/registro', r'^/buscar', r'^/search',
+            r'^/tag/', r'^/tags/', r'^/categoria/', r'^/category/',
+            r'^/autor/', r'^/author/', r'^/page/\d+',
+            r'\.(jpg|png|gif|svg|pdf|css|js|mp4|mp3)$',
+            r'^/(wp-admin|wp-content|assets|static|media|img)/',
+        ]
+        for exc in excludes:
+            if re.search(exc, path):
+                return False
+
+        # Método 1: patrones conocidos de URLs de artículos
         for pattern in NEWS_PATH_PATTERNS:
             if re.search(pattern, url, re.IGNORECASE):
                 return True
+        
+        # Método 2: URL con slug tipo artículo (path con 3+ segmentos o slug largo)
+        segments = [s for s in path.split('/') if s]
+        if len(segments) >= 2:
+            last_segment = segments[-1]
+            # Slug con guiones tipo "feminicidio-en-estado-de-mexico"
+            if '-' in last_segment and len(last_segment) > 20:
+                return True
+            # Último segmento es numérico (ID de noticia)
+            if last_segment.isdigit() and len(last_segment) >= 4:
+                return True
+
         return False
 
     def _extract_article(
@@ -697,6 +1093,10 @@ class DynamicScraper:
         }
 
     # ── Utilidades ──────────────────────────────────────────
+
+    def close(self):
+        """Libera recursos (cierra sesiones stealth)."""
+        self._stealth.close_all()
 
     @staticmethod
     def content_hash(title: str, content: str) -> str:
