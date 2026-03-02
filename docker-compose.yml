@@ -28,13 +28,23 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+      - models_cache:/app/models/cache
+    env_file:
+      - .env
     environment:
       - PYTHONPATH=/app
       - DATA_DIR=/app/data
       - LOGS_DIR=/app/logs
+      - MODELS_DIR=/app/models
+      - TRANSFORMERS_CACHE=/app/models/cache
+      - HF_HOME=/app/models/cache
       - TZ=America/Mexico_City
+      - POSTGRES_HOST=nna-postgres
     networks:
       - nna-network
+    depends_on:
+      nna-postgres:
+        condition: service_healthy
     command: ["python", "scheduler.py", "schedule"]
 
   # ── Aplicación web Flask ──────────────────────────────────
@@ -47,6 +57,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+      - models_cache:/app/models/cache
     env_file:
       - .env
     environment:
@@ -55,6 +66,9 @@ services:
       - PYTHONPATH=/app
       - DATA_DIR=/app/data
       - LOGS_DIR=/app/logs
+      - MODELS_DIR=/app/models
+      - TRANSFORMERS_CACHE=/app/models/cache
+      - HF_HOME=/app/models/cache
       - TZ=America/Mexico_City
       - POSTGRES_HOST=nna-postgres
     networks:
@@ -64,7 +78,7 @@ services:
         condition: service_healthy
       nna-analyzer:
         condition: service_started
-    command: ["python", "wsgi.py"]
+    command: ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "300", "wsgi:app"]
 
 networks:
   nna-network:
@@ -72,4 +86,6 @@ networks:
 
 volumes:
   pgdata:
+    driver: local
+  models_cache:
     driver: local

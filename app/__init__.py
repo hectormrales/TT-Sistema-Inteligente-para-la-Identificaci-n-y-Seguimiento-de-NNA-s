@@ -65,9 +65,17 @@ def create_app() -> Flask:
 
 
 def _init_database(app: Flask) -> None:
-    """Crea tablas, usuario admin y fuentes predeterminadas."""
+    """Crea tablas, usuario admin, fuentes predeterminadas y esquema FTS."""
     from app.models import db, User, NewsSource
     from sqlalchemy import inspect, text
+
+    # Importar modelos de noticias para que SQLAlchemy los registre
+    try:
+        from src.database.models_noticias import (
+            Noticia, Deteccion, ClusterSemantico, Entidad,
+        )
+    except ImportError:
+        app.logger.warning("Modelos de noticias no disponibles")
 
     db.create_all()
 
@@ -84,19 +92,28 @@ def _init_database(app: Flask) -> None:
             app.logger.info("Columna 'is_predefined' agregada a news_sources")
 
     # ── Usuario admin ──
+    admin_password = os.environ.get('ADMIN_PASSWORD', 'Admin_NNA_2026!')
     if not User.query.filter_by(username='admin').first():
         admin = User(
             username='admin',
             email='admin@sistema-nna.local',
             is_admin=True,
         )
-        admin.set_password('Admin_NNA_2026!')
+        admin.set_password(admin_password)
         db.session.add(admin)
         db.session.commit()
-        app.logger.info("Usuario administrador creado (admin / Admin_NNA_2026!)")
+        app.logger.info("Usuario administrador creado")
 
     # ── Fuentes predeterminadas ──
     _seed_predefined_sources(app)
+
+    # ── Esquema FTS para noticias (OE-3) ──
+    try:
+        from src.database.repository import init_fts_schema
+        init_fts_schema()
+        app.logger.info("Esquema FTS inicializado")
+    except Exception as e:
+        app.logger.warning(f"FTS no inicializado (normal en primer arranque): {e}")
 
 
 def _seed_predefined_sources(app: Flask) -> None:

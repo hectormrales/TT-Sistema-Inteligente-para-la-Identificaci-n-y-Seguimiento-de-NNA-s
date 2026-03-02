@@ -6,11 +6,20 @@ Recolecta noticias desde feeds RSS, fuentes dinámicas (DB) y web scraping:
 
 Incluye deduplicación avanzada cross-site (v4.0).
 Solo se conservan noticias que superan el umbral de relevancia compuesto.
+
+v6.0 TT2 Mejoras:
+  - Filtro geográfico México reforzado con scoring ponderado (título 3x)
+  - 100+ indicadores de ciudades/estados/instituciones mexicanas
+  - Tracking de URLs previamente procesadas (evita re-scrapping)
+  - Logging mejorado para diagnóstico de fuentes fallidas
+  - Filtro de antigüedad (máx. 30 días para feeds RSS)
 """
 
+import json
+import os
 import re
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from unicodedata import normalize
 from typing import Tuple
 
@@ -24,6 +33,54 @@ from src.collection.scraper import DynamicScraper
 from src.analysis.dedup import NewsDeduplicator
 
 logger = logging.getLogger(__name__)
+
+# Archivo de URLs ya procesadas (evita re-scraping cada ciclo)
+_SEEN_URLS_FILE = os.path.join(
+    os.environ.get('DATA_DIR', 'data'), 'seen_urls.json'
+)
+_MAX_AGE_DAYS = 30  # Máxima antigüedad de noticias a recolectar
+
+
+def _load_seen_urls() -> set:
+    """Carga el set de URLs ya procesadas desde disco."""
+    try:
+        if os.path.exists(_SEEN_URLS_FILE):
+            with open(_SEEN_URLS_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Limpieza: solo mantener URLs de los últimos 60 días
+                cutoff = (datetime.now() - timedelta(days=60)).isoformat()
+                if isinstance(data, dict):
+                    return {url for url, ts in data.items() if ts > cutoff}
+                return set(data)
+    except Exception as e:
+        logger.warning(f"Error cargando seen_urls: {e}")
+    return set()
+
+
+def _save_seen_urls(urls: set):
+    """Guarda el set de URLs procesadas a disco con timestamp."""
+    try:
+        os.makedirs(os.path.dirname(_SEEN_URLS_FILE) or '.', exist_ok=True)
+        now = datetime.now().isoformat()
+        data = {url: now for url in urls}
+        with open(_SEEN_URLS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+    except Exception as e:
+        logger.warning(f"Error guardando seen_urls: {e}")
+
+
+def _is_recent(date_str: str, max_days: int = _MAX_AGE_DAYS) -> bool:
+    """Verifica que una noticia no sea más antigua que max_days."""
+    try:
+        from dateutil import parser as dateutil_parser
+        dt = dateutil_parser.parse(date_str)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=max_days)
+        return dt >= cutoff
+    except Exception:
+        return True  # Si no se puede parsear la fecha, incluir por defecto
+
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Diccionarios de keywords ponderados por importancia
@@ -93,7 +150,7 @@ NNA_KEYWORDS: list[Tuple[str, float]] = [
 MEXICO_INDICATORS = [
     # País
     r'\bm[eé]xico\b', r'\bmexican[oa]s?\b', r'\brepública\s+mexicana\b',
-    # Estados
+    # Estados (32 entidades federativas)
     r'\baguascalientes\b', r'\bbaja\s+california\b', r'\bcampeche\b',
     r'\bchiapas\b', r'\bchihuahua\b', r'\bcoahuila\b', r'\bcolima\b',
     r'\bdurango\b', r'\bguanajuato\b', r'\bguerrero\b', r'\bhidalgo\b',
@@ -103,7 +160,7 @@ MEXICO_INDICATORS = [
     r'\bsonora\b', r'\btabasco\b', r'\btamaulipas\b', r'\btlaxcala\b',
     r'\bveracruz\b', r'\byucat[aá]n\b', r'\bzacatecas\b',
     r'\bestado\s+de\s+m[eé]xico\b', r'\bcdmx\b', r'\bciudad\s+de\s+m[eé]xico\b',
-    # Ciudades principales
+    # Ciudades principales y municipios clave
     r'\bguadalajara\b', r'\bmonterrey\b', r'\btijuana\b', r'\bjuárez\b',
     r'\bju[aá]rez\b', r'\ble[oó]n\b', r'\becatepec\b', r'\bneza\b',
     r'\btoluca\b', r'\bculiac[aá]n\b', r'\bcancún\b', r'\bacapulco\b',
@@ -111,6 +168,26 @@ MEXICO_INDICATORS = [
     r'\bsaltillo\b', r'\btuxtla\b', r'\bxalapa\b', r'\btorreón\b',
     r'\bmatamoros\b', r'\breynosa\b', r'\bplaya\s+del\s+carmen\b',
     r'\biztapalapa\b', r'\bnaucalpan\b', r'\btlalnepantla\b',
+    # Ciudades adicionales de alta violencia
+    r'\bcelaya\b', r'\bchilpancingo\b', r'\birapuato\b', r'\bpachuca\b',
+    r'\bcuernavaca\b', r'\btepic\b', r'\bchetumal\b', r'\bmazatl[aá]n\b',
+    r'\blos\s+mochis\b', r'\bensenada\b', r'\bmexicali\b', r'\bla\s+paz\s+bcs\b',
+    r'\btuxtla\s+guti[eé]rrez\b', r'\bsan\s+crist[oó]bal\b', r'\btapachula\b',
+    r'\bcoatzacoalcos\b', r'\borizaba\b', r'\bc[oó]rdoba\b', r'\bpoza\s+rica\b',
+    r'\bnuevo\s+laredo\b', r'\bciudad\s+victoria\b', r'\btampico\b',
+    r'\bciudad\s+obreg[oó]n\b', r'\bnogales\b', r'\bagua\s*prieta\b',
+    r'\bzihuatanejo\b', r'\btaxco\b', r'\biguala\b', r'\btlapa\b',
+    r'\bpuerto\s+vallarta\b', r'\bzapopan\b', r'\btlaquepaque\b',
+    r'\btonalá\b', r'\bsan\s+pedro\s+garza\b', r'\bapodaca\b',
+    r'\bsan\s+nicol[aá]s\b', r'\besc[oó]bedo\b',
+    # Municipios del Edomex peligrosos
+    r'\bchimalhuac[aá]n\b', r'\bchalco\b', r'\btexcoco\b', r'\blos\s+reyes\b',
+    r'\bcuautitl[aá]n\b', r'\batizap[aá]n\b',
+    # Alcaldías de CDMX
+    r'\btl[aá]huac\b', r'\bxochimilco\b', r'\bgustavo\s+a\.?\s+madero\b',
+    r'\bvenustiano\s+carranza\b', r'\b[aá]lvaro\s+obreg[oó]n\b',
+    r'\bcoyoac[aá]n\b', r'\bbenito\s+ju[aá]rez\b', r'\bcuauht[eé]moc\b',
+    r'\bmiguel\s+hidalgo\b', r'\bazcapotzalco\b',
     # Instituciones mexicanas
     r'\bfisca[il]ía\b', r'\bfgr\b', r'\bfgj\b', r'\bsemefo\b',
     r'\bDIF\b', r'\bSEP\b', r'\bIMSS\b', r'\bcndh\b',
@@ -118,21 +195,39 @@ MEXICO_INDICATORS = [
     r'\bguardia\s+nacional\b', r'\bprocuradur[ií]a\b',
     r'\balerta\s+de\s+(?:violencia\s+de\s+)?g[eé]nero\b',
     r'\bcódigo?\s+rojo\b', r'\bministerio\s+p[uú]blico\b',
+    # Instituciones/términos exclusivamente mexicanos
+    r'\bsedena\b', r'\bsemar\b', r'\bconago\b',
+    r'\bmorena\b', r'\bpri\b', r'\bpan\b', r'\bprd\b',
+    r'\binegi\b', r'\bconapo\b', r'\bconeval\b',
+    r'\bsipinna\b', r'\bceav\b', r'\bfiscal[ií]a\s+general\b',
+    r'\bamlo\b', r'\bclaudia\s+sheinbaum\b',
+    r'\bsecretar[ií]a\s+de\s+gobernaci[oó]n\b',
+    r'\bsegob\b', r'\bbienestar\b',
 ]
 
-# Indicadores de que la noticia NO es de México
+# Indicadores de que la noticia NO es de México (ampliado)
 NON_MEXICO_INDICATORS = [
+    # Sudamérica
     r'\bargentina\b', r'\bbuenos\s+aires\b', r'\bcolombia\b', r'\bbogot[aá]\b',
-    r'\bper[uú]\b', r'\blima\b', r'\bchile\b', r'\bsantiago\b',
+    r'\bmedell[ií]n\b', r'\bcali\b(?!\s*fornia)', r'\bper[uú]\b', r'\blima\b',
+    r'\bchile\b', r'\bsantiago\b', r'\bvalparaíso\b',
     r'\bvenezuela\b', r'\bcaracas\b', r'\becuador\b', r'\bquito\b',
-    r'\bbolivia\b', r'\bla\s+paz\b', r'\bparaguay\b', r'\basunci[oó]n\b',
+    r'\bguayaquil\b', r'\bbolivia\b', r'\bparaguay\b', r'\basunci[oó]n\b',
     r'\buruguay\b', r'\bmontevideo\b', r'\bbrasil\b', r'\bsão\s+paulo\b',
-    r'\bespaña\b', r'\bmadrid\b', r'\bbarcelona\b',
+    r'\bbrasilia\b', r'\br[ií]o\s+de\s+janeiro\b',
+    # Europa
+    r'\bespaña\b', r'\bmadrid\b', r'\bbarcelona\b', r'\bfrancia\b',
+    r'\balemani[ea]\b', r'\bitalia\b', r'\breino\s+unido\b',
+    # Norteamérica (no-México)
     r'\bestados\s+unidos\b', r'\bnew\s+york\b', r'\bwashington\b',
+    r'\btexas\b', r'\bcalifornia\b', r'\bflorida\b', r'\bcanad[aá]\b',
+    # Centroamérica y Caribe
     r'\bel\s+salvador\b', r'\bguatemala\b', r'\bhonduras\b',
-    r'\bnicaragua\b', r'\bcosta\s+rica\b', r'\bpanam[aá]\b',
-    r'\brepública\s+dominicana\b', r'\bcuba\b', r'\bhaití\b',
-    r'\bpuerto\s+rico\b',
+    r'\btegucigalpa\b', r'\bsan\s+salvador\b', r'\bciudad\s+de\s+guatemala\b',
+    r'\bnicaragua\b', r'\bmanagua\b', r'\bcosta\s+rica\b', r'\bsan\s+jos[eé]\b',
+    r'\bpanam[aá]\b', r'\brepública\s+dominicana\b', r'\bsanto\s+domingo\b',
+    r'\bcuba\b', r'\bla\s+habana\b', r'\bhaití\b', r'\bpuerto\s+rico\b',
+    r'\bbelice\b',
 ]
 
 # Dominios de medios mexicanos conocidos (siempre pasan el filtro)
@@ -148,61 +243,84 @@ MEXICAN_DOMAINS = {
     'elsoldetoluca.com.mx', 'elsoldepuebla.com.mx', 'diariodexalapa.com.mx',
     'noroeste.com.mx', 'elsiglodetorreon.com.mx', 'lasillarota.com',
     'expansion.mx', 'forbes.com.mx', 'nmas.com.mx', 'infobae.com',
-    'news.google.com',  # Los queries de Google News ya son de México
+    # news.google.com: NO se marca como dominio mexicano; el filtro de texto
+    # se encarga de verificar el contenido artículo por artículo.
 }
 
 
 def _is_mexico_news(title: str, content: str, source_url: str = '') -> bool:
     """
     Determina si una noticia es de México.
-    
-    Lógica:
-      1. Si la fuente es un dominio mexicano conocido → True
-      2. Si el texto tiene indicadores de otro país → False
-      3. Si el texto tiene indicadores de México → True
-      4. Si la fuente tiene dominio .mx → True
-      5. Sin indicadores claros → True (beneficio de la duda para fuentes configuradas)
+
+    Lógica estricta v6.0 — Mejorada para ONGs:
+      1. Si el dominio es .mx conocido → verificar que NO hable de otro país
+         como tema principal (medios mexicanos cubren noticias de Centroamérica)
+      2. Si hay indicadores claros de OTRO país sin contrapeso mexicano → False
+      3. Si hay indicadores de México superiores a los extranjeros → True
+      4. Sin señales, fuente neutral → False (filtro conservador)
+
+    Mejoras v6.0:
+      - Verificación estricta para dominios .mx (evita falsos positivos de
+        noticias centroamericanas publicadas en medios mexicanos)
+      - Score ponderado: indicadores en título pesan 3x más que en contenido
+      - Más ciudades/municipios mexicanos para reducir falsos negativos
+      - Instituciones exclusivamente mexicanas como señal fuerte
     """
+    from urllib.parse import urlparse as _urlparse
+
+    article_domain = ''
+    if source_url:
+        article_domain = _urlparse(source_url).netloc.replace('www.', '')
+
+    text_title = title.lower() if title else ''
+    text_content = content.lower() if content else ''
+    text_combined = f"{text_title} {text_content}"
+
+    # Contar indicadores con peso (título vale 3x)
+    def _weighted_count(indicators, title_text, content_text):
+        count = 0
+        for p in indicators:
+            in_title = bool(re.search(p, title_text, re.IGNORECASE))
+            in_content = bool(re.search(p, content_text, re.IGNORECASE))
+            if in_title:
+                count += 3  # título pesa más
+            elif in_content:
+                count += 1
+        return count
+
+    mexico_score = _weighted_count(MEXICO_INDICATORS, text_title, text_content)
+    non_mexico_score = _weighted_count(NON_MEXICO_INDICATORS, text_title, text_content)
+
     # 1. Dominio mexicano conocido
-    if source_url:
-        from urllib.parse import urlparse
-        domain = urlparse(source_url).netloc.replace('www.', '')
-        if domain in MEXICAN_DOMAINS or domain.endswith('.mx'):
-            return True
-    
-    text_combined = f"{title} {content}".lower()
-    
-    # 2. Indicadores de otro país (descartar)
-    non_mexico_count = 0
-    for pattern in NON_MEXICO_INDICATORS:
-        if re.search(pattern, text_combined, re.IGNORECASE):
-            non_mexico_count += 1
-    
-    # 3. Indicadores de México
-    mexico_count = 0
-    for pattern in MEXICO_INDICATORS:
-        if re.search(pattern, text_combined, re.IGNORECASE):
-            mexico_count += 1
-    
-    # Si hay más indicadores de otro país que de México, descartar
-    if non_mexico_count > 0 and mexico_count == 0:
-        return False
-    
-    if non_mexico_count > mexico_count:
-        return False
-    
-    # Si hay al menos un indicador de México, aceptar
-    if mexico_count > 0:
+    if article_domain in MEXICAN_DOMAINS or article_domain.endswith('.mx'):
+        # Aun así, si el TÍTULO menciona otro país y NO menciona México → rechazar
+        # (medios mexicanos publican noticias de Centroamérica)
+        if non_mexico_score > 0 and mexico_score == 0:
+            return False
+        # Si hay más indicadores extranjeros que mexicanos en la nota completa
+        # y el título no menciona México → es una nota internacional
+        if non_mexico_score > mexico_score and mexico_score < 3:
+            return False
         return True
-    
-    # Sin indicadores claros: aceptar si es de dominio .mx
-    if source_url:
-        domain = urlparse(source_url).netloc
-        if '.mx' in domain:
-            return True
-    
-    # Beneficio de la duda para fuentes configuradas manualmente
-    return True
+
+    # 2. Descarte duro: menciona país extranjero y NADA de México
+    if non_mexico_score > 0 and mexico_score == 0:
+        return False
+
+    # 3. Si indicadores extranjeros superan a México → rechazar
+    if non_mexico_score >= mexico_score and non_mexico_score > 0:
+        return False
+
+    # 4. Al menos un indicador de México → aceptar
+    if mexico_score >= 1:
+        return True
+
+    # 5. Sin indicadores claros: fuentes .mx → beneficio de la duda
+    if article_domain.endswith('.mx') and 'google' not in article_domain:
+        return True
+
+    # Filtro conservador: sin señal de México = descartar
+    return False
 
 
 def _normalize_text(text: str) -> str:
@@ -325,8 +443,15 @@ def score_relevance(title: str, content: str) -> dict:
 # Recolección RSS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def collect_news_from_rss(rss_url: str) -> list[dict]:
-    """Recolecta artículos desde un feed RSS individual."""
+def collect_news_from_rss(rss_url: str, seen_urls: set | None = None) -> list[dict]:
+    """Recolecta artículos desde un feed RSS individual.
+    
+    Args:
+        rss_url: URL del feed RSS.
+        seen_urls: Set de URLs ya procesadas (para evitar re-scraping).
+    """
+    if seen_urls is None:
+        seen_urls = set()
     try:
         headers = getattr(config, 'HTTP_HEADERS', {})
         response = requests.get(rss_url, headers=headers, timeout=15)
@@ -334,6 +459,10 @@ def collect_news_from_rss(rss_url: str) -> list[dict]:
         soup = BeautifulSoup(response.content, 'xml')
 
         articles = []
+        skipped_seen = 0
+        skipped_old = 0
+        skipped_geo = 0
+
         for item in soup.find_all('item'):
             title_tag = item.find('title')
             description = item.find('description')
@@ -343,6 +472,13 @@ def collect_news_from_rss(rss_url: str) -> list[dict]:
 
             title_text = title_tag.text.strip() if title_tag else ''
             if not title_text:
+                continue
+
+            enlace_text = link.text.strip() if link else ''
+
+            # ── Filtro de URLs ya procesadas ────────────────
+            if enlace_text and enlace_text in seen_urls:
+                skipped_seen += 1
                 continue
 
             # Extraer contenido: preferir content:encoded > description
@@ -364,16 +500,26 @@ def collect_news_from_rss(rss_url: str) -> list[dict]:
             else:
                 dt = datetime.now(timezone.utc)
 
+            # ── Filtro de antigüedad ────────────────────────
+            if not _is_recent(dt.isoformat()):
+                skipped_old += 1
+                continue
+
             # ── Scoring de relevancia ───────────────────────
             rel = score_relevance(title_text, desc_text)
             # ── Filtro geográfico: solo México ─────────────
-            enlace_text = link.text.strip() if link else rss_url
-            if not _is_mexico_news(title_text, desc_text, enlace_text):
+            if not _is_mexico_news(title_text, desc_text, enlace_text or rss_url):
+                skipped_geo += 1
                 continue
+
+            # Registrar URL como procesada
+            if enlace_text:
+                seen_urls.add(enlace_text)
+
             articles.append({
                 'titulo': title_text,
                 'contenido': desc_text,
-                'enlace': link.text.strip() if link else '',
+                'enlace': enlace_text,
                 'fuente': rss_url,
                 'fecha': dt.isoformat(),
                 'score_feminicidio': rel['score_feminicidio'],
@@ -384,10 +530,23 @@ def collect_news_from_rss(rss_url: str) -> list[dict]:
                 'cluster': 0,
             })
 
+        if skipped_seen or skipped_old or skipped_geo:
+            logger.debug(
+                f"RSS {rss_url[:50]}: {len(articles)} OK, "
+                f"{skipped_seen} ya vistas, {skipped_old} antiguas, "
+                f"{skipped_geo} no-México"
+            )
+
         return articles
 
+    except requests.exceptions.Timeout:
+        logger.warning(f"Timeout en feed RSS: {rss_url[:60]}")
+        return []
+    except requests.exceptions.ConnectionError:
+        logger.warning(f"Error de conexión al feed RSS: {rss_url[:60]}")
+        return []
     except Exception as e:
-        print(f"  [WARN] Error RSS ({rss_url[:60]}…): {e}")
+        logger.warning(f"Error RSS ({rss_url[:60]}): {e}")
         return []
 
 
@@ -399,6 +558,11 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
       1. Si hay contexto Flask → lee fuentes desde la DB (incluye predeterminadas).
       2. Si no hay contexto   → fallback a config.RSS_FEEDS.
 
+    v6.0 TT2 Mejoras:
+      - Tracking de URLs ya procesadas (evita re-scrapping entre ciclos)
+      - Logging detallado de fuentes exitosas/fallidas
+      - Estadísticas de recolección por fuente
+
     Args:
         keep_all: Si True, conserva TODOS los artículos (para depuración).
                   Si False (default), descarta los "No relevante".
@@ -407,6 +571,10 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
     """
     threshold = getattr(config, 'RELEVANCE_THRESHOLD', 0.25)
     all_articles = []
+    seen_urls = _load_seen_urls()
+    initial_seen = len(seen_urls)
+    sources_ok = 0
+    sources_error = 0
 
     # ── Intentar obtener fuentes desde la DB ────────────────
     db_sources = _get_db_sources()
@@ -421,29 +589,30 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
 
             try:
                 if source['source_type'] == 'rss':
-                    # Usar el recolector RSS nativo (más rápido)
-                    articles = collect_news_from_rss(source['url'])
-                    # Sobreescribir fuente con nombre legible
+                    articles = collect_news_from_rss(source['url'], seen_urls)
                     for art in articles:
                         art['fuente'] = source['name']
                     all_articles.extend(articles)
                     _update_db_source_status(
                         source['id'], 'ok', len(articles)
                     )
+                    sources_ok += 1
                     print(f"    → {len(articles)} artículos")
                 else:
-                    # Usar scraper dinámico para HTML/sitemap/auto
                     raw_articles = scraper.scrape_source(
                         source['url'],
                         method=source['source_type'],
                         max_articles=30,
                     )
+                    accepted = 0
                     for art in raw_articles:
-                        # Filtro geográfico: solo México
+                        enlace = art.get('enlace', source['url'])
+                        if enlace in seen_urls:
+                            continue
                         if not _is_mexico_news(
                             art.get('titulo', ''),
                             art.get('contenido', ''),
-                            art.get('enlace', source['url']),
+                            enlace,
                         ):
                             continue
                         rel = score_relevance(art['titulo'], art['contenido'])
@@ -451,12 +620,17 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
                         art['fuente'] = source['name']
                         art.setdefault('cluster', 0)
                         all_articles.append(art)
+                        if enlace:
+                            seen_urls.add(enlace)
+                        accepted += 1
                     _update_db_source_status(
-                        source['id'], 'ok', len(raw_articles)
+                        source['id'], 'ok', accepted
                     )
-                    print(f"    → {len(raw_articles)} artículos")
+                    sources_ok += 1
+                    print(f"    → {accepted} artículos aceptados")
 
             except Exception as e:
+                sources_error += 1
                 logger.warning(f"Error scraping {source['name']}: {e}")
                 _update_db_source_status(
                     source['id'], 'error', 0, str(e)[:200]
@@ -467,10 +641,19 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
         for feed in config.RSS_FEEDS:
             feed_label = feed[:70] + '…' if len(feed) > 70 else feed
             print(f"  RSS: {feed_label}")
-            all_articles.extend(collect_news_from_rss(feed))
+            articles = collect_news_from_rss(feed, seen_urls)
+            if articles:
+                sources_ok += 1
+            all_articles.extend(articles)
+
+    # Guardar URLs procesadas a disco
+    _save_seen_urls(seen_urls)
+    new_urls = len(seen_urls) - initial_seen
+    print(f"  URLs: {initial_seen} previas + {new_urls} nuevas = {len(seen_urls)} total")
 
     if not all_articles:
         print("  [!] No se recolectaron artículos de ninguna fuente.")
+        print(f"  Fuentes OK: {sources_ok}, con error: {sources_error}")
         return pd.DataFrame()
 
     df = pd.DataFrame(all_articles)

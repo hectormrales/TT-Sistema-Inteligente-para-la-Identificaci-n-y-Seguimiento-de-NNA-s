@@ -241,6 +241,7 @@ def test_source(source_id: int):
                 'source_type': probe.get('source_type'),
                 'can_scrape': probe.get('can_scrape', True),
                 'stealth_mode': stealth_mode,
+                'js_heavy': probe.get('js_heavy', False),
                 'robots_txt': probe.get('robots', {}).get('has_robots', False),
                 'crawl_delay': probe.get('crawl_delay'),
                 'rss_feeds': probe.get('rss_feeds', []),

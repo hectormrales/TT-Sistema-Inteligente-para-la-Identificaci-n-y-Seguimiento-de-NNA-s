@@ -8,23 +8,24 @@ import logging
 import os
 
 from app import create_app
-from app.main.routes import _load_data
 
 # Configurar logging
+log_dir = os.environ.get('LOGS_DIR', 'logs')
+os.makedirs(log_dir, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join(os.environ.get('LOGS_DIR', 'logs'), 'webapp.log')),
+        logging.FileHandler(os.path.join(log_dir, 'webapp.log')),
         logging.StreamHandler(),
     ],
 )
 
-# Cargar datos existentes al inicio
-_load_data()
-
-# Crear la aplicación
+# Crear la aplicación primero, luego cargar datos CSV dentro del app context
 app = create_app()
+with app.app_context():
+    from app.main.routes import _load_data
+    _load_data()
 
 if __name__ == '__main__':
     app.logger.info("Iniciando aplicación web NNA Sistema")

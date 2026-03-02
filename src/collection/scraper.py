@@ -27,6 +27,7 @@ import time
 import random
 import hashlib
 import logging
+import json
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urlparse, urljoin
@@ -36,6 +37,13 @@ import requests
 from bs4 import BeautifulSoup
 
 import config
+
+# Trafilatura: extractor de texto de alta calidad (opcional)
+try:
+    import trafilatura
+    HAS_TRAFILATURA = True
+except ImportError:
+    HAS_TRAFILATURA = False
 
 logger = logging.getLogger(__name__)
 
@@ -167,6 +175,172 @@ NEWS_PATH_PATTERNS = [
     r'-\d{8,}',                            # URLs con IDs numéricos largos
     r'/\d{5,}/',                           # URLs con IDs numéricos
 ]
+
+# ── Paths comunes de feeds RSS para autodescubrimiento ─────
+
+COMMON_RSS_PATHS = [
+    '/feed', '/feed/', '/rss', '/rss.xml', '/rss/', '/atom.xml',
+    '/feed/rss', '/feed/rss2', '/rss2.xml', '/index.xml',
+    '/noticias/feed', '/noticias/rss', '/ultimas-noticias/feed',
+    '/feed/atom', '/atom/', '/syndication.axd',
+    '/feeds/posts/default', '/feeds/all.atom.xml',
+    '/api/rss', '/api/feed',
+    '/wp-json/wp/v2/posts?_embed',  # WordPress REST API
+]
+
+# ── Firmas de páginas de bloqueo / CAPTCHA ────────────────
+
+BLOCK_SIGNATURES = [
+    # Cloudflare
+    'cf-browser-verification', 'cloudflare', 'cf_clearance',
+    'attention required', 'ddos protection',
+    # Generic captcha/block
+    'captcha', 'robot', 'are you human', 'access denied',
+    'forbidden', '403 forbidden', 'blocked',
+    # Paywall
+    'suscríbete', 'suscribete', 'subscríbete', 'subscribe to read',
+    'inicia sesión para leer', 'contenido exclusivo para suscriptores',
+    'iniciar sesi', 'regístrate para',
+    # JavaScript challenges
+    'enable javascript', 'javascript required', 'habilita javascript',
+    'necesitas javascript',
+]
+
+# ── Indicadores de sitio JS-heavy (SPA) ──────────────────
+
+JS_HEAVY_INDICATORS = [
+    # Frameworks SPA
+    'id="root"', 'id="app"', 'ng-app', 'data-reactroot',
+    'data-vue-app', '__nuxt', '__next',
+    # Contenido vacío → cargado por JS
+    '<script>window.__INITIAL_STATE__',
+    '<script>window.__NEXT_DATA__',
+    'window.APP_STATE', 'window.__state',
+]
+
+
+def _is_block_page(resp: requests.Response) -> bool:
+    """
+    Detecta si la respuesta es una página de bloqueo, CAPTCHA o paywall.
+    Returns True si el contenido parece ser un bloqueo.
+    """
+    # Código de estado
+    if resp.status_code in (403, 429, 503, 401):
+        return True
+
+    text_lower = resp.text.lower()[:5000]  # Solo los primeros 5k chars
+    for sig in BLOCK_SIGNATURES:
+        if sig.lower() in text_lower:
+            return True
+
+    # Si el response es extremadamente corto (< 500 chars) → probable bloqueo
+    if len(resp.text.strip()) < 300:
+        return True
+
+    return False
+
+
+def _is_js_heavy_page(html: str) -> bool:
+    """
+    Detecta si una página es una SPA/app JavaScript que no renderiza
+    contenido significativo en el HTML inicial.
+    """
+    # Si el body tiene muy poco texto después de quitar scripts y styles
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        for tag in soup.find_all(['script', 'style', 'noscript']):
+            tag.decompose()
+        text = soup.get_text(strip=True)
+        # Si el texto visible es menor a 200 chars → probablemente JS-heavy
+        if len(text) < 200:
+            return True
+    except Exception:
+        pass
+
+    html_lower = html.lower()
+    matched = sum(1 for sig in JS_HEAVY_INDICATORS if sig.lower() in html_lower)
+    return matched >= 2
+
+
+def _extract_json_ld(soup: BeautifulSoup) -> dict:
+    """
+    Extrae metadatos de Schema.org en formato JSON-LD.
+    Soporta Article, NewsArticle, BlogPosting.
+    Returns dict con: title, content, date (o vacíos).
+    """
+    result = {'title': '', 'content': '', 'date': ''}
+
+    for script in soup.find_all('script', type='application/ld+json'):
+        try:
+            data = json.loads(script.string or '{}')
+            # Puede ser lista o dict
+            if isinstance(data, list):
+                items = data
+            else:
+                items = [data]
+
+            for item in items:
+                schema_type = item.get('@type', '')
+                if isinstance(schema_type, list):
+                    schema_type = schema_type[0] if schema_type else ''
+
+                if schema_type in ('Article', 'NewsArticle', 'BlogPosting',
+                                   'ReportageNewsArticle', 'AnalysisNewsArticle'):
+                    if not result['title']:
+                        result['title'] = item.get('headline', item.get('name', ''))
+                    if not result['content']:
+                        # articleBody > description
+                        result['content'] = item.get(
+                            'articleBody', item.get('description', '')
+                        )
+                    if not result['date']:
+                        result['date'] = item.get(
+                            'datePublished', item.get('dateModified', '')
+                        )
+                    if all(result.values()):
+                        break
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            continue
+
+    return result
+
+
+def _extract_with_trafilatura(url: str, html: str) -> dict | None:
+    """
+    Usa trafilatura para extraer texto de artículo de forma robusta.
+    Returns dict con title/content/date o None si no está disponible.
+    """
+    if not HAS_TRAFILATURA:
+        return None
+
+    try:
+        extracted = trafilatura.extract(
+            html,
+            url=url,
+            include_comments=False,
+            include_tables=False,
+            no_fallback=False,
+            output_format='json',
+        )
+        if not extracted:
+            return None
+
+        data = json.loads(extracted)
+        text = data.get('text', '') or ''
+        title = data.get('title', '') or ''
+        date = data.get('date', '') or ''
+
+        if len(text) < 80:
+            return None
+
+        return {
+            'title': title,
+            'content': text,
+            'date': date,
+        }
+    except Exception as e:
+        logger.debug(f"trafilatura error: {e}")
+        return None
 
 
 class RobotsChecker:
@@ -553,6 +727,27 @@ class DynamicScraper:
         soup = BeautifulSoup(resp.text, 'html.parser')
         rss_links = self._find_rss_links(soup, url)
 
+        # 4b. Si no se encontraron feeds en HTML, probar rutas comunes
+        if not rss_links:
+            rss_links = self._autodiscover_rss(url)
+
+        # 4c. Detectar si el sitio es JS-heavy (SPA)
+        if _is_js_heavy_page(resp.text):
+            logger.info(
+                f"Sitio JS-heavy detectado: {domain} → intentando RSS/sitemap primero"
+            )
+            result['js_heavy'] = True
+        else:
+            result['js_heavy'] = False
+
+        # 4d. Detectar página de bloqueo
+        if _is_block_page(resp):
+            logger.warning(
+                f"Página de bloqueo/CAPTCHA detectada en {domain} → activando stealth"
+            )
+            self._stealth_domains.add(domain)
+            result['stealth_mode'] = True
+
         if rss_links:
             result['rss_feeds'] = rss_links
             result['source_type'] = 'rss'
@@ -563,6 +758,12 @@ class DynamicScraper:
         else:
             result['source_type'] = 'html'
             result['recommended_method'] = 'html'
+            # Si es JS-heavy y no tiene RSS ni sitemap, advertir
+            if result.get('js_heavy'):
+                logger.warning(
+                    f"{domain} es JS-heavy sin RSS ni sitemap: "
+                    f"scraping HTML puede estar limitado"
+                )
 
         return result
 
@@ -608,6 +809,59 @@ class DynamicScraper:
                 seen.add(f)
                 unique.append(f)
         return unique
+
+    def _autodiscover_rss(self, base_url: str) -> list[str]:
+        """
+        Intenta descubrir feeds RSS probando rutas comunes del sitio.
+        Técnica de fallback cuando no se encuentran feeds en el HTML.
+        """
+        parsed = urlparse(base_url)
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        found = []
+
+        for path in COMMON_RSS_PATHS:
+            candidate = f"{origin}{path}"
+            try:
+                resp = requests.get(
+                    candidate,
+                    headers=_build_stealth_headers(),
+                    timeout=8,
+                    allow_redirects=True,
+                )
+                if resp.status_code != 200:
+                    continue
+                ct = resp.headers.get('Content-Type', '')
+                # Verificar que sea XML/RSS real
+                if any(x in ct for x in ['xml', 'rss', 'atom']):
+                    found.append(candidate)
+                    logger.info(f"Feed RSS autodescubierto: {candidate}")
+                    break
+                # Si es HTML, comprobar si contiene items RSS
+                if 'html' not in ct:
+                    text = resp.text[:500]
+                    if any(tag in text for tag in ['<rss', '<feed', '<item>', '<entry>']):
+                        found.append(candidate)
+                        logger.info(f"Feed RSS autodescubierto (contenido): {candidate}")
+                        break
+            except Exception:
+                continue
+
+        return found
+
+    def _fetch_google_cache(self, url: str) -> requests.Response | None:
+        """
+        Intenta obtener una página a través de Google Cache como último recurso.
+        Solo funciona para páginas públicamente indexadas.
+        """
+        cache_url = f"https://webcache.googleusercontent.com/search?q=cache:{url}"
+        try:
+            headers = _build_stealth_headers(referer='https://www.google.com/')
+            resp = requests.get(cache_url, headers=headers, timeout=15)
+            if resp.status_code == 200 and len(resp.text) > 500:
+                return resp
+        except Exception:
+            pass
+        return None
 
     # ── Scraping por tipo ───────────────────────────────────
 
@@ -999,21 +1253,80 @@ class DynamicScraper:
     ) -> dict | None:
         """
         Extrae título, contenido y fecha de una página de artículo.
-        Prueba múltiples selectores CSS para adaptarse a diferentes sitios.
+
+        Estrategia multi-nivel (cascada):
+          1. Petición HTTP normal / stealth
+          2. Si la página está bloqueada → Google Cache fallback
+          3. JSON-LD / Schema.org (más fiable si está disponible)
+          4. trafilatura (extractor ML moderno, si está instalado)
+          5. Selectores CSS específicos por sitio
+          6. Meta tags og:title, og:description
+          7. Descarte si el contenido mínimo no se cumple
+
+        Si la página es JS-heavy, lo registra como warning.
         """
         resp = self._get(url, crawl_delay)
         if resp is None:
             return None
 
-        soup = BeautifulSoup(resp.text, 'html.parser')
+        # ── Detección de bloqueo ────────────────────────────
+        if _is_block_page(resp):
+            domain = urlparse(url).netloc
+            logger.info(
+                f"Bloqueo detectado en {url[:60]}… → activando stealth + "
+                f"intentando Google Cache"
+            )
+            self._stealth_domains.add(domain)
 
-        # ── Título ──
+            # Primer reintento en stealth
+            resp = self._stealth.get(url, is_blocked_site=True)
+            if resp is None or _is_block_page(resp):
+                # Último recurso: caché de Google
+                resp = self._fetch_google_cache(url)
+                if resp is None:
+                    logger.warning(
+                        f"No se pudo extraer {url[:60]}: bloqueado y sin caché"
+                    )
+                    return None
+
+        html = resp.text
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # ── Advertencia: JS-heavy ─────────────────────────
+        if _is_js_heavy_page(html):
+            logger.debug(f"Página JS-heavy: {url[:60]} — contenido puede ser limitado")
+
         title = ''
-        for sel in TITLE_SELECTORS:
-            tag = soup.select_one(sel)
-            if tag:
-                title = tag.get_text(strip=True)
-                break
+        content = ''
+        date_str = ''
+
+        # ── Nivel 1: JSON-LD / Schema.org ─────────────────
+        jld = _extract_json_ld(soup)
+        if jld['title']:
+            title = jld['title']
+        if jld['content'] and len(jld['content']) >= 100:
+            content = jld['content']
+        if jld['date']:
+            date_str = jld['date']
+
+        # ── Nivel 2: trafilatura ───────────────────────────
+        if not content or len(content) < 100:
+            traf = _extract_with_trafilatura(url, html)
+            if traf:
+                if not title and traf['title']:
+                    title = traf['title']
+                if traf['content'] and len(traf['content']) >= 100:
+                    content = traf['content']
+                if not date_str and traf['date']:
+                    date_str = traf['date']
+
+        # ── Nivel 3: Selectores CSS específicos ───────────
+        if not title:
+            for sel in TITLE_SELECTORS:
+                tag = soup.select_one(sel)
+                if tag:
+                    title = tag.get_text(strip=True)
+                    break
         if not title:
             og_title = soup.find('meta', property='og:title')
             if og_title:
@@ -1023,32 +1336,33 @@ class DynamicScraper:
             if title_tag:
                 title = title_tag.get_text(strip=True)
 
-        if not title or len(title) < 10:
-            return None
+        if not content or len(content) < 100:
+            for sel in ARTICLE_SELECTORS:
+                container = soup.select_one(sel)
+                if container:
+                    for tag in container.find_all(
+                        ['script', 'style', 'nav', 'aside', 'iframe',
+                         'noscript', 'footer', 'header', 'figure',
+                         'figcaption', 'form', 'button']
+                    ):
+                        tag.decompose()
+                    paragraphs = container.find_all('p')
+                    if paragraphs:
+                        candidate = ' '.join(
+                            p.get_text(' ', strip=True) for p in paragraphs
+                            if len(p.get_text(strip=True)) > 30
+                        )
+                        if len(candidate) >= 100:
+                            content = candidate
+                            break
+                    else:
+                        candidate = container.get_text(' ', strip=True)
+                        if len(candidate) >= 100:
+                            content = candidate
+                            break
 
-        # ── Contenido ──
-        content = ''
-        for sel in ARTICLE_SELECTORS:
-            container = soup.select_one(sel)
-            if container:
-                # Eliminar scripts, styles, nav, ads
-                for tag in container.find_all(
-                    ['script', 'style', 'nav', 'aside', 'iframe',
-                     'noscript', 'footer', 'header']
-                ):
-                    tag.decompose()
-
-                paragraphs = container.find_all('p')
-                if paragraphs:
-                    content = ' '.join(
-                        p.get_text(' ', strip=True) for p in paragraphs
-                    )
-                else:
-                    content = container.get_text(' ', strip=True)
-                break
-
-        if not content:
-            # Fallback: meta description
+        # ── Nivel 4: Fallback a meta tags ─────────────────
+        if not content or len(content) < 80:
             meta_desc = soup.find('meta', attrs={'name': 'description'})
             if meta_desc:
                 content = meta_desc.get('content', '')
@@ -1057,24 +1371,27 @@ class DynamicScraper:
                 if og_desc:
                     content = og_desc.get('content', '')
 
+        # ── Validación mínima ──────────────────────────────
+        if not title or len(title) < 10:
+            return None
         if not content or len(content) < 50:
             return None
 
-        # ── Fecha ──
-        date_str = ''
+        # ── Fecha ──────────────────────────────────────────
         dt = datetime.now(timezone.utc)
 
-        for sel in DATE_SELECTORS:
-            if sel.startswith('meta'):
-                tag = soup.select_one(sel)
-                if tag:
-                    date_str = tag.get('content', '')
-                    break
-            else:
-                tag = soup.select_one(sel)
-                if tag:
-                    date_str = tag.get('datetime') or tag.get_text(strip=True)
-                    break
+        if not date_str:
+            for sel in DATE_SELECTORS:
+                if sel.startswith('meta'):
+                    tag = soup.select_one(sel)
+                    if tag:
+                        date_str = tag.get('content', '')
+                        break
+                else:
+                    tag = soup.select_one(sel)
+                    if tag:
+                        date_str = tag.get('datetime') or tag.get_text(strip=True)
+                        break
 
         if date_str:
             try:
@@ -1085,7 +1402,7 @@ class DynamicScraper:
 
         return {
             'titulo': title,
-            'contenido': content[:3000],  # Limitar a 3000 chars
+            'contenido': content[:4000],  # Limitar a 4000 chars
             'enlace': url,
             'fuente': urlparse(url).netloc,
             'fecha': dt.isoformat() if dt else '',

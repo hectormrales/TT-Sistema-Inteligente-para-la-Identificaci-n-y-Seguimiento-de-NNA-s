@@ -1,26 +1,33 @@
 # src/analysis/analyzer.py — Analizador de noticias con scoring de relevancia
 """
-Pipeline de análisis NLP con filtrado inteligente:
-  1. Recolección RSS con scoring dual (feminicidio + NNA)
-  2. Filtrado por relevancia (descarta no-relevantes)
-  3. TF-IDF con vocabulario domain-boosted
-  4. LDA (modelado de tópicos)
-  5. K-Means (clustering temático)
-  6. Similitud coseno (detección de duplicados / noticias relacionadas)
-  7. Reclasificación TF-IDF: re-score usando los vectores aprendidos
-  8. Búsqueda con sinónimos
+Pipeline de análisis NLP con filtrado inteligente (v5.0 — TT2):
 
-El cambio principal respecto a la versión anterior es que ahora:
-  • Se filtran noticias irrelevantes ANTES del análisis.
-  • Se usa un scoring dual ponderado (feminicidio × NNA).
-  • Los clusters se enriquecen con etiquetas de relevancia.
-  • Se genera una columna 'relevancia_final' que combina el scoring
-    heurístico (keywords) con el scoring estadístico (TF-IDF).
+  Pipeline original (TT1, pasos 1-8):
+    1. Recolección RSS con scoring dual (feminicidio + NNA)
+    2. Filtrado por relevancia (descarta no-relevantes)
+    3. TF-IDF con vocabulario domain-boosted
+    4. LDA (modelado de tópicos)
+    5. K-Means (clustering temático)
+    6. Similitud coseno (detección de duplicados / noticias relacionadas)
+    7. Reclasificación TF-IDF: re-score usando los vectores aprendidos
+    8. Búsqueda con sinónimos
+
+  Nuevos pasos TT2:
+    9.  Detección semántica con BETO (OE-1)
+    10. Clustering semántico con BERTopic (OE-4)
+    11. Persistencia en PostgreSQL con FTS (OE-3)
+
+Cambios v5.0:
+  • OE-1: Scoring semántico con BETO reemplaza/complementa el heurístico
+  • OE-3: Resultados se guardan en PostgreSQL además de CSV
+  • OE-4: BERTopic reemplaza K-Means para clustering
+  • Pipeline híbrido: mantiene backward compatibility con CSV
 """
 
 import os
 import re
 import json
+import logging
 import unicodedata
 from typing import Dict, Tuple, Optional
 
@@ -35,6 +42,8 @@ from sklearn.metrics import silhouette_score
 from src.collection.collector import collect_all_news, detect_children_mentions
 from src.analysis.synonyms import SynonymDictionary, enhanced_search
 from src.analysis.dedup import NewsDeduplicator
+
+logger = logging.getLogger(__name__)
 
 
 # ── Vocabulario de dominio para inyectar al TF-IDF ──────────
@@ -414,16 +423,19 @@ class SimplifiedNewsAnalyzer:
             'alta_relevancia': alta,
             'media_relevancia': media,
             'columnas_disponibles': list(self.df_processed.columns),
-            'version': 'relevance_analyzer_v4.0',
+            'version': 'relevance_analyzer_v5.0_TT2',
             'algoritmos_usados': [
                 'Scoring Dual Heurístico (Feminicidio × NNA)',
                 'TF-IDF (domain-boosted, sublinear, n-grams 1-3)',
                 'LDA (topic modeling)',
-                'K-Means (clustering)',
+                'K-Means (clustering temático)',
                 'Similitud Coseno + Deduplicación Semántica',
                 'Reclasificación TF-IDF (doc ideal)',
                 'Web Scraping Dinámico (robots.txt)',
                 'Dedup Cross-Site (Hash + Jaccard + SimHash + TF-IDF)',
+                'Detección Semántica BETO (OE-1, zero-shot/hybrid)',
+                'BERTopic: BETO + UMAP + HDBSCAN + c-TF-IDF (OE-4)',
+                'PostgreSQL FTS con tsvector/GIN (OE-3)',
             ],
         }
         meta_path = filepath.replace('.csv', '_metadata.json')
@@ -442,12 +454,29 @@ class SimplifiedNewsAnalyzer:
         num_topics: int = 6,
         n_clusters: int = 4,
         save_intermediate: bool = True,
+        enable_semantic: bool = True,
+        enable_bertopic: bool = True,
+        enable_postgres: bool = True,
     ) -> pd.DataFrame:
-        """Ejecuta los 8 pasos del pipeline de análisis."""
+        """
+        Ejecuta el pipeline completo de análisis (v5.0).
+
+        Pasos 1-8: Pipeline original (TT1)
+        Pasos 9-11: Nuevas funcionalidades (TT2)
+
+        Args:
+            num_topics: Número de tópicos para LDA.
+            n_clusters: Número de clusters para K-Means.
+            save_intermediate: Si True, guarda CSV intermedio.
+            enable_semantic: Si True, ejecuta detección BETO (OE-1).
+            enable_bertopic: Si True, ejecuta BERTopic (OE-4).
+            enable_postgres: Si True, persiste en PostgreSQL (OE-3).
+        """
         print("=" * 60)
-        print("  PIPELINE DE ANÁLISIS v4.0 — RELEVANCIA DUAL + DEDUP")
+        print("  PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO")
         print("=" * 60)
 
+        # Pasos 1-8: Pipeline original
         self.step_1_collect_data()
 
         if self.df_original is None or self.df_original.empty:
@@ -464,12 +493,261 @@ class SimplifiedNewsAnalyzer:
         self.step_6_similarity_analysis()
         self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
+
+        # Paso 9: Detección semántica BETO (OE-1)
+        if enable_semantic:
+            self.step_9_semantic_detection()
+
+        # Paso 10: Clustering BERTopic (OE-4)
+        if enable_bertopic:
+            self.step_10_bertopic_clustering()
+
+        # Guardar CSV (siempre, para backward compatibility)
         self.save_final_results()
+
+        # Paso 11: Persistencia PostgreSQL (OE-3)
+        if enable_postgres:
+            self.step_11_persist_to_postgres()
 
         print("=" * 60)
         print(f"  COMPLETADO — {len(self.df_analyzed)} noticias analizadas")
         print("=" * 60)
         return self.df_analyzed
+
+    # ── Nuevos pasos TT2 ────────────────────────────────────
+
+    def step_9_semantic_detection(self) -> pd.DataFrame:
+        """
+        OE-1: Detección semántica con BETO.
+
+        Usa el SemanticDetector en modo hybrid (zero-shot + heurístico)
+        para complementar el scoring heurístico existente.
+
+        El score semántico se combina con el heurístico:
+          relevancia_final = α * semántico + (1-α) * heurístico
+        donde α se ajusta dinámicamente según la confianza del modelo.
+        """
+        print("=== PASO 9: DETECCIÓN SEMÁNTICA BETO (OE-1) ===")
+        assert self.df_processed is not None, "Ejecute pasos anteriores primero"
+
+        try:
+            from src.analysis.semantic_detector import SemanticDetector, HybridScorer
+
+            detector = SemanticDetector(mode="zero_shot")
+
+            scores_semanticos = []
+            total = len(self.df_processed)
+
+            for i, (_, row) in enumerate(self.df_processed.iterrows()):
+                titulo = str(row.get("titulo", ""))
+                contenido = str(row.get("contenido", ""))
+                text = f"{titulo}. {contenido[:500]}"
+
+                try:
+                    result = detector.detect(text)
+                    score = result.get("score", 0.0)
+                except Exception:
+                    score = 0.0
+
+                scores_semanticos.append(score)
+
+                if (i + 1) % 50 == 0:
+                    print(f"  Procesadas {i + 1}/{total} noticias")
+
+            self.df_processed["score_semantico"] = scores_semanticos
+            self.df_processed["modo_deteccion"] = "hybrid"
+
+            # Combinar con heurístico usando HybridScorer
+            hybrid_scorer = HybridScorer()
+            for i, (idx, row) in enumerate(self.df_processed.iterrows()):
+                h_score = row.get("relevancia_final", row.get("score_compuesto", 0))
+                s_score = row.get("score_semantico", 0)
+                combined = hybrid_scorer.combine(
+                    heuristic_score=float(h_score),
+                    semantic_score=float(s_score),
+                )
+                self.df_processed.at[idx, "relevancia_final"] = combined["score"]
+                self.df_processed.at[idx, "clasificacion_final"] = combined["clasificacion"]
+
+            avg_sem = np.mean(scores_semanticos)
+            print(f"  Score semántico promedio: {avg_sem:.4f}")
+            print(f"  {total} noticias procesadas con BETO")
+
+        except ImportError as e:
+            print(f"  [!] Módulo semántico no disponible: {e}")
+            print("  [!] Continuando sin detección semántica")
+        except Exception as e:
+            print(f"  [!] Error en detección semántica: {e}")
+            logger.exception("Error en step_9_semantic_detection")
+
+        return self.df_processed
+
+    def step_10_bertopic_clustering(self) -> pd.DataFrame:
+        """
+        OE-4: Clustering semántico con BERTopic.
+
+        Reemplaza K-Means con BERTopic que usa:
+          BETO embeddings → UMAP → HDBSCAN → c-TF-IDF
+
+        Los resultados se agregan como columnas adicionales sin
+        sobreescribir los clusters de K-Means para comparación.
+        """
+        print("=== PASO 10: CLUSTERING BERTOPIC (OE-4) ===")
+        assert self.df_processed is not None, "Ejecute pasos anteriores primero"
+
+        try:
+            from src.analysis.bertopic_clustering import SemanticClustering
+
+            clustering = SemanticClustering(
+                min_cluster_size=8,
+                reduce_outliers=True,
+            )
+
+            # Preparar documentos
+            docs = self.df_processed["contenido"].fillna("").astype(str).tolist()
+            titles = self.df_processed["titulo"].fillna("").astype(str).tolist()
+
+            if len(docs) < 20:
+                print("  [!] Muy pocos documentos para BERTopic (mínimo 20)")
+                return self.df_processed
+
+            results = clustering.fit_transform(docs=docs, titles=titles)
+
+            # Agregar resultados al DataFrame
+            self.df_processed["topic_id"] = results["topics"]
+
+            # Asignar cluster_id basado en topic (para PostgreSQL)
+            labels = results.get("labels", {})
+            self.df_processed["topic_description"] = [
+                labels.get(t, f"Tema {t}") for t in results["topics"]
+            ]
+
+            # Guardar modelo
+            try:
+                clustering.save_model()
+            except Exception as e:
+                logger.warning(f"No se pudo guardar modelo BERTopic: {e}")
+
+            # Generar visualizaciones
+            try:
+                viz_files = clustering.visualize_clusters(output_dir=self.DATA_DIR)
+                if viz_files:
+                    print(f"  Visualizaciones generadas: {list(viz_files.keys())}")
+            except Exception as e:
+                logger.warning(f"No se pudieron generar visualizaciones: {e}")
+
+            print(f"  Topics encontrados: {results['n_topics']}")
+            print(
+                f"  Outliers: {results['outlier_percent_initial']:.1%} → "
+                f"{results['outlier_percent_final']:.1%}"
+            )
+
+            # Almacenar referencia para uso posterior
+            self._bertopic_clustering = clustering
+
+        except ImportError as e:
+            print(f"  [!] BERTopic no disponible: {e}")
+            print("  [!] Continuando con clustering K-Means existente")
+        except Exception as e:
+            print(f"  [!] Error en BERTopic: {e}")
+            logger.exception("Error en step_10_bertopic_clustering")
+
+        return self.df_processed
+
+    def step_11_persist_to_postgres(self) -> None:
+        """
+        OE-3: Persistencia en PostgreSQL con FTS.
+
+        Guarda los resultados del análisis en la base de datos
+        relacional normalizada, habilitando búsqueda full-text.
+
+        Mantiene CSV como backup/fallback para compatibilidad.
+        """
+        print("=== PASO 11: PERSISTENCIA POSTGRESQL (OE-3) ===")
+        assert self.df_processed is not None, "Ejecute pasos anteriores primero"
+
+        try:
+            from src.database.repository import NoticiasRepository, init_fts_schema
+            from app import create_app
+
+            # Verificar si ya estamos en un contexto de app
+            from flask import current_app
+            try:
+                _ = current_app.name
+                in_app_context = True
+            except RuntimeError:
+                in_app_context = False
+
+            if in_app_context:
+                # Inicializar FTS y persistir
+                init_fts_schema()
+
+                records = []
+                for _, row in self.df_processed.iterrows():
+                    record = {
+                        "titulo": str(row.get("titulo", "")),
+                        "contenido": str(row.get("contenido", "")),
+                        "enlace": row.get("enlace"),
+                        "fuente": row.get("fuente"),
+                        "fecha": (
+                            pd.to_datetime(row["fecha"], utc=True)
+                            if pd.notna(row.get("fecha"))
+                            else None
+                        ),
+                        "score_feminicidio": float(row.get("score_feminicidio", 0)),
+                        "score_nna": float(row.get("score_nna", 0)),
+                        "score_compuesto": float(row.get("score_compuesto", 0)),
+                        "relevancia_final": float(
+                            row.get("relevancia_final", row.get("score_compuesto", 0))
+                        ),
+                        "clasificacion": row.get("clasificacion", "No relevante"),
+                        "clasificacion_final": row.get(
+                            "clasificacion_final",
+                            row.get("clasificacion", "No relevante"),
+                        ),
+                        "score_semantico": (
+                            float(row["score_semantico"])
+                            if pd.notna(row.get("score_semantico"))
+                            else None
+                        ),
+                        "modo_deteccion": row.get("modo_deteccion"),
+                        "topic_id": (
+                            int(row["topic_id"])
+                            if pd.notna(row.get("topic_id"))
+                            else None
+                        ),
+                        "topic_description": row.get("topic_description"),
+                        "max_similarity": float(row.get("max_similarity", 0)),
+                        "menores_identificados": row.get("menores_identificados", "No"),
+                        "scrape_method": row.get("scrape_method", "rss"),
+                    }
+                    records.append(record)
+
+                count = NoticiasRepository.crear_batch(records)
+                print(f"  {count} noticias persistidas en PostgreSQL")
+
+                # Guardar clusters si BERTopic se ejecutó
+                if hasattr(self, "_bertopic_clustering"):
+                    try:
+                        topics = self.df_processed["topic_id"].tolist()
+                        labels = {}
+                        if "topic_description" in self.df_processed.columns:
+                            for t in set(topics):
+                                mask = self.df_processed["topic_id"] == t
+                                desc = self.df_processed.loc[mask, "topic_description"].iloc[0]
+                                labels[t] = desc
+                        self._bertopic_clustering.save_results_to_db(topics, labels)
+                    except Exception as e:
+                        logger.warning(f"Error guardando clusters en DB: {e}")
+            else:
+                print("  [!] Sin contexto Flask — PostgreSQL omitido")
+                print("  [i] Los datos se guardaron en CSV como fallback")
+
+        except ImportError as e:
+            print(f"  [!] Módulo de database no disponible: {e}")
+        except Exception as e:
+            print(f"  [!] Error persistiendo en PostgreSQL: {e}")
+            logger.exception("Error en step_11_persist_to_postgres")
 
     def search_enhanced(self, query: str, max_results: int = 10) -> pd.DataFrame:
         """Búsqueda con expansión de sinónimos y ordenada por relevancia."""

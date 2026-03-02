@@ -1,457 +1,1030 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Inteligente NNA - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Plataforma NNA | Seguimiento de Víctimas Indirectas de Feminicidio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --navy:     #1a3a6b;
+            --navy-dk:  #122a52;
+            --navy-lt:  #2a5298;
+            --crimson:  #b03030;
+            --crimson-lt: #c0392b;
+            --teal:     #0e7c6e;
+            --teal-lt:  #16a085;
+            --amber:    #c47c10;
+            --amber-lt: #d68910;
+            --gray-bg:  #f0f2f7;
+            --card-bg:  #ffffff;
+            --text-main: #1c2b3a;
+            --text-muted: #6b7a8d;
+            --border:   #dde3ef;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--gray-bg);
+            color: var(--text-main);
+            font-size: 14px;
+        }
+        /* ── Topbar ─────────────────────────────────────── */
+        .topbar {
+            background: var(--navy);
             color: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 0 1.5rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .stat-card.nna {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .topbar-brand {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none; color: white;
         }
-        .stat-card.clusters {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: var(--crimson); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
         }
-        .stat-card.topics {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+        .brand-title { font-weight: 700; font-size: 14px; letter-spacing: 0.02em; }
+        .brand-sub   { font-size: 10px; color: rgba(255,255,255,0.65); font-weight: 400; }
+        .topbar-nav  { display: flex; align-items: center; gap: 6px; }
+        .btn-nav {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white; border-radius: 6px;
+            padding: 6px 14px; font-size: 13px; font-weight: 500;
+            text-decoration: none;
+            display: flex; align-items: center; gap: 6px;
+            transition: background 0.15s; cursor: pointer;
         }
-        .news-card {
-            border-left: 4px solid #667eea;
-            transition: transform 0.2s;
+        .btn-nav:hover { background: rgba(255,255,255,0.22); color: white; }
+        .btn-nav.btn-run { background: var(--crimson); border-color: var(--crimson-lt); }
+        .btn-nav.btn-run:hover { background: var(--crimson-lt); }
+        .user-chip {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.85);
+            border-radius: 20px; padding: 4px 12px; font-size: 12px;
         }
-        .news-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .btn-logout {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.7);
         }
-        .badge-nna {
-            background-color: #f5576c;
+        .btn-logout:hover {
+            background: rgba(220,50,50,0.4);
+            border-color: rgba(255,100,100,0.5); color: white;
         }
-        .search-box {
-            border-radius: 25px;
-            border: 2px solid #667eea;
+        /* ── Subheader ──────────────────────────────────── */
+        .subheader {
+            background: var(--navy-dk);
+            color: rgba(255,255,255,0.75);
+            padding: 7px 1.5rem; font-size: 12px;
+            display: flex; align-items: center; gap: 16px;
         }
-        .btn-analyze {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
+        .subheader .flag {
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px; padding: 2px 8px;
+            font-weight: 600; color: white;
         }
-        .loading {
-            display: none;
+        /* ── Loading overlay ────────────────────────────── */
+        .loading-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(26,58,107,0.78);
+            z-index: 9999; align-items: center;
+            justify-content: center; flex-direction: column; color: white;
         }
-        .container-fluid {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+        .loading-overlay.visible { display: flex; }
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        /* ── Main layout ────────────────────────────────── */
+        .main-content { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        /* ── Stat cards ─────────────────────────────────── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px; margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--card-bg); border-radius: 12px;
+            padding: 18px 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--border);
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .stat-card.c-total   { border-top-color: var(--navy-lt); }
+        .stat-card.c-nna     { border-top-color: var(--teal-lt); }
+        .stat-card.c-alta    { border-top-color: var(--crimson-lt); }
+        .stat-card.c-media   { border-top-color: var(--amber-lt); }
+        .stat-card.c-cluster { border-top-color: #7c5cbf; }
+        .stat-icon {
+            width: 38px; height: 38px; border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; margin-bottom: 4px;
+        }
+        .c-total .stat-icon   { background: #e8edf8; color: var(--navy-lt); }
+        .c-nna .stat-icon     { background: #e3f5f1; color: var(--teal-lt); }
+        .c-alta .stat-icon    { background: #fbeaea; color: var(--crimson-lt); }
+        .c-media .stat-icon   { background: #fdf3e3; color: var(--amber-lt); }
+        .c-cluster .stat-icon { background: #f0ebfb; color: #7c5cbf; }
+        .stat-value { font-size: 26px; font-weight: 700; line-height: 1; color: var(--text-main); }
+        .stat-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        /* ── Charts ─────────────────────────────────────── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 14px; margin-bottom: 1.5rem;
+        }
+        .chart-card {
+            background: var(--card-bg); border-radius: 12px;
+            padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .chart-title {
+            font-size: 13px; font-weight: 600; color: var(--text-main);
+            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+        }
+        .chart-title i { color: var(--navy-lt); }
+        .charts-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px; margin-bottom: 1.5rem;
+        }
+        /* ── Search panel ───────────────────────────────── */
+        .search-panel {
+            background: var(--card-bg); border-radius: 12px;
+            padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            margin-bottom: 1.25rem;
+        }
+        .search-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
+        .search-input-group { display: flex; gap: 8px; }
+        .search-input-group input {
+            flex: 1; border: 1.5px solid var(--border);
+            border-radius: 8px; padding: 9px 14px;
+            font-size: 13px; outline: none;
+            transition: border-color 0.15s; font-family: inherit;
+        }
+        .search-input-group input:focus { border-color: var(--navy-lt); }
+        .btn-search {
+            background: var(--navy); color: white;
+            border: none; border-radius: 8px;
+            padding: 9px 18px; font-size: 13px;
+            font-weight: 500; cursor: pointer; font-family: inherit;
+        }
+        .btn-search:hover { background: var(--navy-lt); }
+        .search-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+        .filter-bar {
+            display: flex; align-items: center; gap: 6px;
+            margin-top: 12px; padding-top: 12px;
+            border-top: 1px solid var(--border); flex-wrap: wrap;
+        }
+        .filter-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+        .filter-btn {
+            border: 1.5px solid var(--border); background: white;
+            color: var(--text-main); border-radius: 20px;
+            padding: 4px 14px; font-size: 12px; font-weight: 500;
+            cursor: pointer; transition: all 0.15s; font-family: inherit;
+        }
+        .filter-btn:hover, .filter-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+        .filter-btn.f-alta:hover,  .filter-btn.f-alta.active  { background: var(--crimson); border-color: var(--crimson); color: white; }
+        .filter-btn.f-media:hover, .filter-btn.f-media.active { background: var(--amber);   border-color: var(--amber);   color: white; }
+        .filter-btn.f-nna:hover,   .filter-btn.f-nna.active   { background: var(--teal);    border-color: var(--teal);    color: white; }
+        /* ── Export buttons ─────────────────────────────── */
+        .export-bar {
+            display: flex; gap: 8px; align-items: center; margin-left: auto;
+        }
+        .btn-export {
+            border: 1.5px solid var(--border); background: white;
+            color: var(--text-main); border-radius: 6px;
+            padding: 5px 12px; font-size: 12px; font-weight: 500;
+            cursor: pointer; transition: all 0.15s; font-family: inherit;
+            text-decoration: none; display: flex; align-items: center; gap: 4px;
+        }
+        .btn-export:hover { background: var(--navy); border-color: var(--navy); color: white; }
+        /* ── News panel ─────────────────────────────────── */
+        .news-panel {
+            background: var(--card-bg); border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden;
+        }
+        .news-panel-header {
+            padding: 14px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            background: #fafbfd; flex-wrap: wrap; gap: 8px;
+        }
+        .panel-title { font-weight: 600; font-size: 14px; color: var(--text-main); }
+        .results-count { font-size: 12px; color: var(--text-muted); background: var(--gray-bg); border-radius: 12px; padding: 2px 10px; }
+        .news-panel-body { padding: 16px 20px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 36px; margin-bottom: 12px; opacity: 0.4; display: block; }
+        /* ── News items ─────────────────────────────────── */
+        .news-item {
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: 14px 16px; margin-bottom: 12px;
+            transition: box-shadow 0.15s, transform 0.15s;
+            position: relative; overflow: hidden;
+        }
+        .news-item::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 4px;
+            background: var(--border); border-radius: 4px 0 0 4px;
+        }
+        .news-item.rel-alta::before  { background: var(--crimson); }
+        .news-item.rel-media::before { background: var(--amber); }
+        .news-item.rel-baja::before  { background: #95a5a6; }
+        .news-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .news-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+        .news-title { font-size: 13.5px; font-weight: 600; color: var(--text-main); line-height: 1.4; flex: 1; }
+        .badges { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; align-items: flex-start; }
+        .badge-rel { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .badge-alta  { background: #fbeaea; color: var(--crimson); border: 1px solid #f5c6c6; }
+        .badge-media { background: #fdf3e3; color: var(--amber);   border: 1px solid #f5ddb6; }
+        .badge-baja  { background: #f0f0f0; color: #666;           border: 1px solid #ddd; }
+        .badge-nna   { background: var(--teal-lt); color: white; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+        .news-excerpt {
+            font-size: 12.5px; color: var(--text-muted); line-height: 1.5;
+            margin-bottom: 10px;
+            display: -webkit-box; -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .news-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11.5px; color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 8px; flex-wrap: wrap; gap: 4px;
+        }
+        .news-meta { display: flex; align-items: center; gap: 12px; }
+        .score-pills { display: flex; gap: 6px; }
+        .score-pill {
+            display: flex; align-items: center; gap: 3px;
+            font-size: 11px; background: var(--gray-bg);
+            border-radius: 4px; padding: 2px 7px;
+        }
+        .score-pill.s-fem { color: var(--crimson); }
+        .score-pill.s-nna { color: var(--teal); }
+        .news-link { color: var(--navy-lt); text-decoration: none; font-weight: 500; }
+        .news-link:hover { text-decoration: underline; }
+        /* ── Bookmark buttons ───────────────────────────── */
+        .btn-bookmark {
+            background: none; border: none; cursor: pointer;
+            color: var(--text-muted); font-size: 14px; padding: 2px 4px;
+            transition: color 0.15s;
+        }
+        .btn-bookmark:hover, .btn-bookmark.active { color: var(--amber); }
+        /* ── Pagination ─────────────────────────────────── */
+        .pagination-bar {
+            display: flex; justify-content: center; align-items: center;
+            gap: 4px; margin-top: 18px;
+            padding-top: 14px; border-top: 1px solid var(--border);
+        }
+        .page-btn {
+            border: 1.5px solid var(--border); background: white;
+            color: var(--text-main); border-radius: 6px;
+            padding: 5px 12px; font-size: 12px; cursor: pointer;
+            transition: all 0.12s; font-family: inherit;
+        }
+        .page-btn:hover:not(:disabled) { border-color: var(--navy); color: var(--navy); }
+        .page-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+        .page-btn:disabled { opacity: 0.4; cursor: default; }
+        /* ── Tabs ───────────────────────────────────────── */
+        .section-tabs {
+            display: flex; gap: 4px; margin-bottom: 1.5rem;
+            background: var(--card-bg); padding: 6px; border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .tab-btn {
+            border: none; background: transparent; color: var(--text-muted);
+            padding: 8px 18px; font-size: 13px; font-weight: 500;
+            border-radius: 6px; cursor: pointer; font-family: inherit;
+            transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn:hover { background: var(--gray-bg); color: var(--text-main); }
+        .tab-btn.active { background: var(--navy); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* ── Footer ─────────────────────────────────────── */
+        .site-footer {
+            text-align: center; padding: 20px;
+            color: var(--text-muted); font-size: 11.5px;
+            border-top: 1px solid var(--border); margin-top: 2rem;
+        }
+        .site-footer strong { color: var(--navy); }
+        /* ── Responsive ─────────────────────────────────── */
+        @media (max-width: 900px) {
+            .stat-grid { grid-template-columns: repeat(3, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+            .charts-row-2 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .brand-sub { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid p-4">
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h2 mb-0">
-                            <i class="fas fa-shield-alt text-primary"></i>
-                            Sistema Inteligente NNA
-                        </h1>
-                        <p class="text-muted">Identificación y Seguimiento de Casos</p>
-                    </div>
-                    <div>
-                        <button class="btn btn-primary btn-analyze" onclick="runAnalysis()">
-                            <i class="fas fa-play"></i> Ejecutar Análisis
-                        </button>
-                        <a href="{{ url_for('sources.index') }}" class="btn btn-info text-white">
-                            <i class="fas fa-rss"></i> Fuentes
-                        </a>
-                        <button class="btn btn-success" onclick="exportData()">
-                            <i class="fas fa-download"></i> Exportar CSV
-                        </button>
-                        <span class="badge bg-secondary ms-2 p-2">
-                            <i class="fas fa-user me-1"></i>{{ current_user.username }}
-                        </span>
-                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger ms-1" title="Cerrar Sesión">
-                            <i class="fas fa-sign-out-alt"></i> Salir
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Loading -->
-        <div class="row loading" id="loadingDiv">
-            <div class="col-12 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <p class="mt-2">Ejecutando análisis completo...</p>
-            </div>
-        </div>
-
-        <!-- Statistics Cards -->
-        <div class="row" id="statsRow">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="totalNoticias">-</h3>
-                            <p class="mb-0">Total Noticias</p>
-                        </div>
-                        <i class="fas fa-newspaper fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card nna">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="noticiasNNA">-</h3>
-                            <p class="mb-0">Mencionan NNA</p>
-                        </div>
-                        <i class="fas fa-child fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="altaRelevancia">-</h3>
-                            <p class="mb-0">Alta Rel.</p>
-                        </div>
-                        <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="stat-card clusters">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="mediaRelevancia">-</h3>
-                            <p class="mb-0">Media Rel.</p>
-                        </div>
-                        <i class="fas fa-info-circle fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="stat-card topics">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-0" id="clusters">-</h3>
-                            <p class="mb-0">Clusters</p>
-                        </div>
-                        <i class="fas fa-project-diagram fa-2x opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-search"></i> Búsqueda Inteligente
-                        </h5>
-                        <div class="input-group">
-                            <input type="text" class="form-control search-box" 
-                                   placeholder="Buscar noticias (ej: feminicidio, violencia, niños)..." 
-                                   id="searchInput">
-                            <button class="btn btn-primary" onclick="searchNews()">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        <small class="text-muted">
-                            La búsqueda incluye sinónimos automáticamente (ej: "niños" encuentra también "menores", "NNA")
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- News Results -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-list"></i> 
-                            <span id="resultsTitle">Últimas Noticias</span>
-                        </h5>
-                        <div>
-                            <button class="btn btn-sm btn-danger" onclick="loadNews(false, 1, 'Alta')" title="Solo alta relevancia">
-                                Alta Rel.
-                            </button>
-                            <button class="btn btn-sm btn-warning" onclick="loadNews(false, 1, 'Media')" title="Solo media relevancia">
-                                Media Rel.
-                            </button>
-                            <button class="btn btn-sm btn-outline-primary" onclick="loadNews(true)">
-                                Solo NNA
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadNews(false)">
-                                Todas
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="newsContainer">
-                            <p class="text-muted text-center">Cargando noticias...</p>
-                        </div>
-                        <nav id="pagination" class="mt-3" style="display: none;">
-                            <ul class="pagination justify-content-center">
-                                <!-- Pagination buttons will be inserted here -->
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="row mt-4">
-            <div class="col-12 text-center">
-                <p class="text-muted">
-                    Sistema Inteligente para Identificación y Seguimiento de NNA - 
-                    <span id="lastUpdate">-</span>
-                </p>
-            </div>
-        </div>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner mb-3"></div>
+        <p style="font-size:15px;font-weight:600;margin-bottom:4px;">Ejecutando análisis…</p>
+        <small style="opacity:0.7;">Recolectando noticias y aplicando modelos de IA</small>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        let currentPage = 1;
-        let onlyNNA = false;
-        let currentClasificacion = '';
+    <!-- Barra de navegación -->
+    <nav class="topbar">
+        <a class="topbar-brand" href="#">
+            <div class="brand-icon"><i class="fas fa-child"></i></div>
+            <div class="brand-text">
+                <span class="brand-title">Plataforma NNA</span>
+                <span class="brand-sub">Víctimas Indirectas del Feminicidio · México</span>
+            </div>
+        </a>
+        <div class="topbar-nav">
+            <button class="btn-nav btn-run" onclick="runAnalysis()">
+                <i class="fas fa-sync-alt"></i>
+                <span class="d-none d-md-inline">Actualizar datos</span>
+            </button>
+            <a href="{{ url_for('sources.index') }}" class="btn-nav">
+                <i class="fas fa-rss"></i>
+                <span class="d-none d-md-inline">Fuentes</span>
+            </a>
+            <span class="user-chip">
+                <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
+            </span>
+            <a href="{{ url_for('auth.logout') }}" class="btn-nav btn-logout" title="Cerrar sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </nav>
 
-        // Cargar estadísticas
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/stats');
-                if (response.ok) {
-                    const stats = await response.json();
-                    document.getElementById('totalNoticias').textContent = stats.total_noticias;
-                    document.getElementById('noticiasNNA').textContent = stats.noticias_nna;
-                    document.getElementById('altaRelevancia').textContent = stats.alta_relevancia || 0;
-                    document.getElementById('mediaRelevancia').textContent = stats.media_relevancia || 0;
-                    document.getElementById('clusters').textContent = stats.clusters;
-                    document.getElementById('lastUpdate').textContent = stats.ultima_actualizacion;
-                }
-            } catch (error) {
-                console.error('Error cargando estadísticas:', error);
-            }
-        }
+    <!-- Sub-header contextual -->
+    <div class="subheader">
+        <span class="flag"><i class="fas fa-map-marker-alt"></i> Solo México</span>
+        <span>Feminicidio · NNA huérfanos · Víctimas indirectas</span>
+        <span class="ms-auto" style="font-size:11px;">Última actualización: <span id="headerUpdate">—</span></span>
+    </div>
 
-        // Cargar noticias
-        async function loadNews(nnaOnly = false, page = 1, clasificacion = '') {
-            onlyNNA = nnaOnly;
-            currentPage = page;
-            currentClasificacion = clasificacion;
-            
-            try {
-                let url = `/api/noticias?page=${page}&per_page=10&only_nna=${nnaOnly}`;
-                if (clasificacion) {
-                    url += `&clasificacion=${encodeURIComponent(clasificacion)}`;
-                }
-                const response = await fetch(url);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    displayNews(data.noticias);
-                    displayPagination(data);
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <!-- Estadísticas rápidas -->
+        <div class="stat-grid">
+            <div class="stat-card c-total">
+                <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                <div class="stat-value" id="totalNoticias">—</div>
+                <div class="stat-label">Noticias totales</div>
+            </div>
+            <div class="stat-card c-nna">
+                <div class="stat-icon"><i class="fas fa-child"></i></div>
+                <div class="stat-value" id="noticiasNNA">—</div>
+                <div class="stat-label">Mencionan NNA</div>
+            </div>
+            <div class="stat-card c-alta">
+                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="stat-value" id="altaRelevancia">—</div>
+                <div class="stat-label">Alta relevancia</div>
+            </div>
+            <div class="stat-card c-media">
+                <div class="stat-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="stat-value" id="mediaRelevancia">—</div>
+                <div class="stat-label">Media relevancia</div>
+            </div>
+            <div class="stat-card c-cluster">
+                <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                <div class="stat-value" id="clusters">—</div>
+                <div class="stat-label">Grupos temáticos</div>
+            </div>
+        </div>
 
-                    let title = 'Todas las Noticias';
-                    if (clasificacion) title = `Relevancia ${clasificacion}`;
-                    else if (nnaOnly) title = 'Casos con NNA';
-                    document.getElementById('resultsTitle').textContent = 
-                        `${title} (${data.total})`;
-                }
-            } catch (error) {
-                console.error('Error cargando noticias:', error);
-                document.getElementById('newsContainer').innerHTML = 
-                    '<p class="text-danger">Error cargando noticias</p>';
-            }
-        }
+        <!-- Pestañas de secciones -->
+        <div class="section-tabs">
+            <button class="tab-btn active" data-tab="noticias" onclick="switchTab('noticias', this)">
+                <i class="fas fa-newspaper"></i> Noticias
+            </button>
+            <button class="tab-btn" data-tab="graficos" onclick="switchTab('graficos', this)">
+                <i class="fas fa-chart-bar"></i> Gráficos
+            </button>
+            <button class="tab-btn" data-tab="guardadas" onclick="switchTab('guardadas', this)">
+                <i class="fas fa-bookmark"></i> Guardadas
+                <span id="savedCount" style="background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:10px;display:none;">0</span>
+            </button>
+        </div>
 
-        // Color de badge según clasificación
-        function getRelevanceBadge(clasificacion, score) {
-            const pct = (score * 100).toFixed(0);
-            switch(clasificacion) {
-                case 'Alta':
-                    return `<span class="badge bg-danger">Alta ${pct}%</span>`;
-                case 'Media':
-                    return `<span class="badge bg-warning text-dark">Media ${pct}%</span>`;
-                case 'Baja':
-                    return `<span class="badge bg-secondary">Baja ${pct}%</span>`;
-                default:
-                    return `<span class="badge bg-light text-dark">${pct}%</span>`;
-            }
-        }
+        <!-- ╔═══ TAB: Noticias ═══╗ -->
+        <div id="tab-noticias" class="tab-content active">
+            <!-- Búsqueda y filtros -->
+            <div class="search-panel">
+                <div class="search-label">
+                    <i class="fas fa-search me-1"></i>Búsqueda inteligente
+                </div>
+                <div class="search-input-group">
+                    <input type="text" id="searchInput"
+                        placeholder="Buscar por palabra clave (ej: feminicidio, huérfanos, Jalisco)…"
+                        autocomplete="off">
+                    <button class="btn-search" onclick="searchNews()">
+                        <i class="fas fa-search me-1"></i>Buscar
+                    </button>
+                </div>
+                <div class="search-hint">
+                    <i class="fas fa-magic me-1"></i>
+                    La búsqueda expande automáticamente sinónimos: "niños" incluye "menores", "NNA", "infantes"
+                </div>
+                <div class="filter-bar">
+                    <span class="filter-label">Filtros:</span>
+                    <button class="filter-btn active" id="fb-todas" onclick="applyFilter('todas')">Todas</button>
+                    <button class="filter-btn f-alta"  id="fb-alta"  onclick="applyFilter('alta')">
+                        <i class="fas fa-circle" style="font-size:7px;"></i> Alta relevancia
+                    </button>
+                    <button class="filter-btn f-media" id="fb-media" onclick="applyFilter('media')">
+                        <i class="fas fa-circle" style="font-size:7px;"></i> Media relevancia
+                    </button>
+                    <button class="filter-btn f-nna"   id="fb-nna"   onclick="applyFilter('nna')">
+                        <i class="fas fa-child" style="font-size:9px;"></i> NNA identificados
+                    </button>
+                    <div class="export-bar">
+                        <a href="/api/export/csv" class="btn-export" title="Exportar datos a CSV">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-        // Mostrar noticias
-        function displayNews(noticias) {
-            const container = document.getElementById('newsContainer');
-            
-            if (noticias.length === 0) {
-                container.innerHTML = '<p class="text-muted text-center">No se encontraron noticias</p>';
-                return;
-            }
-
-            let html = '';
-            noticias.forEach(noticia => {
-                const badgeNNA = noticia.menores_identificados === 'Si' ? 
-                    '<span class="badge badge-nna ms-1">NNA</span>' : '';
-                const relevanceBadge = getRelevanceBadge(
-                    noticia.clasificacion, 
-                    noticia.relevancia_final || noticia.score_compuesto || 0
-                );
-
-                // Color del borde según relevancia
-                let borderColor = '#667eea';
-                if (noticia.clasificacion === 'Alta') borderColor = '#e74c3c';
-                else if (noticia.clasificacion === 'Media') borderColor = '#f39c12';
-                
-                html += `
-                    <div class="news-card card mb-3" style="border-left-color: ${borderColor};">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="card-title mb-0">${noticia.titulo}</h6>
-                                <div class="text-nowrap ms-2">
-                                    ${relevanceBadge}${badgeNNA}
-                                </div>
-                            </div>
-                            <p class="card-text text-muted small">${noticia.contenido}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="fas fa-calendar"></i> ${noticia.fecha} | 
-                                    ${noticia.enlace ? 
-                                        `<a href="${noticia.enlace}" target="_blank"><i class="fas fa-link"></i> Ver fuente</a>` : 
-                                        `<i class="fas fa-link"></i> ${noticia.fuente}`}
-                                </small>
-                                <div class="text-end">
-                                    <small class="text-muted">
-                                        Fem: ${(noticia.score_feminicidio * 100).toFixed(0)}% | 
-                                        NNA: ${(noticia.score_nna * 100).toFixed(0)}% | 
-                                        Cluster: ${noticia.cluster}
-                                    </small>
-                                </div>
-                            </div>
+            <!-- Panel de noticias -->
+            <div class="news-panel">
+                <div class="news-panel-header">
+                    <span class="panel-title">
+                        <i class="fas fa-list-ul me-2" style="color:var(--navy-lt);"></i>
+                        <span id="resultsTitle">Noticias recientes</span>
+                    </span>
+                    <span class="results-count" id="resultsCount">—</span>
+                </div>
+                <div class="news-panel-body">
+                    <div id="newsContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Cargando noticias…</p>
                         </div>
                     </div>
-                `;
+                    <div class="pagination-bar" id="paginationBar" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ╔═══ TAB: Gráficos ═══╗ -->
+        <div id="tab-graficos" class="tab-content">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-line"></i> Tendencia temporal de noticias</div>
+                    <canvas id="chartTemporal" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-pie"></i> Distribución de relevancia</div>
+                    <canvas id="chartRelevancia" height="200"></canvas>
+                </div>
+            </div>
+            <div class="charts-row-2">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-map-marked-alt"></i> Top estados con mayor incidencia</div>
+                    <canvas id="chartEstados" height="250"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-rss"></i> Top fuentes de noticias</div>
+                    <canvas id="chartFuentes" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ╔═══ TAB: Guardadas (NGO tracking) ═══╗ -->
+        <div id="tab-guardadas" class="tab-content">
+            <div class="news-panel">
+                <div class="news-panel-header">
+                    <span class="panel-title">
+                        <i class="fas fa-bookmark me-2" style="color:var(--amber);"></i>
+                        Noticias guardadas para seguimiento
+                    </span>
+                    <div class="export-bar">
+                        <button class="btn-export" onclick="exportSaved()">
+                            <i class="fas fa-file-csv"></i> Exportar guardadas
+                        </button>
+                        <button class="btn-export" onclick="clearSaved()" style="color:var(--crimson);">
+                            <i class="fas fa-trash-alt"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+                <div class="news-panel-body">
+                    <div id="savedContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-bookmark"></i>
+                            <p>No hay noticias guardadas.</p>
+                            <small>Haz clic en el ícono <i class="fas fa-bookmark"></i> de una noticia para guardarla y darle seguimiento.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /main-content -->
+
+    <footer class="site-footer">
+        <strong>Plataforma NNA — Seguimiento de Víctimas Indirectas del Feminicidio</strong><br>
+        Sistema de monitoreo exclusivo para organizaciones sin fines de lucro · República Mexicana<br>
+        <small>Los datos provienen de medios de comunicación mexicanos verificados.
+        Esta plataforma no sustituye asesoría legal o psicosocial.</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // ══════════════════════════════════════════════════════════
+    //  Estado global
+    // ══════════════════════════════════════════════════════════
+    let state = { page: 1, filter: 'todas', search: '', total: 0, totalPages: 1 };
+    let charts = {};
+    let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
+
+    // ══════════════════════════════════════════════════════════
+    //  Tabs
+    // ══════════════════════════════════════════════════════════
+    function switchTab(tab, el) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (el) el.classList.add('active');
+        if (tab === 'graficos') loadCharts();
+        if (tab === 'guardadas') renderSaved();
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Stats
+    // ══════════════════════════════════════════════════════════
+    async function loadStats() {
+        try {
+            const r = await fetch('/api/stats');
+            if (!r.ok) return;
+            const s = await r.json();
+            document.getElementById('totalNoticias').textContent   = fmt(s.total_noticias);
+            document.getElementById('noticiasNNA').textContent     = fmt(s.noticias_nna);
+            document.getElementById('altaRelevancia').textContent  = fmt(s.alta_relevancia || 0);
+            document.getElementById('mediaRelevancia').textContent = fmt(s.media_relevancia || 0);
+            document.getElementById('clusters').textContent        = fmt(s.clusters || s.topics || 0);
+            document.getElementById('headerUpdate').textContent    = s.ultima_actualizacion || '—';
+        } catch(e) { console.warn('Stats error:', e); }
+    }
+
+    function fmt(n) {
+        if (n === undefined || n === null) return '—';
+        return Number(n).toLocaleString('es-MX');
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Filters
+    // ══════════════════════════════════════════════════════════
+    function applyFilter(filter) {
+        state.filter = filter; state.page = 1; state.search = '';
+        document.getElementById('searchInput').value = '';
+        ['todas','alta','media','nna'].forEach(f => {
+            document.getElementById('fb-' + f).classList.toggle('active', f === filter);
+        });
+        loadNews();
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  News loading
+    // ══════════════════════════════════════════════════════════
+    async function loadNews() {
+        const container = document.getElementById('newsContainer');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando…</p></div>';
+        try {
+            let url;
+            if (state.search) {
+                url = '/api/search?q=' + encodeURIComponent(state.search);
+            } else {
+                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna');
+                if (state.filter === 'alta' || state.filter === 'media') {
+                    const cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                    url += '&clasificacion=' + encodeURIComponent(cls);
+                }
+            }
+            const r = await fetch(url);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const data = await r.json();
+            const noticias = data.noticias || [];
+            state.total = data.total || data.resultados || noticias.length;
+            state.totalPages = data.total_pages || 1;
+            const labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados' };
+            document.getElementById('resultsTitle').textContent = state.search
+                ? 'Resultados para "' + state.search + '"'
+                : labels[state.filter];
+            document.getElementById('resultsCount').textContent = fmt(state.total) + ' resultado' + (state.total !== 1 ? 's' : '');
+            renderNews(noticias);
+            renderPagination();
+        } catch(e) {
+            console.error('Noticias error:', e);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
+        }
+    }
+
+    function renderNews(noticias) {
+        const c = document.getElementById('newsContainer');
+        if (!noticias.length) {
+            c.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No hay noticias con estos filtros.</p><button class="filter-btn mt-2" onclick="applyFilter(\'todas\')">Ver todas</button></div>';
+            return;
+        }
+        c.innerHTML = noticias.map(buildCard).join('');
+    }
+
+    function buildCard(n) {
+        const cls = (n.clasificacion || '').toLowerCase();
+        const rel = n.relevancia_final || n.score_compuesto || 0;
+        const pct = (rel * 100).toFixed(0);
+        const femPct = ((n.score_feminicidio || 0) * 100).toFixed(0);
+        const nnaPct = ((n.score_nna || 0) * 100).toFixed(0);
+        const hasNNA = n.menores_identificados === 'Si';
+        const isSaved = savedNews.some(function(s) { return s.id === n.id || s.titulo === n.titulo; });
+
+        var relBadge = '';
+        if (cls === 'alta')       relBadge = '<span class="badge-rel badge-alta">Alta ' + pct + '%</span>';
+        else if (cls === 'media') relBadge = '<span class="badge-rel badge-media">Media ' + pct + '%</span>';
+        else if (cls === 'baja')  relBadge = '<span class="badge-rel badge-baja">Baja ' + pct + '%</span>';
+        var nnaBadge = hasNNA ? '<span class="badge-nna"><i class="fas fa-child me-1"></i>NNA</span>' : '';
+
+        var enlace = n.enlace
+            ? '<a href="' + esc(n.enlace) + '" target="_blank" rel="noopener" class="news-link"><i class="fas fa-external-link-alt me-1"></i>Ver nota</a>'
+            : '<span>' + esc(n.fuente || '') + '</span>';
+
+        var bookmarkClass = isSaved ? 'active' : '';
+        var bookmarkIcon = isSaved ? 'fas' : 'far';
+        // Store the news id for the bookmark toggle
+        var nId = n.id || 0;
+
+        return '<div class="news-item rel-' + cls + '">' +
+            '<div class="news-header">' +
+                '<div class="news-title">' + esc(n.titulo || '') + '</div>' +
+                '<div class="badges">' +
+                    '<button class="btn-bookmark ' + bookmarkClass + '" onclick="toggleSaveById(' + nId + ')" title="' + (isSaved ? 'Quitar de guardadas' : 'Guardar para seguimiento') + '">' +
+                        '<i class="' + bookmarkIcon + ' fa-bookmark"></i>' +
+                    '</button>' +
+                    relBadge + nnaBadge +
+                '</div>' +
+            '</div>' +
+            '<div class="news-excerpt">' + esc((n.contenido || '').substring(0, 280)) + '</div>' +
+            '<div class="news-footer">' +
+                '<div class="news-meta">' +
+                    '<span><i class="fas fa-calendar-alt me-1"></i>' + fmtDate(n.fecha) + '</span>' +
+                    enlace +
+                '</div>' +
+                '<div class="score-pills">' +
+                    '<span class="score-pill s-fem" title="Score feminicidio"><i class="fas fa-venus"></i> ' + femPct + '%</span>' +
+                    '<span class="score-pill s-nna" title="Score NNA"><i class="fas fa-child"></i> ' + nnaPct + '%</span>' +
+                    (n.cluster !== undefined && n.cluster >= 0 ? '<span class="score-pill" title="Grupo temático">G' + n.cluster + '</span>' : '') +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Pagination
+    // ══════════════════════════════════════════════════════════
+    function renderPagination() {
+        var bar = document.getElementById('paginationBar');
+        if (state.totalPages <= 1 || state.search) { bar.style.display = 'none'; return; }
+        bar.style.display = 'flex';
+        var p = state.page, t = state.totalPages;
+        var start = Math.max(1, p - 2), end = Math.min(t, start + 4);
+        var html = '<button class="page-btn" onclick="goPage(' + (p-1) + ')" ' + (p<=1?'disabled':'') + '><i class="fas fa-chevron-left"></i></button>';
+        for (var i = start; i <= end; i++) html += '<button class="page-btn ' + (i===p?'active':'') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        html += '<button class="page-btn" onclick="goPage(' + (p+1) + ')" ' + (p>=t?'disabled':'') + '><i class="fas fa-chevron-right"></i></button>';
+        bar.innerHTML = html;
+    }
+
+    function goPage(p) {
+        if (p < 1 || p > state.totalPages) return;
+        state.page = p; loadNews();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Search
+    // ══════════════════════════════════════════════════════════
+    async function searchNews() {
+        var q = document.getElementById('searchInput').value.trim();
+        if (!q) { applyFilter('todas'); return; }
+        state.search = q; state.page = 1;
+        ['todas','alta','media','nna'].forEach(function(f) { document.getElementById('fb-' + f).classList.remove('active'); });
+        await loadNews();
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') searchNews();
+        if (e.key === 'Escape') applyFilter('todas');
+    });
+
+    // ══════════════════════════════════════════════════════════
+    //  Run Analysis
+    // ══════════════════════════════════════════════════════════
+    async function runAnalysis() {
+        var overlay = document.getElementById('loadingOverlay');
+        overlay.classList.add('visible');
+        try {
+            var r = await fetch('/api/analyze');
+            var data = await r.json();
+            if (r.ok) {
+                await Promise.all([loadStats(), loadNews()]);
+                showToast('Análisis completado correctamente.', 'success');
+            } else {
+                showToast('Error: ' + (data.error || 'desconocido'), 'error');
+            }
+        } catch(e) {
+            showToast('Error de conexión al ejecutar análisis.', 'error');
+        } finally {
+            overlay.classList.remove('visible');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Charts (Chart.js)
+    // ══════════════════════════════════════════════════════════
+    async function loadCharts() {
+        await Promise.all([
+            loadChartTemporal(),
+            loadChartRelevancia(),
+            loadChartEstados(),
+            loadChartFuentes(),
+        ]);
+    }
+
+    async function loadChartTemporal() {
+        try {
+            var r = await fetch('/api/charts/temporal');
+            var d = await r.json();
+            if (charts.temporal) charts.temporal.destroy();
+            charts.temporal = new Chart(document.getElementById('chartTemporal'), {
+                type: 'line',
+                data: {
+                    labels: d.labels || [],
+                    datasets: [{
+                        label: 'Total noticias',
+                        data: d.total || [],
+                        borderColor: '#2a5298',
+                        backgroundColor: 'rgba(42,82,152,0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
+                        x: { title: { display: true, text: 'Mes' } },
+                    },
+                },
             });
-            
-            container.innerHTML = html;
+        } catch(e) { console.warn('Chart temporal error:', e); }
+    }
+
+    async function loadChartRelevancia() {
+        try {
+            var r = await fetch('/api/charts/relevancia');
+            var d = await r.json();
+            if (charts.relevancia) charts.relevancia.destroy();
+            charts.relevancia = new Chart(document.getElementById('chartRelevancia'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Alta', 'Media', 'Baja', 'No relevante'],
+                    datasets: [{
+                        data: [d.alta || 0, d.media || 0, d.baja || 0, d.no_relevante || 0],
+                        backgroundColor: ['#c0392b', '#d68910', '#95a5a6', '#dde3ef'],
+                        borderWidth: 2,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true } },
+                    },
+                },
+            });
+        } catch(e) { console.warn('Chart relevancia error:', e); }
+    }
+
+    async function loadChartEstados() {
+        try {
+            var r = await fetch('/api/charts/estados');
+            var d = await r.json();
+            if (charts.estados) charts.estados.destroy();
+            charts.estados = new Chart(document.getElementById('chartEstados'), {
+                type: 'bar',
+                data: {
+                    labels: d.labels || [],
+                    datasets: [{
+                        label: 'Noticias por estado',
+                        data: d.values || [],
+                        backgroundColor: 'rgba(176,48,48,0.75)',
+                        borderColor: '#b03030',
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
+                    },
+                },
+            });
+        } catch(e) { console.warn('Chart estados error:', e); }
+    }
+
+    async function loadChartFuentes() {
+        try {
+            var r = await fetch('/api/charts/fuentes');
+            var d = await r.json();
+            if (charts.fuentes) charts.fuentes.destroy();
+            charts.fuentes = new Chart(document.getElementById('chartFuentes'), {
+                type: 'bar',
+                data: {
+                    labels: d.labels || [],
+                    datasets: [{
+                        label: 'Artículos por fuente',
+                        data: d.values || [],
+                        backgroundColor: 'rgba(42,82,152,0.75)',
+                        borderColor: '#2a5298',
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Artículos' } },
+                    },
+                },
+            });
+        } catch(e) { console.warn('Chart fuentes error:', e); }
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Saved / Bookmarks (NGO case tracking)
+    // ══════════════════════════════════════════════════════════
+    // Global cache of loaded noticias for bookmark lookups
+    var _loadedNoticias = [];
+
+    function toggleSaveById(id) {
+        // Find the noticia either from last loaded results or from savedNews
+        var noticia = _loadedNoticias.find(function(n) { return n.id === id; })
+                   || savedNews.find(function(n) { return n.id === id; });
+        if (!noticia) return;
+        var idx = savedNews.findIndex(function(s) { return s.id === noticia.id; });
+        if (idx >= 0) {
+            savedNews.splice(idx, 1);
+            showToast('Noticia removida de guardadas', 'info');
+        } else {
+            noticia._savedAt = new Date().toISOString();
+            savedNews.push(noticia);
+            showToast('Noticia guardada para seguimiento', 'success');
         }
+        localStorage.setItem('nna_saved', JSON.stringify(savedNews));
+        updateSavedCount();
+        // Re-render current view to update bookmark icons
+        if (document.getElementById('tab-noticias').classList.contains('active')) loadNews();
+        if (document.getElementById('tab-guardadas').classList.contains('active')) renderSaved();
+    }
 
-        // Mostrar paginación
-        function displayPagination(data) {
-            const paginationContainer = document.getElementById('pagination');
-            const ul = paginationContainer.querySelector('ul');
-            
-            if (data.total_pages <= 1) {
-                paginationContainer.style.display = 'none';
-                return;
-            }
-
-            let html = '';
-            
-            // Previous button
-            html += `<li class="page-item ${data.page <= 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page - 1}, '${currentClasificacion}')">Anterior</a>
-            </li>`;
-            
-            // Page numbers
-            for (let i = 1; i <= Math.min(data.total_pages, 5); i++) {
-                html += `<li class="page-item ${i === data.page ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${i}, '${currentClasificacion}')">${i}</a>
-                </li>`;
-            }
-            
-            // Next button
-            html += `<li class="page-item ${data.page >= data.total_pages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="loadNews(${onlyNNA}, ${data.page + 1}, '${currentClasificacion}')">Siguiente</a>
-            </li>`;
-            
-            ul.innerHTML = html;
-            paginationContainer.style.display = 'block';
+    function updateSavedCount() {
+        var badge = document.getElementById('savedCount');
+        if (savedNews.length > 0) {
+            badge.textContent = savedNews.length;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
         }
+    }
 
-        // Búsqueda de noticias
-        async function searchNews() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
-
-            try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    displayNews(data.noticias);
-                    document.getElementById('resultsTitle').textContent = 
-                        `Resultados para "${query}" (${data.resultados})`;
-                    document.getElementById('pagination').style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error en búsqueda:', error);
-            }
+    function renderSaved() {
+        var c = document.getElementById('savedContainer');
+        if (!savedNews.length) {
+            c.innerHTML = '<div class="empty-state"><i class="fas fa-bookmark"></i><p>No hay noticias guardadas.</p><small>Haz clic en el ícono <i class="fas fa-bookmark"></i> de una noticia para guardarla.</small></div>';
+            return;
         }
+        c.innerHTML = savedNews.map(buildCard).join('');
+    }
 
-        // Enter key en búsqueda
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchNews();
-            }
+    function exportSaved() {
+        if (!savedNews.length) { showToast('No hay noticias guardadas', 'error'); return; }
+        var headers = ['titulo','fecha','fuente','enlace','clasificacion','score_feminicidio','score_nna','menores_identificados'];
+        var csv = headers.join(',') + '\n';
+        savedNews.forEach(function(n) {
+            csv += headers.map(function(h) { return '"' + (n[h] || '').toString().replace(/"/g, '""') + '"'; }).join(',') + '\n';
         });
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'noticias_guardadas_' + new Date().toISOString().slice(0,10) + '.csv';
+        link.click();
+        showToast('CSV de noticias guardadas descargado', 'success');
+    }
 
-        // Ejecutar análisis
-        async function runAnalysis() {
-            document.getElementById('loadingDiv').style.display = 'block';
-            document.getElementById('statsRow').style.display = 'none';
-            
-            try {
-                const response = await fetch('/api/analyze');
-                const result = await response.json();
-                
-                if (response.ok) {
-                    // Recargar datos
-                    await loadStats();
-                    await loadNews();
-                    alert('Análisis completado exitosamente');
-                } else {
-                    alert('Error: ' + result.error);
+    function clearSaved() {
+        if (!savedNews.length) return;
+        if (confirm('¿Eliminar todas las noticias guardadas?')) {
+            savedNews = [];
+            localStorage.setItem('nna_saved', '[]');
+            updateSavedCount();
+            renderSaved();
+            showToast('Noticias guardadas eliminadas', 'info');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Utilities
+    // ══════════════════════════════════════════════════════════
+    function showToast(msg, type) {
+        var el = document.createElement('div');
+        var bg = type === 'success' ? 'var(--teal)' : type === 'error' ? 'var(--crimson)' : 'var(--navy)';
+        el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:' + bg + ';color:white;padding:12px 20px;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,0.25);font-size:13px;font-weight:500;max-width:320px;transition:opacity 0.3s;';
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(function() { el.style.opacity = '0'; }, 3800);
+        setTimeout(function() { el.remove(); }, 4200);
+    }
+
+    function esc(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function fmtDate(iso) {
+        if (!iso) return '—';
+        try {
+            var d = new Date(iso);
+            if (isNaN(d.getTime())) return String(iso).substring(0,10);
+            return d.toLocaleDateString('es-MX', {day:'2-digit',month:'short',year:'numeric'});
+        } catch(e) { return String(iso).substring(0,10); }
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Patch loadNews to cache loaded noticias for bookmarks
+    // ══════════════════════════════════════════════════════════
+    var _origLoadNews = loadNews;
+    loadNews = async function() {
+        var container = document.getElementById('newsContainer');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando…</p></div>';
+        try {
+            var url;
+            if (state.search) {
+                url = '/api/search?q=' + encodeURIComponent(state.search);
+            } else {
+                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna');
+                if (state.filter === 'alta' || state.filter === 'media') {
+                    var cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                    url += '&clasificacion=' + encodeURIComponent(cls);
                 }
-            } catch (error) {
-                console.error('Error ejecutando análisis:', error);
-                alert('Error ejecutando análisis');
-            } finally {
-                document.getElementById('loadingDiv').style.display = 'none';
-                document.getElementById('statsRow').style.display = 'flex';
             }
+            var r = await fetch(url);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            var data = await r.json();
+            var noticias = data.noticias || [];
+            _loadedNoticias = noticias; // cache for bookmarks
+            state.total = data.total || data.resultados || noticias.length;
+            state.totalPages = data.total_pages || 1;
+            var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados' };
+            document.getElementById('resultsTitle').textContent = state.search
+                ? 'Resultados para "' + state.search + '"'
+                : labels[state.filter];
+            document.getElementById('resultsCount').textContent = fmt(state.total) + ' resultado' + (state.total !== 1 ? 's' : '');
+            renderNews(noticias);
+            renderPagination();
+        } catch(e) {
+            console.error('Noticias error:', e);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
         }
+    };
 
-        // Exportar datos
-        function exportData() {
-            window.location.href = '/api/export/csv';
-        }
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', function() {
-            loadStats();
-            loadNews();
-        });
+    // ══════════════════════════════════════════════════════════
+    //  Init
+    // ══════════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', function() {
+        loadStats();
+        loadNews();
+        updateSavedCount();
+    });
     </script>
 </body>
 </html>

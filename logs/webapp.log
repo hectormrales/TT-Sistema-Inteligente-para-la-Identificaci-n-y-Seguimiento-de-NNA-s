@@ -665,3 +665,112 @@
 2026-02-20 16:59:53,752 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:53] "GET /api/noticias?page=1&per_page=10&only_nna=true HTTP/1.1" 200 -
 2026-02-20 16:59:57,009 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:57] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
 2026-02-20 16:59:57,817 - werkzeug - INFO - 172.19.0.1 - - [20/Feb/2026 16:59:57] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-03-01 20:17:22,458 - app - INFO - Usuario administrador creado (admin / Admin_NNA_2026!)
+2026-03-01 20:17:22,560 - app - INFO - Fuentes predeterminadas sembradas: 45 nuevas
+2026-03-01 20:17:23,700 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-01 20:17:23,701 - app - INFO - Esquema FTS inicializado
+2026-03-01 20:17:23,705 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-03-01 20:17:23,728 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.4:5000
+2026-03-01 20:17:23,728 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-03-01 20:17:29,573 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:17:29] "[32mGET / HTTP/1.1[0m" 302 -
+2026-03-01 20:17:29,706 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:17:29] "GET /login?next=/ HTTP/1.1" 200 -
+2026-03-01 20:17:30,512 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:17:30] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-01 20:17:34,752 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:17:34] "GET /register HTTP/1.1" 200 -
+2026-03-01 20:18:21,922 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:21] "POST /register HTTP/1.1" 200 -
+2026-03-01 20:18:45,602 - app - INFO - Nuevo usuario registrado: test1
+2026-03-01 20:18:45,610 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:45] "[32mPOST /register HTTP/1.1[0m" 302 -
+2026-03-01 20:18:45,635 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:45] "GET /login HTTP/1.1" 200 -
+2026-03-01 20:18:50,943 - app - INFO - Login exitoso: test1 desde 172.18.0.1
+2026-03-01 20:18:50,948 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:50] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-03-01 20:18:51,039 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:51] "GET / HTTP/1.1" 200 -
+2026-03-01 20:18:51,176 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:51] "GET /api/stats HTTP/1.1" 200 -
+2026-03-01 20:18:51,230 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:18:51] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-03-01 20:19:50,573 - src.analysis.dedup - INFO - Deduplicación: 1198 noticias de entrada
+2026-03-01 20:19:50,873 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 213 duplicados
+2026-03-01 20:19:51,329 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 4 duplicados
+2026-03-01 20:19:52,813 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 44 duplicados
+2026-03-01 20:19:53,645 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 7 duplicados
+2026-03-01 20:19:53,648 - src.analysis.dedup - INFO -   Resultado: 1198 → 930 únicos (268 duplicados eliminados)
+2026-03-01 20:19:56,457 - src.analysis.dedup - INFO - Deduplicación: 371 noticias de entrada
+2026-03-01 20:19:56,493 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-03-01 20:19:56,643 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
+2026-03-01 20:19:56,958 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 4 duplicados
+2026-03-01 20:19:57,094 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-03-01 20:19:57,098 - src.analysis.dedup - INFO -   Resultado: 371 → 366 únicos (5 duplicados eliminados)
+2026-03-01 20:20:20,632 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-03-01 20:20:20,634 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-03-01 20:20:20,991 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-03-01 20:20:20,993 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-03-01 20:20:21,057 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-03-01 20:20:21,179 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-03-01 20:20:21,271 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-03-01 20:20:21,459 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-03-01 20:20:21,707 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-03-01 20:20:21,996 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-03-01 20:20:22,035 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-03-01 20:20:22,273 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-03-01 20:20:22,546 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-03-01 20:20:22,748 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-03-01 20:20:22,933 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-03-01 20:20:23,123 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-03-01 20:20:23,305 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-03-01 20:20:23,517 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-03-01 20:20:43,587 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-03-01 20:20:43,682 - src.analysis.analyzer - ERROR - Error en step_9_semantic_detection
+Traceback (most recent call last):
+  File "/app/src/analysis/analyzer.py", line 565, in step_9_semantic_detection
+    combined = hybrid_scorer.combine(
+               ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'HybridScorer' object has no attribute 'combine'
+2026-03-01 20:20:43,747 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 366 documentos
+2026-03-01 20:20:45,790 - src.analysis.analyzer - ERROR - Error en step_10_bertopic_clustering
+Traceback (most recent call last):
+  File "/app/src/analysis/analyzer.py", line 614, in step_10_bertopic_clustering
+    results = clustering.fit_transform(docs=docs, titles=titles)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/analysis/bertopic_clustering.py", line 333, in fit_transform
+    self._build_pipeline()
+  File "/app/src/analysis/bertopic_clustering.py", line 230, in _build_pipeline
+    from bertopic import BERTopic
+  File "/usr/local/lib/python3.11/site-packages/bertopic/__init__.py", line 3, in <module>
+    from bertopic._bertopic import BERTopic
+  File "/usr/local/lib/python3.11/site-packages/bertopic/_bertopic.py", line 41, in <module>
+    from bertopic import plotting
+  File "/usr/local/lib/python3.11/site-packages/bertopic/plotting/__init__.py", line 1, in <module>
+    from ._topics import visualize_topics
+  File "/usr/local/lib/python3.11/site-packages/bertopic/plotting/_topics.py", line 5, in <module>
+    from umap import UMAP
+  File "/usr/local/lib/python3.11/site-packages/umap/__init__.py", line 2, in <module>
+    from .umap_ import UMAP
+  File "/usr/local/lib/python3.11/site-packages/umap/umap_.py", line 42, in <module>
+    from umap.layouts import (
+  File "/usr/local/lib/python3.11/site-packages/umap/layouts.py", line 31, in <module>
+    @numba.njit(
+     ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numba/core/decorators.py", line 227, in wrapper
+    disp.enable_caching()
+  File "/usr/local/lib/python3.11/site-packages/numba/core/dispatcher.py", line 811, in enable_caching
+    self._cache = FunctionCache(self.py_func)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numba/core/caching.py", line 687, in __init__
+    self._impl = self._impl_class(py_func)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/numba/core/caching.py", line 423, in __init__
+    raise RuntimeError("cannot cache function %r: no locator available "
+RuntimeError: cannot cache function 'rdist': no locator available for file '/usr/local/lib/python3.11/site-packages/umap/layouts.py'
+2026-03-01 20:20:46,109 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-01 20:20:48,408 - src.database.repository - INFO - Batch insert: 366 noticias insertadas
+2026-03-01 20:20:48,453 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:20:48] "GET /api/analyze HTTP/1.1" 200 -
+2026-03-01 20:20:48,527 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:20:48] "GET /api/stats HTTP/1.1" 200 -
+2026-03-01 20:20:48,578 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:20:48] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-03-01 20:20:58,264 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:20:58] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-03-01 20:21:26,284 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:26] "GET /api/noticias?page=2&per_page=10&only_nna=false&clasificacion=Alta HTTP/1.1" 200 -
+2026-03-01 20:21:42,056 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:42] "GET /fuentes/ HTTP/1.1" 200 -
+2026-03-01 20:21:42,176 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:42] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-03-01 20:21:51,647 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:51] "GET / HTTP/1.1" 200 -
+2026-03-01 20:21:51,839 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:51] "GET /api/stats HTTP/1.1" 200 -
+2026-03-01 20:21:51,898 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:51] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
+2026-03-01 20:21:57,524 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:57] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -

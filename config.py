@@ -50,22 +50,34 @@ RSS_FEEDS = [
     'https://www.elsoldepuebla.com.mx/rss.xml',
     'https://www.diariodexalapa.com.mx/rss.xml',
     'https://www.noroeste.com.mx/rss.xml',
-    # ── Google News queries (feminicidio + NNA) ─────────────
-    'https://news.google.com/rss/search?q=feminicidio+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=feminicidio+ni%C3%B1os+ni%C3%B1as&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=orfandad+feminicidio+menores&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+feminicidio&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=feminicidio+menores+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
-    # ── Google News queries adicionales (v4.0) ──────────────
+    # ── Google News queries (feminicidio + NNA) — SOLO MÉXICO ─
+    # Todos los queries incluyen "México" explícito Y parámetros de geo:
+    # hl=es-419 (español latinoamericano), gl=MX (México), ceid=MX:es-419
+    # + "location:México" en el query para forzar noticias del país.
+    'https://news.google.com/rss/search?q=feminicidio+M%C3%A9xico+location%3AM%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+ni%C3%B1os+ni%C3%B1as+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=orfandad+feminicidio+menores+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+feminicidio+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+menores+hu%C3%A9rfanos+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    # ── Google News queries adicionales (v5.0 — Mexico-explicit) ──
     'https://news.google.com/rss/search?q=feminicidio+hijos+menores+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=%22violencia+feminicida%22+ni%C3%B1os&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=%22alerta+de+g%C3%A9nero%22+menores&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=orfandad+violencia+genero+Mexico&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=%22violencia+contra+la+mujer%22+menores+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=feminicidio+NNA+victimas+indirectas&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22violencia+feminicida%22+ni%C3%B1os+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22alerta+de+g%C3%A9nero%22+menores+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=orfandad+violencia+genero+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22violencia+contra+la+mujer%22+menores+hu%C3%A9rfanos+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+NNA+victimas+indirectas+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
+    # ── Queries por estado/ciudad clave de México ───────────
+    'https://news.google.com/rss/search?q=feminicidio+CDMX+hijos+menores&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Jalisco+NNA+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico+menores&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Veracruz+hijos&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Chihuahua+menores&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Nuevo+Le%C3%B3n+ni%C3%B1os&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Guerrero+NNA+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Puebla+menores+hijos&hl=es-419&gl=MX&ceid=MX:es-419',
 ]
 
 HTTP_HEADERS = {
@@ -103,7 +115,7 @@ TFIDF_MAX_FEATURES = 5000
 class Config:
     """Configuración base para la aplicación Flask."""
 
-    SECRET_KEY = os.environ.get('SECRET_KEY', '')
+    SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(32).hex()
 
     # --- PostgreSQL ---
     _PG_USER = os.environ.get('POSTGRES_USER', 'nna_admin')
