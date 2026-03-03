@@ -774,3 +774,129 @@ RuntimeError: cannot cache function 'rdist': no locator available for file '/usr
 2026-03-01 20:21:51,839 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:51] "GET /api/stats HTTP/1.1" 200 -
 2026-03-01 20:21:51,898 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:51] "GET /api/noticias?page=1&per_page=10&only_nna=false HTTP/1.1" 200 -
 2026-03-01 20:21:57,524 - werkzeug - INFO - 172.18.0.1 - - [01/Mar/2026 20:21:57] "GET /api/noticias?page=1&per_page=10&only_nna=false&clasificacion=Media HTTP/1.1" 200 -
+2026-03-02 14:58:23,109 - app - INFO - Usuario administrador creado
+2026-03-02 14:58:23,149 - app - INFO - Fuentes predeterminadas sembradas: 53 nuevas
+2026-03-02 14:58:23,288 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-02 14:58:23,289 - app - INFO - Esquema FTS inicializado
+2026-03-02 14:58:31,783 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.DeadlockDetected) deadlock detected
+DETAIL:  Process 77 waits for ShareLock on transaction 737; blocked by process 78.
+Process 78 waits for RowExclusiveLock on relation 16421 of database 16384; blocked by process 77.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (19,6) in relation "pg_proc"
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-02 14:58:31,786 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_trigger WHERE tgname = 'trg_noticias_fts'
+            ) THEN
+                CREATE TRIGGER trg_noticias_fts
+                BEFORE INSERT OR UPDATE OF titulo, contenido
+                ON noticias
+                FOR EACH ROW
+                EXECUTE FUNCTION noticias_fts_trigger();
+            END IF;
+        END $$;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,788 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_fecha
+        ON noticias (fecha DESC NULLS LAST);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,790 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_score
+        ON noticias (score_compuesto DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,791 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_relevancia
+        ON noticias (relevancia_final DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,794 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_cluster
+        ON noticias (cluster_id);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,794 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-02 14:58:31,796 - app - INFO - Esquema FTS inicializado
+2026-03-02 14:58:31,797 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_clasificacion
+        ON noticias (clasificacion_final);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,799 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_nna
+        ON noticias (score_nna DESC)
+        WHERE menores_identificados = 'Si';
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,801 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_hash
+        ON noticias USING hash (content_hash);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,802 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        UPDATE noticias
+        SET busqueda_fts =
+            setweight(to_tsvector('spanish_unaccent', COALESCE(titulo, '')), 'A') ||
+            setweight(to_tsvector('spanish_unaccent', COALESCE(contenido, '')), 'B')
+        WHERE busqueda_fts IS NULL;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-02 14:58:31,804 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-02 14:58:31,805 - app - INFO - Esquema FTS inicializado
+2026-03-02 14:58:55,546 - app - WARNING - Login fallido para 'hectorm11' desde 172.19.0.1
+2026-03-02 14:59:28,584 - app - INFO - Nuevo usuario registrado: test1
+2026-03-02 14:59:34,344 - app - INFO - Login exitoso: test1 desde 172.19.0.1
+2026-03-02 15:00:17,387 - src.collection.collector - WARNING - Error RSS (https://www.proceso.com.mx/feed): 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-03-02 15:00:20,208 - src.collection.collector - WARNING - Error RSS (https://www.animalpolitico.com/feed/): 404 Client Error: Not Found for url: https://www.animalpolitico.com/feed
+2026-03-02 15:00:20,534 - src.collection.collector - WARNING - Error RSS (https://www.sinembargo.mx/feed/): 403 Client Error: Forbidden for url: https://www.sinembargo.mx/feed/
+2026-03-02 15:00:20,952 - src.collection.collector - WARNING - Error RSS (https://www.elsoldemexico.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.elsoldemexico.com.mx/rss.xml/
+2026-03-02 15:00:22,587 - src.collection.collector - WARNING - Error RSS (https://www.eluniversal.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-03-02 15:00:22,934 - src.collection.collector - WARNING - Error RSS (https://www.milenio.com/rss): 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-03-02 15:00:23,239 - src.collection.collector - WARNING - Error RSS (https://www.excelsior.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-03-02 15:00:23,566 - src.collection.collector - WARNING - Error RSS (https://www.reporteindigo.com/feed/): 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-03-02 15:00:26,893 - src.collection.collector - WARNING - Error RSS (https://www.sdpnoticias.com/feed): 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-03-02 15:00:27,416 - src.collection.collector - WARNING - Error RSS (https://www.debate.com.mx/rss/rss.xml): 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-03-02 15:00:28,682 - src.collection.collector - WARNING - Error RSS (https://www.elheraldodemexico.com/rss.xml): 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-03-02 15:00:29,865 - src.collection.collector - WARNING - Error RSS (https://www.zocalo.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-03-02 15:00:46,455 - src.collection.collector - WARNING - Timeout en feed RSS: https://luchadoras.mx/feed/
+2026-03-02 15:00:46,926 - src.collection.collector - WARNING - Error RSS (https://www.eleconomista.com.mx/rss/): 403 Client Error: Forbidden for url: https://www.eleconomista.com.mx/rss/
+2026-03-02 15:00:47,293 - src.collection.collector - WARNING - Error RSS (https://elpais.com/mexico/rss/): 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-03-02 15:00:47,586 - src.collection.collector - WARNING - Error RSS (https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml): 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-03-02 15:00:48,107 - src.collection.collector - WARNING - Error RSS (https://www.elsoldetoluca.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.elsoldetoluca.com.mx/rss.xml/
+2026-03-02 15:00:48,822 - src.collection.collector - WARNING - Error RSS (https://www.elsoldepuebla.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/rss.xml/
+2026-03-02 15:00:49,409 - src.collection.collector - WARNING - Error RSS (https://www.diariodexalapa.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/rss.xml/
+2026-03-02 15:00:49,733 - src.collection.collector - WARNING - Error RSS (https://www.noroeste.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
