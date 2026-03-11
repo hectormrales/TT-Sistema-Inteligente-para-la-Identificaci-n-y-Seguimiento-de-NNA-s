@@ -900,3 +900,250 @@ CONTEXT:  while updating tuple (19,6) in relation "pg_proc"
 2026-03-02 15:00:48,822 - src.collection.collector - WARNING - Error RSS (https://www.elsoldepuebla.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/rss.xml/
 2026-03-02 15:00:49,409 - src.collection.collector - WARNING - Error RSS (https://www.diariodexalapa.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/rss.xml/
 2026-03-02 15:00:49,733 - src.collection.collector - WARNING - Error RSS (https://www.noroeste.com.mx/rss.xml): 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-03-11 16:14:52,140 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.DeadlockDetected) deadlock detected
+DETAIL:  Process 40 waits for ShareLock on transaction 802; blocked by process 41.
+Process 41 waits for RowExclusiveLock on relation 16421 of database 16384; blocked by process 40.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (19,8) in relation "pg_proc"
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-11 16:14:52,175 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_trigger WHERE tgname = 'trg_noticias_fts'
+            ) THEN
+                CREATE TRIGGER trg_noticias_fts
+                BEFORE INSERT OR UPDATE OF titulo, contenido
+                ON noticias
+                FOR EACH ROW
+                EXECUTE FUNCTION noticias_fts_trigger();
+            END IF;
+        END $$;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,177 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_fecha
+        ON noticias (fecha DESC NULLS LAST);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,180 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_score
+        ON noticias (score_compuesto DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,181 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_relevancia
+        ON noticias (relevancia_final DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,183 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_cluster
+        ON noticias (cluster_id);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,185 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_clasificacion
+        ON noticias (clasificacion_final);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,187 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_nna
+        ON noticias (score_nna DESC)
+        WHERE menores_identificados = 'Si';
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,189 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_hash
+        ON noticias USING hash (content_hash);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,190 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        UPDATE noticias
+        SET busqueda_fts =
+            setweight(to_tsvector('spanish_unaccent', COALESCE(titulo, '')), 'A') ||
+            setweight(to_tsvector('spanish_unaccent', COALESCE(contenido, '')), 'B')
+        WHERE busqueda_fts IS NULL;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 16:14:52,191 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-11 16:14:52,192 - app - INFO - Esquema FTS inicializado
+2026-03-11 16:14:52,589 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-11 16:14:52,590 - app - INFO - Esquema FTS inicializado
+2026-03-11 16:16:13,391 - app - INFO - Login exitoso: test1 desde 172.19.0.1
+2026-03-11 16:39:56,582 - app - INFO - Logout: test1
+2026-03-11 16:41:49,213 - app - INFO - Nuevo usuario registrado: test2
+2026-03-11 16:42:01,359 - app - INFO - Login exitoso: test1 desde 172.19.0.1
+2026-03-11 16:42:53,061 - src.collection.scraper - INFO - robots.txt bloquea news.google.com → activando modo stealth (delays 12-25s, UA rotation, cookies persistentes)
+2026-03-11 17:37:32,527 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.DeadlockDetected) deadlock detected
+DETAIL:  Process 112 waits for ShareLock on transaction 808; blocked by process 111.
+Process 111 waits for RowExclusiveLock on relation 16421 of database 16384; blocked by process 112.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (19,18) in relation "pg_proc"
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-11 17:37:32,530 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_trigger WHERE tgname = 'trg_noticias_fts'
+            ) THEN
+                CREATE TRIGGER trg_noticias_fts
+                BEFORE INSERT OR UPDATE OF titulo, contenido
+                ON noticias
+                FOR EACH ROW
+                EXECUTE FUNCTION noticias_fts_trigger();
+            END IF;
+        END $$;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,532 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_fecha
+        ON noticias (fecha DESC NULLS LAST);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,534 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_score
+        ON noticias (score_compuesto DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,536 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_relevancia
+        ON noticias (relevancia_final DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,537 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_cluster
+        ON noticias (cluster_id);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,539 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_clasificacion
+        ON noticias (clasificacion_final);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,542 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_nna
+        ON noticias (score_nna DESC)
+        WHERE menores_identificados = 'Si';
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,544 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_hash
+        ON noticias USING hash (content_hash);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,546 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        UPDATE noticias
+        SET busqueda_fts =
+            setweight(to_tsvector('spanish_unaccent', COALESCE(titulo, '')), 'A') ||
+            setweight(to_tsvector('spanish_unaccent', COALESCE(contenido, '')), 'B')
+        WHERE busqueda_fts IS NULL;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-03-11 17:37:32,547 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-11 17:37:32,548 - app - INFO - Esquema FTS inicializado
+2026-03-11 17:37:32,661 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-03-11 17:37:32,662 - app - INFO - Esquema FTS inicializado
+2026-03-11 17:41:20,264 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-03-11 17:41:20,267 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.noroeste.com.mx/rss.xml…
+2026-03-11 17:41:25,154 - src.collection.scraper - INFO - Métodos ['rss', 'sitemap'] sin resultados, intentando HTML: https://www.noroeste.com.mx/rss.xml…
+2026-03-11 17:41:27,001 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-03-11 17:41:27,002 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.noroeste.com.mx/rss.xml… (métodos intentados: ['rss', 'sitemap', 'html'])
+2026-03-11 17:41:48,684 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-03-11 17:41:48,686 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://elpais.com/mexico/rss/…
+2026-03-11 17:41:50,471 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/sitemap.xml: 404 Client Error: Not Found for url: https://elpais.com/sitemap.xml
+2026-03-11 17:41:51,907 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/sitemap_index.xml: 404 Client Error: Not Found for url: https://elpais.com/sitemap_index.xml
+2026-03-11 17:41:53,377 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/sitemap-news.xml: 404 Client Error: Not Found for url: https://elpais.com/sitemap-news.xml
+2026-03-11 17:41:54,844 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/news-sitemap.xml: 404 Client Error: Not Found for url: https://elpais.com/news-sitemap.xml
+2026-03-11 17:41:54,846 - src.collection.scraper - INFO - Métodos ['rss', 'sitemap'] sin resultados, intentando HTML: https://elpais.com/mexico/rss/…
+2026-03-11 17:41:55,872 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-03-11 17:41:55,875 - src.collection.scraper - WARNING - No se encontraron artículos en https://elpais.com/mexico/rss/… (métodos intentados: ['rss', 'sitemap', 'html'])
+2026-03-11 17:42:04,788 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-03-11 17:42:08,022 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-03-11 17:42:10,893 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-03-11 17:42:13,158 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-03-11 17:42:17,381 - flask_wtf.csrf - INFO - The CSRF session token is missing.
+2026-03-11 17:42:24,644 - app - INFO - Login exitoso: test1 desde 172.19.0.1
+2026-03-11 17:42:40,630 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.jornada.com.mx/rss/sociedad.xml…
+2026-03-11 17:42:41,972 - src.collection.scraper - INFO - Métodos ['rss', 'sitemap'] sin resultados, intentando HTML: https://www.jornada.com.mx/rss/sociedad.xml…
+2026-03-11 17:42:43,413 - src.collection.scraper - INFO - HTML listing: 0 enlaces a artículos en https://www.jornada.com.mx/rss/sociedad.xml…
+2026-03-11 17:42:43,414 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/rss/sociedad.xml… (métodos intentados: ['rss', 'sitemap', 'html'])
+2026-03-11 17:42:50,497 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-03-11 17:42:50,498 - src.collection.scraper - INFO - Método rss sin resultados, intentando sitemap: https://www.proceso.com.mx/feed…
+2026-03-11 17:43:05,710 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-03-11 17:43:05,712 - trafilatura.core - ERROR - empty HTML tree: None
+2026-03-11 17:43:05,713 - trafilatura.core - WARNING - discarding data: https://www.proceso.com.mx/brand-studio/2026/3/8/maru-campos-reconoce-mujeres-chihuahuenses-369877.html
+2026-03-11 17:43:07,185 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-03-11 17:43:07,187 - trafilatura.core - ERROR - empty HTML tree: None
+2026-03-11 17:43:07,188 - trafilatura.core - WARNING - discarding data: https://www.proceso.com.mx/brand-studio/2026/3/7/la-unidad-no-es-un-lujo-durazo-advierte-que-morena-debe-cerrar-filas-rumbo-2027-369842.html
+2026-03-11 17:43:08,755 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-03-11 17:43:08,757 - trafilatura.core - ERROR - empty HTML tree: None
+2026-03-11 17:43:08,757 - trafilatura.core - WARNING - discarding data: https://www.proceso.com.mx/brand-studio/2026/3/7/gobernador-durazo-garantiza-subsidio-historico-la-tarifa-electrica-para-las-familias-sonorenses-369841.html
+2026-03-11 17:43:10,223 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-03-11 17:43:10,223 - trafilatura.core - ERROR - empty HTML tree: None
+2026-03-11 17:43:10,224 - trafilatura.core - WARNING - discarding data: https://www.proceso.com.mx/brand-studio/2026/3/7/con-rally-deportivo-mensajes-de-igualdad-conmemoran-el-8m-en-el-cedes-altamira-369912.html
+2026-03-11 17:43:11,731 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-03-11 17:43:11,732 - trafilatura.core - ERROR - empty HTML tree: None
+2026-03-11 17:43:11,733 - trafilatura.core - WARNING - discarding data: https://www.proceso.com.mx/brand-studio/2026/3/7/gobernador-durazo-promueve-talento-de-futuras-promesas-deportivas-con-mundialito-escolar-rumbo-al-mundial-2026-369798.html
+2026-03-11 17:43:11,741 - src.collection.scraper - INFO - Métodos ['rss', 'sitemap'] sin resultados, intentando HTML: https://www.proceso.com.mx/feed…
+2026-03-11 17:43:13,032 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-03-11 17:43:13,034 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/feed… (métodos intentados: ['rss', 'sitemap', 'html'])
