@@ -192,20 +192,24 @@ def enhanced_search(
     syn = SynonymDictionary()
     all_terms = syn.expand_search_query(query)
 
-    # Contar coincidencias para ranking
+    # 1. Construir patrón Regex unificado
+    # Operador | para evaluar todo junto; delimitador \\b para exactitud
+    pattern_str = r'\b(?:' + '|'.join(re.escape(term) for term in all_terms) + r')\b'
+    pattern = re.compile(pattern_str, flags=re.IGNORECASE)
+
+    # 2. Contar coincidencias para ranking vectorizadamente
     hit_count = pd.Series(0, index=df.index, dtype=int)
 
     for col in search_columns:
         if col not in df.columns:
             continue
-        col_lower = df[col].fillna('').str.lower()
-        for term in all_terms:
-            matches = col_lower.str.contains(
-                re.escape(term), case=False, na=False, regex=True
-            )
-            # Matches en título valen más
-            weight = 3 if col == 'titulo' else 1
-            hit_count += matches.astype(int) * weight
+            
+        col_str = df[col].fillna('').astype(str)
+        # Uso de .count() explota la implementación nativa subyacente de regex en pandas
+        matches = col_str.str.count(pattern)
+        
+        weight = 3 if col == 'titulo' else 1
+        hit_count += matches * weight
 
     mask = hit_count > 0
     result = df[mask].copy()

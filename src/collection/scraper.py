@@ -386,8 +386,8 @@ class RobotsChecker:
             rp = RobotFileParser()
             rp.set_url(robots_url)
 
-            # Timeout manual con requests
-            resp = requests.get(robots_url, timeout=10, headers=HEADERS)
+            # Timeout manual con requests usando rotación explícita (Evasión Anti-Bot Básica)
+            resp = requests.get(robots_url, timeout=10, headers=_build_stealth_headers())
             if resp.status_code == 200:
                 rp.parse(resp.text.splitlines())
                 result['has_robots'] = True
@@ -633,14 +633,25 @@ class DynamicScraper:
         # Modo normal con rate limiting
         self._rate_limit(domain, crawl_delay)
 
-        try:
-            headers = _build_stealth_headers()
-            resp = requests.get(url, headers=headers, timeout=20)
-            resp.raise_for_status()
-            return resp
-        except requests.RequestException as e:
-            logger.warning(f"Error HTTP en {url[:80]}: {e}")
-            return None
+        # Rotación simple de UA/headers y reintentos (Evasión anti-bot en caso de bloqueo)
+        for attempt in range(2):
+            try:
+                headers = _build_stealth_headers()
+                resp = requests.get(url, headers=headers, timeout=20)
+                
+                # Si recibimos bloqueo (Ej. 403), no colapsamos. Rotamos
+                if resp.status_code in (401, 403, 429, 503) or _is_block_page(resp):
+                    logger.warning(f"Posible bloqueo {resp.status_code} en url {url[:60]}... rotando UA y reintentando (Intento {attempt + 1}).")
+                    time.sleep(2)
+                    continue
+                    
+                resp.raise_for_status()
+                return resp
+            except requests.RequestException as e:
+                logger.warning(f"Error HTTP en {url[:80]} (Intento {attempt + 1}): {e}")
+                time.sleep(2)
+                
+        return None
 
     # ── Detección de tipo de fuente ─────────────────────────
 
@@ -908,38 +919,42 @@ class DynamicScraper:
             rss_feeds = [url] if method == 'rss' else []
             stealth = urlparse(url).netloc in self._stealth_domains
 
-        # ── Cascada de métodos con fallback ──
+        # ── Cascada de métodos con fallback (Chain of Responsibility) ──
         articles = []
         methods_tried = []
-
+        
+        # Determinar cadena de evaluación según el método base
         if method == 'rss':
-            articles = self._scrape_rss(
-                rss_feeds or [url], max_articles, crawl_delay
-            )
-            methods_tried.append('rss')
-
-        if not articles and method in ('sitemap', 'rss'):
-            # Si RSS no trajo nada o el método es sitemap, intentar sitemap
-            if 'sitemap' not in methods_tried:
-                logger.info(f"Método {method} sin resultados, intentando sitemap: {url[:60]}…")
-                articles = self._scrape_sitemap(url, max_articles, crawl_delay)
-                methods_tried.append('sitemap')
-
-        if not articles and method != 'html':
-            # Último recurso: HTML scraping directo
-            if 'html' not in methods_tried:
-                logger.info(f"Métodos {methods_tried} sin resultados, intentando HTML: {url[:60]}…")
-                articles = self._scrape_html_listing(url, max_articles, crawl_delay)
-                methods_tried.append('html')
-
-        if not articles and method == 'html':
-            articles = self._scrape_html_listing(url, max_articles, crawl_delay)
-            methods_tried.append('html')
+            methods_to_try = ['rss', 'sitemap', 'html']
+        elif method == 'sitemap':
+            methods_to_try = ['sitemap', 'html']
+        else:
+            methods_to_try = ['html']
+            
+        for current_method in methods_to_try:
+            methods_tried.append(current_method)
+            try:
+                if current_method == 'rss':
+                    articles = self._scrape_rss(rss_feeds or [url], max_articles, crawl_delay)
+                elif current_method == 'sitemap':
+                    articles = self._scrape_sitemap(url, max_articles, crawl_delay)
+                elif current_method == 'html':
+                    articles = self._scrape_html_listing(url, max_articles, crawl_delay)
+                
+                if articles:
+                    # Se hallaron resultados, rompe la cadena sin tener que ejecutar iteraciones basura
+                    break
+                else:
+                    logger.info(f"Método {current_method} sin resultados para {url[:60]}... Intentando técnica de fallback anidada.")
+            except Exception as e:
+                # El proceso fluye de forma tolerante a fallas
+                logger.error(f"Falla crítica en método {current_method} extrayendo de {url[:60]}: {e}")
+                continue
 
         if not articles:
             logger.warning(
                 f"No se encontraron artículos en {url[:60]}… "
-                f"(métodos intentados: {methods_tried})"
+                f"(métodos intentados sin éxito final: {methods_tried})"
             )
 
         return articles
@@ -1291,6 +1306,15 @@ class DynamicScraper:
 
         html = resp.text
         soup = BeautifulSoup(html, 'html.parser')
+
+        # ── Limpieza Rigurosa Global de HTML ──────────────
+        # Esto evitará extraer texto basura que compromete el NLP. 
+        # Conservamos <script> de applicated/ld+json para la metaconfiguración Schema.
+        for tag in soup.find_all(['style', 'nav', 'footer', 'aside', 'header', 'iframe', 'form', 'button', 'noscript']):
+            tag.decompose()
+        for script in soup.find_all('script'):
+            if script.get('type') != 'application/ld+json':
+                script.decompose()
 
         # ── Advertencia: JS-heavy ─────────────────────────
         if _is_js_heavy_page(html):

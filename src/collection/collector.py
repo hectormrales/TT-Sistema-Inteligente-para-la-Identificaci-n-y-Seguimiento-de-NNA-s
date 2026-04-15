@@ -31,6 +31,7 @@ from email.utils import parsedate_to_datetime
 import config
 from src.collection.scraper import DynamicScraper
 from src.analysis.dedup import NewsDeduplicator
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
@@ -382,6 +383,26 @@ def score_relevance(title: str, content: str) -> dict:
     title_norm = _normalize_text(title)
     content_norm = _normalize_text(content)
 
+    # ── Exclusión Negativa (NLP Precision) ─────────────
+    # Ignora el artículo totalmente si se emplean las combinaciones engañosas de la palabra "menor"
+    STOP_PHRASES = [
+        r'\bdelit[os]\s+menor(?:es)?\b',
+        r'\bheridas?\s+menor(?:es)?\b',
+        r'\bdañ[os]\s+menor(?:es)?\b',
+        r'\briesgos?\s+menor(?:es)?\b',
+        r'\bfaltas?\s+menor(?:es)?\b'
+    ]
+    text_combined = f"{title_norm} {content_norm}"
+    for phrase in STOP_PHRASES:
+        if re.search(phrase, text_combined, re.IGNORECASE):
+            return {
+                'score_feminicidio': 0.0,
+                'score_nna': 0.0,
+                'score_compuesto': 0.0,
+                'clasificacion': 'No relevante',
+                'menores_identificados': 'No',
+            }
+
     # Score por eje: título tiene más peso que contenido
     fem_title = _score_axis(title_norm, FEMINICIDIO_KEYWORDS) * title_boost
     fem_content = _score_axis(content_norm, FEMINICIDIO_KEYWORDS)
@@ -443,6 +464,14 @@ def score_relevance(title: str, content: str) -> dict:
 # Recolección RSS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10), reraise=True)
+def _fetch_rss_with_retry(rss_url: str) -> bytes:
+    """Intenta descargar el feed aplicando exponential backoff (max 3 reintentos)."""
+    headers = getattr(config, 'HTTP_HEADERS', {})
+    response = requests.get(rss_url, headers=headers, timeout=15)
+    response.raise_for_status()
+    return response.content
+
 def collect_news_from_rss(rss_url: str, seen_urls: set | None = None) -> list[dict]:
     """Recolecta artículos desde un feed RSS individual.
     
@@ -453,10 +482,8 @@ def collect_news_from_rss(rss_url: str, seen_urls: set | None = None) -> list[di
     if seen_urls is None:
         seen_urls = set()
     try:
-        headers = getattr(config, 'HTTP_HEADERS', {})
-        response = requests.get(rss_url, headers=headers, timeout=15)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'xml')
+        content = _fetch_rss_with_retry(rss_url)
+        soup = BeautifulSoup(content, 'xml')
 
         articles = []
         skipped_seen = 0
