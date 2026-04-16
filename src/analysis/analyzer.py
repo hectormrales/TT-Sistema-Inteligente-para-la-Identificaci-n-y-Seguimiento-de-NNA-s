@@ -436,6 +436,7 @@ class SimplifiedNewsAnalyzer:
                 'Detección Semántica BETO (OE-1, zero-shot/hybrid)',
                 'BERTopic: BETO + UMAP + HDBSCAN + c-TF-IDF (OE-4)',
                 'PostgreSQL FTS con tsvector/GIN (OE-3)',
+                'Extracción de Entidades con spaCy (PER, LOC, Edades)',
             ],
         }
         meta_path = filepath.replace('.csv', '_metadata.json')
@@ -501,6 +502,9 @@ class SimplifiedNewsAnalyzer:
         # Paso 10: Clustering BERTopic (OE-4)
         if enable_bertopic:
             self.step_10_bertopic_clustering()
+
+        # Paso 12: Extracción de Entidades (Entity Resolution)
+        self.step_12_entity_extraction()
 
         # Guardar CSV (siempre, para backward compatibility)
         self.save_final_results()
@@ -720,6 +724,7 @@ class SimplifiedNewsAnalyzer:
                         "max_similarity": float(row.get("max_similarity", 0)),
                         "menores_identificados": row.get("menores_identificados", "No"),
                         "scrape_method": row.get("scrape_method", "rss"),
+                        "entidades": json.dumps(row.get("entidades", {}), ensure_ascii=False) if pd.notna(row.get("entidades")) and row.get("entidades") else None,
                     }
                     records.append(record)
 
@@ -760,5 +765,60 @@ class SimplifiedNewsAnalyzer:
         cols = [c for c in [
             'titulo', 'fecha', 'fuente', 'cluster', 'topic_id',
             'menores_identificados', 'clasificacion_final', 'relevancia_final',
+            'entidades'
         ] if c in results.columns]
         return results[cols]
+
+    def extract_entities(self, texto: str) -> dict:
+        """
+        Extrae entidades (PER, LOC) usando spaCy y edades con expresiones regulares.
+        """
+        if not hasattr(self, '_nlp'):
+            try:
+                import spacy
+                self._nlp = spacy.load("es_core_news_md")
+            except Exception as e:
+                logger.warning(f"No se pudo cargar el modelo spaCy 'es_core_news_md': {e}. Usa: python -m spacy download es_core_news_md")
+                self._nlp = None
+
+        nombres_personas = []
+        ubicaciones = []
+        
+        if self._nlp and texto and isinstance(texto, str):
+            doc = self._nlp(texto)
+            nombres_personas = [ent.text for ent in doc.ents if ent.label_ == "PER"]
+            ubicaciones = [ent.text for ent in doc.ents if ent.label_ == "LOC"]
+            
+        # Expresión regular para edades
+        edades = []
+        if isinstance(texto, str):
+            edades = re.findall(r'\b\d{1,2}\s+a[ñn]os(?:(?:\s+de)?\s+edad)?\b', texto, re.IGNORECASE)
+            
+        return {
+            "nombres_personas": list(set(nombres_personas)),
+            "ubicaciones": list(set(ubicaciones)),
+            "edades": list(set(edades))
+        }
+
+    def step_12_entity_extraction(self) -> pd.DataFrame:
+        """
+        Extrae entidades del texto combinado para cada noticia y las añade al DataFrame.
+        """
+        print("=== PASO 12: EXTRACCIÓN DE ENTIDADES (Entity Resolution) ===")
+        assert self.df_processed is not None, "Ejecute pasos anteriores primero"
+        
+        entidades_lista = []
+        total = len(self.df_processed)
+        
+        for i, row in self.df_processed.iterrows():
+            texto = f"{row.get('titulo', '')}. {row.get('contenido', '')}"
+            entidades = self.extract_entities(texto)
+            entidades_lista.append(entidades)
+            
+            if (i + 1) % 50 == 0:
+                print(f"  Procesadas {i + 1}/{total} noticias para entidades")
+                
+        self.df_processed['entidades'] = entidades_lista
+        print(f"  Entidades extraídas para {total} noticias")
+        return self.df_processed
+

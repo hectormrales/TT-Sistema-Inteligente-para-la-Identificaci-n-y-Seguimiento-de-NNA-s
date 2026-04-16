@@ -36,6 +36,43 @@ from datetime import datetime, timezone
 from app.models import db
 
 
+class GoldenRecord(db.Model):
+    """
+    Representa un evento periodístico consolidado tras el Entity Resolution.
+    Agrupa un conjunto de Noticias Crudas que hablan del mismo suceso.
+    """
+    __tablename__ = "golden_records"
+
+    id = db.Column(db.String(36), primary_key=True)
+    nombres_personas = db.Column(db.JSON, nullable=True)
+    ubicaciones = db.Column(db.JSON, nullable=True)
+    edades = db.Column(db.JSON, nullable=True)
+    
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    noticias_rel = db.relationship(
+        "Noticia", backref="golden_record", lazy="dynamic"
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nombres_personas": self.nombres_personas,
+            "ubicaciones": self.ubicaciones,
+            "edades": self.edades,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "noticias_ids": [n.id for n in self.noticias_rel]
+        }
+
+
 class Noticia(db.Model):
     """
     Modelo de noticia almacenada en PostgreSQL.
@@ -45,11 +82,10 @@ class Noticia(db.Model):
     de PostgreSQL, que incluye:
       - Stemming (reducción a raíz: "feminicidios" → "feminicid")
       - Stop words en español
-      - Normalización de acentos
       - Ranking por posición y frecuencia
     """
 
-    __tablename__ = "noticias"
+    __tablename__ = "noticias" # Esta tabla actúa como Noticias_Crudas
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
@@ -121,6 +157,9 @@ class Noticia(db.Model):
         "Entidad", backref="noticia", lazy="dynamic", cascade="all, delete-orphan"
     )
 
+    golden_record_id = db.Column(db.String(36), db.ForeignKey("golden_records.id"), nullable=True, index=True)
+    entidades_extraidas = db.Column(db.JSON, nullable=True, comment="Datos crudos json del extractor de entidades")
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -140,6 +179,8 @@ class Noticia(db.Model):
             "topic_id": self.topic_id,
             "menores_identificados": self.menores_identificados,
             "scrape_method": self.scrape_method,
+            "golden_record_id": self.golden_record_id,
+            "entidades_extraidas": self.entidades_extraidas,
         }
 
     def __repr__(self):

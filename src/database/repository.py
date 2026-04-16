@@ -217,26 +217,40 @@ class NoticiasRepository:
     @staticmethod
     def crear_batch(records: list[dict]) -> int:
         """
-        Inserción masiva de noticias (batch insert).
+        Inserción masiva de noticias con consolidación de eventos (Entity Resolution).
 
-        Usa INSERT con ON CONFLICT para evitar duplicados por enlace.
-        Más eficiente que insertar uno por uno: ~10x más rápido.
+        Usa INSERT con manejo de duplicados y envía cada noticia a EventFuser 
+        para asociarla a un GoldenRecord o crear uno nuevo.
 
         Args:
-            records: Lista de diccionarios con datos de noticias.
+            records: Lista de diccionarios con datos de noticias extraídas.
 
         Returns:
-            Número de noticias insertadas exitosamente.
+            Número de noticias crudas insertadas exitosamente.
         """
-        from src.database.models_noticias import Noticia
+        import json
+        from src.database.models_noticias import Noticia, GoldenRecord
+        from src.analysis.entity_resolution import EventFuser
 
         count = 0
         batch_size = 100
+        fuser = EventFuser()
+
+        # Cargamos en memoria los GoldenRecords existentes para la resolución.
+        db_golden_records = GoldenRecord.query.all()
+        eventos_historicos = []
+        for gr in db_golden_records:
+            eventos_historicos.append({
+                'event_id': gr.id,
+                'nombres_personas': gr.nombres_personas or [],
+                'ubicaciones': gr.ubicaciones or [],
+                'edades': gr.edades or []
+            })
 
         for i in range(0, len(records), batch_size):
             batch = records[i:i + batch_size]
             for record in batch:
-                # Verificar duplicado por hash o enlace
+                # Verificar duplicado por hash o enlace (Raw data)
                 existing = None
                 if record.get("content_hash"):
                     existing = Noticia.query.filter_by(
@@ -248,7 +262,50 @@ class NoticiasRepository:
                     ).first()
 
                 if not existing:
-                    noticia = Noticia(**record)
+                    record_copy = record.copy()
+                    
+                    # Manejar Entidades Extraídas previamente (analyzer.py)
+                    entidades_dict = {}
+                    entidades_str = record_copy.pop("entidades", None)
+                    if entidades_str:
+                        # Convertimos a diccionario
+                        entidades_dict = json.loads(entidades_str) if isinstance(entidades_str, str) else entidades_str
+                        record_copy["entidades_extraidas"] = entidades_dict
+                        
+                    # Entity Resolution:
+                    event_id, merged_data = fuser.find_or_create_event(entidades_dict, eventos_historicos)
+                    
+                    # Obtener GoldenRecord existente de la base de datos o sesión actual
+                    gr = db.session.get(GoldenRecord, event_id)
+
+                    if not gr:
+                        # Crear el GoldenRecord por primera vez
+                        gr = GoldenRecord(
+                            id=event_id,
+                            nombres_personas=merged_data.get('nombres_personas', []),
+                            ubicaciones=merged_data.get('ubicaciones', []),
+                            edades=merged_data.get('edades', [])
+                        )
+                        db.session.add(gr)
+                    else:
+                        # Actualizar la agregación del evento en base a la nueva noticia
+                        gr.nombres_personas = merged_data.get('nombres_personas', [])
+                        gr.ubicaciones = merged_data.get('ubicaciones', [])
+                        gr.edades = merged_data.get('edades', [])
+                    
+                    # Reflejamos en la memoria RAM para que la sig. iteración esté actualizada
+                    matched = False
+                    for b_ev in eventos_historicos:
+                        if b_ev['event_id'] == event_id:
+                            b_ev.update(merged_data)
+                            matched = True
+                            break
+                    if not matched:
+                        eventos_historicos.append(merged_data)
+
+                    # 3. Asignar llave foránea y persistir Noticia Cruda
+                    record_copy["golden_record_id"] = event_id
+                    noticia = Noticia(**record_copy)
                     db.session.add(noticia)
                     count += 1
 
@@ -256,9 +313,9 @@ class NoticiasRepository:
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                logger.warning(f"Error en batch insert: {e}")
+                logger.warning(f"Error en batch insert con Entity Resolution: {e}")
 
-        logger.info(f"Batch insert: {count} noticias insertadas")
+        logger.info(f"Batch insert: {count} noticias crudas insertadas y agrupadas en GoldenRecords")
         return count
 
     @staticmethod
