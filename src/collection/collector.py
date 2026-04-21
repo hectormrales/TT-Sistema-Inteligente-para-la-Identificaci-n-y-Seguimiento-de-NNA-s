@@ -430,7 +430,44 @@ def score_relevance(title: str, content: str) -> dict:
     elif direct_fem_title:
         score_comp = min(1.0, score_comp * 1.10)
 
-    # Clasificación — v4.1: Umbrales ajustados para capturar más noticias relevantes
+    # ── Penalización: tentativas / intentos (NO son feminicidios consumados) ──
+    # El usuario solo quiere feminicidios reales, no tentativas ni intentos.
+    TENTATIVA_PATTERNS = [
+        r'\btentativa\s+de\s+feminicidio\b',
+        r'\bintento\s+de\s+feminicidio\b',
+        r'\bsobre\s*vivi[oó]\b',
+        r'\bfeminicidio\s+(?:en\s+)?grado\s+de\s+tentativa\b',
+        r'\bintent[oó]\s+(?:asesinar|matar|privar)\b',
+    ]
+    is_tentativa = any(
+        re.search(p, title_norm, re.IGNORECASE) or
+        re.search(p, content_norm, re.IGNORECASE)
+        for p in TENTATIVA_PATTERNS
+    )
+    if is_tentativa:
+        score_comp *= 0.35  # Reducción fuerte: aparece pero con baja relevancia
+
+    # ── Penalización: noticias de estadísticas / cifras / reportes ──
+    # No son casos individuales sino reportajes generales de cifras.
+    STATS_PATTERNS = [
+        r'\bcifras?\s+de\s+feminicidio\b',
+        r'\bestadísticas?\s+de\s+(?:feminicidio|violencia)\b',
+        r'\b(?:sube|baja|aumenta|disminuye|incrementa)\s+(?:el\s+)?(?:número|cifra|índice|tasa)\b',
+        r'\binforme\s+(?:anual|mensual|trimestral|semestral|de\s+cifras)\b',
+        r'\breporte\s+(?:anual|mensual|estadístico|de\s+incidencia)\b',
+        r'\b\d+\s+(?:feminicidios|víctimas)\s+(?:en|durante)\s+(?:el\s+)?\d{4}\b',
+        r'\btasa\s+de\s+feminicidio\b',
+    ]
+    is_stats = any(
+        re.search(p, title_norm, re.IGNORECASE) or
+        re.search(p, content_norm, re.IGNORECASE)
+        for p in STATS_PATTERNS
+    )
+    # Solo penalizar si NO hay también señal de NNA (caso individual con cifras)
+    if is_stats and score_nna < 0.15:
+        score_comp *= 0.45  # Reducción moderada
+
+    # Reclasificar después de penalizaciones
     if score_comp >= 0.45:
         clasificacion = 'Alta'
     elif score_comp >= 0.30:

@@ -77,18 +77,23 @@ def analyze_news():
             return
 
         _log("Iniciando análisis completo v5.0...")
-        analyzer = SimplifiedNewsAnalyzer()
-        df = analyzer.run_complete_analysis(
-            enable_semantic=True,
-            enable_bertopic=True,
-            enable_postgres=True,
-        )
 
-        if df is not None and not df.empty:
-            df.to_csv(DATA_FILE, index=False)
-            nna = (df['menores_identificados'] == 'Si').sum()
-            pct = nna / len(df) * 100 if len(df) > 0 else 0
-            _log(f"Análisis completado: {len(df)} noticias, {nna} NNA ({pct:.1f}%)")
+        # Crear contexto Flask para que step_11 pueda persistir a PostgreSQL
+        from app import create_app
+        app = create_app()
+        with app.app_context():
+            analyzer = SimplifiedNewsAnalyzer()
+            df = analyzer.run_complete_analysis(
+                enable_semantic=True,
+                enable_bertopic=True,
+                enable_postgres=True,
+            )
+
+            if df is not None and not df.empty:
+                df.to_csv(DATA_FILE, index=False)
+                nna = (df['menores_identificados'] == 'Si').sum()
+                pct = nna / len(df) * 100 if len(df) > 0 else 0
+                _log(f"Análisis completado: {len(df)} noticias, {nna} NNA ({pct:.1f}%)")
 
     except Exception as e:
         _log(f"Error en análisis: {e}")
@@ -185,10 +190,10 @@ def run_full_cycle():
 def start_scheduler():
     """Planificador: recolección cada 6 h, análisis cada 12 h."""
     _log("Planificador automático iniciado")
+    _log("Próxima recolección en 6h, próximo análisis en 12h")
+    _log("(No se ejecuta ciclo al arrancar — usa 'full' para ejecución inmediata)")
     schedule.every(6).hours.do(collect_news)
     schedule.every(12).hours.do(analyze_news)
-
-    run_full_cycle()
 
     while True:
         try:

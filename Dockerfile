@@ -13,7 +13,7 @@ ENV PYTHONUNBUFFERED=1 \
     TRANSFORMERS_CACHE=/app/models/cache \
     HF_HOME=/app/models/cache
 
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN groupadd -r appuser && useradd -r -g appuser -m appuser
 
 RUN apt-get update && apt-get install -y \
     --no-install-recommends \

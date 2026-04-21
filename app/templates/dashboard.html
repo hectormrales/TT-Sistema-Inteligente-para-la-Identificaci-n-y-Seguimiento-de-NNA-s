@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -457,6 +457,13 @@
                         <i class="fas fa-child" style="font-size:9px;"></i> NNA identificados
                     </button>
                     <div class="export-bar">
+                        <span class="filter-label" style="margin-left:12px;">Orden:</span>
+                        <button class="filter-btn active" id="sort-fecha" onclick="applySort('fecha')">
+                            <i class="fas fa-calendar-alt" style="font-size:9px;"></i> Fecha
+                        </button>
+                        <button class="filter-btn" id="sort-relevancia" onclick="applySort('relevancia')">
+                            <i class="fas fa-sort-amount-down" style="font-size:9px;"></i> Relevancia
+                        </button>
                         <a href="/api/export/csv" class="btn-export" title="Exportar datos a CSV">
                             <i class="fas fa-file-csv"></i> CSV
                         </a>
@@ -552,7 +559,7 @@
     // ══════════════════════════════════════════════════════════
     //  Estado global
     // ══════════════════════════════════════════════════════════
-    let state = { page: 1, filter: 'todas', search: '', total: 0, totalPages: 1 };
+    let state = { page: 1, filter: 'todas', search: '', sort: 'fecha', total: 0, totalPages: 1 };
     let charts = {};
     let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
 
@@ -602,6 +609,14 @@
         loadNews();
     }
 
+    function applySort(sort) {
+        state.sort = sort; state.page = 1;
+        ['fecha','relevancia'].forEach(s => {
+            document.getElementById('sort-' + s).classList.toggle('active', s === sort);
+        });
+        loadNews();
+    }
+
     // ══════════════════════════════════════════════════════════
     //  News loading
     // ══════════════════════════════════════════════════════════
@@ -613,7 +628,7 @@
             if (state.search) {
                 url = '/api/search?q=' + encodeURIComponent(state.search);
             } else {
-                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna');
+                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
                 if (state.filter === 'alta' || state.filter === 'media') {
                     const cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                     url += '&clasificacion=' + encodeURIComponent(cls);
@@ -739,19 +754,46 @@
     async function runAnalysis() {
         var overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('visible');
+        var startTime = Date.now();
+
         try {
             var r = await fetch('/api/analyze');
             var data = await r.json();
-            if (r.ok) {
-                await Promise.all([loadStats(), loadNews()]);
-                showToast('Análisis completado correctamente.', 'success');
-            } else {
+
+            if (data.status === 'already_running' || data.status === 'started') {
+                // Poll status until done
+                var loadingMsg = overlay.querySelector('small');
+                var pollInterval = setInterval(async function() {
+                    var elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    var mins = Math.floor(elapsed / 60);
+                    var secs = elapsed % 60;
+                    loadingMsg.textContent = 'Recolectando noticias y aplicando modelos de IA… (' + mins + 'm ' + secs + 's)';
+
+                    try {
+                        var sr = await fetch('/api/analyze/status');
+                        var st = await sr.json();
+                        if (!st.running) {
+                            clearInterval(pollInterval);
+                            overlay.classList.remove('visible');
+                            if (st.error) {
+                                showToast('Error: ' + st.error, 'error');
+                            } else {
+                                await Promise.all([loadStats(), loadNews()]);
+                                showToast('Recolección y análisis completados.', 'success');
+                            }
+                        }
+                    } catch(pe) {
+                        // Network error, keep polling
+                        console.warn('Poll error:', pe);
+                    }
+                }, 5000);
+            } else if (!r.ok) {
+                overlay.classList.remove('visible');
                 showToast('Error: ' + (data.error || 'desconocido'), 'error');
             }
         } catch(e) {
-            showToast('Error de conexión al ejecutar análisis.', 'error');
-        } finally {
             overlay.classList.remove('visible');
+            showToast('Error de conexión al ejecutar análisis.', 'error');
         }
     }
 
@@ -991,7 +1033,7 @@
             if (state.search) {
                 url = '/api/search?q=' + encodeURIComponent(state.search);
             } else {
-                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna');
+                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
                 if (state.filter === 'alta' || state.filter === 'media') {
                     var cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                     url += '&clasificacion=' + encodeURIComponent(cls);

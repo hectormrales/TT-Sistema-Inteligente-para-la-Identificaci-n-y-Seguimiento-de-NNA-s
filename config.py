@@ -20,36 +20,36 @@ RSS_FEEDS = [
     'https://www.jornada.com.mx/rss/politica.xml',
     'https://www.jornada.com.mx/rss/estados.xml',
     'https://www.jornada.com.mx/rss/sociedad.xml',
-    'https://www.proceso.com.mx/feed',
-    'https://aristeguinoticias.com/feed/',
-    'https://www.animalpolitico.com/feed/',
-    'https://www.sinembargo.mx/feed/',
+    'https://www.proceso.com.mx/rss',
+    # 'https://aristeguinoticias.com/feed/',   # Verifica si funciona con cloudscraper
+    # 'https://www.animalpolitico.com/feed/',  # 404 — feed discontinuado
+    # 'https://www.sinembargo.mx/feed/',       # 403 persistente, circuit breaker
     'https://www.elsoldemexico.com.mx/rss.xml',
     'https://www.elfinanciero.com.mx/rss/',
-    'https://www.eluniversal.com.mx/rss.xml',
-    'https://www.milenio.com/rss',
-    'https://www.excelsior.com.mx/rss.xml',
-    'https://www.reporteindigo.com/feed/',
+    # 'https://www.eluniversal.com.mx/rss.xml',  # 404 — feed discontinuado
+    # 'https://www.milenio.com/rss',             # 404 — feed discontinuado
+    'https://www.excelsior.com.mx/rss/nacional',
+    # 'https://www.reporteindigo.com/feed/',     # 403 — bloqueado
     'https://piedepagina.mx/feed/',
     'https://www.contralinea.com.mx/feed/',
-    'https://www.sdpnoticias.com/feed',
-    'https://www.debate.com.mx/rss/rss.xml',
+    # 'https://www.sdpnoticias.com/feed',        # 404 — feed discontinuado
+    # 'https://www.debate.com.mx/rss/rss.xml',   # 403/404 — feed discontinuado
     'https://www.razon.com.mx/feed/',
-    'https://www.elheraldodemexico.com/rss.xml',
+    # 'https://www.elheraldodemexico.com/rss.xml', # 404 — feed discontinuado
     'https://www.informador.mx/rss/ultimas-noticias.xml',
-    'https://www.zocalo.com.mx/rss.xml',
+    # 'https://www.zocalo.com.mx/rss.xml',       # 404 — feed discontinuado
     'https://www.lajornadadeoriente.com.mx/feed/',
     # ── Medios especializados en género y DDHH ──────────────
     'https://cimacnoticias.com.mx/feed/',
     'https://luchadoras.mx/feed/',
     'https://www.eleconomista.com.mx/rss/',
-    'https://elpais.com/mexico/rss/',
-    'https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml',
+    'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/mexico/portada',
+    'https://feeds.bbci.co.uk/mundo/rss.xml',
     # ── Medios estatales / regionales ───────────────────────
     'https://www.elsoldetoluca.com.mx/rss.xml',
     'https://www.elsoldepuebla.com.mx/rss.xml',
     'https://www.diariodexalapa.com.mx/rss.xml',
-    'https://www.noroeste.com.mx/rss.xml',
+    'https://www.noroeste.com.mx/rss/portada.xml',
     # ── Google News queries (feminicidio + NNA) — SOLO MÉXICO ─
     # Todos los queries incluyen "México" explícito Y parámetros de geo:
     # hl=es-419 (español latinoamericano), gl=MX (México), ceid=MX:es-419

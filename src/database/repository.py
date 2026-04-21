@@ -186,10 +186,11 @@ def init_fts_schema():
     for stmt in statements:
         try:
             db.session.execute(text(stmt))
+            db.session.commit()
         except Exception as e:
+            db.session.rollback()
             logger.warning(f"FTS setup warning: {e}")
 
-    db.session.commit()
     logger.info("Esquema FTS inicializado correctamente")
 
 

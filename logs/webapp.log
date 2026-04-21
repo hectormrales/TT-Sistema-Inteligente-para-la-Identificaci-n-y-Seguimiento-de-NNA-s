@@ -1200,3 +1200,576 @@ CONTEXT:  while updating tuple (19,18) in relation "pg_proc"
 2026-04-20 18:03:31,196 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml
 2026-04-20 18:03:33,211 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
 2026-04-20 18:03:33,211 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.noroeste.com.mx/rss.xml
+2026-04-20 22:18:47,331 - app - INFO - Usuario administrador creado
+2026-04-20 22:18:47,347 - app - INFO - Fuentes predeterminadas sembradas: 53 nuevas
+2026-04-20 22:18:47,413 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:18:47,413 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:19:00,842 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:19:00,843 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:19:00,855 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:19:00,856 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:20:08,003 - app - INFO - Nuevo usuario registrado: hectormm10
+2026-04-20 22:20:11,116 - app - INFO - Login exitoso: hectormm10 desde 172.19.0.1
+2026-04-20 22:20:44,154 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed…: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-04-20 22:20:44,154 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.proceso.com.mx/feed
+2026-04-20 22:20:45,087 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-20 22:20:45,088 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.animalpolitico.com/feed/
+2026-04-20 22:20:45,246 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 4s
+2026-04-20 22:21:00,556 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 5s
+2026-04-20 22:21:09,002 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 10s
+2026-04-20 22:21:09,002 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 22:21:19,205 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-20 22:21:19,205 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sinembargo.mx/feed/
+2026-04-20 22:21:23,714 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 22:21:23,715 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 22:21:23,899 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-20 22:21:23,900 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.milenio.com/rss
+2026-04-20 22:21:24,084 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-20 22:21:24,084 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.excelsior.com.mx/rss.xml
+2026-04-20 22:21:24,242 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/feed/… Reintento 1/3 en 3s
+2026-04-20 22:21:33,007 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-20 22:21:33,008 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.reporteindigo.com/feed/
+2026-04-20 22:21:36,215 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-20 22:21:36,216 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sdpnoticias.com/feed
+2026-04-20 22:21:36,387 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 2s
+2026-04-20 22:21:47,439 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 2/3 en 4s
+2026-04-20 22:22:00,315 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 3/3 en 9s
+2026-04-20 22:22:00,315 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.debate.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 22:22:09,583 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.debate.com.mx/rss/rss.xml…
+2026-04-20 22:22:09,584 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.debate.com.mx/rss/rss.xml
+2026-04-20 22:22:10,212 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml…: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-04-20 22:22:10,212 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.elheraldodemexico.com/rss.xml
+2026-04-20 22:22:11,551 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-20 22:22:11,551 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.zocalo.com.mx/rss.xml
+2026-04-20 22:22:15,408 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 2s
+2026-04-20 22:22:20,577 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 6s
+2026-04-20 22:22:32,235 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 16s
+2026-04-20 22:22:32,235 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 22:22:47,831 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-20 22:22:47,831 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eleconomista.com.mx/rss/
+2026-04-20 22:22:49,582 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-20 22:22:49,582 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://elpais.com/mexico/rss/
+2026-04-20 22:22:49,775 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-20 22:22:49,776 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml
+2026-04-20 22:22:50,819 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-04-20 22:22:50,820 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.noroeste.com.mx/rss.xml
+2026-04-20 22:25:35,845 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:25:35,846 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:54:50,878 - app - INFO - Fuentes predeterminadas sembradas: 3 nuevas
+2026-04-20 22:54:50,964 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:54:50,965 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:54:55,659 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:54:55,659 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:54:55,677 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:54:55,678 - app - INFO - Esquema FTS inicializado
+2026-04-20 22:55:17,588 - src.analysis.dedup - INFO - Deduplicación: 393 noticias de entrada
+2026-04-20 22:55:17,600 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-20 22:55:17,668 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-20 22:55:17,821 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-20 22:55:17,872 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-20 22:55:17,875 - src.analysis.dedup - INFO -   Resultado: 393 → 393 únicos (0 duplicados eliminados)
+2026-04-20 22:55:26,589 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-20 22:55:26,590 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-20 22:55:26,820 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:55:26,875 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:26,897 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:26,990 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:55:27,003 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,018 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,104 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-20 22:55:27,195 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,279 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/vocab.txt "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:55:27,292 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/vocab.txt "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,311 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/vocab.txt "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,413 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:55:27,425 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,440 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,558 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:55:27,645 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/special_tokens_map.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:55:27,660 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,673 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:27,767 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-04-20 22:55:28,064 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:55:28,078 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:55:28,184 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-20 22:55:28,185 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-20 22:55:28,270 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:55:28,360 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/pytorch_model.bin "HTTP/1.1 302 Found"
+2026-04-20 22:55:28,528 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/xet-read-token/c4d86612f51b4f46759c8390d1798c2febe71b93 "HTTP/1.1 200 OK"
+2026-04-20 22:56:03,833 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:03,927 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-20 22:56:04,096 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-20 22:56:04,196 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-20 22:56:04,322 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-20 22:56:04,411 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:04,511 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-20 22:56:04,607 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/xet-read-token/35695e6a39cb1254b606e9d72d89dd53fb1e384d "HTTP/1.1 200 OK"
+2026-04-20 22:56:06,923 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-04-20 22:56:06,985 - src.analysis.analyzer - ERROR - Error en step_9_semantic_detection
+Traceback (most recent call last):
+  File "/app/src/analysis/analyzer.py", line 635, in step_9_semantic_detection
+    combined = hybrid_scorer.combine(
+               ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'HybridScorer' object has no attribute 'combine'
+2026-04-20 22:56:07,050 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 393 documentos
+2026-04-20 22:56:35,820 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-04-20 22:56:35,997 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,009 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,052 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,146 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,158 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,173 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,174 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-04-20 22:56:36,261 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,274 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,365 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,377 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,391 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,484 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,497 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,577 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,590 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,604 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,690 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:36,775 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:36,790 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,805 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:36,886 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+2026-04-20 22:56:36,966 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/xet-read-token/e8f8c211226b894fcb81acc59f3b34ba3efd5f42 "HTTP/1.1 200 OK"
+2026-04-20 22:56:50,582 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:50,678 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:50,775 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:50,861 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:50,940 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:50,954 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:50,969 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:51,055 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:51,069 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:51,149 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:51,161 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:51,244 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:51,258 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:51,344 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:51,357 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:51,443 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:51,530 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-20 22:56:51,632 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer.json "HTTP/1.1 302 Found"
+2026-04-20 22:56:52,130 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer.model "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:52,214 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:56:52,296 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/special_tokens_map.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:56:52,310 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:52,326 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-04-20 22:56:52,416 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-04-20 22:57:06,952 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-20 22:57:07,328 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:57:07,340 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-20 22:57:07,357 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-20 22:57:07,435 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-20 22:57:07,439 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-04-20 22:57:24,231 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 16/393 (4.1%)
+2026-04-20 22:57:24,265 - src.analysis.bertopic_clustering - INFO - Clustering completado: 6 temas, outliers finales: 16/393 (4.1%)
+2026-04-20 22:57:38,367 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-04-20 22:57:39,145 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 22:57:40,296 - src.database.repository - INFO - Batch insert: 393 noticias insertadas
+2026-04-20 22:57:41,369 - src.analysis.bertopic_clustering - INFO - Guardados 7 clusters en PostgreSQL
+2026-04-20 22:59:39,395 - src.analysis.dedup - INFO - Deduplicación: 393 noticias de entrada
+2026-04-20 22:59:39,421 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-20 22:59:39,493 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-20 22:59:39,646 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-20 22:59:39,699 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-20 22:59:39,720 - src.analysis.dedup - INFO -   Resultado: 393 → 393 únicos (0 duplicados eliminados)
+2026-04-20 22:59:51,547 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-20 22:59:51,548 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-20 22:59:51,744 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:59:51,757 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:59:51,844 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:59:51,859 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 22:59:51,951 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-20 22:59:52,038 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-20 22:59:52,323 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 22:59:52,324 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-20 22:59:52,334 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 22:59:52,438 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-20 22:59:52,523 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-20 22:59:52,639 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-20 22:59:52,867 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-20 22:59:53,003 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-20 22:59:53,084 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-20 22:59:53,174 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-20 23:10:51,183 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.DeadlockDetected) deadlock detected
+DETAIL:  Process 40 waits for ShareLock on transaction 808; blocked by process 41.
+Process 41 waits for RowExclusiveLock on relation 16421 of database 16384; blocked by process 40.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (19,8) in relation "pg_proc"
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-04-20 23:10:51,186 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_trigger WHERE tgname = 'trg_noticias_fts'
+            ) THEN
+                CREATE TRIGGER trg_noticias_fts
+                BEFORE INSERT OR UPDATE OF titulo, contenido
+                ON noticias
+                FOR EACH ROW
+                EXECUTE FUNCTION noticias_fts_trigger();
+            END IF;
+        END $$;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,187 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_fecha
+        ON noticias (fecha DESC NULLS LAST);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,187 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_score
+        ON noticias (score_compuesto DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,188 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_relevancia
+        ON noticias (relevancia_final DESC);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,189 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_cluster
+        ON noticias (cluster_id);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,190 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_clasificacion
+        ON noticias (clasificacion_final);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,190 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:10:51,191 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_nna
+        ON noticias (score_nna DESC)
+        WHERE menores_identificados = 'Si';
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,191 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:10:51,192 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        CREATE INDEX IF NOT EXISTS idx_noticias_hash
+        ON noticias USING hash (content_hash);
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,192 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: 
+        UPDATE noticias
+        SET busqueda_fts =
+            setweight(to_tsvector('spanish_unaccent', COALESCE(titulo, '')), 'A') ||
+            setweight(to_tsvector('spanish_unaccent', COALESCE(contenido, '')), 'B')
+        WHERE busqueda_fts IS NULL;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:10:51,193 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:10:51,194 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:11:01,758 - app - INFO - Logout: hectormm10
+2026-04-20 23:11:05,507 - app - INFO - Login exitoso: hectormm10 desde 172.19.0.1
+2026-04-20 23:11:40,239 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed…: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-04-20 23:11:40,239 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.proceso.com.mx/feed
+2026-04-20 23:11:41,153 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-20 23:11:41,154 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.animalpolitico.com/feed/
+2026-04-20 23:11:41,330 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 3s
+2026-04-20 23:12:21,702 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 5s
+2026-04-20 23:12:26,631 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 14s
+2026-04-20 23:12:26,632 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:12:41,107 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-20 23:12:41,107 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sinembargo.mx/feed/
+2026-04-20 23:12:44,279 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 23:12:44,280 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 23:12:44,571 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-20 23:12:44,571 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.milenio.com/rss
+2026-04-20 23:12:44,764 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-20 23:12:44,764 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.excelsior.com.mx/rss.xml
+2026-04-20 23:12:45,037 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-20 23:12:45,037 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.reporteindigo.com/feed/
+2026-04-20 23:12:49,901 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-20 23:12:49,901 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sdpnoticias.com/feed
+2026-04-20 23:12:50,035 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 2s
+2026-04-20 23:13:22,863 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-20 23:13:22,864 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.debate.com.mx/rss/rss.xml
+2026-04-20 23:13:26,972 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml…: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-04-20 23:13:26,972 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.elheraldodemexico.com/rss.xml
+2026-04-20 23:13:27,596 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-20 23:13:27,597 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.zocalo.com.mx/rss.xml
+2026-04-20 23:13:30,501 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-04-20 23:13:56,997 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 8s
+2026-04-20 23:14:07,661 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 12s
+2026-04-20 23:14:07,661 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:14:19,758 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-20 23:14:19,759 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eleconomista.com.mx/rss/
+2026-04-20 23:19:46,357 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-04-20 23:19:46,358 - src.collection.collector - WARNING - Circuit breaker OPEN para www.sinembargo.mx: 3 fallos consecutivos
+2026-04-20 23:19:46,398 - src.analysis.dedup - INFO - Deduplicación: 77 noticias de entrada
+2026-04-20 23:19:46,415 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-20 23:19:46,430 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-20 23:19:46,509 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 1 duplicados
+2026-04-20 23:19:46,556 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-20 23:19:46,564 - src.analysis.dedup - INFO -   Resultado: 77 → 76 únicos (1 duplicados eliminados)
+2026-04-20 23:20:01,734 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-20 23:20:01,735 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-20 23:20:01,859 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 23:20:01,873 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 23:20:01,961 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 23:20:01,975 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-20 23:20:02,063 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-20 23:20:02,153 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-20 23:20:02,323 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-20 23:20:02,338 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-20 23:20:02,445 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-20 23:20:02,531 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-20 23:20:02,663 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-20 23:20:02,784 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-20 23:20:02,916 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-20 23:20:03,008 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-20 23:20:03,094 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-20 23:20:05,341 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-04-20 23:20:05,343 - src.analysis.analyzer - ERROR - Error en step_9_semantic_detection
+Traceback (most recent call last):
+  File "/app/src/analysis/analyzer.py", line 635, in step_9_semantic_detection
+    combined = hybrid_scorer.combine(
+               ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'HybridScorer' object has no attribute 'combine'
+2026-04-20 23:20:05,451 - root - INFO - Análisis background completado exitosamente
+2026-04-20 23:39:02,245 - app - INFO - Fuentes predeterminadas sembradas: 2 nuevas
+2026-04-20 23:39:02,350 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:39:02,351 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:39:13,534 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:39:13,534 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:39:13,547 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:39:13,548 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:41:22,491 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:41:22,492 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:41:22,502 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:41:22,503 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:47:48,836 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:47:48,858 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:47:48,858 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:47:48,858 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:47:48,858 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:47:48,906 - root - INFO - Usando dataset completo: 393 noticias desde noticias.csv
+2026-04-20 23:47:48,906 - root - INFO - Usando dataset completo: 393 noticias desde noticias.csv
+2026-04-20 23:50:14,420 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed…: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-04-20 23:50:14,420 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.proceso.com.mx/feed
+2026-04-20 23:50:15,279 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-20 23:50:15,279 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.animalpolitico.com/feed/
+2026-04-20 23:50:15,361 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 3s
+2026-04-20 23:50:20,562 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 7s
+2026-04-20 23:50:39,757 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 10s
+2026-04-20 23:50:39,758 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:50:49,857 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-20 23:50:49,858 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sinembargo.mx/feed/
+2026-04-20 23:50:51,108 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 23:50:51,108 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 23:50:51,339 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-20 23:50:51,340 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.milenio.com/rss
+2026-04-20 23:50:51,405 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-20 23:50:51,405 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.excelsior.com.mx/rss.xml
+2026-04-20 23:50:51,592 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-20 23:50:51,592 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.reporteindigo.com/feed/
+2026-04-20 23:50:54,537 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-20 23:50:54,537 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sdpnoticias.com/feed
+2026-04-20 23:50:54,612 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 3s
+2026-04-20 23:51:03,650 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 2/3 en 5s
+2026-04-20 23:51:21,610 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 3/3 en 8s
+2026-04-20 23:51:21,610 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.debate.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:51:29,992 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.debate.com.mx/rss/rss.xml…
+2026-04-20 23:51:29,993 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.debate.com.mx/rss/rss.xml
+2026-04-20 23:51:31,571 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-20 23:51:31,572 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.zocalo.com.mx/rss.xml
+2026-04-20 23:51:35,807 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-04-20 23:52:01,256 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 5s
+2026-04-20 23:52:10,840 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 12s
+2026-04-20 23:52:10,840 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:52:22,708 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-20 23:52:22,709 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eleconomista.com.mx/rss/
+2026-04-20 23:52:23,692 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-20 23:52:23,692 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://elpais.com/mexico/rss/
+2026-04-20 23:52:23,784 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-20 23:52:23,785 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml
+2026-04-20 23:52:25,154 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-04-20 23:52:25,155 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.noroeste.com.mx/rss.xml
+2026-04-20 23:56:12,021 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-20 23:56:12,037 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:56:12,038 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:56:12,039 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-20 23:56:12,040 - app - INFO - Esquema FTS inicializado
+2026-04-20 23:56:12,047 - root - INFO - Datos cargados: 1 noticias desde análisis
+2026-04-20 23:56:12,048 - root - INFO - Datos cargados: 1 noticias desde análisis
+2026-04-20 23:56:40,062 - src.collection.scraper - WARNING - Error HTTP en https://www.proceso.com.mx/feed…: 404 Client Error: Not Found for url: https://www.proceso.com.mx/feed
+2026-04-20 23:56:40,063 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.proceso.com.mx/feed
+2026-04-20 23:56:40,929 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-20 23:56:40,930 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.animalpolitico.com/feed/
+2026-04-20 23:56:41,084 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 2s
+2026-04-20 23:57:15,233 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 7s
+2026-04-20 23:57:38,258 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 14s
+2026-04-20 23:57:38,259 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:57:40,755 - root - WARNING - Charts temporal PG error: type object 'Noticia' has no attribute 'fecha_publicacion'
+2026-04-20 23:57:52,467 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-20 23:57:52,468 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sinembargo.mx/feed/
+2026-04-20 23:57:57,521 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 23:57:57,521 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eluniversal.com.mx/rss.xml
+2026-04-20 23:57:57,800 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-20 23:57:57,801 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.milenio.com/rss
+2026-04-20 23:57:58,068 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-20 23:57:58,068 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.excelsior.com.mx/rss.xml
+2026-04-20 23:57:58,347 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-20 23:57:58,347 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.reporteindigo.com/feed/
+2026-04-20 23:58:01,905 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-20 23:58:01,906 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.sdpnoticias.com/feed
+2026-04-20 23:58:02,112 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-20 23:58:02,113 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.debate.com.mx/rss/rss.xml
+2026-04-20 23:58:06,070 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-20 23:58:06,070 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.zocalo.com.mx/rss.xml
+2026-04-20 23:58:11,021 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-04-20 23:58:30,201 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 6s
+2026-04-20 23:58:54,641 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 14s
+2026-04-20 23:58:54,642 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-20 23:59:08,285 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-20 23:59:08,285 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.eleconomista.com.mx/rss/
+2026-04-20 23:59:08,932 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-20 23:59:08,932 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://elpais.com/mexico/rss/
+2026-04-20 23:59:09,022 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-20 23:59:09,023 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml
+2026-04-20 23:59:10,513 - src.collection.scraper - WARNING - Error HTTP en https://www.noroeste.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.noroeste.com.mx/rss.xml
+2026-04-20 23:59:10,513 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.noroeste.com.mx/rss.xml
+2026-04-21 00:03:04,506 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml…: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-04-21 00:03:04,506 - src.collection.collector - WARNING - Sin respuesta para feed RSS: https://www.elheraldodemexico.com/rss.xml
+2026-04-21 00:04:22,852 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-04-21 00:04:22,853 - src.collection.collector - WARNING - Circuit breaker OPEN para www.sinembargo.mx: 3 fallos consecutivos
+2026-04-21 00:04:22,881 - src.analysis.dedup - INFO - Deduplicación: 379 noticias de entrada
+2026-04-21 00:04:22,929 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-21 00:04:22,980 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-21 00:04:23,232 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 12 duplicados
+2026-04-21 00:04:23,369 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-21 00:04:23,377 - src.analysis.dedup - INFO -   Resultado: 379 → 367 únicos (12 duplicados eliminados)
+2026-04-21 00:04:25,337 - src.analysis.dedup - INFO - Deduplicación: 367 noticias de entrada
+2026-04-21 00:04:25,379 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-21 00:04:25,431 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-21 00:04:25,666 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-21 00:04:25,765 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 1 duplicados
+2026-04-21 00:04:25,767 - src.analysis.dedup - INFO -   Resultado: 367 → 366 únicos (1 duplicados eliminados)
+2026-04-21 00:04:34,082 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-21 00:04:34,082 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-21 00:04:34,214 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:04:34,215 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-21 00:04:34,227 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-21 00:04:34,313 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:04:34,326 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-21 00:04:34,415 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-21 00:04:34,530 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-21 00:04:34,716 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:04:34,729 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-21 00:04:34,856 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-21 00:04:34,942 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-21 00:04:35,068 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-21 00:04:35,166 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-21 00:04:35,328 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-21 00:04:35,417 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-21 00:04:35,504 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-21 00:04:37,898 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-04-21 00:04:38,007 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 366 documentos
+2026-04-21 00:05:01,746 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-04-21 00:05:01,854 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:01,874 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:01,955 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:01,967 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:01,968 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-04-21 00:05:02,046 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:02,058 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:02,140 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:02,153 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-04-21 00:05:02,235 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:02,247 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:02,331 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:02,343 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:02,438 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-21 00:05:02,535 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:02,547 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:02,928 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-04-21 00:05:03,012 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-21 00:05:03,097 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-21 00:05:03,181 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-21 00:05:03,271 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:03,290 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:03,390 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:03,403 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:03,485 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:03,497 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:03,582 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:03,593 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:03,674 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:03,687 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:03,771 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-21 00:05:03,861 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-21 00:05:12,973 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-21 00:05:13,268 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-21 00:05:13,280 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-21 00:05:13,375 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-21 00:05:13,378 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-04-21 00:05:36,511 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 134/366 (36.6%)
+2026-04-21 00:05:36,607 - src.analysis.bertopic_clustering - INFO - Clustering completado: 14 temas, outliers finales: 134/366 (36.6%)
+2026-04-21 00:05:54,852 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-04-21 00:05:56,575 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-21 00:05:57,771 - src.database.repository - INFO - Batch insert: 352 noticias insertadas
+2026-04-21 00:05:58,578 - src.analysis.bertopic_clustering - INFO - Guardados 15 clusters en PostgreSQL
+2026-04-21 00:05:58,630 - root - INFO - Datos cargados: 366 noticias desde análisis
+2026-04-21 00:05:58,632 - root - INFO - Análisis background completado exitosamente

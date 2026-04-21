@@ -44,11 +44,12 @@ def _check_postgres() -> bool:
 
 
 def _load_data() -> bool:
-    """Carga datos analizados desde CSV."""
+    """Carga resultados del último análisis desde CSV."""
     global _current_data
     if os.path.exists(DATA_FILE):
         try:
             _current_data = pd.read_csv(DATA_FILE)
+            logging.info(f"Datos cargados: {len(_current_data)} noticias desde análisis")
             return True
         except Exception as e:
             logging.error(f"Error cargando datos: {e}")
@@ -124,6 +125,9 @@ def _row_to_dict(idx, row) -> dict:
 @login_required
 def index():
     """Dashboard principal."""
+    # Cargar datos al primer acceso si no están en memoria
+    if _current_data is None:
+        _load_data()
     return render_template('dashboard.html')
 
 
@@ -144,6 +148,8 @@ def api_stats():
             logging.warning(f"Fallback a CSV: {e}")
 
     # Fallback a CSV
+    if _current_data is None:
+        _load_data()
     stats = _get_stats()
     if stats is None:
         return jsonify({'error': 'No hay datos disponibles'}), 404
@@ -179,6 +185,8 @@ def api_noticias():
 
     # Fallback a CSV
     if _current_data is None:
+        _load_data()
+    if _current_data is None:
         return jsonify({'error': 'No hay datos disponibles'}), 404
 
     data = _current_data.copy()
@@ -191,11 +199,12 @@ def api_noticias():
         if col in data.columns:
             data = data[data[col] == clasificacion]
 
-    # Determinar columna de ordenamiento de respaldo
+    # Determinar ordenamiento: fecha (más reciente) o relevancia (más alta)
     sort_col = 'relevancia_final' if 'relevancia_final' in data.columns else 'score_compuesto'
 
-    # Ordenar por fecha (más reciente primero)
-    if 'fecha' in data.columns:
+    if orden == 'relevancia' and sort_col in data.columns:
+        data = data.sort_values(sort_col, ascending=False)
+    elif 'fecha' in data.columns:
         try:
             data['_fecha_sort'] = pd.to_datetime(data['fecha'], errors='coerce')
             data = data.sort_values('_fecha_sort', ascending=False, na_position='last')
@@ -279,43 +288,115 @@ def api_search():
         return jsonify({'error': 'Error interno del servidor'}), 500
 
 
+import threading
+
+# ── Estado del análisis en background ──────────────────────
+_analysis_status = {
+    'running': False,
+    'last_run': None,
+    'last_result': None,
+    'error': None,
+}
+_analysis_lock = threading.Lock()
+
+
+def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, app):
+    """Ejecuta el pipeline completo en background (hilo separado).
+
+    Recibe la instancia de la app Flask para crear un app_context(),
+    lo cual permite que step_11 persista datos en PostgreSQL.
+    """
+    global _analysis_status
+    try:
+        with app.app_context():
+            analyzer = SimplifiedNewsAnalyzer()
+            analyzer.run_complete_analysis(
+                num_topics=5,
+                n_clusters=4,
+                save_intermediate=False,
+                enable_semantic=enable_semantic,
+                enable_bertopic=enable_bertopic,
+                enable_postgres=enable_postgres,
+            )
+
+            # Recargar datos después del análisis
+            _load_data()
+            stats = _get_stats()
+
+        with _analysis_lock:
+            _analysis_status.update({
+                'running': False,
+                'last_run': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'last_result': stats,
+                'error': None,
+            })
+        logging.info("Análisis background completado exitosamente")
+
+    except Exception as e:
+        logging.error(f"Error en análisis background: {e}")
+        with _analysis_lock:
+            _analysis_status.update({
+                'running': False,
+                'error': str(e),
+            })
+
+
 @main_bp.route('/api/analyze')
 @login_required
 def api_analyze():
-    """Ejecuta el pipeline completo de análisis (v5.0 TT2)."""
-    try:
-        global _analyzer
-        _analyzer = SimplifiedNewsAnalyzer()
+    """Ejecuta el pipeline completo (scraping + análisis) en background.
 
-        # Parámetros opcionales del request
-        enable_semantic = request.args.get('semantic', 'true').lower() == 'true'
-        enable_bertopic = request.args.get('bertopic', 'true').lower() == 'true'
-        enable_postgres = request.args.get('postgres', 'true').lower() == 'true'
+    El scraping de todas las fuentes RSS tarda varios minutos debido a
+    los delays anti-bloqueo. Para evitar el timeout de Gunicorn, se
+    ejecuta en un hilo de fondo. El frontend puede consultar el progreso
+    en /api/analyze/status.
+    """
+    global _analysis_status
 
-        _analyzer.run_complete_analysis(
-            num_topics=5,
-            n_clusters=4,
-            save_intermediate=False,
-            enable_semantic=enable_semantic,
-            enable_bertopic=enable_bertopic,
-            enable_postgres=enable_postgres,
-        )
-
-        if _load_data():
+    with _analysis_lock:
+        if _analysis_status['running']:
             return jsonify({
-                'status': 'success',
-                'message': 'Análisis v5.0 completado exitosamente',
-                'stats': _get_stats(),
-                'features': {
-                    'semantic_detection': enable_semantic,
-                    'bertopic_clustering': enable_bertopic,
-                    'postgresql_persistence': enable_postgres,
-                },
+                'status': 'already_running',
+                'message': 'Ya hay un análisis en ejecución. Consulta /api/analyze/status',
             })
-        return jsonify({'error': 'Análisis completado pero error cargando datos'}), 500
-    except Exception as e:
-        logging.error(f"Error en análisis: {e}")
-        return jsonify({'error': f'Error ejecutando análisis: {e}'}), 500
+
+    # Parámetros opcionales del request
+    enable_semantic = request.args.get('semantic', 'true').lower() == 'true'
+    enable_bertopic = request.args.get('bertopic', 'true').lower() == 'true'
+    enable_postgres = request.args.get('postgres', 'true').lower() == 'true'
+
+    with _analysis_lock:
+        _analysis_status.update({
+            'running': True,
+            'error': None,
+            'last_result': None,
+        })
+
+    # Obtener la app Flask actual para pasarla al hilo de fondo
+    from flask import current_app
+    app = current_app._get_current_object()
+
+    # Lanzar en hilo de fondo (daemon=True para que muera con el worker)
+    thread = threading.Thread(
+        target=_run_analysis_background,
+        args=(enable_semantic, enable_bertopic, enable_postgres, app),
+        daemon=True,
+    )
+    thread.start()
+
+    return jsonify({
+        'status': 'started',
+        'message': 'Recolección y análisis iniciados. Consulta /api/analyze/status para ver el progreso.',
+    })
+
+
+@main_bp.route('/api/analyze/status')
+@login_required
+def api_analyze_status():
+    """Estado del análisis en background."""
+    with _analysis_lock:
+        status = _analysis_status.copy()
+    return jsonify(status)
 
 
 @main_bp.route('/api/export/csv')
@@ -353,12 +434,12 @@ def api_charts_temporal():
             results = (
                 Noticia.query
                 .with_entities(
-                    func.to_char(Noticia.fecha_publicacion, 'YYYY-MM').label('mes'),
+                    func.to_char(Noticia.fecha, 'YYYY-MM').label('mes'),
                     func.count().label('total'),
                 )
-                .filter(Noticia.fecha_publicacion.isnot(None))
-                .group_by(func.to_char(Noticia.fecha_publicacion, 'YYYY-MM'))
-                .order_by(func.to_char(Noticia.fecha_publicacion, 'YYYY-MM'))
+                .filter(Noticia.fecha.isnot(None))
+                .group_by(func.to_char(Noticia.fecha, 'YYYY-MM'))
+                .order_by(func.to_char(Noticia.fecha, 'YYYY-MM'))
                 .all()
             )
             return jsonify({

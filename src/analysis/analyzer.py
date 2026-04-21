@@ -120,7 +120,7 @@ class SimplifiedNewsAnalyzer:
     def step_1_collect_data(self) -> pd.DataFrame:
         """Recolección de datos desde RSS feeds con filtrado de relevancia."""
         print("=== PASO 1: RECOLECCIÓN + SCORING DE RELEVANCIA ===")
-        self.df_original = collect_all_news(keep_all=False)
+        self.df_original = collect_all_news(keep_all=True)
 
         if self.df_original.empty:
             print("  No se recolectaron noticias relevantes.")
@@ -514,6 +514,76 @@ class SimplifiedNewsAnalyzer:
         print("=" * 60)
         return self.df_analyzed
 
+    def run_analysis_only(
+        self,
+        num_topics: int = 6,
+        n_clusters: int = 4,
+        enable_semantic: bool = True,
+        enable_bertopic: bool = True,
+        enable_postgres: bool = True,
+    ) -> pd.DataFrame:
+        """
+        Ejecuta análisis sobre datos ya recolectados (sin scraping).
+
+        Carga datos del CSV existente en lugar de ejecutar step_1 (recolección
+        RSS), lo que evita el timeout de Gunicorn al ejecutar desde la webapp.
+
+        Pasos ejecutados: 3-11 (omite 1 y 2).
+        """
+        print("=" * 60)
+        print("  PIPELINE DE ANÁLISIS v5.0 — SOLO ANÁLISIS (sin scraping)")
+        print("=" * 60)
+
+        # Cargar datos existentes del CSV en lugar de recolectar
+        csv_path = os.path.join(self.DATA_DIR, 'noticias.csv')
+        if not os.path.exists(csv_path):
+            print("  [!] No hay datos recolectados para analizar.")
+            self.df_analyzed = pd.DataFrame()
+            return self.df_analyzed
+
+        print(f"=== CARGANDO DATOS EXISTENTES de {csv_path} ===")
+        self.df_original = pd.read_csv(csv_path)
+        print(f"  {len(self.df_original)} noticias cargadas desde CSV")
+
+        if self.df_original.empty:
+            print("  [!] CSV vacío — no hay noticias para analizar.")
+            self.df_analyzed = pd.DataFrame()
+            return self.df_analyzed
+
+        # Asegurar columnas mínimas necesarias
+        if 'menores_identificados' not in self.df_original.columns:
+            self.df_original['menores_identificados'] = 'No'
+        if 'clasificacion' not in self.df_original.columns:
+            self.df_original['clasificacion'] = 'No relevante'
+
+        # Ejecutar pasos 3-8 (análisis NLP)
+        self.step_3_vectorize_text()
+        self.step_4_topic_modeling(num_topics=num_topics)
+        self.step_5_clustering(n_clusters=n_clusters)
+        self.step_6_similarity_analysis()
+        self.step_7_tfidf_rescore()
+        self.step_8_enhanced_search_setup()
+
+        # Paso 9: Detección semántica BETO (OE-1)
+        if enable_semantic:
+            self.step_9_semantic_detection()
+
+        # Paso 10: Clustering BERTopic (OE-4)
+        if enable_bertopic:
+            self.step_10_bertopic_clustering()
+
+        # Guardar CSV
+        self.save_final_results()
+
+        # Paso 11: Persistencia PostgreSQL (OE-3)
+        if enable_postgres:
+            self.step_11_persist_to_postgres()
+
+        print("=" * 60)
+        print(f"  COMPLETADO — {len(self.df_analyzed)} noticias analizadas")
+        print("=" * 60)
+        return self.df_analyzed
+
     # ── Nuevos pasos TT2 ────────────────────────────────────
 
     def step_9_semantic_detection(self) -> pd.DataFrame:
@@ -557,17 +627,35 @@ class SimplifiedNewsAnalyzer:
             self.df_processed["score_semantico"] = scores_semanticos
             self.df_processed["modo_deteccion"] = "hybrid"
 
-            # Combinar con heurístico usando HybridScorer
-            hybrid_scorer = HybridScorer()
+            # Combinar con heurístico usando fórmula alpha-weighted
             for i, (idx, row) in enumerate(self.df_processed.iterrows()):
-                h_score = row.get("relevancia_final", row.get("score_compuesto", 0))
-                s_score = row.get("score_semantico", 0)
-                combined = hybrid_scorer.combine(
-                    heuristic_score=float(h_score),
-                    semantic_score=float(s_score),
-                )
-                self.df_processed.at[idx, "relevancia_final"] = combined["score"]
-                self.df_processed.at[idx, "clasificacion_final"] = combined["clasificacion"]
+                h_score = float(row.get("relevancia_final", row.get("score_compuesto", 0)))
+                s_score = float(row.get("score_semantico", 0))
+
+                # Alpha ponderado: si el score semántico es fuerte, confiar más en él
+                distance = abs(s_score - 0.5)
+                if distance > 0.3:
+                    alpha = 0.7  # Alta confianza → peso al semántico
+                elif distance > 0.15:
+                    alpha = 0.5  # Media confianza
+                else:
+                    alpha = 0.3  # Baja confianza → peso al heurístico
+
+                score_final = alpha * s_score + (1 - alpha) * h_score
+                score_final = max(h_score, score_final)
+
+                # Clasificar por umbrales
+                if score_final >= 0.70:
+                    clasificacion = "Alta"
+                elif score_final >= 0.35:
+                    clasificacion = "Media"
+                elif score_final >= 0.15:
+                    clasificacion = "Baja"
+                else:
+                    clasificacion = "No relevante"
+
+                self.df_processed.at[idx, "relevancia_final"] = round(score_final, 4)
+                self.df_processed.at[idx, "clasificacion_final"] = clasificacion
 
             avg_sem = np.mean(scores_semanticos)
             print(f"  Score semántico promedio: {avg_sem:.4f}")

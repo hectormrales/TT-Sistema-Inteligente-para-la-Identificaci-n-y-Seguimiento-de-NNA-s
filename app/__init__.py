@@ -122,56 +122,16 @@ def _seed_predefined_sources(app: Flask) -> None:
     from config import RSS_FEEDS
     from urllib.parse import urlparse, parse_qs, unquote
 
-    existing_urls = {s.url for s in NewsSource.query.all()}
-
-    # Mapeo de dominios a nombres legibles
-    DOMAIN_NAMES = {
-        'jornada.com.mx': 'La Jornada',
-        'proceso.com.mx': 'Proceso',
-        'aristeguinoticias.com': 'Aristegui Noticias',
-        'animalpolitico.com': 'Animal Político',
-        'sinembargo.mx': 'Sin Embargo',
-        'elsoldemexico.com.mx': 'El Sol de México',
-        'elfinanciero.com.mx': 'El Financiero',
-        'eluniversal.com.mx': 'El Universal',
-        'milenio.com': 'Milenio',
-        'excelsior.com.mx': 'Excélsior',
-        'reporteindigo.com': 'Reporte Índigo',
-        'piedepagina.mx': 'Pie de Página',
-        'contralinea.com.mx': 'Contralínea',
-        'sdpnoticias.com': 'SDP Noticias',
-        'debate.com.mx': 'El Debate',
-        'razon.com.mx': 'La Razón',
-        'elheraldodemexico.com': 'El Heraldo de México',
-        'informador.mx': 'El Informador',
-        'zocalo.com.mx': 'Zócalo',
-        'lajornadadeoriente.com.mx': 'La Jornada de Oriente',
-        'cimacnoticias.com.mx': 'CIMAC Noticias',
-        'luchadoras.mx': 'Luchadoras',
-        'eleconomista.com.mx': 'El Economista',
-        'elpais.com': 'El País México',
-        'bbc.com': 'BBC Mundo',
-        'elsoldetoluca.com.mx': 'El Sol de Toluca',
-        'elsoldepuebla.com.mx': 'El Sol de Puebla',
-        'diariodexalapa.com.mx': 'Diario de Xalapa',
-        'noroeste.com.mx': 'Noroeste',
-    }
-
-    SECTION_SUFFIXES = {
-        '/politica': ' – Política',
-        '/estados': ' – Estados',
-        '/sociedad': ' – Sociedad',
-    }
+    # Obtener fuentes existentes por URL y por Nombre para mapeo
+    existing_sources = {s.url: s for s in NewsSource.query.all()}
 
     added = 0
+    updated = 0
     for url in RSS_FEEDS:
-        if url in existing_urls:
-            continue
-
         parsed = urlparse(url)
         domain = parsed.netloc.replace('www.', '')
 
-        # Google News → nombre especial
+        # Determinar nombre
         if 'news.google.com' in domain:
             qs = parse_qs(parsed.query)
             query = unquote(qs.get('q', ['búsqueda'])[0])
@@ -183,6 +143,23 @@ def _seed_predefined_sources(app: Flask) -> None:
                     name += suffix
                     break
 
+        if url in existing_sources:
+            # Si ya existe pero el nombre cambió, actualizamos
+            source = existing_sources[url]
+            if source.name != name:
+                source.name = name
+                updated += 1
+            continue
+        
+        # Si la URL es nueva, verificar si es una actualización de una fuente por dominio
+        # (Especial para Proceso/Excelsior que cambiaron URL)
+        source_by_name = NewsSource.query.filter_by(name=name, is_predefined=True).first()
+        if source_by_name:
+            source_by_name.url = url
+            updated += 1
+            continue
+
+        # Es una fuente totalmente nueva
         source = NewsSource(
             name=name,
             url=url,
@@ -194,8 +171,12 @@ def _seed_predefined_sources(app: Flask) -> None:
         db.session.add(source)
         added += 1
 
-    if added:
-        db.session.commit()
-        app.logger.info(
-            f"Fuentes predeterminadas sembradas: {added} nuevas"
-        )
+    if added or updated:
+        try:
+            db.session.commit()
+            app.logger.info(
+                f"Fuentes predeterminadas: {added} nuevas, {updated} actualizadas"
+            )
+        except Exception as e:
+            db.session.rollback()
+            app.logger.warning(f"Error actualizando fuentes: {e}")
