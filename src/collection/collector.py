@@ -13,6 +13,16 @@ v6.0 TT2 Mejoras:
   - Tracking de URLs previamente procesadas (evita re-scrapping)
   - Logging mejorado para diagnóstico de fuentes fallidas
   - Filtro de antigüedad (máx. 30 días para feeds RSS)
+
+v7.0 Mejoras (Fase 1 — Pipeline unificado):
+  - TODAS las peticiones HTTP ahora pasan por StealthSession, incluyendo
+    las de feeds RSS que antes usaban requests.get() directo.
+  - Esto garantiza que cada request tiene:
+    • Fingerprint TLS (JA3) de Chrome real via cloudscraper
+    • Delays con distribución lognormal (anti-fingerprinting)
+    • Circuit breaker por dominio (evita golpear sitios caídos)
+    • Rotación de User-Agent consistente por dominio
+  - Se eliminó la dependencia directa de 'requests' para peticiones HTTP.
 """
 
 import json
@@ -21,15 +31,15 @@ import re
 import logging
 from datetime import datetime, timezone, timedelta
 from unicodedata import normalize
-from typing import Tuple
+from typing import Tuple, Optional
 
-import requests
+import requests  # Solo para type hints de Response
 import pandas as pd
 from bs4 import BeautifulSoup
 from email.utils import parsedate_to_datetime
 
 import config
-from src.collection.scraper import DynamicScraper
+from src.collection.scraper import DynamicScraper, StealthSession
 from src.analysis.dedup import NewsDeduplicator
 
 logger = logging.getLogger(__name__)
@@ -443,18 +453,40 @@ def score_relevance(title: str, content: str) -> dict:
 # Recolección RSS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def collect_news_from_rss(rss_url: str, seen_urls: set | None = None) -> list[dict]:
+def collect_news_from_rss(
+    rss_url: str,
+    seen_urls: set | None = None,
+    session: Optional[StealthSession] = None,
+) -> list[dict]:
     """Recolecta artículos desde un feed RSS individual.
-    
+
+    v7.0: Todas las peticiones HTTP pasan por StealthSession para
+    beneficiarse de cloudscraper (bypass Cloudflare), TLS fingerprinting
+    realista, delays lognormales y circuit breaker por dominio.
+
     Args:
         rss_url: URL del feed RSS.
         seen_urls: Set de URLs ya procesadas (para evitar re-scraping).
+        session: StealthSession compartida. Si None, crea una temporal.
     """
     if seen_urls is None:
         seen_urls = set()
+
+    # Usar sesión stealth compartida o crear una temporal
+    _owns_session = False
+    if session is None:
+        session = StealthSession(test_mode=True)
+        _owns_session = True
+
     try:
-        headers = getattr(config, 'HTTP_HEADERS', {})
-        response = requests.get(rss_url, headers=headers, timeout=15)
+        # v7.0: Usar StealthSession en lugar de requests.get() directo.
+        # Esto garantiza: cloudscraper TLS fingerprint, delays lognormales,
+        # rotación de UA consistente, y circuit breaker por dominio.
+        response = session.get(rss_url, timeout=15)
+        if response is None:
+            logger.warning(f"Sin respuesta para feed RSS: {rss_url[:60]}")
+            return []
+
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'xml')
 
@@ -548,6 +580,10 @@ def collect_news_from_rss(rss_url: str, seen_urls: set | None = None) -> list[di
     except Exception as e:
         logger.warning(f"Error RSS ({rss_url[:60]}): {e}")
         return []
+    finally:
+        # Solo cerrar si creamos la sesión nosotros (evitar cerrar la compartida)
+        if _owns_session:
+            session.close_all()
 
 
 def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
@@ -563,6 +599,14 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
       - Logging detallado de fuentes exitosas/fallidas
       - Estadísticas de recolección por fuente
 
+    v7.0 Mejoras (Pipeline unificado):
+      - Crea UNA StealthSession compartida para todo el ciclo de recolección.
+        Esto garantiza que:
+        • Todas las peticiones (RSS y scraping) usan cloudscraper (TLS real)
+        • El circuit breaker acumula estado entre fuentes del mismo dominio
+        • Los delays lognormales se aplican consistentemente
+      - Al finalizar, imprime el estado del circuit breaker para diagnóstico.
+
     Args:
         keep_all: Si True, conserva TODOS los artículos (para depuración).
                   Si False (default), descarta los "No relevante".
@@ -576,75 +620,108 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
     sources_ok = 0
     sources_error = 0
 
-    # ── Intentar obtener fuentes desde la DB ────────────────
-    db_sources = _get_db_sources()
+    # v7.0: Crear UNA sesión stealth compartida para todo el ciclo.
+    # Beneficios:
+    #   - cloudscraper reutiliza cookies/sesiones por dominio
+    #   - Circuit breaker acumula estado entre fuentes del mismo dominio
+    #   - Menos overhead de crear/destruir sesiones
+    shared_session = StealthSession(test_mode=False)
 
-    if db_sources:
-        print(f"  ── {len(db_sources)} fuentes activas desde DB ──")
-        scraper = DynamicScraper(respect_robots=True, default_delay=2.0)
+    try:
+        # ── Intentar obtener fuentes desde la DB ────────────────
+        db_sources = _get_db_sources()
 
-        for source in db_sources:
-            src_label = f"{source['name']} ({source['source_type']})"
-            print(f"  [{source['source_type'].upper()}] {src_label}")
+        if db_sources:
+            print(f"  ── {len(db_sources)} fuentes activas desde DB ──")
+            scraper = DynamicScraper(respect_robots=True, default_delay=2.0)
 
-            try:
-                if source['source_type'] == 'rss':
-                    articles = collect_news_from_rss(source['url'], seen_urls)
-                    for art in articles:
-                        art['fuente'] = source['name']
-                    all_articles.extend(articles)
+            for source in db_sources:
+                src_label = f"{source['name']} ({source['source_type']})"
+                print(f"  [{source['source_type'].upper()}] {src_label}")
+
+                try:
+                    if source['source_type'] == 'rss':
+                        # v7.0: Pasar la sesión stealth compartida
+                        articles = collect_news_from_rss(
+                            source['url'], seen_urls, session=shared_session
+                        )
+                        for art in articles:
+                            art['fuente'] = source['name']
+                        all_articles.extend(articles)
+                        _update_db_source_status(
+                            source['id'], 'ok', len(articles)
+                        )
+                        sources_ok += 1
+                        print(f"    → {len(articles)} artículos")
+                    else:
+                        raw_articles = scraper.scrape_source(
+                            source['url'],
+                            method=source['source_type'],
+                            max_articles=30,
+                        )
+                        accepted = 0
+                        for art in raw_articles:
+                            enlace = art.get('enlace', source['url'])
+                            if enlace in seen_urls:
+                                continue
+                            if not _is_mexico_news(
+                                art.get('titulo', ''),
+                                art.get('contenido', ''),
+                                enlace,
+                            ):
+                                continue
+                            rel = score_relevance(art['titulo'], art['contenido'])
+                            art.update(rel)
+                            art['fuente'] = source['name']
+                            art.setdefault('cluster', 0)
+                            all_articles.append(art)
+                            if enlace:
+                                seen_urls.add(enlace)
+                            accepted += 1
+                        _update_db_source_status(
+                            source['id'], 'ok', accepted
+                        )
+                        sources_ok += 1
+                        print(f"    → {accepted} artículos aceptados")
+
+                except Exception as e:
+                    sources_error += 1
+                    logger.warning(f"Error scraping {source['name']}: {e}")
                     _update_db_source_status(
-                        source['id'], 'ok', len(articles)
+                        source['id'], 'error', 0, str(e)[:200]
                     )
-                    sources_ok += 1
-                    print(f"    → {len(articles)} artículos")
-                else:
-                    raw_articles = scraper.scrape_source(
-                        source['url'],
-                        method=source['source_type'],
-                        max_articles=30,
-                    )
-                    accepted = 0
-                    for art in raw_articles:
-                        enlace = art.get('enlace', source['url'])
-                        if enlace in seen_urls:
-                            continue
-                        if not _is_mexico_news(
-                            art.get('titulo', ''),
-                            art.get('contenido', ''),
-                            enlace,
-                        ):
-                            continue
-                        rel = score_relevance(art['titulo'], art['contenido'])
-                        art.update(rel)
-                        art['fuente'] = source['name']
-                        art.setdefault('cluster', 0)
-                        all_articles.append(art)
-                        if enlace:
-                            seen_urls.add(enlace)
-                        accepted += 1
-                    _update_db_source_status(
-                        source['id'], 'ok', accepted
-                    )
-                    sources_ok += 1
-                    print(f"    → {accepted} artículos aceptados")
-
-            except Exception as e:
-                sources_error += 1
-                logger.warning(f"Error scraping {source['name']}: {e}")
-                _update_db_source_status(
-                    source['id'], 'error', 0, str(e)[:200]
+        else:
+            # ── Fallback: sin DB, usar config.RSS_FEEDS ─────────
+            print("  ── Fuentes RSS desde config (sin contexto DB) ──")
+            for feed in config.RSS_FEEDS:
+                feed_label = feed[:70] + '…' if len(feed) > 70 else feed
+                print(f"  RSS: {feed_label}")
+                # v7.0: Pasar la sesión stealth compartida
+                articles = collect_news_from_rss(
+                    feed, seen_urls, session=shared_session
                 )
-    else:
-        # ── Fallback: sin DB, usar config.RSS_FEEDS ─────────
-        print("  ── Fuentes RSS desde config (sin contexto DB) ──")
-        for feed in config.RSS_FEEDS:
-            feed_label = feed[:70] + '…' if len(feed) > 70 else feed
-            print(f"  RSS: {feed_label}")
-            articles = collect_news_from_rss(feed, seen_urls)
-            if articles:
-                sources_ok += 1
-            all_articles.extend(articles)
+                if articles:
+                    sources_ok += 1
+                all_articles.extend(articles)
+
+        # v7.0: Diagnóstico del circuit breaker al final del ciclo
+        cb_status = shared_session.get_circuit_breaker_status()
+        if cb_status:
+            open_circuits = {
+                d: info for d, info in cb_status.items()
+                if info['state'] != 'closed'
+            }
+            if open_circuits:
+                print(f"  ⚠ Circuit breaker — dominios en cooldown: {list(open_circuits.keys())}")
+                for domain, info in open_circuits.items():
+                    logger.warning(
+                        f"Circuit breaker {info['state'].upper()} para {domain}: "
+                        f"{info['failures']} fallos consecutivos"
+                    )
+
+    finally:
+        # Siempre cerrar la sesión compartida al terminar
+        shared_session.close_all()
 
     # Guardar URLs procesadas a disco
     _save_seen_urls(seen_urls)

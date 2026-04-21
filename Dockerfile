@@ -43,7 +43,7 @@ ENV PYTHONPATH=/app \
     LOGS_DIR=/app/logs \
     MODELS_DIR=/app/models
 
-RUN python -c "import pandas, sklearn, requests, bs4, flask_login, flask_sqlalchemy, argon2, torch, transformers; print('Dependencias OK')"
+RUN python -c "import pandas, sklearn, requests, bs4, flask_login, flask_sqlalchemy, argon2, torch, transformers, cloudscraper; print('Dependencias OK (cloudscraper v' + cloudscraper.__version__ + ')')"
 
 EXPOSE 5000
 

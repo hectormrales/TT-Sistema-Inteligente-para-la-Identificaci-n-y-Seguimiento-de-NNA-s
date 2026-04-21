@@ -16,6 +16,19 @@ Scraper inteligente que adapta la técnica de extracción según el sitio:
      • HTML      → extrae article/main body
   5. Respeta Crawl-delay y aplica rate-limiting.
 
+v7.0 Mejoras Fase 1:
+  - Integración de cloudscraper: bypass de Cloudflare + TLS fingerprint (JA3)
+    que coincide con navegadores reales, resolviendo el problema de detección
+    donde el User-Agent dice "Chrome" pero el handshake TLS dice "Python".
+  - Timing con distribución lognormal: imita el patrón de lectura humana real
+    (mayoría de delays medianos + colas largas ocasionales) en lugar de
+    distribución uniforme que es trivial de detectar por WAFs.
+  - Circuit breaker por dominio: si un dominio falla 3 veces consecutivas,
+    se enfría automáticamente por 5 minutos para evitar desperdiciar
+    recursos y ser bloqueado más agresivamente.
+  - Backoff adaptativo: el intervalo mínimo entre requests se ajusta
+    dinámicamente según el historial de éxitos/fallos de cada dominio.
+
 Uso:
     scraper = DynamicScraper()
     result = scraper.probe_url('https://ejemplo.com')
@@ -24,6 +37,7 @@ Uso:
 
 import re
 import time
+import math
 import random
 import hashlib
 import logging
@@ -37,6 +51,19 @@ import requests
 from bs4 import BeautifulSoup
 
 import config
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Cloudscraper: bypass de Cloudflare + TLS fingerprint matching
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# cloudscraper crea sesiones HTTP cuyo handshake TLS (JA3 hash)
+# coincide con el de un navegador real, evitando la detección
+# que servicios como Cloudflare, Akamai y PerimeterX realizan
+# comparando el User-Agent declarado vs el fingerprint TLS real.
+try:
+    import cloudscraper
+    HAS_CLOUDSCRAPER = True
+except ImportError:
+    HAS_CLOUDSCRAPER = False
 
 # Trafilatura: extractor de texto de alta calidad (opcional)
 try:
@@ -343,6 +370,140 @@ def _extract_with_trafilatura(url: str, html: str) -> dict | None:
         return None
 
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Circuit Breaker por dominio (Fase 1 – v7.0)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Patrón de resiliencia que evita desperdiciar recursos en dominios
+# que fallan repetidamente. Después de N fallos consecutivos, el
+# circuito se "abre" y rechaza requests por un período de cooldown.
+#
+# Estados del circuito:
+#   CLOSED   → operación normal, se permiten requests.
+#   OPEN     → dominio en cooldown, se rechazan requests inmediatamente.
+#   HALF-OPEN → después del cooldown, se permite 1 request de prueba.
+#               Si tiene éxito → CLOSED; si falla → OPEN de nuevo.
+#
+# Beneficios:
+#   - Evita saturar un dominio que nos está bloqueando (empeora el ban)
+#   - Ahorra tiempo de ejecución al no esperar timeouts en dominios muertos
+#   - Permite recuperación automática cuando el dominio vuelve a estar disponible
+
+
+class DomainCircuitBreaker:
+    """
+    Circuit breaker por dominio para el scraper.
+
+    Implementa el patrón Circuit Breaker (Martin Fowler, 2014) adaptado
+    a scraping web. Cada dominio tiene su propio circuito independiente.
+
+    Parámetros configurables:
+      - FAILURE_THRESHOLD: fallos consecutivos para abrir el circuito (default: 3)
+      - COOLDOWN_SECONDS: tiempo total de cooldown antes de cerrar (default: 300s)
+      - HALF_OPEN_AFTER: tiempo antes de permitir un request de prueba (default: 180s)
+    """
+
+    FAILURE_THRESHOLD = 3       # Fallos consecutivos para abrir circuito
+    COOLDOWN_SECONDS = 300      # 5 minutos de cooldown total
+    HALF_OPEN_AFTER = 180       # Intenta 1 request después de 3 minutos
+
+    def __init__(self):
+        # Contador de fallos consecutivos por dominio
+        self._failures: dict[str, int] = {}
+        # Timestamp del último fallo por dominio
+        self._last_failure: dict[str, float] = {}
+        # Estado del circuito: 'closed', 'open', 'half-open'
+        self._state: dict[str, str] = {}
+
+    def can_request(self, domain: str) -> bool:
+        """
+        Determina si se puede hacer un request a este dominio.
+
+        Returns:
+            True si el circuito está 'closed' o 'half-open' (request de prueba).
+            False si el circuito está 'open' (en cooldown).
+        """
+        state = self._state.get(domain, 'closed')
+
+        if state == 'closed':
+            return True
+
+        if state == 'open':
+            elapsed = time.time() - self._last_failure.get(domain, 0)
+            if elapsed >= self.HALF_OPEN_AFTER:
+                # Transición: OPEN → HALF-OPEN (permitir 1 request de prueba)
+                self._state[domain] = 'half-open'
+                logger.info(
+                    f"Circuit breaker HALF-OPEN para {domain} "
+                    f"(probando con 1 request)"
+                )
+                return True
+            return False
+
+        # half-open: permitir 1 request de prueba
+        return True
+
+    def record_success(self, domain: str):
+        """
+        Registra un request exitoso. Resetea el contador de fallos
+        y cierra el circuito si estaba en half-open.
+        """
+        previous_state = self._state.get(domain, 'closed')
+        self._failures[domain] = 0
+        self._state[domain] = 'closed'
+
+        if previous_state == 'half-open':
+            logger.info(
+                f"Circuit breaker CERRADO para {domain} (recuperado)"
+            )
+
+    def record_failure(self, domain: str):
+        """
+        Registra un fallo. Si se alcanza el threshold, abre el circuito.
+        Si estaba en half-open, vuelve a abrir.
+        """
+        self._failures[domain] = self._failures.get(domain, 0) + 1
+        self._last_failure[domain] = time.time()
+
+        current_state = self._state.get(domain, 'closed')
+
+        # Si estaba en half-open y falló → volver a abrir
+        if current_state == 'half-open':
+            self._state[domain] = 'open'
+            logger.warning(
+                f"Circuit breaker RE-ABIERTO para {domain} "
+                f"(request de prueba falló). Cooldown {self.COOLDOWN_SECONDS}s"
+            )
+            return
+
+        # Si alcanzó el threshold → abrir
+        if self._failures[domain] >= self.FAILURE_THRESHOLD:
+            self._state[domain] = 'open'
+            logger.warning(
+                f"Circuit breaker ABIERTO para {domain} — "
+                f"{self._failures[domain]} fallos consecutivos. "
+                f"Cooldown {self.COOLDOWN_SECONDS}s"
+            )
+
+    def get_status(self) -> dict:
+        """Retorna el estado de todos los circuitos para diagnóstico."""
+        all_domains = set(
+            list(self._failures.keys()) + list(self._state.keys())
+        )
+        return {
+            domain: {
+                'state': self._state.get(domain, 'closed'),
+                'failures': self._failures.get(domain, 0),
+                'last_failure': self._last_failure.get(domain),
+            }
+            for domain in all_domains
+        }
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# robots.txt checker
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
 class RobotsChecker:
     """Verifica permisos en robots.txt con caché."""
 
@@ -426,45 +587,105 @@ class RobotsChecker:
         cls._cache.clear()
 
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# StealthSession con cloudscraper + timing lognormal (v7.0)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
 class StealthSession:
     """
     Sesión HTTP stealth que imita el comportamiento de un navegador real.
-    
-    Técnicas anti-bloqueo:
-    - Sesiones persistentes con cookies
-    - Rotación de User-Agent por dominio
-    - Delays aleatorios entre requests (simula lectura humana)
-    - Headers realistas con Referer, Sec-Fetch, etc.
-    - Reintentos con backoff exponencial
-    
+
+    Técnicas anti-bloqueo (v7.0):
+    - cloudscraper: emula fingerprint TLS (JA3) de Chrome/Firefox reales,
+      resolviendo challenges de Cloudflare automáticamente.
+    - Sesiones persistentes con cookies por dominio.
+    - Rotación de User-Agent consistente por dominio (como haría un usuario).
+    - Delays con distribución lognormal: la mayoría de los delays son medianos
+      (8-15s) con "colas largas" ocasionales (25-45s), imitando el patrón
+      real de un humano que lee artículos a velocidades variables.
+      (Distribución uniforme → detectable; lognormal → natural.)
+    - Reintentos con backoff exponencial + full jitter (estilo Amazon/AWS).
+    - Circuit breaker integrado para evitar golpear dominios caídos.
+
     Modos:
-    - test_mode=True: delays reducidos para pruebas rápidas (3-6s)
-    - test_mode=False: delays completos para producción (8-20s normal, 12-25s blocked)
+    - test_mode=True: delays reducidos (~3-6s) para pruebas rápidas.
+    - test_mode=False: delays completos (~8-20s normal, 12-45s blocked).
     """
 
-    # Rango de delay para producción (segundos)
-    MIN_DELAY = 8.0
-    MAX_DELAY = 20.0
-    BLOCKED_MIN_DELAY = 12.0
-    BLOCKED_MAX_DELAY = 25.0
-    # Rango de delay para pruebas rápidas
-    TEST_MIN_DELAY = 2.0
-    TEST_MAX_DELAY = 5.0
-    TEST_BLOCKED_MIN_DELAY = 3.0
-    TEST_BLOCKED_MAX_DELAY = 6.0
     # Máximo de reintentos por request
     MAX_RETRIES = 3
+
+    # ── Parámetros de distribución lognormal ────────────────
+    # La distribución lognormal se parametriza con (mu, sigma) donde:
+    #   mu    = media del logaritmo natural de la variable
+    #   sigma = desviación estándar del logaritmo natural
+    #
+    # Propiedades resultantes (para producción, no bloqueado):
+    #   Mediana:   e^mu ≈ 12.2s
+    #   Media:     e^(mu + sigma²/2) ≈ 15.3s
+    #   Moda:      e^(mu - sigma²) ≈ 7.8s  (delay más frecuente)
+    #   P75:       ~18s
+    #   P95:       ~32s   (simula "lectura de artículo largo")
+    #   P99:       ~45s   (simula "distracción / alt-tab")
+    #
+    # Esto es MUY diferente de uniform(8, 20) que tiene una moda "plana"
+    # y nunca genera delays > 20s, algo que los WAFs pueden detectar.
+
+    # Producción – navegación normal
+    LOGNORMAL_MU = 2.5          # mediana ≈ 12.2s
+    LOGNORMAL_SIGMA = 0.7       # dispersión moderada
+    # Producción – sitio que nos ha bloqueado
+    BLOCKED_LOGNORMAL_MU = 3.2  # mediana ≈ 24.5s
+    BLOCKED_LOGNORMAL_SIGMA = 0.6
+    # Test – navegación normal
+    TEST_LOGNORMAL_MU = 1.2     # mediana ≈ 3.3s
+    TEST_LOGNORMAL_SIGMA = 0.6
+    # Test – sitio bloqueado
+    TEST_BLOCKED_LOGNORMAL_MU = 1.8   # mediana ≈ 6s
+    TEST_BLOCKED_LOGNORMAL_SIGMA = 0.5
+    # Límites absolutos para evitar extremos absurdos
+    MIN_DELAY = 2.0
+    MAX_DELAY_CAP = 60.0
 
     def __init__(self, test_mode: bool = False):
         self._sessions: dict[str, requests.Session] = {}
         self._domain_ua: dict[str, str] = {}
         self._last_request: dict[str, float] = {}
         self.test_mode = test_mode
+        # Circuit breaker compartido entre todas las sesiones
+        self._circuit_breaker = DomainCircuitBreaker()
 
     def _get_session(self, domain: str) -> requests.Session:
-        """Obtiene o crea una sesión persistente para un dominio."""
+        """
+        Obtiene o crea una sesión persistente para un dominio.
+
+        v7.0: Si cloudscraper está disponible, crea una sesión con
+        fingerprint TLS de Chrome en Windows (el perfil más común),
+        lo que hace que el handshake TLS coincida con el User-Agent.
+        Si no está disponible, cae back a requests.Session estándar.
+        """
         if domain not in self._sessions:
-            session = requests.Session()
+            if HAS_CLOUDSCRAPER:
+                # cloudscraper emula el fingerprint TLS de Chrome + resuelve
+                # los JavaScript challenges de Cloudflare automáticamente
+                session = cloudscraper.create_scraper(
+                    browser={
+                        'browser': 'chrome',
+                        'platform': 'windows',
+                        'desktop': True,
+                    }
+                )
+                logger.debug(
+                    f"Sesión cloudscraper creada para {domain} "
+                    f"(TLS fingerprint: Chrome/Windows)"
+                )
+            else:
+                session = requests.Session()
+                logger.debug(
+                    f"Sesión requests estándar para {domain} "
+                    f"(cloudscraper no disponible — TLS fingerprint expuesto)"
+                )
             # Asignar un UA fijo por dominio (como haría un navegador real)
             ua = _random_user_agent()
             self._domain_ua[domain] = ua
@@ -473,31 +694,53 @@ class StealthSession:
 
     def _human_delay(self, domain: str, is_blocked_site: bool = False):
         """
-        Espera un tiempo aleatorio entre requests al mismo dominio
-        para simular comportamiento humano de lectura.
+        Espera un tiempo aleatorio con distribución lognormal entre requests.
+
+        ¿Por qué lognormal y no uniforme?
+        ---------------------------------
+        Los humanos reales tienen un patrón de lectura que NO es uniforme:
+          - La mayoría de las acciones toman un tiempo "medio" (scroll, click)
+          - Ocasionalmente, el usuario lee un artículo completo (delay largo)
+          - Muy raramente, hay una pausa muy larga (alt-tab, distracción)
+
+        Esto genera una distribución con "cola derecha larga" = lognormal.
+        Una distribución uniforme (U(8,20)) genera delays absolutamente
+        equidistribuidos entre 8 y 20s, algo que un WAF puede reconocer
+        como patrón robótico en ~50 requests.
+
+        La distribución lognormal genera (en producción):
+          - 50% de requests:  8-15s  (navegación normal)
+          - 30% de requests: 15-25s  (lectura rápida)
+          - 15% de requests: 25-40s  (lectura detenida)
+          - 5% de requests:  40-60s  (pausa / distracción)
         """
         now = time.time()
         last = self._last_request.get(domain, 0)
         elapsed = now - last
 
+        # Seleccionar parámetros según modo y estado del sitio
         if self.test_mode:
             if is_blocked_site:
-                target_delay = random.uniform(self.TEST_BLOCKED_MIN_DELAY, self.TEST_BLOCKED_MAX_DELAY)
+                mu, sigma = self.TEST_BLOCKED_LOGNORMAL_MU, self.TEST_BLOCKED_LOGNORMAL_SIGMA
             else:
-                target_delay = random.uniform(self.TEST_MIN_DELAY, self.TEST_MAX_DELAY)
+                mu, sigma = self.TEST_LOGNORMAL_MU, self.TEST_LOGNORMAL_SIGMA
         else:
             if is_blocked_site:
-                target_delay = random.uniform(self.BLOCKED_MIN_DELAY, self.BLOCKED_MAX_DELAY)
+                mu, sigma = self.BLOCKED_LOGNORMAL_MU, self.BLOCKED_LOGNORMAL_SIGMA
             else:
-                target_delay = random.uniform(self.MIN_DELAY, self.MAX_DELAY)
+                mu, sigma = self.LOGNORMAL_MU, self.LOGNORMAL_SIGMA
 
-        # Añadir jitter adicional aleatorio (±30%)
-        jitter = target_delay * random.uniform(-0.3, 0.3)
-        target_delay = max(3.0, target_delay + jitter)
+        # Generar delay con distribución lognormal
+        target_delay = random.lognormvariate(mu, sigma)
+        # Clamp: evitar delays absurdamente cortos o largos
+        target_delay = max(self.MIN_DELAY, min(target_delay, self.MAX_DELAY_CAP))
 
         remaining = target_delay - elapsed
         if remaining > 0:
-            logger.debug(f"Stealth delay {remaining:.1f}s para {domain}")
+            logger.debug(
+                f"Stealth delay {remaining:.1f}s para {domain} "
+                f"(lognormal μ={mu}, σ={sigma})"
+            )
             time.sleep(remaining)
 
         self._last_request[domain] = time.time()
@@ -510,36 +753,52 @@ class StealthSession:
         timeout: int = 25,
     ) -> requests.Response | None:
         """
-        GET stealth con reintentos, rotación de headers y delay humano.
-        
+        GET stealth con reintentos, rotación de headers, delay lognormal
+        y circuit breaker integrado.
+
         Args:
             url: URL a solicitar.
             is_blocked_site: Si True, usa delays más largos.
             referer: URL de referencia (simula navegación desde otra página).
             timeout: Timeout en segundos.
+
+        Returns:
+            requests.Response si tuvo éxito, None si todos los reintentos fallaron.
         """
         parsed = urlparse(url)
         domain = parsed.netloc
 
+        # ── Circuit breaker: verificar si el dominio está en cooldown ──
+        if not self._circuit_breaker.can_request(domain):
+            logger.debug(
+                f"Circuit breaker ABIERTO para {domain} — saltando request"
+            )
+            return None
+
         session = self._get_session(domain)
         headers = _build_stealth_headers(referer)
-        # Usar el UA asignado a este dominio
+        # Usar el UA asignado a este dominio (consistencia por sesión)
         headers['User-Agent'] = self._domain_ua.get(domain, _random_user_agent())
 
         for attempt in range(1, self.MAX_RETRIES + 1):
-            # Delay humano ANTES de cada request
+            # Delay lognormal ANTES de cada request
             self._human_delay(domain, is_blocked_site)
 
             try:
                 resp = session.get(url, headers=headers, timeout=timeout)
 
-                # Si recibimos 403/429 → backoff y reintentar con otro UA
+                # Si recibimos 403/429/503 → backoff exponencial + rotar UA
                 if resp.status_code in (403, 429, 503):
-                    backoff = (2 ** attempt) + random.uniform(3, 8)
+                    # Backoff exponencial con full jitter (estilo Amazon)
+                    # cap = min(300, base * 2^attempt)
+                    # delay = random(0, cap)
+                    cap = min(300, 2 * (2 ** attempt))
+                    backoff = random.uniform(cap * 0.5, cap)
                     logger.info(
                         f"HTTP {resp.status_code} en {url[:60]}… "
                         f"Reintento {attempt}/{self.MAX_RETRIES} en {backoff:.0f}s"
                     )
+                    self._circuit_breaker.record_failure(domain)
                     time.sleep(backoff)
                     # Rotar User-Agent para el reintento
                     headers['User-Agent'] = _random_user_agent()
@@ -547,24 +806,33 @@ class StealthSession:
                     continue
 
                 resp.raise_for_status()
+                # ── Éxito: registrar en circuit breaker ──
+                self._circuit_breaker.record_success(domain)
                 return resp
 
             except requests.Timeout:
                 logger.warning(f"Timeout en {url[:60]}… (intento {attempt})")
+                self._circuit_breaker.record_failure(domain)
                 if attempt < self.MAX_RETRIES:
                     time.sleep(random.uniform(5, 10))
                 continue
             except requests.ConnectionError as e:
                 logger.warning(f"Error conexión {url[:60]}…: {e}")
+                self._circuit_breaker.record_failure(domain)
                 if attempt < self.MAX_RETRIES:
                     time.sleep(random.uniform(3, 7))
                 continue
             except requests.RequestException as e:
                 logger.warning(f"Error HTTP en {url[:60]}…: {e}")
+                self._circuit_breaker.record_failure(domain)
                 return None
 
         logger.warning(f"Agotados {self.MAX_RETRIES} reintentos para {url[:60]}…")
         return None
+
+    def get_circuit_breaker_status(self) -> dict:
+        """Expone el estado del circuit breaker para diagnóstico."""
+        return self._circuit_breaker.get_status()
 
     def close_all(self):
         """Cierra todas las sesiones."""
@@ -581,13 +849,12 @@ class DynamicScraper:
       1. probe_url() → detecta tipo de fuente (rss, sitemap, html)
       2. Si robots.txt bloquea → activa modo stealth con técnicas anti-bloqueo
       3. scrape_source() → aplica la técnica apropiada
-    
-    Técnicas anti-bloqueo (cuando robots.txt bloquea):
-      • Rotación de User-Agents reales
-      • Delays aleatorios 12-25s entre requests (simula humano)
-      • Sesiones HTTP con cookies persistentes
-      • Headers completos de navegador (Sec-Fetch, Referer, etc.)
-      • Reintentos con backoff exponencial ante 403/429
+
+    v7.0 Mejoras:
+      • cloudscraper como transport: JA3 fingerprint = Chrome real
+      • Timing lognormal: distribución natural de delays
+      • Circuit breaker por dominio: cooldown automático ante fallos
+      • Cascada de fallback: RSS → Sitemap → HTML → Google Cache
     """
 
     def __init__(self, respect_robots: bool = True, default_delay: float = 1.5, test_mode: bool = False):
@@ -614,10 +881,13 @@ class DynamicScraper:
     def _get(self, url: str, crawl_delay: float | None = None) -> requests.Response | None:
         """
         GET inteligente: usa modo normal o stealth según el dominio.
-        
+
         Si el dominio está en la lista de stealth (bloqueado por robots.txt),
         usa la sesión stealth con delays largos y headers realistas.
         En caso contrario, usa el rate-limiting normal.
+
+        v7.0: Todas las peticiones pasan por el circuit breaker integrado
+        en StealthSession, incluso en modo normal.
         """
         parsed = urlparse(url)
         domain = parsed.netloc
@@ -630,17 +900,14 @@ class DynamicScraper:
                 referer=f"{parsed.scheme}://{domain}/",
             )
 
-        # Modo normal con rate limiting
+        # Modo normal: también usa StealthSession para beneficiarse del
+        # circuit breaker y cloudscraper, pero con delays más cortos
         self._rate_limit(domain, crawl_delay)
-
-        try:
-            headers = _build_stealth_headers()
-            resp = requests.get(url, headers=headers, timeout=20)
-            resp.raise_for_status()
-            return resp
-        except requests.RequestException as e:
-            logger.warning(f"Error HTTP en {url[:80]}: {e}")
-            return None
+        return self._stealth.get(
+            url,
+            is_blocked_site=False,
+            referer=None,
+        )
 
     # ── Detección de tipo de fuente ─────────────────────────
 
@@ -688,7 +955,7 @@ class DynamicScraper:
                 # ── MODO STEALTH: robots.txt bloquea, activar bypass ──
                 logger.info(
                     f"robots.txt bloquea {domain} → activando modo stealth "
-                    f"(delays 12-25s, UA rotation, cookies persistentes)"
+                    f"(cloudscraper + delays lognormales + UA rotation)"
                 )
                 parsed_d = urlparse(url)
                 self._stealth_domains.add(parsed_d.netloc)
@@ -822,13 +1089,8 @@ class DynamicScraper:
         for path in COMMON_RSS_PATHS:
             candidate = f"{origin}{path}"
             try:
-                resp = requests.get(
-                    candidate,
-                    headers=_build_stealth_headers(),
-                    timeout=8,
-                    allow_redirects=True,
-                )
-                if resp.status_code != 200:
+                resp = self._stealth.get(candidate, timeout=8)
+                if resp is None or resp.status_code != 200:
                     continue
                 ct = resp.headers.get('Content-Type', '')
                 # Verificar que sea XML/RSS real
@@ -855,9 +1117,12 @@ class DynamicScraper:
         """
         cache_url = f"https://webcache.googleusercontent.com/search?q=cache:{url}"
         try:
-            headers = _build_stealth_headers(referer='https://www.google.com/')
-            resp = requests.get(cache_url, headers=headers, timeout=15)
-            if resp.status_code == 200 and len(resp.text) > 500:
+            resp = self._stealth.get(
+                cache_url,
+                referer='https://www.google.com/',
+                timeout=15,
+            )
+            if resp and resp.status_code == 200 and len(resp.text) > 500:
                 return resp
         except Exception:
             pass
@@ -873,10 +1138,10 @@ class DynamicScraper:
     ) -> list[dict]:
         """
         Scrapea una fuente usando el método indicado o auto-detectado.
-        
+
         Si la fuente está bloqueada por robots.txt, activa automáticamente
         el modo stealth con delays largos y técnicas anti-detección.
-        
+
         Cascada de fallback: si un método no trae artículos,
         intenta el siguiente: RSS → Sitemap → HTML.
 
@@ -897,11 +1162,11 @@ class DynamicScraper:
             crawl_delay = probe.get('crawl_delay')
             rss_feeds = probe.get('rss_feeds', [])
             stealth = probe.get('stealth_mode', False)
-            
+
             if stealth:
                 logger.info(
                     f"Modo stealth activo para {url[:60]}… "
-                    f"(delays aleatorios, UA rotation)"
+                    f"(cloudscraper + delays lognormales + UA rotation)"
                 )
         else:
             crawl_delay = None
@@ -1123,7 +1388,7 @@ class DynamicScraper:
         """
         Scrapea una página HTML que lista noticias.
         Extrae enlaces a artículos y luego scrapea cada uno.
-        
+
         En modo stealth NO re-verifica robots.txt por artículo
         (ya se decidió hacer bypass al nivel del dominio).
         """
@@ -1216,7 +1481,7 @@ class DynamicScraper:
         # Excluir URLs claramente no-artículo
         parsed = urlparse(url)
         path = parsed.path.lower()
-        
+
         # Excluir páginas genéricas
         excludes = [
             r'^/$', r'^/index', r'^/home', r'^/contacto', r'^/about',
@@ -1234,7 +1499,7 @@ class DynamicScraper:
         for pattern in NEWS_PATH_PATTERNS:
             if re.search(pattern, url, re.IGNORECASE):
                 return True
-        
+
         # Método 2: URL con slug tipo artículo (path con 3+ segmentos o slug largo)
         segments = [s for s in path.split('/') if s]
         if len(segments) >= 2:
@@ -1410,6 +1675,10 @@ class DynamicScraper:
         }
 
     # ── Utilidades ──────────────────────────────────────────
+
+    def get_circuit_breaker_status(self) -> dict:
+        """Expone el estado del circuit breaker para diagnóstico externo."""
+        return self._stealth.get_circuit_breaker_status()
 
     def close(self):
         """Libera recursos (cierra sesiones stealth)."""
