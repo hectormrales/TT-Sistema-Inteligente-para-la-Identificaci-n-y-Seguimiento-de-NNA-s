@@ -372,9 +372,69 @@ def _score_axis(text_norm: str, keywords: list[Tuple[str, float]]) -> float:
     return 1.0 - 1.0 / (1.0 + total)
 
 
+def _is_noise_title(title_norm: str) -> bool:
+    """
+    Descarte rápido de noticias claramente irrelevantes por título.
+
+    Evita gastar ciclos de scoring en noticias que nunca serán relevantes
+    (deportes, entretenimiento, economía pura, clima, etc.).
+    """
+    NOISE_PATTERNS = [
+        r'\b(?:liga\s+mx|f[uú]tbol|gol(?:es)?|partido|seleccion|cl[aá]sico|liguilla)\b',
+        r'\b(?:box|boxeador|pelea\s+de|ufc|nfl|nba|mlb|olimp)\b',
+        r'\b(?:horóscopo|hor[oó]scopo|signo\s+zodiacal|predicciones?\s+astrol)\b',
+        r'\b(?:receta\s+de|ingredientes|cocinar?|platillo|gastrono)\b',
+        r'\b(?:clima\s+(?:hoy|para|en)|pron[oó]stico\s+del\s+tiempo|temperatura\s+m[aá]xima)\b',
+        r'\b(?:dólar\s+hoy|tipo\s+de\s+cambio|bolsa\s+de\s+valores|wall\s+street|nasdaq)\b',
+        r'\b(?:estrenos?\s+(?:de|en)|pel[ií]cula|serie\s+de\s+(?:tv|netflix|hbo|amazon))\b',
+        r'\b(?:videojuego|playstation|xbox|nintendo|gaming)\b',
+        r'\b(?:influencer|tiktok|instagram|youtube|viral)\b',
+        r'\b(?:aranceles?|importaci[oó]n|exportaci[oó]n|tratado\s+comercial|t-mec)\b',
+    ]
+    return any(re.search(p, title_norm, re.IGNORECASE) for p in NOISE_PATTERNS)
+
+
+# ── Eje 3: Señales de CASO INDIVIDUAL (no estadísticas/reportajes) ──
+# Detecta patrones narrativos que indican un feminicidio concreto, no un
+# artículo de política pública, estadísticas o columnas de opinión.
+CASO_INDIVIDUAL_KEYWORDS: list[Tuple[str, float]] = [
+    # Señales narrativas de caso concreto
+    (r'\bfue\s+(?:encontrada|hallada|localizada|asesinada|privada)\b', 1.0),
+    (r'\b(?:el\s+)?cuerpo\s+(?:de|sin\s+vida|fue)\b', 1.0),
+    (r'\bsin\s+vida\b', 0.95),
+    (r'\b(?:la|lo)\s+mat(?:aron|ó)\b', 0.95),
+    (r'\b(?:la|su)\s+(?:pareja|esposo|ex)\s+(?:la\s+)?(?:mat[oó]|asesino|apuñal|golpe)\b', 0.95),
+    (r'\bpresunto\s+(?:feminicida|asesino|responsable|agresor)\b', 0.9),
+    (r'\bdetenid[oa]\s+(?:el|al|por)\b', 0.85),
+    (r'\b(?:fue\s+)?detenido\b', 0.8),
+    (r'\borden\s+de\s+aprehensi[oó]n\b', 0.8),
+    (r'\bvinculad[oa]\s+a\s+proceso\b', 0.8),
+    # Mención de nombres propios con edad (señal de caso individual)
+    (r'\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+(?:[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+)?de\s+\d{1,2}\s+a[ñn]os\b', 0.9),
+    # Menores dejados solos/huérfanos tras el hecho
+    (r'\b(?:dej[oó]|dejaron|quedan|quedaron)\s+(?:\w+\s+){0,3}(?:hu[eé]rfan|sin\s+madre|sol[oa]s?|desamparad)\b', 1.0),
+    (r'\bmenores?\s+(?:quedan|quedaron|fueron\s+(?:resguardad|entregad|puestos?))\b', 0.95),
+    (r'\b(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\s+(?:de\s+)?(?:la\s+)?v[ií]ctima\b', 0.95),
+    (r'\b(?:dos|tres|cuatro|cinco|\d)\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\s+(?:quedan|quedaron|en\s+orfandad)\b', 1.0),
+    # Contexto policial/forense
+    (r'\bescena\s+del\s+crimen\b', 0.7),
+    (r'\bcarpeta\s+de\s+investigaci[oó]n\b', 0.75),
+    (r'\bperitaje\b', 0.65),
+    (r'\bnecropsia\b', 0.7),
+    (r'\bdomicilio\s+(?:de|donde|ubicado)\b', 0.65),
+]
+
+
 def score_relevance(title: str, content: str) -> dict:
     """
     Calcula la relevancia compuesta de un artículo.
+
+    v8.0: 3 ejes de scoring + penalizaciones fuertes para ruido.
+      - Eje 1: Feminicidio (¿la noticia habla de un feminicidio?)
+      - Eje 2: NNA (¿menciona menores afectados?)
+      - Eje 3: Caso individual (¿es un caso concreto, no estadísticas?)
+
+    Solo noticias que combinen los 3 ejes obtienen score alto.
 
     Returns:
         dict con:
@@ -391,6 +451,15 @@ def score_relevance(title: str, content: str) -> dict:
 
     title_norm = _normalize_text(title)
     content_norm = _normalize_text(content)
+    combined_norm = f"{title_norm} {content_norm}"
+
+    # ── Descarte rápido por título ──
+    if _is_noise_title(title_norm):
+        return {
+            'score_feminicidio': 0.0, 'score_nna': 0.0,
+            'score_compuesto': 0.0, 'clasificacion': 'No relevante',
+            'menores_identificados': 'No',
+        }
 
     # Score por eje: título tiene más peso que contenido
     fem_title = _score_axis(title_norm, FEMINICIDIO_KEYWORDS) * title_boost
@@ -401,37 +470,39 @@ def score_relevance(title: str, content: str) -> dict:
     nna_content = _score_axis(content_norm, NNA_KEYWORDS)
     score_nna = min(1.0, (nna_title + nna_content) / (1.0 + title_boost))
 
+    # ── Eje 3: ¿Es un caso individual? ──
+    caso_title = _score_axis(title_norm, CASO_INDIVIDUAL_KEYWORDS) * title_boost
+    caso_content = _score_axis(content_norm, CASO_INDIVIDUAL_KEYWORDS)
+    score_caso = min(1.0, (caso_title + caso_content) / (1.0 + title_boost))
+
     # Score compuesto ponderado
     score_comp = w_fem * score_fem + w_nna * score_nna
 
-    # Bonus: si AMBOS ejes tienen señal, boost multiplicativo
-    # v4.1: Boost más agresivo para capturar noticias realmente relevantes
-    if score_fem > 0.10 and score_nna > 0.10:
-        # Cuanto más fuertes ambos ejes, mayor el boost
+    # ── Bonus: solo si AMBOS ejes principales son fuertes ──
+    # v8.0: Más selectivo — ambos ejes deben tener señal significativa
+    if score_fem > 0.15 and score_nna > 0.15:
         dual_strength = min(score_fem, score_nna)
         if dual_strength > 0.30:
-            score_comp = min(1.0, score_comp * 1.55)
-        elif dual_strength > 0.15:
             score_comp = min(1.0, score_comp * 1.45)
-        else:
-            score_comp = min(1.0, score_comp * 1.35)
+        elif dual_strength > 0.20:
+            score_comp = min(1.0, score_comp * 1.30)
+        # Si además es caso individual → boost extra
+        if score_caso > 0.15:
+            score_comp = min(1.0, score_comp * 1.25)
 
-    # Bonus adicional: si el título menciona directamente feminicidio/NNA
+    # Bonus adicional: si el título menciona directamente feminicidio + NNA
     direct_fem_title = bool(re.search(
         r'\bfeminicidio|femicidio|violencia\s+feminicida|asesinato\s+de\s+(?:una\s+)?mujer\b',
         title_norm, re.IGNORECASE
     ))
     direct_nna_title = bool(re.search(
-        r'\bhu[eé]rfan|orfandad|hijos?|hijas?|menores?|ni[\u00f1n][oa]s?|NNA|v[ií]ctimas?\s+indirectas?\b',
+        r'\bhu[eé]rfan|orfandad|hijos?\s+(?:de\s+la\s+v[ií]ctima|quedaron)|menores?\s+(?:quedan|quedaron|en\s+orfandad)|NNA|v[ií]ctimas?\s+indirectas?\b',
         title_norm, re.IGNORECASE
     ))
     if direct_fem_title and direct_nna_title:
-        score_comp = min(1.0, score_comp * 1.20)
-    elif direct_fem_title:
-        score_comp = min(1.0, score_comp * 1.10)
+        score_comp = min(1.0, score_comp * 1.25)
 
     # ── Penalización: tentativas / intentos (NO son feminicidios consumados) ──
-    # El usuario solo quiere feminicidios reales, no tentativas ni intentos.
     TENTATIVA_PATTERNS = [
         r'\btentativa\s+de\s+feminicidio\b',
         r'\bintento\s+de\s+feminicidio\b',
@@ -440,37 +511,79 @@ def score_relevance(title: str, content: str) -> dict:
         r'\bintent[oó]\s+(?:asesinar|matar|privar)\b',
     ]
     is_tentativa = any(
-        re.search(p, title_norm, re.IGNORECASE) or
-        re.search(p, content_norm, re.IGNORECASE)
+        re.search(p, combined_norm, re.IGNORECASE)
         for p in TENTATIVA_PATTERNS
     )
     if is_tentativa:
-        score_comp *= 0.35  # Reducción fuerte: aparece pero con baja relevancia
+        score_comp *= 0.30
 
-    # ── Penalización: noticias de estadísticas / cifras / reportes ──
-    # No son casos individuales sino reportajes generales de cifras.
-    STATS_PATTERNS = [
-        r'\bcifras?\s+de\s+feminicidio\b',
-        r'\bestadísticas?\s+de\s+(?:feminicidio|violencia)\b',
-        r'\b(?:sube|baja|aumenta|disminuye|incrementa)\s+(?:el\s+)?(?:número|cifra|índice|tasa)\b',
-        r'\binforme\s+(?:anual|mensual|trimestral|semestral|de\s+cifras)\b',
+    # ── Penalización FUERTE: estadísticas, cifras, reportes, política pública ──
+    # v8.0: Penalización mucho más agresiva y patrones ampliados.
+    # Estas noticias mencionan "feminicidio" y "NNA" pero NO son casos concretos.
+    STATS_POLICY_PATTERNS = [
+        # Estadísticas y cifras
+        r'\bcifras?\s+de\s+(?:feminicidio|violencia)\b',
+        r'\bestadísticas?\s+de\s+(?:feminicidio|violencia|género)\b',
+        r'\b(?:sube|baja|aumenta|disminuye|incrementa|reduce)\s+(?:el\s+)?(?:número|cifra|índice|tasa)\b',
+        r'\binforme\s+(?:anual|mensual|trimestral|semestral|de\s+cifras|del?\s+\d{4})\b',
         r'\breporte\s+(?:anual|mensual|estadístico|de\s+incidencia)\b',
-        r'\b\d+\s+(?:feminicidios|víctimas)\s+(?:en|durante)\s+(?:el\s+)?\d{4}\b',
-        r'\btasa\s+de\s+feminicidio\b',
+        r'\b\d+\s+(?:feminicidios|víctimas|casos)\s+(?:en|durante|al|del?)\s+(?:el\s+)?\d{4}\b',
+        r'\btasa\s+de\s+(?:feminicidio|incidencia)\b',
+        r'\bencuesta\s+(?:nacional|sobre)\b',
+        r'\bregistr[oó]\s+(?:un\s+)?(?:total|aumento|incremento|descenso)\b',
+        # Política pública y legislación
+        r'\b(?:ley|decreto|reforma|iniciativa|dictamen)\s+(?:de|para|contra|sobre)\s+(?:feminicidio|violencia|género)\b',
+        r'\bpresupuesto\s+(?:para|de|contra)\b',
+        r'\bpol[ií]tica\s+p[uú]blica\b',
+        r'\bprotocolo\s+(?:de|para|contra)\b',
+        r'\bcomisi[oó]n\s+(?:de|para|sobre)\b',
+        r'\bforo\s+(?:de|sobre|para|contra)\b',
+        r'\bjornada\s+(?:de|contra|sobre)\b',
+        r'\bcampa[ñn]a\s+(?:de|contra|para)\b',
+        r'\bsesi[oó]n\s+(?:de|del|solemne|ordinaria|extraordinaria)\b',
+        # Programas de apoyo (no son casos)
+        r'\bprograma\s+(?:de\s+)?(?:apoyo|atenci[oó]n|prevenci[oó]n|protecci[oó]n)\b',
+        r'\bbeca\s+(?:para|de)\s+(?:hu[eé]rfan|menores?|hijos?|NNA|ni[ñn])\b',
+        r'\bapoyo\s+(?:econ[oó]mico|a\s+(?:hu[eé]rfan|menores?|v[ií]ctimas?))\b',
+        r'\bfondo\s+(?:de|para)\s+(?:v[ií]ctimas?|apoyo|atenci[oó]n)\b',
+        # Columnas de opinión y editoriales
+        r'\bcolumna\b.*\bopini[oó]n\b',
+        r'\beditorial\b',
+        r'\bart[ií]culo\s+de\s+opini[oó]n\b',
+        # Marchas, conmemoraciones, actos simbólicos
+        r'\bmarcha\s+(?:contra|por|del?\s+\d)\b',
+        r'\bconmemoraci[oó]n\b',
+        r'\bd[ií]a\s+(?:internacional|nacional|mundial)\s+(?:de|contra)\b',
     ]
-    is_stats = any(
-        re.search(p, title_norm, re.IGNORECASE) or
-        re.search(p, content_norm, re.IGNORECASE)
-        for p in STATS_PATTERNS
+    stats_hits = sum(
+        1 for p in STATS_POLICY_PATTERNS
+        if re.search(p, combined_norm, re.IGNORECASE)
     )
-    # Solo penalizar si NO hay también señal de NNA (caso individual con cifras)
-    if is_stats and score_nna < 0.15:
-        score_comp *= 0.45  # Reducción moderada
+    if stats_hits > 0:
+        # Si tiene señal de caso individual, atenuar la penalización
+        if score_caso > 0.20:
+            score_comp *= 0.75  # Penalización leve (puede ser caso + contexto)
+        elif stats_hits >= 3:
+            score_comp *= 0.15  # Penalización muy fuerte (claramente estadísticas)
+        elif stats_hits >= 2:
+            score_comp *= 0.25  # Penalización fuerte
+        else:
+            score_comp *= 0.40  # Penalización moderada
+
+    # ── Penalización: solo feminicidio sin NNA → no es lo que buscamos ──
+    # v8.0: Si SOLO hay señal de feminicidio pero NO de NNA, penalizar fuerte.
+    # El usuario busca casos donde hay MENORES afectados específicamente.
+    if score_fem > 0.15 and score_nna < 0.05:
+        score_comp *= 0.30  # Sin mención a NNA → muy baja relevancia
+
+    # ── Penalización: solo NNA sin feminicidio → tampoco relevante ──
+    if score_nna > 0.15 and score_fem < 0.05:
+        score_comp *= 0.30
 
     # Reclasificar después de penalizaciones
-    if score_comp >= 0.45:
+    if score_comp >= 0.50:
         clasificacion = 'Alta'
-    elif score_comp >= 0.30:
+    elif score_comp >= 0.35:
         clasificacion = 'Media'
     elif score_comp >= threshold:
         clasificacion = 'Baja'
@@ -494,36 +607,28 @@ def collect_news_from_rss(
     rss_url: str,
     seen_urls: set | None = None,
     session: Optional[StealthSession] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> list[dict]:
-    """Recolecta artículos desde un feed RSS individual.
-
-    v7.0: Todas las peticiones HTTP pasan por StealthSession para
-    beneficiarse de cloudscraper (bypass Cloudflare), TLS fingerprinting
-    realista, delays lognormales y circuit breaker por dominio.
-
-    Args:
-        rss_url: URL del feed RSS.
-        seen_urls: Set de URLs ya procesadas (para evitar re-scraping).
-        session: StealthSession compartida. Si None, crea una temporal.
+    """
+    Recolecta noticias de un feed RSS específico.
     """
     if seen_urls is None:
         seen_urls = set()
 
-    # Usar sesión stealth compartida o crear una temporal
+    # Si no se provee sesión, crear una temporal
     _owns_session = False
     if session is None:
-        session = StealthSession(test_mode=True)
+        session = StealthSession()
         _owns_session = True
 
     try:
-        # v7.0: Usar StealthSession en lugar de requests.get() directo.
-        # Esto garantiza: cloudscraper TLS fingerprint, delays lognormales,
-        # rotación de UA consistente, y circuit breaker por dominio.
-        response = session.get(rss_url, timeout=15)
+        response = session.get(rss_url, timeout=20)
+        
         if response is None:
-            logger.warning(f"Sin respuesta para feed RSS: {rss_url[:60]}")
+            logger.warning(f"  [!] No se pudo obtener respuesta de {rss_url} (Circuito abierto o fallo de conexión)")
             return []
-
+            
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'xml')
 
@@ -531,6 +636,7 @@ def collect_news_from_rss(
         skipped_seen = 0
         skipped_old = 0
         skipped_geo = 0
+        skipped_irrelevant = 0
 
         for item in soup.find_all('item'):
             title_tag = item.find('title')
@@ -546,7 +652,10 @@ def collect_news_from_rss(
             enlace_text = link.text.strip() if link else ''
 
             # ── Filtro de URLs ya procesadas ────────────────
-            if enlace_text and enlace_text in seen_urls:
+            # v8.0: Si se especifica un rango de fechas, permitimos re-analizar URLs 'vistas'
+            # para darles una segunda oportunidad con el analizador mejorado,
+            # siempre que el Repositorio de DB se encargue de evitar duplicados finales.
+            if enlace_text and enlace_text in seen_urls and not (start_date or end_date):
                 skipped_seen += 1
                 continue
 
@@ -561,21 +670,42 @@ def collect_news_from_rss(
             desc_text = BeautifulSoup(desc_html, 'html.parser').get_text(' ', strip=True)
 
             # Fecha
+            dt = None
             if pub_date and pub_date.text.strip():
                 try:
                     dt = parsedate_to_datetime(pub_date.text.strip())
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
                 except Exception:
                     dt = datetime.now(timezone.utc)
             else:
                 dt = datetime.now(timezone.utc)
 
-            # ── Filtro de antigüedad ────────────────────────
-            if not _is_recent(dt.isoformat()):
+            # ── Filtro de rango de fechas ───────────────────
+            if start_date or end_date:
+                from dateutil import parser as dateutil_parser
+                if start_date:
+                    start_dt = dateutil_parser.parse(start_date).replace(tzinfo=timezone.utc)
+                    if dt < start_dt:
+                        skipped_old += 1
+                        continue
+                if end_date:
+                    end_dt = dateutil_parser.parse(end_date).replace(tzinfo=timezone.utc)
+                    if dt > end_dt:
+                        skipped_old += 1
+                        continue
+            elif not _is_recent(dt.isoformat()):
                 skipped_old += 1
                 continue
 
             # ── Scoring de relevancia ───────────────────────
             rel = score_relevance(title_text, desc_text)
+
+            # ── Descarte temprano: sin señal mínima → no procesar ──
+            if rel['clasificacion'] == 'No relevante':
+                skipped_irrelevant += 1
+                continue
+
             # ── Filtro geográfico: solo México ─────────────
             if not _is_mexico_news(title_text, desc_text, enlace_text or rss_url):
                 skipped_geo += 1
@@ -599,11 +729,11 @@ def collect_news_from_rss(
                 'cluster': 0,
             })
 
-        if skipped_seen or skipped_old or skipped_geo:
+        if skipped_seen or skipped_old or skipped_geo or skipped_irrelevant:
             logger.debug(
                 f"RSS {rss_url[:50]}: {len(articles)} OK, "
-                f"{skipped_seen} ya vistas, {skipped_old} antiguas, "
-                f"{skipped_geo} no-México"
+                f"{skipped_seen} ya vistas, {skipped_old} fuera de rango, "
+                f"{skipped_geo} no-México, {skipped_irrelevant} irrelevantes"
             )
 
         return articles
@@ -623,32 +753,13 @@ def collect_news_from_rss(
             session.close_all()
 
 
-def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
+def collect_all_news(
+    keep_all: bool = False,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> pd.DataFrame:
     """
     Recolecta noticias de todas las fuentes activas.
-
-    Prioridad:
-      1. Si hay contexto Flask → lee fuentes desde la DB (incluye predeterminadas).
-      2. Si no hay contexto   → fallback a config.RSS_FEEDS.
-
-    v6.0 TT2 Mejoras:
-      - Tracking de URLs ya procesadas (evita re-scrapping entre ciclos)
-      - Logging detallado de fuentes exitosas/fallidas
-      - Estadísticas de recolección por fuente
-
-    v7.0 Mejoras (Pipeline unificado):
-      - Crea UNA StealthSession compartida para todo el ciclo de recolección.
-        Esto garantiza que:
-        • Todas las peticiones (RSS y scraping) usan cloudscraper (TLS real)
-        • El circuit breaker acumula estado entre fuentes del mismo dominio
-        • Los delays lognormales se aplican consistentemente
-      - Al finalizar, imprime el estado del circuit breaker para diagnóstico.
-
-    Args:
-        keep_all: Si True, conserva TODOS los artículos (para depuración).
-                  Si False (default), descarta los "No relevante".
-    Returns:
-        DataFrame con noticias filtradas, scored y deduplicadas.
     """
     threshold = getattr(config, 'RELEVANCE_THRESHOLD', 0.25)
     all_articles = []
@@ -658,10 +769,6 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
     sources_error = 0
 
     # v7.0: Crear UNA sesión stealth compartida para todo el ciclo.
-    # Beneficios:
-    #   - cloudscraper reutiliza cookies/sesiones por dominio
-    #   - Circuit breaker acumula estado entre fuentes del mismo dominio
-    #   - Menos overhead de crear/destruir sesiones
     shared_session = StealthSession(test_mode=False)
 
     try:
@@ -680,7 +787,11 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
                     if source['source_type'] == 'rss':
                         # v7.0: Pasar la sesión stealth compartida
                         articles = collect_news_from_rss(
-                            source['url'], seen_urls, session=shared_session
+                            source['url'], 
+                            seen_urls, 
+                            session=shared_session,
+                            start_date=start_date,
+                            end_date=end_date
                         )
                         for art in articles:
                             art['fuente'] = source['name']
@@ -699,7 +810,8 @@ def collect_all_news(keep_all: bool = False) -> pd.DataFrame:
                         accepted = 0
                         for art in raw_articles:
                             enlace = art.get('enlace', source['url'])
-                            if enlace in seen_urls:
+                            # v8.0: Bypass seen_urls if custom dates are provided
+                            if enlace in seen_urls and not (start_date or end_date):
                                 continue
                             if not _is_mexico_news(
                                 art.get('titulo', ''),

@@ -15,6 +15,40 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+# ── Diccionarios de mapeo para nombres de fuentes (OE-1) ────────
+DOMAIN_NAMES = {
+    'jornada.com.mx': 'La Jornada',
+    'proceso.com.mx': 'Proceso',
+    'elsoldemexico.com.mx': 'El Sol de México',
+    'elfinanciero.com.mx': 'El Financiero',
+    'excelsior.com.mx': 'Excélsior',
+    'piedepagina.mx': 'Pie de Página',
+    'contralinea.com.mx': 'Contralínea',
+    'razon.com.mx': 'La Razón',
+    'informador.mx': 'El Informador',
+    'lajornadadeoriente.com.mx': 'La Jornada de Oriente',
+    'cimacnoticias.com.mx': 'Cimacnoticias',
+    'luchadoras.mx': 'Luchadoras',
+    'eleconomista.com.mx': 'El Economista',
+    'elpais.com': 'El País',
+    'bbci.co.uk': 'BBC Mundo',
+    'elsoldetoluca.com.mx': 'El Sol de Toluca',
+    'elsoldepuebla.com.mx': 'El Sol de Puebla',
+    'diariodexalapa.com.mx': 'Diario de Xalapa',
+    'noroeste.com.mx': 'Noroeste',
+}
+
+SECTION_SUFFIXES = {
+    '/politica': ' (Política)',
+    '/estados': ' (Estados)',
+    '/sociedad': ' (Sociedad)',
+    '/justicia': ' (Justicia)',
+    '/nacional': ' (Nacional)',
+    '/seguridad': ' (Seguridad)',
+    '/policiaca': ' (Policiaca)',
+}
+
+
 def create_app() -> Flask:
     """Crea y configura la aplicación Flask."""
 

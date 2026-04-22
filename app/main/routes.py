@@ -300,12 +300,8 @@ _analysis_status = {
 _analysis_lock = threading.Lock()
 
 
-def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, app):
-    """Ejecuta el pipeline completo en background (hilo separado).
-
-    Recibe la instancia de la app Flask para crear un app_context(),
-    lo cual permite que step_11 persista datos en PostgreSQL.
-    """
+def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, app):
+    """Ejecuta el pipeline completo en background (hilo separado)."""
     global _analysis_status
     try:
         with app.app_context():
@@ -317,6 +313,8 @@ def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, 
                 enable_semantic=enable_semantic,
                 enable_bertopic=enable_bertopic,
                 enable_postgres=enable_postgres,
+                start_date=start_date,
+                end_date=end_date,
             )
 
             # Recargar datos después del análisis
@@ -344,13 +342,7 @@ def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, 
 @main_bp.route('/api/analyze')
 @login_required
 def api_analyze():
-    """Ejecuta el pipeline completo (scraping + análisis) en background.
-
-    El scraping de todas las fuentes RSS tarda varios minutos debido a
-    los delays anti-bloqueo. Para evitar el timeout de Gunicorn, se
-    ejecuta en un hilo de fondo. El frontend puede consultar el progreso
-    en /api/analyze/status.
-    """
+    """Ejecuta el pipeline completo (scraping + análisis) en background."""
     global _analysis_status
 
     with _analysis_lock:
@@ -364,6 +356,8 @@ def api_analyze():
     enable_semantic = request.args.get('semantic', 'true').lower() == 'true'
     enable_bertopic = request.args.get('bertopic', 'true').lower() == 'true'
     enable_postgres = request.args.get('postgres', 'true').lower() == 'true'
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
 
     with _analysis_lock:
         _analysis_status.update({
@@ -379,7 +373,7 @@ def api_analyze():
     # Lanzar en hilo de fondo (daemon=True para que muera con el worker)
     thread = threading.Thread(
         target=_run_analysis_background,
-        args=(enable_semantic, enable_bertopic, enable_postgres, app),
+        args=(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, app),
         daemon=True,
     )
     thread.start()

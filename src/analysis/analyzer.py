@@ -117,10 +117,10 @@ class SimplifiedNewsAnalyzer:
 
     # ── Pasos del pipeline ──────────────────────────────────
 
-    def step_1_collect_data(self) -> pd.DataFrame:
+    def step_1_collect_data(self, start_date: str | None = None, end_date: str | None = None) -> pd.DataFrame:
         """Recolección de datos desde RSS feeds con filtrado de relevancia."""
         print("=== PASO 1: RECOLECCIÓN + SCORING DE RELEVANCIA ===")
-        self.df_original = collect_all_news(keep_all=True)
+        self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date)
 
         if self.df_original.empty:
             print("  No se recolectaron noticias relevantes.")
@@ -344,13 +344,13 @@ class SimplifiedNewsAnalyzer:
             self.df_processed['relevancia_final'] = np.round(combined, 4)
 
             # Re-clasificar con el score combinado
-            # v4.1: Umbrales ajustados para ser más sensibles
+            # v5.1: Umbrales más estrictos para reducir falsos positivos
             def _classify(score):
-                if score >= 0.38:
+                if score >= 0.50:
                     return 'Alta'
-                elif score >= 0.22:
+                elif score >= 0.35:
                     return 'Media'
-                elif score >= 0.12:
+                elif score >= 0.18:
                     return 'Baja'
                 return 'No relevante'
 
@@ -457,6 +457,8 @@ class SimplifiedNewsAnalyzer:
         enable_semantic: bool = True,
         enable_bertopic: bool = True,
         enable_postgres: bool = True,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> pd.DataFrame:
         """
         Ejecuta el pipeline completo de análisis (v5.0).
@@ -477,7 +479,7 @@ class SimplifiedNewsAnalyzer:
         print("=" * 60)
 
         # Pasos 1-8: Pipeline original
-        self.step_1_collect_data()
+        self.step_1_collect_data(start_date=start_date, end_date=end_date)
 
         if self.df_original is None or self.df_original.empty:
             print("  [!] No hay noticias para analizar.")
@@ -611,11 +613,11 @@ class SimplifiedNewsAnalyzer:
             for i, (_, row) in enumerate(self.df_processed.iterrows()):
                 titulo = str(row.get("titulo", ""))
                 contenido = str(row.get("contenido", ""))
-                text = f"{titulo}. {contenido[:500]}"
 
                 try:
-                    result = detector.detect(text)
-                    score = result.get("score", 0.0)
+                    # v5.1 Fix: El método correcto es predict(), no detect()
+                    result = detector.predict(titulo, contenido)
+                    score = result.get("score_semantico", 0.0)
                 except Exception:
                     score = 0.0
 
@@ -642,14 +644,19 @@ class SimplifiedNewsAnalyzer:
                     alpha = 0.3  # Baja confianza → peso al heurístico
 
                 score_final = alpha * s_score + (1 - alpha) * h_score
-                score_final = max(h_score, score_final)
+                # v5.1: Permitir que BETO BAJE el score si detecta no-relevante.
+                # Antes: max(h_score, score_final) impedía que BETO corrigiera
+                # falsos positivos del heurístico.
+                # Ahora: solo subir si BETO tiene confianza alta
+                if s_score > h_score and distance > 0.2:
+                    score_final = max(h_score, score_final)  # BETO sube con confianza
 
-                # Clasificar por umbrales
-                if score_final >= 0.70:
+                # Clasificar por umbrales (v5.1: más estrictos)
+                if score_final >= 0.60:
                     clasificacion = "Alta"
-                elif score_final >= 0.35:
+                elif score_final >= 0.40:
                     clasificacion = "Media"
-                elif score_final >= 0.15:
+                elif score_final >= 0.20:
                     clasificacion = "Baja"
                 else:
                     clasificacion = "No relevante"

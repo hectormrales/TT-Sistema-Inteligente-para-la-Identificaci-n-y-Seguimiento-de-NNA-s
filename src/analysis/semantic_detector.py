@@ -75,17 +75,23 @@ CACHE_DIR = os.environ.get("MODEL_CACHE_DIR", "models/cache")
 FINETUNED_DIR = os.environ.get("FINETUNED_MODEL_DIR", "models/finetuned")
 
 # Descripciones de categorías para zero-shot classification
+# v2.0: Descripciones mucho más específicas para el caso de uso exacto.
 CATEGORY_DESCRIPTIONS = {
     "relevante": (
-        "Feminicidio, asesinato de mujer, violencia feminicida, "
-        "niños huérfanos, menores víctimas indirectas, "
-        "hijos de víctimas de feminicidio, orfandad por violencia de género, "
-        "NNA afectados por violencia contra mujeres"
+        "Caso individual de feminicidio en México donde una mujer fue asesinada "
+        "y sus hijos menores de edad quedaron huérfanos, desamparados o en orfandad. "
+        "Noticia que describe un evento específico: la víctima fue encontrada sin vida, "
+        "el agresor fue detenido, los niños quedaron solos, "
+        "menores de edad que perdieron a su madre por violencia feminicida, "
+        "DIF resguarda a los hijos de la víctima de feminicidio."
     ),
     "no_relevante": (
-        "Noticia general sin relación con violencia de género, "
-        "deportes, entretenimiento, economía, clima, tecnología, "
-        "política internacional, cultura"
+        "Noticia general sin relación con feminicidio ni menores huérfanos. "
+        "Estadísticas y cifras de feminicidio sin caso concreto. "
+        "Política pública, leyes, reformas, programas de apoyo, becas. "
+        "Columna de opinión, editorial, marcha, conmemoración. "
+        "Deportes, entretenimiento, economía, clima, tecnología, "
+        "política internacional, cultura, espectáculos."
     ),
 }
 

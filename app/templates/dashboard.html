@@ -100,21 +100,47 @@
             border-radius: 4px; padding: 2px 8px;
             font-weight: 600; color: white;
         }
-        /* ── Loading overlay ────────────────────────────── */
-        .loading-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(26,58,107,0.78);
-            z-index: 9999; align-items: center;
-            justify-content: center; flex-direction: column; color: white;
+        /* ── Floating Analysis Notification (Non-blocking) ── */
+        .analysis-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--navy);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            z-index: 10000;
+            width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .loading-overlay.visible { display: flex; }
-        .loading-spinner {
-            width: 50px; height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white; border-radius: 50%;
-            animation: spin 0.9s linear infinite;
+        @keyframes slideUp {
+            from { transform: translateY(100%) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .custom-input {
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .custom-input:focus {
+            border-color: var(--navy-lt);
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+        .bg-navy { background-color: var(--navy) !important; }
+        .text-navy { color: var(--navy) !important; }
+        .btn-navy {
+            background-color: var(--navy);
+            color: white;
+            border: none;
+        }
+        .btn-navy:hover {
+            background-color: var(--navy-dk);
+            color: white;
+        }
         /* ── Main layout ────────────────────────────────── */
         .main-content { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
         /* ── Stat cards ─────────────────────────────────── */
@@ -339,11 +365,63 @@
 </head>
 <body>
 
-    <!-- Loading overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner mb-3"></div>
-        <p style="font-size:15px;font-weight:600;margin-bottom:4px;">Ejecutando análisis…</p>
-        <small style="opacity:0.7;">Recolectando noticias y aplicando modelos de IA</small>
+    <!-- Floating Analysis Notification (Non-blocking) -->
+    <div id="analysisNotification" class="analysis-toast shadow-lg" style="display: none;">
+        <div class="d-flex align-items-center gap-3">
+            <div class="spinner-border spinner-border-sm text-light" role="status"></div>
+            <div class="flex-grow-1">
+                <div class="fw-bold" style="font-size: 13px;">Procesamiento en curso...</div>
+                <div id="analysisTimer" class="text-white-50" style="font-size: 11px;">Iniciado hace 0s</div>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-2" onclick="toggleAnalysisToast(false)" style="font-size: 10px;"></button>
+        </div>
+        <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.1);">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-white" role="progressbar" style="width: 100%"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Scraping -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+                <div class="modal-header bg-navy text-white py-3">
+                    <h5 class="modal-title fs-6 fw-bold" id="settingsModalLabel">
+                        <i class="fas fa-cog me-2"></i>Configuración de Recolección
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted mb-4" style="font-size: 13px;">
+                        Selecciona un rango de fechas para el scraping. Si se dejan vacíos, se usarán los últimos 30 días de los feeds RSS.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-navy" style="font-size: 12px;">FECHA INICIO</label>
+                            <input type="date" id="configStartDate" class="form-control custom-input">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-navy" style="font-size: 12px;">FECHA FIN</label>
+                            <input type="date" id="configEndDate" class="form-control custom-input">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 rounded-3 bg-light border border-warning-subtle">
+                        <div class="d-flex gap-2">
+                            <i class="fas fa-exclamation-triangle text-warning mt-1"></i>
+                            <div style="font-size: 11.5px;">
+                                <strong>Nota:</strong> Los feeds RSS tienen límites de profundidad. Intentar recuperar noticias muy antiguas podría no devolver resultados si el feed ya las eliminó.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 p-3">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal" style="font-size: 13px; font-weight: 500;">Cancelar</button>
+                    <button type="button" class="btn btn-navy px-4" onclick="runAnalysisWithConfig()" style="font-size: 13px; font-weight: 600;">
+                        <i class="fas fa-play me-2"></i>Iniciar Proceso
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Barra de navegación -->
@@ -356,15 +434,21 @@
             </div>
         </a>
         <div class="topbar-nav">
-            <button class="btn-nav btn-run" onclick="runAnalysis()">
-                <i class="fas fa-sync-alt"></i>
-                <span class="d-none d-md-inline">Actualizar datos</span>
-            </button>
+            <div class="btn-group me-1">
+                <button class="btn-nav btn-run" onclick="runAnalysis()" id="btnUpdateData">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="d-none d-md-inline">Actualizar datos</span>
+                </button>
+                <button class="btn-nav" style="border-left: 1px solid rgba(255,255,255,0.2); border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 10px; padding-right: 10px;" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Configurar rango de fechas">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+            
             <a href="{{ url_for('sources.index') }}" class="btn-nav">
                 <i class="fas fa-rss"></i>
                 <span class="d-none d-md-inline">Fuentes</span>
             </a>
-            <span class="user-chip">
+            <span class="user-chip d-none d-lg-inline-block">
                 <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
             </span>
             <a href="{{ url_for('auth.logout') }}" class="btn-nav btn-logout" title="Cerrar sesión">
@@ -376,7 +460,7 @@
     <!-- Sub-header contextual -->
     <div class="subheader">
         <span class="flag"> Trabajo Terminal</span>
-        <span>Sistema Inteligente para la Identificacion y Seguimiento de Derechos de NNA afectados por feminicidios en México</span>
+        <span class="d-none d-md-inline">Sistema Inteligente para la Identificacion y Seguimiento de Derechos de NNA afectados por feminicidios en México</span>
         <span class="ms-auto" style="font-size:11px;">Última actualización: <span id="headerUpdate">—</span></span>
     </div>
 
@@ -749,52 +833,90 @@
     });
 
     // ══════════════════════════════════════════════════════════
-    //  Run Analysis
+    //  Run Analysis & Background Polling
     // ══════════════════════════════════════════════════════════
-    async function runAnalysis() {
-        var overlay = document.getElementById('loadingOverlay');
-        overlay.classList.add('visible');
-        var startTime = Date.now();
+    
+    function toggleAnalysisToast(show) {
+        const toast = document.getElementById('analysisNotification');
+        if (toast) toast.style.display = show ? 'block' : 'none';
+    }
 
+    async function runAnalysisWithConfig() {
+        const start = document.getElementById('configStartDate').value;
+        const end = document.getElementById('configEndDate').value;
+        
+        // Cerrar modal
+        const modalEl = document.getElementById('settingsModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+        
+        await runAnalysis(start, end);
+    }
+
+    async function runAnalysis(startDate = null, endDate = null) {
+        const startTime = Date.now();
+        
+        // Mostrar notificación flotante
+        toggleAnalysisToast(true);
+        updateAnalysisTimer(0);
+        
         try {
-            var r = await fetch('/api/analyze');
-            var data = await r.json();
+            let url = '/api/analyze?postgres=true&semantic=true';
+            if (startDate) url += '&start_date=' + encodeURIComponent(startDate);
+            if (endDate) url += '&end_date=' + encodeURIComponent(endDate);
+            
+            const r = await fetch(url);
+            const data = await r.json();
 
             if (data.status === 'already_running' || data.status === 'started') {
-                // Poll status until done
-                var loadingMsg = overlay.querySelector('small');
-                var pollInterval = setInterval(async function() {
-                    var elapsed = Math.floor((Date.now() - startTime) / 1000);
-                    var mins = Math.floor(elapsed / 60);
-                    var secs = elapsed % 60;
-                    loadingMsg.textContent = 'Recolectando noticias y aplicando modelos de IA… (' + mins + 'm ' + secs + 's)';
-
-                    try {
-                        var sr = await fetch('/api/analyze/status');
-                        var st = await sr.json();
-                        if (!st.running) {
-                            clearInterval(pollInterval);
-                            overlay.classList.remove('visible');
-                            if (st.error) {
-                                showToast('Error: ' + st.error, 'error');
-                            } else {
-                                await Promise.all([loadStats(), loadNews()]);
-                                showToast('Recolección y análisis completados.', 'success');
-                            }
-                        }
-                    } catch(pe) {
-                        // Network error, keep polling
-                        console.warn('Poll error:', pe);
-                    }
-                }, 5000);
-            } else if (!r.ok) {
-                overlay.classList.remove('visible');
-                showToast('Error: ' + (data.error || 'desconocido'), 'error');
+                // Iniciar polling
+                startStatusPolling(startTime);
+            } else {
+                toggleAnalysisToast(false);
+                showToast('No se pudo iniciar el análisis: ' + (data.message || 'error'), 'error');
             }
         } catch(e) {
-            overlay.classList.remove('visible');
-            showToast('Error de conexión al ejecutar análisis.', 'error');
+            console.error('Error iniciando análisis:', e);
+            toggleAnalysisToast(false);
+            showToast('Error de conexión al servidor.', 'error');
         }
+    }
+
+    function updateAnalysisTimer(seconds) {
+        const timer = document.getElementById('analysisTimer');
+        if (!timer) return;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timer.textContent = `Iniciado hace ${mins}m ${secs}s`;
+    }
+
+    function startStatusPolling(startTime) {
+        const pollInterval = setInterval(async function() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            updateAnalysisTimer(elapsed);
+
+            try {
+                const r = await fetch('/api/analyze/status');
+                const st = await r.json();
+                
+                if (!st.running) {
+                    clearInterval(pollInterval);
+                    toggleAnalysisToast(false);
+                    
+                    if (st.error) {
+                        showToast('Error en el análisis: ' + st.error, 'error');
+                    } else {
+                        showToast('¡Análisis completado con éxito!', 'success');
+                        // REFRESH AUTOMÁTICO
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                }
+            } catch(e) {
+                console.warn('Error en polling de status:', e);
+            }
+        }, 5000);
     }
 
     // ══════════════════════════════════════════════════════════
