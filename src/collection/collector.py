@@ -103,14 +103,16 @@ FEMINICIDIO_KEYWORDS: list[Tuple[str, float]] = [
     (r'\bfeminicidio\b',               1.0),
     (r'\bfemicidio\b',                 1.0),
     (r'\bviolencia\s+feminicida\b',    1.0),
-    (r'\bmuerte\s+violenta\s+de\s+(?:una\s+)?mujer\b', 0.9),
-    (r'\basesinato\s+de\s+(?:una\s+)?mujer\b', 0.9),
-    (r'\bhomicidio\s+(?:doloso\s+)?de\s+(?:una\s+)?mujer\b', 0.85),
+    (r'\bmuerte\s+violenta\s+de\s+(?:(?:una|la)\s+)?mujer\b', 0.9),
+    (r'\basesinato\s+de\s+(?:(?:una|la)\s+)?mujer\b', 0.9),
+    (r'\b(?:asesinan|matan|ultiman|ejecutan|hallan|encuentran)\s+(?:a\s+)?(?:(?:una|la)\s+)?mujer\b', 0.95),
+    (r'\bmujer\s+(?:asesinada|muerta|sin\s+vida|hallada|encontrada|baleada|ejecutada)\b', 0.95),
+    (r'\bhomicidio\s+(?:doloso\s+)?de\s+(?:(?:una|la)\s+)?mujer\b', 0.85),
     (r'\bviolencia\s+de\s+g[eé]nero\b', 0.7),
     (r'\bcrimen\s+de\s+g[eé]nero\b',  0.7),
     (r'\bviolencia\s+contra\s+(?:la\s+)?mujer(?:es)?\b', 0.65),
     (r'\bmata(?:ron|r(?:on)?|do|da)?\s+a\s+(?:su\s+)?(?:esposa|pareja|novia|mujer|concubina|ex)\b', 0.85),
-    (r'\bpriv[oó]\s+de\s+la\s+vida\b', 0.6),
+    (r'\bpriv[oó]\s+de\s+la\s+vida\s+a\s+(?:una\s+)?mujer\b', 0.8),
     # Contextuales (peso medio)
     (r'\balerta\s+de\s+(?:violencia\s+de\s+)?g[eé]nero\b', 0.55),
     (r'\bviolencia\s+(?:dom[eé]stica|intrafamiliar|familiar)\b', 0.5),
@@ -399,10 +401,11 @@ def _is_noise_title(title_norm: str) -> bool:
 # artículo de política pública, estadísticas o columnas de opinión.
 CASO_INDIVIDUAL_KEYWORDS: list[Tuple[str, float]] = [
     # Señales narrativas de caso concreto
-    (r'\bfue\s+(?:encontrada|hallada|localizada|asesinada|privada)\b', 1.0),
+    (r'\bfue\s+(?:encontrada|hallada|localizada|asesinada|privada|baleada|ejecutada)\b', 1.0),
     (r'\b(?:el\s+)?cuerpo\s+(?:de|sin\s+vida|fue)\b', 1.0),
     (r'\bsin\s+vida\b', 0.95),
     (r'\b(?:la|lo)\s+mat(?:aron|ó)\b', 0.95),
+    (r'\b(?:asesinan|matan|ultiman|ejecutan|disparan)\s+(?:a\s+)?(?:(?:una|la)\s+)?mujer\b', 0.95),
     (r'\b(?:la|su)\s+(?:pareja|esposo|ex)\s+(?:la\s+)?(?:mat[oó]|asesino|apuñal|golpe)\b', 0.95),
     (r'\bpresunto\s+(?:feminicida|asesino|responsable|agresor)\b', 0.9),
     (r'\bdetenid[oa]\s+(?:el|al|por)\b', 0.85),
@@ -411,7 +414,8 @@ CASO_INDIVIDUAL_KEYWORDS: list[Tuple[str, float]] = [
     (r'\bvinculad[oa]\s+a\s+proceso\b', 0.8),
     # Mención de nombres propios con edad (señal de caso individual)
     (r'\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+(?:[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+)?de\s+\d{1,2}\s+a[ñn]os\b', 0.9),
-    # Menores dejados solos/huérfanos tras el hecho
+    # Menores presentes / dejados solos
+    (r'\bfrente\s+a\s+sus\s+(?:hijos?|hijas?|menores?|familiares)\b', 1.0),
     (r'\b(?:dej[oó]|dejaron|quedan|quedaron)\s+(?:\w+\s+){0,3}(?:hu[eé]rfan|sin\s+madre|sol[oa]s?|desamparad)\b', 1.0),
     (r'\bmenores?\s+(?:quedan|quedaron|fueron\s+(?:resguardad|entregad|puestos?))\b', 0.95),
     (r'\b(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\s+(?:de\s+)?(?:la\s+)?v[ií]ctima\b', 0.95),
