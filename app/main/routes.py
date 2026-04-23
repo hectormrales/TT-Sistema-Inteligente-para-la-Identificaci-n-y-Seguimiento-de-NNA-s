@@ -300,7 +300,7 @@ _analysis_status = {
 _analysis_lock = threading.Lock()
 
 
-def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, app):
+def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, scraper_type, app):
     """Ejecuta el pipeline completo en background (hilo separado)."""
     global _analysis_status
     try:
@@ -315,6 +315,7 @@ def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, 
                 enable_postgres=enable_postgres,
                 start_date=start_date,
                 end_date=end_date,
+                scraper_type=scraper_type,
             )
 
             # Recargar datos después del análisis
@@ -358,6 +359,7 @@ def api_analyze():
     enable_postgres = request.args.get('postgres', 'true').lower() == 'true'
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
+    scraper_type = request.args.get('scraper', 'all')
 
     with _analysis_lock:
         _analysis_status.update({
@@ -373,7 +375,7 @@ def api_analyze():
     # Lanzar en hilo de fondo (daemon=True para que muera con el worker)
     thread = threading.Thread(
         target=_run_analysis_background,
-        args=(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, app),
+        args=(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, scraper_type, app),
         daemon=True,
     )
     thread.start()

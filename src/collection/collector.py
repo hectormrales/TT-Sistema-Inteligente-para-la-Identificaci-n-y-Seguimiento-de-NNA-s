@@ -609,6 +609,7 @@ def collect_news_from_rss(
     session: Optional[StealthSession] = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    keep_all: bool = False,
 ) -> list[dict]:
     """
     Recolecta noticias de un feed RSS específico.
@@ -702,7 +703,7 @@ def collect_news_from_rss(
             rel = score_relevance(title_text, desc_text)
 
             # ── Descarte temprano: sin señal mínima → no procesar ──
-            if rel['clasificacion'] == 'No relevante':
+            if rel['clasificacion'] == 'No relevante' and not keep_all:
                 skipped_irrelevant += 1
                 continue
 
@@ -757,6 +758,7 @@ def collect_all_news(
     keep_all: bool = False,
     start_date: str | None = None,
     end_date: str | None = None,
+    scraper_type: str = 'all',  # 'all', 'google', 'custom'
 ) -> pd.DataFrame:
     """
     Recolecta noticias de todas las fuentes activas.
@@ -772,86 +774,105 @@ def collect_all_news(
     shared_session = StealthSession(test_mode=False)
 
     try:
-        # ── Intentar obtener fuentes desde la DB ────────────────
-        db_sources = _get_db_sources()
-
-        if db_sources:
-            print(f"  ── {len(db_sources)} fuentes activas desde DB ──")
-            scraper = DynamicScraper(respect_robots=True, default_delay=2.0)
-
-            for source in db_sources:
-                src_label = f"{source['name']} ({source['source_type']})"
-                print(f"  [{source['source_type'].upper()}] {src_label}")
-
-                try:
-                    if source['source_type'] == 'rss':
-                        # v7.0: Pasar la sesión stealth compartida
-                        articles = collect_news_from_rss(
-                            source['url'], 
-                            seen_urls, 
-                            session=shared_session,
-                            start_date=start_date,
-                            end_date=end_date
-                        )
-                        for art in articles:
-                            art['fuente'] = source['name']
-                        all_articles.extend(articles)
-                        _update_db_source_status(
-                            source['id'], 'ok', len(articles)
-                        )
-                        sources_ok += 1
-                        print(f"    → {len(articles)} artículos")
-                    else:
-                        raw_articles = scraper.scrape_source(
-                            source['url'],
-                            method=source['source_type'],
-                            max_articles=30,
-                        )
-                        accepted = 0
-                        for art in raw_articles:
-                            enlace = art.get('enlace', source['url'])
-                            # v8.0: Bypass seen_urls if custom dates are provided
-                            if enlace in seen_urls and not (start_date or end_date):
-                                continue
-                            if not _is_mexico_news(
-                                art.get('titulo', ''),
-                                art.get('contenido', ''),
-                                enlace,
-                            ):
-                                continue
-                            rel = score_relevance(art['titulo'], art['contenido'])
-                            art.update(rel)
-                            art['fuente'] = source['name']
-                            art.setdefault('cluster', 0)
-                            all_articles.append(art)
-                            if enlace:
-                                seen_urls.add(enlace)
-                            accepted += 1
-                        _update_db_source_status(
-                            source['id'], 'ok', accepted
-                        )
-                        sources_ok += 1
-                        print(f"    → {accepted} artículos aceptados")
-
-                except Exception as e:
-                    sources_error += 1
-                    logger.warning(f"Error scraping {source['name']}: {e}")
-                    _update_db_source_status(
-                        source['id'], 'error', 0, str(e)[:200]
-                    )
-        else:
-            # ── Fallback: sin DB, usar config.RSS_FEEDS ─────────
-            print("  ── Fuentes RSS desde config (sin contexto DB) ──")
-            for feed in config.RSS_FEEDS:
+        # ── 1. Fase General: Búsqueda en Google News (Siempre) ──
+        if scraper_type in ['all', 'google']:
+            print("  ── Búsqueda General en Google News ──")
+            google_news_feeds = [f for f in config.RSS_FEEDS if 'news.google.com' in f]
+            for feed in google_news_feeds:
                 feed_label = feed[:70] + '…' if len(feed) > 70 else feed
-                print(f"  RSS: {feed_label}")
-                # v7.0: Pasar la sesión stealth compartida
+                print(f"  Google News: {feed_label}")
                 articles = collect_news_from_rss(
-                    feed, seen_urls, session=shared_session
+                    feed, seen_urls, session=shared_session,
+                    start_date=start_date, end_date=end_date, keep_all=keep_all
                 )
                 if articles:
                     sources_ok += 1
+                for art in articles:
+                    art['fuente'] = 'Google News Search'
                 all_articles.extend(articles)
+
+        # ── 2. Fase Específica: Fuentes configuradas por el usuario ──
+        if scraper_type in ['all', 'custom']:
+            db_sources = _get_db_sources()
+
+            if db_sources:
+                print(f"  ── {len(db_sources)} fuentes personalizadas desde DB ──")
+                scraper = DynamicScraper(respect_robots=True, default_delay=2.0)
+
+                for source in db_sources:
+                    src_label = f"{source['name']} ({source['source_type']})"
+                    print(f"  [{source['source_type'].upper()}] {src_label}")
+
+                    try:
+                        if source['source_type'] == 'rss':
+                            articles = collect_news_from_rss(
+                                source['url'], 
+                                seen_urls, 
+                                session=shared_session,
+                                start_date=start_date,
+                                end_date=end_date,
+                                keep_all=keep_all
+                            )
+                            for art in articles:
+                                art['fuente'] = source['name']
+                            all_articles.extend(articles)
+                            _update_db_source_status(
+                                source['id'], 'ok', len(articles)
+                            )
+                            sources_ok += 1
+                            print(f"    → {len(articles)} artículos")
+                        else:
+                            raw_articles = scraper.scrape_source(
+                                source['url'],
+                                method=source['source_type'],
+                                max_articles=30,
+                            )
+                            accepted = 0
+                            for art in raw_articles:
+                                enlace = art.get('enlace', source['url'])
+                                # v8.0: Bypass seen_urls if custom dates are provided
+                                if enlace in seen_urls and not (start_date or end_date):
+                                    continue
+                                if not _is_mexico_news(
+                                    art.get('titulo', ''),
+                                    art.get('contenido', ''),
+                                    enlace,
+                                ):
+                                    continue
+                                rel = score_relevance(art['titulo'], art['contenido'])
+                                art.update(rel)
+                                art['fuente'] = source['name']
+                                art.setdefault('cluster', 0)
+                                all_articles.append(art)
+                                if enlace:
+                                    seen_urls.add(enlace)
+                                accepted += 1
+                            _update_db_source_status(
+                                source['id'], 'ok', accepted
+                            )
+                            sources_ok += 1
+                            print(f"    → {accepted} artículos aceptados")
+
+                    except Exception as e:
+                        sources_error += 1
+                        logger.warning(f"Error scraping {source['name']}: {e}")
+                        _update_db_source_status(
+                            source['id'], 'error', 0, str(e)[:200]
+                        )
+            else:
+                # ── Fallback: sin DB, usar el resto de config.RSS_FEEDS ─────────
+                print("  ── Fuentes RSS adicionales desde config (sin contexto DB) ──")
+                other_feeds = [f for f in config.RSS_FEEDS if 'news.google.com' not in f]
+                for feed in other_feeds:
+                    feed_label = feed[:70] + '…' if len(feed) > 70 else feed
+                    print(f"  RSS: {feed_label}")
+                    articles = collect_news_from_rss(
+                        feed, seen_urls, session=shared_session,
+                        start_date=start_date, end_date=end_date, keep_all=keep_all
+                    )
+                    if articles:
+                        sources_ok += 1
+                    all_articles.extend(articles)
 
         # v7.0: Diagnóstico del circuit breaker al final del ciclo
         cb_status = shared_session.get_circuit_breaker_status()

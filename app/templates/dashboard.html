@@ -404,6 +404,16 @@
                             <input type="date" id="configEndDate" class="form-control custom-input">
                         </div>
                     </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-navy" style="font-size: 12px;">TIPO DE BÚSQUEDA</label>
+                            <select id="configScraperType" class="form-select custom-input" style="font-size: 13px;">
+                                <option value="all">Ambas (General + Avanzada)</option>
+                                <option value="google">1. Búsqueda General (Google News)</option>
+                                <option value="custom">2. Búsqueda Avanzada (Fuentes configuradas)</option>
+                            </select>
+                        </div>
+                    </div>
                     
                     <div class="mt-4 p-3 rounded-3 bg-light border border-warning-subtle">
                         <div class="d-flex gap-2">
@@ -542,10 +552,10 @@
                     </button>
                     <div class="export-bar">
                         <span class="filter-label" style="margin-left:12px;">Orden:</span>
-                        <button class="filter-btn active" id="sort-fecha" onclick="applySort('fecha')">
+                        <button class="filter-btn" id="sort-fecha" onclick="applySort('fecha')">
                             <i class="fas fa-calendar-alt" style="font-size:9px;"></i> Fecha
                         </button>
-                        <button class="filter-btn" id="sort-relevancia" onclick="applySort('relevancia')">
+                        <button class="filter-btn active" id="sort-relevancia" onclick="applySort('relevancia')">
                             <i class="fas fa-sort-amount-down" style="font-size:9px;"></i> Relevancia
                         </button>
                         <a href="/api/export/csv" class="btn-export" title="Exportar datos a CSV">
@@ -643,7 +653,7 @@
     // ══════════════════════════════════════════════════════════
     //  Estado global
     // ══════════════════════════════════════════════════════════
-    let state = { page: 1, filter: 'todas', search: '', sort: 'fecha', total: 0, totalPages: 1 };
+    let state = { page: 1, filter: 'todas', search: '', sort: 'relevancia', total: 0, totalPages: 1 };
     let charts = {};
     let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
 
@@ -844,16 +854,17 @@
     async function runAnalysisWithConfig() {
         const start = document.getElementById('configStartDate').value;
         const end = document.getElementById('configEndDate').value;
+        const scraperType = document.getElementById('configScraperType') ? document.getElementById('configScraperType').value : 'all';
         
         // Cerrar modal
         const modalEl = document.getElementById('settingsModal');
         const modal = bootstrap.Modal.getInstance(modalEl);
         if (modal) modal.hide();
         
-        await runAnalysis(start, end);
+        await runAnalysis(start, end, scraperType);
     }
 
-    async function runAnalysis(startDate = null, endDate = null) {
+    async function runAnalysis(startDate = null, endDate = null, scraperType = 'all') {
         const startTime = Date.now();
         
         // Mostrar notificación flotante
@@ -864,6 +875,7 @@
             let url = '/api/analyze?postgres=true&semantic=true';
             if (startDate) url += '&start_date=' + encodeURIComponent(startDate);
             if (endDate) url += '&end_date=' + encodeURIComponent(endDate);
+            if (scraperType) url += '&scraper=' + encodeURIComponent(scraperType);
             
             const r = await fetch(url);
             const data = await r.json();

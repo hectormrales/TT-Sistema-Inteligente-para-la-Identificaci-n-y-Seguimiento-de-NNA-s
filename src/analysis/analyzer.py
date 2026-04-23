@@ -117,10 +117,10 @@ class SimplifiedNewsAnalyzer:
 
     # ── Pasos del pipeline ──────────────────────────────────
 
-    def step_1_collect_data(self, start_date: str | None = None, end_date: str | None = None) -> pd.DataFrame:
+    def step_1_collect_data(self, start_date: str | None = None, end_date: str | None = None, scraper_type: str = 'all') -> pd.DataFrame:
         """Recolección de datos desde RSS feeds con filtrado de relevancia."""
         print("=== PASO 1: RECOLECCIÓN + SCORING DE RELEVANCIA ===")
-        self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date)
+        self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
 
         if self.df_original.empty:
             print("  No se recolectaron noticias relevantes.")
@@ -459,6 +459,7 @@ class SimplifiedNewsAnalyzer:
         enable_postgres: bool = True,
         start_date: str | None = None,
         end_date: str | None = None,
+        scraper_type: str = 'all',
     ) -> pd.DataFrame:
         """
         Ejecuta el pipeline completo de análisis (v5.0).
@@ -479,7 +480,7 @@ class SimplifiedNewsAnalyzer:
         print("=" * 60)
 
         # Pasos 1-8: Pipeline original
-        self.step_1_collect_data(start_date=start_date, end_date=end_date)
+        self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
 
         if self.df_original is None or self.df_original.empty:
             print("  [!] No hay noticias para analizar.")
