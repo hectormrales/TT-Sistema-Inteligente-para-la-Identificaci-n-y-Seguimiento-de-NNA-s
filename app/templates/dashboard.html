@@ -551,6 +551,10 @@
                         <i class="fas fa-child" style="font-size:9px;"></i> NNA identificados
                     </button>
                     <div class="export-bar">
+                        <span class="filter-label">Historial:</span>
+                        <select id="batchSelect" class="form-select form-select-sm" style="font-size: 11px; width: auto; display: inline-block;" onchange="onBatchChange()">
+                            <option value="">Cargando...</option>
+                        </select>
                         <span class="filter-label" style="margin-left:12px;">Orden:</span>
                         <button class="filter-btn" id="sort-fecha" onclick="applySort('fecha')">
                             <i class="fas fa-calendar-alt" style="font-size:9px;"></i> Fecha
@@ -653,7 +657,7 @@
     // ══════════════════════════════════════════════════════════
     //  Estado global
     // ══════════════════════════════════════════════════════════
-    let state = { page: 1, filter: 'todas', search: '', sort: 'relevancia', total: 0, totalPages: 1 };
+    let state = { page: 1, filter: 'todas', search: '', sort: 'relevancia', total: 0, totalPages: 1, batchId: '' };
     let charts = {};
     let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
 
@@ -674,7 +678,11 @@
     // ══════════════════════════════════════════════════════════
     async function loadStats() {
         try {
-            const r = await fetch('/api/stats');
+            let url = '/api/stats';
+            if (state.batchId) {
+                url += '?batch_id=' + encodeURIComponent(state.batchId);
+            }
+            const r = await fetch(url);
             if (!r.ok) return;
             const s = await r.json();
             document.getElementById('totalNoticias').textContent   = fmt(s.total_noticias);
@@ -683,7 +691,52 @@
             document.getElementById('mediaRelevancia').textContent = fmt(s.media_relevancia || 0);
             document.getElementById('clusters').textContent        = fmt(s.clusters || s.topics || 0);
             document.getElementById('headerUpdate').textContent    = s.ultima_actualizacion || '—';
+            
+            // Si no teníamos un batchId seleccionado, usar el que viene del backend
+            if (!state.batchId && s.current_batch_id) {
+                state.batchId = s.current_batch_id;
+                await loadBatches();
+            }
         } catch(e) { console.warn('Stats error:', e); }
+    }
+
+    async function loadBatches() {
+        try {
+            const r = await fetch('/api/batches');
+            if (!r.ok) return;
+            const data = await r.json();
+            const select = document.getElementById('batchSelect');
+            select.innerHTML = '';
+            
+            if (data.batches && data.batches.length > 0) {
+                // Ordenar de más reciente a más antiguo asumiendo formato YYYYMMDD_HHMMSS
+                data.batches.sort().reverse();
+                data.batches.forEach(b => {
+                    const option = document.createElement('option');
+                    option.value = b;
+                    
+                    // Formatear para lectura amigable
+                    let lbl = b;
+                    if (b.length === 15 && b.indexOf('_') === 8) {
+                        lbl = b.substring(6,8) + '/' + b.substring(4,6) + '/' + b.substring(0,4) + ' ' + 
+                              b.substring(9,11) + ':' + b.substring(11,13);
+                    }
+                    option.textContent = lbl;
+                    if (b === state.batchId) option.selected = true;
+                    select.appendChild(option);
+                });
+            } else {
+                select.innerHTML = '<option value="">Sin historial</option>';
+            }
+        } catch(e) { console.warn('Batches error:', e); }
+    }
+
+    function onBatchChange() {
+        state.batchId = document.getElementById('batchSelect').value;
+        state.page = 1;
+        loadStats();
+        loadNews();
+        loadCharts();
     }
 
     function fmt(n) {
@@ -721,11 +774,15 @@
             let url;
             if (state.search) {
                 url = '/api/search?q=' + encodeURIComponent(state.search);
+                if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
             } else {
                 url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
                 if (state.filter === 'alta' || state.filter === 'media') {
                     const cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                     url += '&clasificacion=' + encodeURIComponent(cls);
+                }
+                if (state.batchId) {
+                    url += '&batch_id=' + encodeURIComponent(state.batchId);
                 }
             }
             const r = await fetch(url);

@@ -2665,3 +2665,793 @@ WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido
 2026-04-23 17:47:39,542 - src.analysis.bertopic_clustering - INFO - Guardados 14 clusters en PostgreSQL
 2026-04-23 17:47:39,842 - root - INFO - Datos cargados: 283 noticias desde análisis
 2026-04-23 17:47:39,845 - root - INFO - Análisis background completado exitosamente
+2026-04-24 12:48:02,699 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 12:48:02,733 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 12:48:02,733 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 12:48:02,734 - app - INFO - Esquema FTS inicializado
+2026-04-24 12:48:02,734 - app - INFO - Esquema FTS inicializado
+2026-04-24 12:48:02,790 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 12:48:02,790 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 12:50:45,731 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 12:50:45,751 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 12:50:45,751 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 12:50:45,752 - app - INFO - Esquema FTS inicializado
+2026-04-24 12:50:45,752 - app - INFO - Esquema FTS inicializado
+2026-04-24 12:50:45,816 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 12:50:45,817 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 12:51:10,124 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-24 12:51:10,137 - app - INFO - Logout: hectormorales
+2026-04-24 12:51:15,969 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-24 12:56:52,926 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-24 12:56:52,927 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eluniversal.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 12:56:53,348 - src.collection.scraper - INFO - HTML listing: 121 enlaces a artículos en https://www.eluniversal.com.mx/…
+2026-04-24 12:57:41,890 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/la-ley-es-para-todos-d… → activando stealth + intentando Google Cache
+2026-04-24 12:58:06,545 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 12:58:06,545 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 12:58:06,546 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/nacion/la-ley-es-para-todos-dice-la-marina-tras-captura-de-contralmirante-fernando-farias-hace-un-llamado-a-honrar-el-uniforme/
+2026-04-24 12:58:24,686 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/sheinbaum-envia-cartas… → activando stealth + intentando Google Cache
+2026-04-24 12:58:35,096 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 12:58:35,096 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 12:58:35,097 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/nacion/sheinbaum-envia-cartas-a-gobernadores-sobre-colaboracion-con-agencias-de-eu-tienen-que-cumplir-con-la-ley-si-o-si-insiste/
+2026-04-24 12:58:46,414 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/estados-unidos-agrega-o… → activando stealth + intentando Google Cache
+2026-04-24 12:59:06,230 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 12:59:06,231 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 12:59:06,232 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/mundo/estados-unidos-agrega-otras-13-barreras-al-comercio-en-que-incurre-mexico-se-suman-a-las-54-previas/
+2026-04-24 12:59:29,073 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/sheinbaum-reacciona-a-… → activando stealth + intentando Google Cache
+2026-04-24 13:00:19,431 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:00:19,432 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:00:19,432 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/nacion/sheinbaum-reacciona-a-dichos-de-embajador-johnson-sobre-corrupcion-y-extorsion-pide-que-en-eu-tambien-haya-certeza/
+2026-04-24 13:00:35,603 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/departamento-de-justici… → activando stealth + intentando Google Cache
+2026-04-24 13:01:00,026 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:01:00,027 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:01:00,027 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/mundo/departamento-de-justicia-de-eu-revive-el-fusilamiento-para-ejecuciones-federales-tambien-incluye-la-inyeccion-letal/
+2026-04-24 13:01:26,720 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/argentina-no-es-refugio… → activando stealth + intentando Google Cache
+2026-04-24 13:02:22,284 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:02:22,285 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:02:22,285 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/mundo/argentina-no-es-refugio-de-criminales-ministra-de-seguridad-lanza-mensaje-tras-captura-de-fernando-farias-laguna/
+2026-04-24 13:02:38,113 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/bajo-reserva/… → activando stealth + intentando Google Cache
+2026-04-24 13:03:29,369 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:03:29,369 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:03:29,370 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/bajo-reserva/
+2026-04-24 13:03:36,914 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/bajo-reserva/taddei-s… → activando stealth + intentando Google Cache
+2026-04-24 13:04:11,657 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:04:11,657 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:04:11,658 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/bajo-reserva/taddei-saca-la-guadana/
+2026-04-24 13:04:36,150 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/arlequin/luisa-maria-… → activando stealth + intentando Google Cache
+2026-04-24 13:05:10,778 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:05:10,778 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:05:10,779 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/arlequin/luisa-maria-la-empleada-del-ano/
+2026-04-24 13:05:29,090 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/carlos-loret-de-mola/… → activando stealth + intentando Google Cache
+2026-04-24 13:05:43,629 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:05:43,630 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:05:43,630 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/carlos-loret-de-mola/los-tres-estados-que-se-entienden-directamente-con-eu/
+2026-04-24 13:06:10,475 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/carlos-loret-de-mola/… → activando stealth + intentando Google Cache
+2026-04-24 13:06:19,789 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:06:19,790 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:06:19,790 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/carlos-loret-de-mola/
+2026-04-24 13:07:06,826 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/mario-maldonado/la-co… → activando stealth + intentando Google Cache
+2026-04-24 13:07:24,446 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:07:24,446 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:07:24,447 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/mario-maldonado/la-corte-y-el-conflicto-de-interes-en-cruz-azul/
+2026-04-24 13:07:59,123 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/mario-maldonado/… → activando stealth + intentando Google Cache
+2026-04-24 13:15:47,615 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 13:15:47,652 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 13:15:47,652 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 13:15:47,652 - app - INFO - Esquema FTS inicializado
+2026-04-24 13:15:47,652 - app - INFO - Esquema FTS inicializado
+2026-04-24 13:15:47,702 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 13:15:47,703 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 13:21:56,991 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 13:21:56,991 - app - INFO - Esquema FTS inicializado
+2026-04-24 13:21:57,042 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 13:21:57,067 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 13:21:57,068 - app - INFO - Esquema FTS inicializado
+2026-04-24 13:21:57,118 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 13:22:13,453 - app - INFO - Logout: hectormorales
+2026-04-24 13:22:19,021 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-24 13:27:38,092 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-24 13:27:38,093 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eluniversal.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 13:27:38,580 - src.collection.scraper - INFO - HTML listing: 121 enlaces a artículos en https://www.eluniversal.com.mx/…
+2026-04-24 13:27:46,370 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/la-ley-es-para-todos-d… → activando stealth + intentando Google Cache
+2026-04-24 13:28:44,477 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/sheinbaum-envia-cartas… → activando stealth + intentando Google Cache
+2026-04-24 13:29:18,623 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/estados-unidos-agrega-o… → activando stealth + intentando Google Cache
+2026-04-24 13:30:16,354 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/sheinbaum-reacciona-a-… → activando stealth + intentando Google Cache
+2026-04-24 13:30:36,694 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:30:36,695 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:30:36,696 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/nacion/sheinbaum-reacciona-a-dichos-de-embajador-johnson-sobre-corrupcion-y-extorsion-pide-que-en-eu-tambien-haya-certeza/
+2026-04-24 13:30:56,538 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/departamento-de-justici… → activando stealth + intentando Google Cache
+2026-04-24 13:31:08,663 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:31:08,663 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:31:08,664 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/mundo/departamento-de-justicia-de-eu-revive-el-fusilamiento-para-ejecuciones-federales-tambien-incluye-la-inyeccion-letal/
+2026-04-24 13:31:29,584 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/argentina-no-es-refugio… → activando stealth + intentando Google Cache
+2026-04-24 13:31:48,135 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:31:48,135 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:31:48,136 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/mundo/argentina-no-es-refugio-de-criminales-ministra-de-seguridad-lanza-mensaje-tras-captura-de-fernando-farias-laguna/
+2026-04-24 13:32:06,818 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/bajo-reserva/… → activando stealth + intentando Google Cache
+2026-04-24 13:32:46,993 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/bajo-reserva/taddei-s… → activando stealth + intentando Google Cache
+2026-04-24 13:33:42,408 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/arlequin/luisa-maria-… → activando stealth + intentando Google Cache
+2026-04-24 13:34:26,310 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/carlos-loret-de-mola/… → activando stealth + intentando Google Cache
+2026-04-24 13:35:06,669 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/carlos-loret-de-mola/… → activando stealth + intentando Google Cache
+2026-04-24 13:36:51,269 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/mario-maldonado/la-co… → activando stealth + intentando Google Cache
+2026-04-24 13:38:24,335 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/mario-maldonado/… → activando stealth + intentando Google Cache
+2026-04-24 13:39:20,146 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:39:20,147 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:39:20,147 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/mario-maldonado/
+2026-04-24 13:39:31,778 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/eunice-rendon/mexico-… → activando stealth + intentando Google Cache
+2026-04-24 13:39:56,504 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:39:56,505 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:39:56,505 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/eunice-rendon/mexico-ante-el-mundial-el-desafio-integral-de-la-seguridad/
+2026-04-24 13:40:21,192 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/eunice-rendon/… → activando stealth + intentando Google Cache
+2026-04-24 13:40:46,073 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:40:46,074 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:40:46,074 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/eunice-rendon/
+2026-04-24 13:40:46,800 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-24 13:40:46,802 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.milenio.com/rss (Circuito abierto o fallo de conexión)
+2026-04-24 13:40:47,483 - src.collection.scraper - INFO - HTML listing: 102 enlaces a artículos en https://www.milenio.com/…
+2026-04-24 13:43:17,542 - src.collection.scraper - INFO - Bloqueo detectado en https://www.milenio.com/opinion/carlos-marin… → activando stealth + intentando Google Cache
+2026-04-24 13:44:57,476 - src.collection.scraper - INFO - Bloqueo detectado en https://www.milenio.com/opinion/enrique-serna… → activando stealth + intentando Google Cache
+2026-04-24 13:45:38,375 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-24 13:45:38,375 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.excelsior.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 13:45:38,833 - src.collection.scraper - INFO - HTML listing: 53 enlaces a artículos en https://www.excelsior.com.mx/…
+2026-04-24 13:45:44,985 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/vamos-agarrados-amor-m… → activando stealth + intentando Google Cache
+2026-04-24 13:46:36,752 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/robo-donativos-dif-aca… → activando stealth + intentando Google Cache
+2026-04-24 13:47:03,926 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:47:03,926 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:47:03,927 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/nacional/robo-donativos-dif-acapulco
+2026-04-24 13:47:19,938 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/tecnologia/whatsapp-liquid-glas… → activando stealth + intentando Google Cache
+2026-04-24 13:47:43,915 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:47:43,916 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:47:43,916 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/tecnologia/whatsapp-liquid-glass-que-celulares-son-compatibles-con-actualizacion
+2026-04-24 13:48:01,732 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/recetas/como-hacer-chilaquiles-… → activando stealth + intentando Google Cache
+2026-04-24 13:48:33,127 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 13:48:33,127 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 13:48:33,128 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/recetas/como-hacer-chilaquiles-verdes-autenticos-tradicionales-cocina-mexicana
+2026-04-24 13:49:05,645 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/ciudad-de-mexico/feminicidio-ca… → activando stealth + intentando Google Cache
+2026-04-24 13:50:26,527 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/temas/presidencia-de-la-republi… → activando stealth + intentando Google Cache
+2026-04-24 13:51:19,577 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/deportes/orgullo-mexicano-yarel… → activando stealth + intentando Google Cache
+2026-04-24 13:52:33,209 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/ciudad-de-mexico/baja-percepcio… → activando stealth + intentando Google Cache
+2026-04-24 13:53:10,450 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/finanzas/precio-dolar-hoy-mexic… → activando stealth + intentando Google Cache
+2026-04-24 13:53:58,140 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/internacional/estados-unidos-re… → activando stealth + intentando Google Cache
+2026-04-24 13:54:35,600 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/mexico-busca-deportaci… → activando stealth + intentando Google Cache
+2026-04-24 13:55:28,279 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/internacional/departamento-just… → activando stealth + intentando Google Cache
+2026-04-24 13:56:46,172 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/ciudad-de-mexico/vinculan-proce… → activando stealth + intentando Google Cache
+2026-04-24 13:57:34,301 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/depende-gobernadora-ch… → activando stealth + intentando Google Cache
+2026-04-24 13:59:08,309 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/sheinbaum-reunion-dire… → activando stealth + intentando Google Cache
+2026-04-24 13:59:30,418 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-24 13:59:30,418 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.reporteindigo.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 13:59:30,498 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 1/3 en 2s
+2026-04-24 13:59:35,001 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 2/3 en 6s
+2026-04-24 13:59:47,333 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 3/3 en 9s
+2026-04-24 13:59:47,335 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.reporteindigo.com — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 13:59:56,748 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.reporteindigo.com/…
+2026-04-24 13:59:56,750 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.reporteindigo.com/… (métodos intentados: ['html'])
+2026-04-24 13:59:58,619 - src.collection.scraper - INFO - HTML listing: 15 enlaces a artículos en https://piedepagina.mx/…
+2026-04-24 14:00:07,780 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/campesinos-acusan-a-semarnat-de-simul… → activando stealth + intentando Google Cache
+2026-04-24 14:00:37,087 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/el-viaje-de-los-cantores-cuando-la-pa… → activando stealth + intentando Google Cache
+2026-04-24 14:01:50,390 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/cemda-2025-ano-critico-para-la-defens… → activando stealth + intentando Google Cache
+2026-04-24 14:02:31,509 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/de-mexico-a-palestina-hay-presos-poli… → activando stealth + intentando Google Cache
+2026-04-24 14:03:15,407 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/la-parteria-tradicional-en-guerrero/… → activando stealth + intentando Google Cache
+2026-04-24 14:04:23,365 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/justicia-federal-frena-200-ordenes-de… → activando stealth + intentando Google Cache
+2026-04-24 14:05:18,717 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/edicion-genetica-una-forma-mas-de-gen… → activando stealth + intentando Google Cache
+2026-04-24 14:06:44,313 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/robert-rauschenberg-un-fotografo-pop/… → activando stealth + intentando Google Cache
+2026-04-24 14:07:27,475 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-04-24 14:07:27,475 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:07:27,476 - trafilatura.core - WARNING - discarding data: https://piedepagina.mx/robert-rauschenberg-un-fotografo-pop/
+2026-04-24 14:07:33,160 - src.collection.scraper - INFO - Bloqueo detectado en https://piedepagina.mx/2025-el-tercer-ano-mas-calido-de-la-h… → activando stealth + intentando Google Cache
+2026-04-24 14:08:38,719 - src.collection.scraper - WARNING - Timeout en https://piedepagina.mx/2025-el-tercer-ano-mas-calido-de-la-h… (intento 1)
+2026-04-24 14:08:51,620 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:08:51,621 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:08:51,622 - trafilatura.core - WARNING - discarding data: https://piedepagina.mx/2025-el-tercer-ano-mas-calido-de-la-historia/
+2026-04-24 14:09:19,599 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/2024-un-ano-de-cambios-y-transiciones… Reintento 1/3 en 3s
+2026-04-24 14:09:48,313 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/2024-un-ano-de-cambios-y-transiciones… Reintento 2/3 en 8s
+2026-04-24 14:10:07,712 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/2024-un-ano-de-cambios-y-transiciones… Reintento 3/3 en 11s
+2026-04-24 14:10:07,713 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para piedepagina.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:10:18,756 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://piedepagina.mx/2024-un-ano-de-cambios-y-transiciones…
+2026-04-24 14:10:21,814 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-24 14:10:21,814 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sdpnoticias.com/feed (Circuito abierto o fallo de conexión)
+2026-04-24 14:10:22,379 - src.collection.scraper - INFO - HTML listing: 54 enlaces a artículos en https://www.sdpnoticias.com/…
+2026-04-24 14:10:50,588 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/mexico/quien-es-alejandro-sanche… → activando stealth + intentando Google Cache
+2026-04-24 14:11:04,357 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:11:04,358 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:11:04,358 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/mexico/quien-es-alejandro-sanchez-herrera-esposo-de-carolina-flores-ex-reina-de-belleza/
+2026-04-24 14:11:18,997 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/mexico/quien-es-erika-maria-herr… → activando stealth + intentando Google Cache
+2026-04-24 14:12:25,442 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/deportes/los-5-dt-que-podrian-ll… → activando stealth + intentando Google Cache
+2026-04-24 14:13:13,117 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/deportes/seleccion-mexicana-segu… → activando stealth + intentando Google Cache
+2026-04-24 14:13:53,727 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/edomex/no-te-mueras-vide… → activando stealth + intentando Google Cache
+2026-04-24 14:14:06,330 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:14:06,330 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:14:06,331 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/estados/edomex/no-te-mueras-video-del-tiroteo-en-teotihuacan-muestra-a-turistas-en-panico/
+2026-04-24 14:14:29,412 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/sheinbaum-sobre-ebrard-d… → activando stealth + intentando Google Cache
+2026-04-24 14:14:58,457 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:14:58,458 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:14:58,458 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/opinion/sheinbaum-sobre-ebrard-dira-como-erasmo-y-dira-bien-aequi-bonique-facio/
+2026-04-24 14:15:16,298 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/mexico/fernando-farias-laguna-so… → activando stealth + intentando Google Cache
+2026-04-24 14:15:47,332 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:15:47,333 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:15:47,333 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/mexico/fernando-farias-laguna-solicitara-asilo-politico-en-argentina/
+2026-04-24 14:16:30,054 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/mexico/luisa-alcalde-analizara-i… → activando stealth + intentando Google Cache
+2026-04-24 14:17:50,028 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/acusan-a-maru-campos-de-… → activando stealth + intentando Google Cache
+2026-04-24 14:18:54,221 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/cdmx/activan-alerta-migr… → activando stealth + intentando Google Cache
+2026-04-24 14:19:35,285 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/confesion-de-parte-impun… → activando stealth + intentando Google Cache
+2026-04-24 14:21:03,404 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/lealtad-por-impunidad/… → activando stealth + intentando Google Cache
+2026-04-24 14:21:38,113 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/aprender-a-las-malas/… → activando stealth + intentando Google Cache
+2026-04-24 14:22:59,477 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/primero-la-risa-despues-… → activando stealth + intentando Google Cache
+2026-04-24 14:23:36,256 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:23:36,257 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:23:36,257 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/opinion/primero-la-risa-despues-el-terror/
+2026-04-24 14:23:59,183 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/el-feminicidio-de-caroli… → activando stealth + intentando Google Cache
+2026-04-24 14:24:45,311 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-04-24 14:24:45,312 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:24:45,312 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/opinion/el-feminicidio-de-carolina-y-el-amor-de-madre-que-devora-como-violencia-filioposesiva/
+2026-04-24 14:24:45,768 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 3s
+2026-04-24 14:25:15,599 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-24 14:25:15,600 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.debate.com.mx/rss/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:25:15,833 - src.collection.scraper - INFO - HTML listing: 0 enlaces a artículos en https://www.debate.com.mx/…
+2026-04-24 14:25:15,834 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.debate.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:25:19,448 - src.collection.scraper - INFO - HTML listing: 93 enlaces a artículos en https://www.razon.com.mx/…
+2026-04-24 14:25:26,075 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/24/fernando-farias-l… → activando stealth + intentando Google Cache
+2026-04-24 14:26:03,323 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-04-24 14:26:03,323 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:26:03,324 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/04/24/fernando-farias-laguna-pedira-asilo-en-argentina-y-rechaza-extradicion-a-mexico/
+2026-04-24 14:26:19,821 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/24/mexico-pedira-dep… → activando stealth + intentando Google Cache
+2026-04-24 14:26:49,301 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/24/cae-en-argentina-… → activando stealth + intentando Google Cache
+2026-04-24 14:28:33,860 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/24/crece-confianza-c… → activando stealth + intentando Google Cache
+2026-04-24 14:29:53,084 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/cultura/2026/04/24/distingue-snd-a-… → activando stealth + intentando Google Cache
+2026-04-24 14:30:09,659 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:30:09,659 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:30:09,660 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/cultura/2026/04/24/distingue-snd-a-la-razon-con-6-premios-mundiales-de-diseno/
+2026-04-24 14:30:37,166 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mundo/2026/04/24/netanyahu-revela-q… → activando stealth + intentando Google Cache
+2026-04-24 14:31:04,012 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:31:04,013 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:31:04,013 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mundo/2026/04/24/netanyahu-revela-que-fue-sometido-a-tratamiento-contra-cancer-de-prostata-fue-exitoso/
+2026-04-24 14:31:53,631 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/negocios/2026/04/24/este-es-el-prec… → activando stealth + intentando Google Cache
+2026-04-24 14:32:07,436 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:32:07,437 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:32:07,437 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/negocios/2026/04/24/este-es-el-precio-del-dolar-hoy-viernes-24-de-abril-de-2026/
+2026-04-24 14:32:33,906 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/23/asi-comenzo-el-at… → activando stealth + intentando Google Cache
+2026-04-24 14:32:59,286 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:32:59,286 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:32:59,287 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/04/23/asi-comenzo-el-ataque-en-teotihuacan-captan-a-agresor-antes-de-abrir-fuego-video/
+2026-04-24 14:33:17,791 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/cultura/2026/04/23/reabre-teotihuac… → activando stealth + intentando Google Cache
+2026-04-24 14:33:53,598 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-24 14:33:53,599 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-24 14:33:53,599 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/cultura/2026/04/23/reabre-teotihuacan-mas-vigilado-pero-con-revision-improvisada/
+2026-04-24 14:34:19,415 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/23/julio-no-destacab… → activando stealth + intentando Google Cache
+2026-04-24 14:34:56,619 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/24/eu-tambien-tiene-… → activando stealth + intentando Google Cache
+2026-04-24 14:35:37,470 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/04/24/presidenta-y-gob… → activando stealth + intentando Google Cache
+2026-04-24 14:41:22,040 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 14:41:22,079 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 14:41:22,079 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 14:41:22,080 - app - INFO - Esquema FTS inicializado
+2026-04-24 14:41:22,080 - app - INFO - Esquema FTS inicializado
+2026-04-24 14:41:22,188 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 14:41:22,188 - root - INFO - Datos cargados: 283 noticias desde análisis
+2026-04-24 14:41:35,854 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-24 14:41:35,865 - app - INFO - Logout: hectormorales
+2026-04-24 14:41:40,915 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-24 14:48:21,291 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-24 14:48:21,293 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eluniversal.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:48:21,933 - src.collection.collector - WARNING - Error scraping El Universal: No module named 'unidecode'
+2026-04-24 14:48:26,908 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-24 14:48:26,908 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.milenio.com/rss (Circuito abierto o fallo de conexión)
+2026-04-24 14:48:27,544 - src.collection.collector - WARNING - Error scraping Milenio: No module named 'unidecode'
+2026-04-24 14:48:28,055 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-24 14:48:28,057 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.excelsior.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:48:28,514 - src.collection.collector - WARNING - Error scraping Excélsior: No module named 'unidecode'
+2026-04-24 14:48:28,849 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-24 14:48:28,850 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.reporteindigo.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 14:48:29,108 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 1/3 en 3s
+2026-04-24 14:49:10,394 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 2/3 en 5s
+2026-04-24 14:49:15,877 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 3/3 en 10s
+2026-04-24 14:49:15,878 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.reporteindigo.com — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:49:26,207 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.reporteindigo.com/…
+2026-04-24 14:49:26,209 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.reporteindigo.com/… (métodos intentados: ['html'])
+2026-04-24 14:49:28,152 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/feed/… Reintento 1/3 en 3s
+2026-04-24 14:49:40,720 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/feed/… Reintento 2/3 en 6s
+2026-04-24 14:50:01,505 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/feed/… Reintento 3/3 en 9s
+2026-04-24 14:50:01,505 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para piedepagina.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:50:10,825 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://piedepagina.mx/feed/…
+2026-04-24 14:50:10,827 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://piedepagina.mx/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 14:50:12,775 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/… Reintento 1/3 en 3s
+2026-04-24 14:50:25,268 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/… Reintento 2/3 en 6s
+2026-04-24 14:50:32,375 - src.collection.scraper - INFO - HTTP 429 en https://piedepagina.mx/… Reintento 3/3 en 9s
+2026-04-24 14:50:32,376 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para piedepagina.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:50:41,568 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://piedepagina.mx/…
+2026-04-24 14:50:41,570 - src.collection.scraper - WARNING - No se encontraron artículos en https://piedepagina.mx/… (métodos intentados: ['html'])
+2026-04-24 14:50:44,758 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-24 14:50:44,758 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sdpnoticias.com/feed (Circuito abierto o fallo de conexión)
+2026-04-24 14:50:44,987 - src.collection.collector - WARNING - Error scraping SDP Noticias: No module named 'unidecode'
+2026-04-24 14:50:45,157 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 3s
+2026-04-24 14:50:59,947 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-24 14:50:59,947 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.debate.com.mx/rss/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:51:00,246 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.debate.com.mx/…
+2026-04-24 14:51:00,247 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.debate.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:51:03,395 - src.collection.collector - WARNING - Error scraping La Razón: No module named 'unidecode'
+2026-04-24 14:51:04,992 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-24 14:51:04,992 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.zocalo.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:51:05,411 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.zocalo.com.mx/…
+2026-04-24 14:51:05,412 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.zocalo.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:51:10,485 - src.collection.collector - WARNING - Error scraping Luchadoras: No module named 'unidecode'
+2026-04-24 14:51:11,480 - src.collection.collector - WARNING - Error scraping Google News: feminicidio menores huérfanos México: No module named 'unidecode'
+2026-04-24 14:51:11,850 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 2s
+2026-04-24 14:51:23,456 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 4s
+2026-04-24 14:51:42,921 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 15s
+2026-04-24 14:51:42,923 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:51:57,894 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-24 14:51:57,896 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-04-24 14:51:58,296 - src.collection.collector - WARNING - Error scraping El Economista: No module named 'unidecode'
+2026-04-24 14:51:59,329 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-24 14:51:59,330 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://elpais.com/mexico/rss/ (Circuito abierto o fallo de conexión)
+2026-04-24 14:52:00,108 - src.collection.collector - WARNING - Error scraping El País México: No module named 'unidecode'
+2026-04-24 14:52:00,900 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-24 14:52:00,901 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:52:01,252 - src.collection.collector - WARNING - Error scraping BBC Mundo: No module named 'unidecode'
+2026-04-24 14:52:04,723 - src.collection.collector - WARNING - Error scraping El Sol de Puebla: No module named 'unidecode'
+2026-04-24 14:52:05,950 - src.collection.collector - WARNING - Error scraping Diario de Xalapa: No module named 'unidecode'
+2026-04-24 14:52:06,882 - src.collection.collector - WARNING - Error scraping Google News: feminicidio hijos huérfanos México: No module named 'unidecode'
+2026-04-24 14:52:16,737 - src.collection.collector - WARNING - Error scraping Google News: feminicidio hijos menores México: No module named 'unidecode'
+2026-04-24 14:52:36,806 - src.collection.collector - WARNING - Error scraping Google News: feminicidio niños niñas México: No module named 'unidecode'
+2026-04-24 14:52:43,073 - src.collection.collector - WARNING - Error scraping Google News: "violencia feminicida" niños México: No module named 'unidecode'
+2026-04-24 14:52:43,393 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-24 14:52:43,393 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:53:10,860 - src.collection.collector - WARNING - Error scraping Google News: asesinato mujer hijos quedaron México: No module named 'unidecode'
+2026-04-24 14:54:05,589 - src.collection.collector - WARNING - Error scraping Google News: "alerta de género" menores México: No module named 'unidecode'
+2026-04-24 14:54:14,507 - src.collection.collector - WARNING - Error scraping Google News: orfandad violencia genero México: No module named 'unidecode'
+2026-04-24 14:54:26,728 - src.collection.collector - WARNING - Error scraping Google News: DIF custodia feminicidio hijos México: No module named 'unidecode'
+2026-04-24 14:54:38,491 - src.collection.collector - WARNING - Error scraping Google News: "violencia contra la mujer" menores huérfanos México: No module named 'unidecode'
+2026-04-24 14:55:07,134 - src.collection.collector - WARNING - Error scraping Google News: feminicidio NNA victimas indirectas México: No module named 'unidecode'
+2026-04-24 14:55:22,712 - src.collection.collector - WARNING - Error scraping Google News: feminicidio CDMX hijos menores: No module named 'unidecode'
+2026-04-24 14:55:33,565 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Jalisco NNA huérfanos: No module named 'unidecode'
+2026-04-24 14:55:37,675 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Estado de México menores: No module named 'unidecode'
+2026-04-24 14:55:38,049 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-24 14:55:38,050 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:55:38,810 - src.collection.collector - WARNING - Error scraping Aristegui Noticias: No module named 'unidecode'
+2026-04-24 14:56:03,464 - src.collection.collector - WARNING - Error scraping Google News: orfandad feminicidio menores México: No module named 'unidecode'
+2026-04-24 14:56:14,540 - src.collection.collector - WARNING - Error scraping Google News: "víctimas indirectas" feminicidio México: No module named 'unidecode'
+2026-04-24 14:56:15,872 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-24 14:56:15,872 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.animalpolitico.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 14:56:16,798 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.animalpolitico.com/…
+2026-04-24 14:56:16,799 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.animalpolitico.com/… (métodos intentados: ['html'])
+2026-04-24 14:56:17,839 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 3s
+2026-04-24 14:56:34,637 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 7s
+2026-04-24 14:56:49,936 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 14s
+2026-04-24 14:56:49,937 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:57:04,313 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-24 14:57:04,314 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sinembargo.mx/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 14:57:04,675 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 1/3 en 2s
+2026-04-24 14:57:19,299 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 2/3 en 7s
+2026-04-24 14:57:28,210 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 3/3 en 11s
+2026-04-24 14:57:28,213 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 14:57:39,503 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/…
+2026-04-24 14:57:39,504 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.sinembargo.mx/… (métodos intentados: ['html'])
+2026-04-24 14:57:39,883 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-04-24 14:57:39,883 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:57:42,762 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Veracruz hijos: No module named 'unidecode'
+2026-04-24 14:58:21,064 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Nuevo León niños: No module named 'unidecode'
+2026-04-24 14:58:43,184 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Guerrero NNA huérfanos: No module named 'unidecode'
+2026-04-24 14:59:11,156 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Puebla menores hijos: No module named 'unidecode'
+2026-04-24 14:59:11,691 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml…: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-04-24 14:59:11,693 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.elheraldodemexico.com/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 14:59:12,129 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.elheraldodemexico.com/…
+2026-04-24 14:59:12,130 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elheraldodemexico.com/… (métodos intentados: ['html'])
+2026-04-24 14:59:38,398 - src.collection.collector - WARNING - Error scraping Google News: feminicidio México location:México: No module named 'unidecode'
+2026-04-24 14:59:38,979 - src.collection.collector - WARNING - Error scraping Excélsior (Nacional): No module named 'unidecode'
+2026-04-24 14:59:43,575 - src.collection.scraper - WARNING - Error HTTP en https://feeds.bbci.co.uk/…: 404 Client Error: Not Found for url: https://feeds.bbci.co.uk/
+2026-04-24 14:59:43,577 - src.collection.scraper - WARNING - No se encontraron artículos en https://feeds.bbci.co.uk/… (métodos intentados: ['html'])
+2026-04-24 14:59:43,769 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-24 14:59:43,769 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-24 14:59:43,780 - src.collection.collector - WARNING - Circuit breaker OPEN para www.sinembargo.mx: 3 fallos consecutivos
+2026-04-24 14:59:43,781 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-04-24 14:59:43,782 - src.collection.collector - WARNING - Circuit breaker OPEN para piedepagina.mx: 3 fallos consecutivos
+2026-04-24 14:59:43,862 - src.analysis.dedup - INFO - Deduplicación: 264 noticias de entrada
+2026-04-24 14:59:43,906 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-24 14:59:43,954 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-24 14:59:44,110 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 7 duplicados
+2026-04-24 14:59:44,202 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-24 14:59:44,209 - src.analysis.dedup - INFO -   Resultado: 264 → 257 únicos (7 duplicados eliminados)
+2026-04-24 14:59:45,775 - src.analysis.dedup - INFO - Deduplicación: 257 noticias de entrada
+2026-04-24 14:59:45,809 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-24 14:59:45,848 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-24 14:59:45,997 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-24 14:59:46,067 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 1 duplicados
+2026-04-24 14:59:46,077 - src.analysis.dedup - INFO -   Resultado: 257 → 256 únicos (1 duplicados eliminados)
+2026-04-24 14:59:54,291 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-24 14:59:54,292 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-24 14:59:54,518 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 14:59:54,570 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-24 14:59:54,669 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 14:59:54,671 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-24 14:59:54,721 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 14:59:54,815 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-24 14:59:54,933 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-24 14:59:55,124 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 14:59:55,185 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-24 14:59:55,322 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-24 14:59:55,446 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-24 14:59:55,574 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-24 14:59:55,679 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-24 14:59:55,812 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-24 14:59:55,913 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-24 14:59:56,038 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-24 14:59:58,405 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-04-24 15:02:16,777 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 256 documentos
+2026-04-24 15:02:35,334 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-04-24 15:02:35,510 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:35,554 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:35,686 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:35,710 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:35,712 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-04-24 15:02:35,802 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:35,825 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:35,922 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:35,956 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-04-24 15:02:36,052 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:36,071 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:36,177 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:36,216 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:36,308 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:02:36,399 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:36,429 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:36,895 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:02:36,996 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:02:37,093 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:02:37,217 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:02:37,325 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:37,384 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:37,490 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:37,508 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:37,631 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:37,654 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:37,743 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:37,776 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:37,863 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:37,882 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:37,981 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-24 15:02:38,081 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-24 15:02:40,664 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-24 15:02:41,057 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:02:41,112 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-24 15:02:41,219 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-24 15:02:41,226 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-04-24 15:03:06,319 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 83/256 (32.4%)
+2026-04-24 15:03:06,453 - src.analysis.bertopic_clustering - INFO - Clustering completado: 9 temas, outliers finales: 83/256 (32.4%)
+2026-04-24 15:03:09,077 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-04-24 15:03:10,230 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:03:11,353 - src.database.repository - INFO - Batch insert: 256 noticias insertadas
+2026-04-24 15:03:13,656 - src.analysis.bertopic_clustering - INFO - Guardados 10 clusters en PostgreSQL
+2026-04-24 15:03:13,786 - root - INFO - Datos cargados: 256 noticias desde análisis
+2026-04-24 15:03:13,788 - root - INFO - Análisis background completado exitosamente
+2026-04-24 15:28:46,343 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 15:28:46,364 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:28:46,365 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:28:46,372 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:28:46,373 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:28:46,429 - root - INFO - Datos cargados: 256 noticias desde análisis
+2026-04-24 15:28:46,429 - root - INFO - Datos cargados: 256 noticias desde análisis
+2026-04-24 15:30:57,457 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 15:30:57,499 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:30:57,499 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:30:57,500 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:30:57,500 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:30:57,549 - root - INFO - Datos cargados: 256 noticias desde análisis
+2026-04-24 15:30:57,549 - root - INFO - Datos cargados: 256 noticias desde análisis
+2026-04-24 15:36:30,230 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-24 15:36:30,231 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.milenio.com/rss (Circuito abierto o fallo de conexión)
+2026-04-24 15:36:30,519 - src.collection.collector - WARNING - Error scraping Milenio: No module named 'unidecode'
+2026-04-24 15:36:30,818 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-24 15:36:30,819 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.excelsior.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 15:36:31,154 - src.collection.collector - WARNING - Error scraping Excélsior: No module named 'unidecode'
+2026-04-24 15:36:31,476 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-24 15:36:31,478 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.reporteindigo.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 15:36:31,682 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 1/3 en 3s
+2026-04-24 15:36:37,358 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 2/3 en 5s
+2026-04-24 15:37:01,499 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 3/3 en 15s
+2026-04-24 15:37:01,500 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.reporteindigo.com — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 15:37:16,619 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.reporteindigo.com/…
+2026-04-24 15:37:16,621 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.reporteindigo.com/… (métodos intentados: ['html'])
+2026-04-24 15:37:18,407 - src.collection.collector - WARNING - Error scraping Pie de Página: No module named 'unidecode'
+2026-04-24 15:37:21,154 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+2026-04-24 15:37:21,155 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:37:22,271 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-24 15:37:22,272 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sdpnoticias.com/feed (Circuito abierto o fallo de conexión)
+2026-04-24 15:37:22,524 - src.collection.collector - WARNING - Error scraping SDP Noticias: No module named 'unidecode'
+2026-04-24 15:37:22,770 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 3s
+2026-04-24 15:37:53,479 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-24 15:37:53,480 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.debate.com.mx/rss/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 15:37:53,719 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 1/3 en 3s
+2026-04-24 15:38:33,532 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 2/3 en 4s
+2026-04-24 15:38:39,608 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 3/3 en 11s
+2026-04-24 15:38:39,608 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.debate.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 15:38:50,351 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.debate.com.mx/…
+2026-04-24 15:38:50,353 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.debate.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:38:51,400 - src.collection.collector - WARNING - Error scraping La Razón: No module named 'unidecode'
+2026-04-24 15:38:51,892 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-24 15:38:51,894 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eluniversal.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 15:38:52,236 - src.collection.collector - WARNING - Error scraping El Universal: No module named 'unidecode'
+2026-04-24 15:38:53,150 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-24 15:38:53,151 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.zocalo.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 15:38:53,469 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.zocalo.com.mx/…
+2026-04-24 15:38:53,470 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.zocalo.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:38:57,983 - src.collection.collector - WARNING - Error scraping Luchadoras: No module named 'unidecode'
+2026-04-24 15:38:59,157 - src.collection.collector - WARNING - Error scraping Google News: feminicidio menores huérfanos México: No module named 'unidecode'
+2026-04-24 15:38:59,508 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-04-24 15:39:06,283 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 5s
+2026-04-24 15:39:18,970 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 13s
+2026-04-24 15:39:18,972 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 15:39:31,525 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-24 15:39:31,527 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-04-24 15:39:31,911 - src.collection.collector - WARNING - Error scraping El Economista: No module named 'unidecode'
+2026-04-24 15:39:32,904 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-24 15:39:32,904 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://elpais.com/mexico/rss/ (Circuito abierto o fallo de conexión)
+2026-04-24 15:39:33,458 - src.collection.collector - WARNING - Error scraping El País México: No module named 'unidecode'
+2026-04-24 15:39:33,725 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-24 15:39:33,726 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 15:39:34,120 - src.collection.collector - WARNING - Error scraping BBC Mundo: No module named 'unidecode'
+2026-04-24 15:39:36,075 - src.collection.collector - WARNING - Error scraping El Sol de Puebla: No module named 'unidecode'
+2026-04-24 15:39:37,162 - src.collection.collector - WARNING - Error scraping Diario de Xalapa: No module named 'unidecode'
+2026-04-24 15:39:38,087 - src.collection.collector - WARNING - Error scraping Google News: feminicidio hijos huérfanos México: No module named 'unidecode'
+2026-04-24 15:39:52,203 - src.collection.collector - WARNING - Error scraping Google News: feminicidio hijos menores México: No module named 'unidecode'
+2026-04-24 15:40:31,413 - src.collection.collector - WARNING - Error scraping Google News: feminicidio niños niñas México: No module named 'unidecode'
+2026-04-24 15:41:07,818 - src.collection.collector - WARNING - Error scraping Google News: "violencia feminicida" niños México: No module named 'unidecode'
+2026-04-24 15:41:08,275 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-24 15:41:08,277 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:41:18,003 - src.collection.collector - WARNING - Error scraping Google News: asesinato mujer hijos quedaron México: No module named 'unidecode'
+2026-04-24 15:41:38,327 - src.collection.collector - WARNING - Error scraping Google News: "alerta de género" menores México: No module named 'unidecode'
+2026-04-24 15:41:54,149 - src.collection.collector - WARNING - Error scraping Google News: orfandad violencia genero México: No module named 'unidecode'
+2026-04-24 15:42:08,190 - src.collection.collector - WARNING - Error scraping Google News: DIF custodia feminicidio hijos México: No module named 'unidecode'
+2026-04-24 15:42:14,345 - src.collection.collector - WARNING - Error scraping Google News: feminicidio NNA victimas indirectas México: No module named 'unidecode'
+2026-04-24 15:42:37,942 - src.collection.collector - WARNING - Error scraping Google News: feminicidio CDMX hijos menores: No module named 'unidecode'
+2026-04-24 15:43:10,964 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Jalisco NNA huérfanos: No module named 'unidecode'
+2026-04-24 15:43:15,431 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Estado de México menores: No module named 'unidecode'
+2026-04-24 15:43:15,651 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-24 15:43:15,652 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:43:16,232 - src.collection.collector - WARNING - Error scraping Aristegui Noticias: No module named 'unidecode'
+2026-04-24 15:43:33,482 - src.collection.collector - WARNING - Error scraping Google News: orfandad feminicidio menores México: No module named 'unidecode'
+2026-04-24 15:43:46,093 - src.collection.collector - WARNING - Error scraping Google News: "víctimas indirectas" feminicidio México: No module named 'unidecode'
+2026-04-24 15:43:46,960 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-24 15:43:46,960 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.animalpolitico.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 15:43:47,747 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.animalpolitico.com/…
+2026-04-24 15:43:47,747 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.animalpolitico.com/… (métodos intentados: ['html'])
+2026-04-24 15:43:48,812 - src.collection.collector - WARNING - Error scraping El Sol de México: No module named 'unidecode'
+2026-04-24 15:43:48,959 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 4s
+2026-04-24 15:43:56,223 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 4s
+2026-04-24 15:44:05,216 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 15s
+2026-04-24 15:44:05,217 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 15:44:19,873 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-24 15:44:19,875 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sinembargo.mx/feed/ (Circuito abierto o fallo de conexión)
+2026-04-24 15:44:19,997 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 1/3 en 3s
+2026-04-24 15:44:32,631 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 2/3 en 6s
+2026-04-24 15:44:39,018 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 3/3 en 16s
+2026-04-24 15:44:39,019 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 15:44:54,840 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/…
+2026-04-24 15:44:54,841 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.sinembargo.mx/… (métodos intentados: ['html'])
+2026-04-24 15:44:57,687 - src.collection.scraper - INFO - HTTP 403 en https://feeds.elpais.com/… Reintento 1/3 en 3s
+2026-04-24 15:45:04,032 - src.collection.scraper - INFO - HTTP 403 en https://feeds.elpais.com/… Reintento 2/3 en 4s
+2026-04-24 15:45:23,795 - src.collection.scraper - INFO - HTTP 403 en https://feeds.elpais.com/… Reintento 3/3 en 11s
+2026-04-24 15:45:23,795 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para feeds.elpais.com — 3 fallos consecutivos. Cooldown 300s
+2026-04-24 15:45:34,553 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://feeds.elpais.com/…
+2026-04-24 15:45:34,555 - src.collection.scraper - WARNING - No se encontraron artículos en https://feeds.elpais.com/… (métodos intentados: ['html'])
+2026-04-24 15:45:36,389 - src.collection.scraper - WARNING - Error HTTP en https://feeds.bbci.co.uk/…: 404 Client Error: Not Found for url: https://feeds.bbci.co.uk/
+2026-04-24 15:45:36,391 - src.collection.scraper - WARNING - No se encontraron artículos en https://feeds.bbci.co.uk/… (métodos intentados: ['html'])
+2026-04-24 15:45:36,574 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-24 15:45:36,575 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:45:37,327 - src.collection.collector - WARNING - Error scraping Google News: "violencia contra la mujer" menores huérfanos México: No module named 'unidecode'
+2026-04-24 15:45:37,657 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-04-24 15:45:37,657 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:45:38,845 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://cimacnoticias.com.mx/…
+2026-04-24 15:45:38,846 - src.collection.scraper - WARNING - No se encontraron artículos en https://cimacnoticias.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:45:39,773 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.noroeste.com.mx/…
+2026-04-24 15:45:39,773 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.noroeste.com.mx/… (métodos intentados: ['html'])
+2026-04-24 15:45:45,457 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Veracruz hijos: No module named 'unidecode'
+2026-04-24 15:46:14,169 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Chihuahua menores: No module named 'unidecode'
+2026-04-24 15:46:23,516 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Guerrero NNA huérfanos: No module named 'unidecode'
+2026-04-24 15:46:35,285 - src.collection.collector - WARNING - Error scraping Google News: feminicidio Puebla menores hijos: No module named 'unidecode'
+2026-04-24 15:46:35,987 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml…: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-04-24 15:46:35,988 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.elheraldodemexico.com/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-24 15:46:36,529 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.elheraldodemexico.com/…
+2026-04-24 15:46:36,529 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elheraldodemexico.com/… (métodos intentados: ['html'])
+2026-04-24 15:46:54,920 - src.collection.collector - WARNING - Error scraping Google News: feminicidio México location:México: No module named 'unidecode'
+2026-04-24 15:46:55,483 - src.collection.collector - WARNING - Error scraping Excélsior (Nacional): No module named 'unidecode'
+2026-04-24 15:46:55,488 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-04-24 15:46:55,489 - src.collection.collector - WARNING - Circuit breaker OPEN para www.sinembargo.mx: 3 fallos consecutivos
+2026-04-24 15:46:55,526 - src.analysis.dedup - INFO - Deduplicación: 20 noticias de entrada
+2026-04-24 15:46:55,537 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-24 15:46:55,541 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-24 15:46:55,553 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-24 15:46:55,578 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-24 15:46:55,585 - src.analysis.dedup - INFO -   Resultado: 20 → 20 únicos (0 duplicados eliminados)
+2026-04-24 15:46:56,007 - src.analysis.dedup - INFO - Deduplicación: 20 noticias de entrada
+2026-04-24 15:46:56,011 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-24 15:46:56,015 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-24 15:46:56,026 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-24 15:46:56,033 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-24 15:46:56,035 - src.analysis.dedup - INFO -   Resultado: 20 → 20 únicos (0 duplicados eliminados)
+2026-04-24 15:47:03,734 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-24 15:47:03,735 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-24 15:47:03,965 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:04,000 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:04,116 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:04,212 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:04,311 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:04,433 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-24 15:47:04,631 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:04,654 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:04,778 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:04,898 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-24 15:47:05,038 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-24 15:47:05,154 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-24 15:47:05,267 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-24 15:47:05,388 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:05,488 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-24 15:47:05,489 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-24 15:47:08,027 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-04-24 15:47:19,243 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 20 documentos
+2026-04-24 15:47:37,593 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-04-24 15:47:37,765 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:37,789 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:37,876 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:37,915 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:37,918 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-04-24 15:47:38,011 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:38,054 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:38,153 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:38,173 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-04-24 15:47:38,261 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:38,288 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:38,379 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:38,400 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:38,494 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:38,583 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:38,604 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:39,103 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:39,205 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:39,308 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:39,424 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:39,516 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:39,537 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:39,634 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:39,652 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:39,744 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:39,797 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:39,901 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:39,927 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:40,041 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:40,068 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:40,160 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-24 15:47:40,253 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-24 15:47:42,786 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-24 15:47:43,092 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 15:47:43,115 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-24 15:47:43,212 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-24 15:47:43,216 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-04-24 15:47:52,402 - src.analysis.analyzer - ERROR - Error en step_10_bertopic_clustering
+Traceback (most recent call last):
+  File "/app/src/analysis/analyzer.py", line 719, in step_10_bertopic_clustering
+    results = clustering.fit_transform(docs=docs, titles=titles)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/analysis/bertopic_clustering.py", line 336, in fit_transform
+    topics, probs = self.topic_model.fit_transform(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/bertopic/_bertopic.py", line 520, in fit_transform
+    self._extract_topics(
+  File "/usr/local/lib/python3.11/site-packages/bertopic/_bertopic.py", line 4204, in _extract_topics
+    self.c_tf_idf_, words = self._c_tf_idf(documents_per_topic)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/bertopic/_bertopic.py", line 4422, in _c_tf_idf
+    X = self.vectorizer_model.fit_transform(documents)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sklearn/base.py", line 1474, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sklearn/feature_extraction/text.py", line 1399, in fit_transform
+    raise ValueError("max_df corresponds to < documents than min_df")
+ValueError: max_df corresponds to < documents than min_df
+2026-04-24 15:47:52,503 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:47:52,671 - src.database.repository - INFO - Batch insert: 20 noticias insertadas
+2026-04-24 15:47:52,681 - root - INFO - Datos cargados: 20 noticias desde análisis
+2026-04-24 15:47:52,682 - root - INFO - Análisis background completado exitosamente
+2026-04-24 15:48:46,604 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-24 15:54:20,580 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-24 15:54:20,607 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:54:20,608 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:54:20,608 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:54:20,609 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:54:20,623 - root - INFO - Datos cargados: 20 noticias desde análisis
+2026-04-24 15:54:20,626 - root - INFO - Datos cargados: 20 noticias desde análisis
+2026-04-24 15:57:32,715 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:57:32,716 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:57:32,727 - root - INFO - Datos cargados: 20 noticias desde análisis
+2026-04-24 15:57:32,742 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-24 15:57:32,742 - app - INFO - Esquema FTS inicializado
+2026-04-24 15:57:32,752 - root - INFO - Datos cargados: 20 noticias desde análisis

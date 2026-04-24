@@ -92,6 +92,10 @@ class Noticia(db.Model):
         comment="rss | html | sitemap | google_news_historical | wayback_machine",
     )
     menores_identificados = db.Column(db.String(5), default="No")
+    batch_id = db.Column(
+        db.String(50), nullable=True, index=True,
+        comment="ID de la ejecución/búsqueda",
+    )
 
     # Full-Text Search vector (tsvector)
     # Se puebla via trigger SQL o al insertar
@@ -140,6 +144,7 @@ class Noticia(db.Model):
             "topic_id": self.topic_id,
             "menores_identificados": self.menores_identificados,
             "scrape_method": self.scrape_method,
+            "batch_id": self.batch_id,
         }
 
     def __repr__(self):

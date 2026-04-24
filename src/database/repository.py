@@ -413,6 +413,7 @@ class NoticiasRepository:
         clasificacion: str | None = None,
         solo_nna: bool = False,
         orden: str = "fecha",
+        batch_id: str | None = None,
     ) -> dict:
         """
         Lista noticias con paginación y filtros.
@@ -425,8 +426,15 @@ class NoticiasRepository:
         start_time = time.time()
         q = Noticia.query
 
+        if batch_id:
+            q = q.filter(Noticia.batch_id == batch_id)
+
         if clasificacion:
             q = q.filter(Noticia.clasificacion_final == clasificacion)
+        else:
+            # Por defecto, ocultar las 'No relevante' para que no ensucien el dashboard
+            q = q.filter(Noticia.clasificacion_final != 'No relevante')
+
         if solo_nna:
             q = q.filter(Noticia.menores_identificados == "Si")
 
@@ -454,7 +462,19 @@ class NoticiasRepository:
         }
 
     @staticmethod
-    def estadisticas() -> dict:
+    def get_latest_batch_id() -> str | None:
+        from src.database.models_noticias import Noticia
+        latest = Noticia.query.filter(Noticia.batch_id.isnot(None)).order_by(desc(Noticia.created_at)).first()
+        return latest.batch_id if latest else None
+
+    @staticmethod
+    def get_all_batches() -> list[str]:
+        from src.database.models_noticias import Noticia
+        batches = db.session.query(Noticia.batch_id).filter(Noticia.batch_id.isnot(None)).distinct().all()
+        return [b[0] for b in batches if b[0]]
+
+    @staticmethod
+    def estadisticas(batch_id: str | None = None) -> dict:
         """
         Estadísticas generales de la base de datos.
 
@@ -463,26 +483,27 @@ class NoticiasRepository:
         from src.database.models_noticias import Noticia
 
         start_time = time.time()
+        
+        q = Noticia.query
+        if batch_id:
+            q = q.filter(Noticia.batch_id == batch_id)
 
-        total = Noticia.query.count()
-        nna = Noticia.query.filter(
-            Noticia.menores_identificados == "Si"
-        ).count()
-        alta = Noticia.query.filter(
-            Noticia.clasificacion_final == "Alta"
-        ).count()
-        media = Noticia.query.filter(
-            Noticia.clasificacion_final == "Media"
-        ).count()
-        baja = Noticia.query.filter(
-            Noticia.clasificacion_final == "Baja"
-        ).count()
-        clusters = db.session.query(
-            func.count(func.distinct(Noticia.cluster_id))
-        ).scalar() or 0
-        topics = db.session.query(
-            func.count(func.distinct(Noticia.topic_id))
-        ).scalar() or 0
+        total = q.count()
+        nna = q.filter(Noticia.menores_identificados == "Si").count()
+        alta = q.filter(Noticia.clasificacion_final == "Alta").count()
+        media = q.filter(Noticia.clasificacion_final == "Media").count()
+        baja = q.filter(Noticia.clasificacion_final == "Baja").count()
+        
+        # Para clusters y topics, aplicamos el filtro también
+        q_cluster = db.session.query(func.count(func.distinct(Noticia.cluster_id)))
+        if batch_id:
+            q_cluster = q_cluster.filter(Noticia.batch_id == batch_id)
+        clusters = q_cluster.scalar() or 0
+        
+        q_topic = db.session.query(func.count(func.distinct(Noticia.topic_id)))
+        if batch_id:
+            q_topic = q_topic.filter(Noticia.batch_id == batch_id)
+        topics = q_topic.scalar() or 0
 
         # Similitud promedio
         avg_sim = db.session.query(

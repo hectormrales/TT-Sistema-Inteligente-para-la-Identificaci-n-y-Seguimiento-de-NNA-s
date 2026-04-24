@@ -114,6 +114,7 @@ class SimplifiedNewsAnalyzer:
         self.lda_model: Optional[LatentDirichletAllocation] = None
         self.kmeans_model: Optional[KMeans] = None
         self.synonym_dict = SynonymDictionary()
+        self.current_batch_id: Optional[str] = None
 
     # ── Pasos del pipeline ──────────────────────────────────
 
@@ -479,6 +480,10 @@ class SimplifiedNewsAnalyzer:
         print("  PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO")
         print("=" * 60)
 
+        from datetime import datetime
+        self.current_batch_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        print(f"  Batch ID de ejecución: {self.current_batch_id}")
+
         # Pasos 1-8: Pipeline original
         self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
 
@@ -536,6 +541,10 @@ class SimplifiedNewsAnalyzer:
         print("=" * 60)
         print("  PIPELINE DE ANÁLISIS v5.0 — SOLO ANÁLISIS (sin scraping)")
         print("=" * 60)
+
+        from datetime import datetime
+        self.current_batch_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        print(f"  Batch ID de ejecución: {self.current_batch_id}")
 
         # Cargar datos existentes del CSV en lugar de recolectar
         csv_path = os.path.join(self.DATA_DIR, 'noticias.csv')
@@ -703,8 +712,8 @@ class SimplifiedNewsAnalyzer:
             docs = self.df_processed["contenido"].fillna("").astype(str).tolist()
             titles = self.df_processed["titulo"].fillna("").astype(str).tolist()
 
-            if len(docs) < 20:
-                print("  [!] Muy pocos documentos para BERTopic (mínimo 20)")
+            if len(docs) < 30:
+                print("  [!] Muy pocos documentos para BERTopic (mínimo 30)")
                 return self.df_processed
 
             results = clustering.fit_transform(docs=docs, titles=titles)
@@ -801,6 +810,7 @@ class SimplifiedNewsAnalyzer:
                             "clasificacion_final",
                             row.get("clasificacion", "No relevante"),
                         ),
+                        "batch_id": self.current_batch_id,
                         "score_semantico": (
                             float(row["score_semantico"])
                             if pd.notna(row.get("score_semantico"))

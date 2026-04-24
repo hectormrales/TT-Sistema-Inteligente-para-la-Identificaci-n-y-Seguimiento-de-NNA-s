@@ -133,6 +133,20 @@ def index():
 
 # ── API REST ────────────────────────────────────────────────
 
+@main_bp.route('/api/batches')
+@login_required
+def api_batches():
+    """Lista todos los batch_ids (historial de ejecuciones)."""
+    if _check_postgres():
+        try:
+            from src.database.repository import NoticiasRepository
+            batches = NoticiasRepository.get_all_batches()
+            return jsonify({'batches': batches})
+        except Exception as e:
+            logging.error(f"Error fetching batches: {e}")
+            return jsonify({'error': str(e)}), 500
+    return jsonify({'batches': []})
+
 @main_bp.route('/api/stats')
 @login_required
 def api_stats():
@@ -141,8 +155,13 @@ def api_stats():
     if _check_postgres():
         try:
             from src.database.repository import NoticiasRepository
-            stats = NoticiasRepository.estadisticas()
+            batch_id = request.args.get('batch_id')
+            if not batch_id:
+                batch_id = NoticiasRepository.get_latest_batch_id()
+                
+            stats = NoticiasRepository.estadisticas(batch_id=batch_id)
             stats['data_source'] = 'postgresql'
+            stats['current_batch_id'] = batch_id
             return jsonify(stats)
         except Exception as e:
             logging.warning(f"Fallback a CSV: {e}")
@@ -166,19 +185,25 @@ def api_noticias():
     only_nna = request.args.get('only_nna', 'false').lower() == 'true'
     clasificacion = request.args.get('clasificacion', '').strip()
     orden = request.args.get('orden', 'fecha')
+    batch_id = request.args.get('batch_id')
 
     # Intentar PostgreSQL primero
     if _check_postgres():
         try:
             from src.database.repository import NoticiasRepository
+            if not batch_id:
+                batch_id = NoticiasRepository.get_latest_batch_id()
+                
             result = NoticiasRepository.listar(
                 page=page,
                 per_page=per_page,
                 clasificacion=clasificacion or None,
                 solo_nna=only_nna,
                 orden=orden,
+                batch_id=batch_id,
             )
             result['data_source'] = 'postgresql'
+            result['current_batch_id'] = batch_id
             return jsonify(result)
         except Exception as e:
             logging.warning(f"PostgreSQL fallback: {e}")
@@ -198,6 +223,11 @@ def api_noticias():
         col = 'clasificacion_final' if 'clasificacion_final' in data.columns else 'clasificacion'
         if col in data.columns:
             data = data[data[col] == clasificacion]
+    else:
+        # Por defecto, ocultar las 'No relevante'
+        col = 'clasificacion_final' if 'clasificacion_final' in data.columns else 'clasificacion'
+        if col in data.columns:
+            data = data[data[col] != 'No relevante']
 
     # Determinar ordenamiento: fecha (más reciente) o relevancia (más alta)
     sort_col = 'relevancia_final' if 'relevancia_final' in data.columns else 'score_compuesto'

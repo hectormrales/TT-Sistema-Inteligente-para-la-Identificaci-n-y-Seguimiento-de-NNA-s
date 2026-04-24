@@ -1135,6 +1135,7 @@ class DynamicScraper:
         url: str,
         method: str = 'auto',
         max_articles: int = 50,
+        keywords: list[str] | None = None
     ) -> list[dict]:
         """
         Scrapea una fuente usando el método indicado o auto-detectado.
@@ -1194,11 +1195,11 @@ class DynamicScraper:
             # Último recurso: HTML scraping directo
             if 'html' not in methods_tried:
                 logger.info(f"Métodos {methods_tried} sin resultados, intentando HTML: {url[:60]}…")
-                articles = self._scrape_html_listing(url, max_articles, crawl_delay)
+                articles = self._scrape_html_listing(url, max_articles, crawl_delay, keywords)
                 methods_tried.append('html')
 
         if not articles and method == 'html':
-            articles = self._scrape_html_listing(url, max_articles, crawl_delay)
+            articles = self._scrape_html_listing(url, max_articles, crawl_delay, keywords)
             methods_tried.append('html')
 
         if not articles:
@@ -1383,7 +1384,7 @@ class DynamicScraper:
         return articles
 
     def _scrape_html_listing(
-        self, url: str, max_articles: int, crawl_delay: float | None
+        self, url: str, max_articles: int, crawl_delay: float | None, keywords: list[str] | None = None
     ) -> list[dict]:
         """
         Scrapea una página HTML que lista noticias.
@@ -1447,10 +1448,23 @@ class DynamicScraper:
         unique_urls = []
         for u, t in article_urls:
             if u not in seen:
+                # Filtrado por keywords ANTES de la extracción completa
+                if keywords:
+                    text_to_check = f"{u} {t}".lower()
+                    import unicodedata
+                    
+                    def remove_accents(input_str):
+                        return ''.join(c for c in unicodedata.normalize('NFKD', input_str) if unicodedata.category(c) != 'Mn')
+                    
+                    text_to_check = remove_accents(text_to_check)
+                    normalized_keywords = [remove_accents(k.lower()) for k in keywords]
+                    
+                    if not any(k in text_to_check for k in normalized_keywords):
+                        continue
                 seen.add(u)
                 unique_urls.append((u, t))
 
-        logger.info(f"HTML listing: {len(unique_urls)} enlaces a artículos en {url[:60]}…")
+        logger.info(f"HTML listing: {len(unique_urls)} enlaces (después del filtrado) en {url[:60]}…")
 
         # Extraer contenido de cada artículo
         for article_url, _ in unique_urls[:max_articles]:

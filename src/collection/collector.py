@@ -110,12 +110,16 @@ FEMINICIDIO_KEYWORDS: list[Tuple[str, float]] = [
     (r'\bhomicidio\s+(?:doloso\s+)?de\s+(?:(?:una|la)\s+)?mujer\b', 0.85),
     (r'\bviolencia\s+de\s+g[eé]nero\b', 0.7),
     (r'\bcrimen\s+de\s+g[eé]nero\b',  0.7),
+    (r'\b(?:mujer|empresaria|joven|madre|chica|abuela|ni[ñn]a|maestra|doctora|estudiante|modelo)\s+(?:asesinada|muerta|sin\s+vida|baleada|ejecutada|ultimada|hallada|encontrada)\b', 1.0),
+    (r'\b(?:asesinada|asesinadas)\b', 0.8),
+    (r'\bmadre\s+de\s+\d+\s+ni[ñn]os?\b', 0.9),
+    (r'\bmadre\s+de\s+familia\s+(?:asesinada|muerta|sin\s+vida)\b', 1.0),
     (r'\bviolencia\s+contra\s+(?:la\s+)?mujer(?:es)?\b', 0.65),
-    (r'\bmata(?:ron|r(?:on)?|do|da)?\s+a\s+(?:su\s+)?(?:esposa|pareja|novia|mujer|concubina|ex)\b', 0.85),
+    (r'\bmata(?:ron|r(?:on)?|do|da)?\s+a\s+(?:su\s+)?(?:esposa|pareja|novia|mujer|concubina|ex|madre)\b', 0.85),
     (r'\bpriv[oó]\s+de\s+la\s+vida\s+a\s+(?:una\s+)?mujer\b', 0.8),
     # Contextuales (peso medio)
     (r'\balerta\s+de\s+(?:violencia\s+de\s+)?g[eé]nero\b', 0.55),
-    (r'\bviolencia\s+(?:dom[eé]stica|intrafamiliar|familiar)\b', 0.5),
+    (r'\bviolencia\s+(?:dom[eé]stica|intrafamiliar|familiar|vicaria)\b', 0.5),
     (r'\bagres(?:or|ión)\s+(?:sexual|física)\b', 0.45),
     (r'\bvictimario\b',                0.4),
     (r'\bpareja\s+sentimental\b',      0.35),
@@ -135,7 +139,8 @@ NNA_KEYWORDS: list[Tuple[str, float]] = [
     (r'\bNNA\b',                       0.9),
     (r'\bni[ñn][oa]s?\s+(?:quedaron|sobreviv|afectad|desamparad|sin\s+madre)\b', 0.9),
     # Términos de NNA genéricos (peso medio)
-    (r'\bhij[oa]s?\b',                 0.6),
+    (r'\bhij[oa]s?\b',                 0.65),
+    (r'\bmadre\s+de\s+\d+\s+(?:hijos?|ni[ñn]os?|menores?)\b', 1.0),
     (r'\bmenor(?:es)?(?:\s+de\s+edad)?\b', 0.55),
     (r'\bni[ñn][oa]s?\b',             0.5),
     (r'\badolescentes?\b',             0.5),
@@ -528,7 +533,7 @@ def score_relevance(title: str, content: str) -> dict:
         # Estadísticas y cifras
         r'\bcifras?\s+de\s+(?:feminicidio|violencia)\b',
         r'\bestadísticas?\s+de\s+(?:feminicidio|violencia|género)\b',
-        r'\b(?:sube|baja|aumenta|disminuye|incrementa|reduce)\s+(?:el\s+)?(?:número|cifra|índice|tasa)\b',
+        r'\b(?:sube|baja|aumenta|disminuye|incrementa|reduce|suma|sumar)\s+(?:el\s+)?(?:número|cifra|índice|tasa|casos)\b',
         r'\binforme\s+(?:anual|mensual|trimestral|semestral|de\s+cifras|del?\s+\d{4})\b',
         r'\breporte\s+(?:anual|mensual|estadístico|de\s+incidencia)\b',
         r'\b\d+\s+(?:feminicidios|víctimas|casos)\s+(?:en|durante|al|del?)\s+(?:el\s+)?\d{4}\b',
@@ -541,6 +546,7 @@ def score_relevance(title: str, content: str) -> dict:
         r'\bpol[ií]tica\s+p[uú]blica\b',
         r'\bprotocolo\s+(?:de|para|contra)\b',
         r'\bcomisi[oó]n\s+(?:de|para|sobre)\b',
+        r'\bsemujeres\b',
         r'\bforo\s+(?:de|sobre|para|contra)\b',
         r'\bjornada\s+(?:de|contra|sobre)\b',
         r'\bcampa[ñn]a\s+(?:de|contra|para)\b',
@@ -573,6 +579,22 @@ def score_relevance(title: str, content: str) -> dict:
             score_comp *= 0.25  # Penalización fuerte
         else:
             score_comp *= 0.40  # Penalización moderada
+
+    # ── Penalización: Menor como agresor, no como víctima indirecta ──
+    # Evita que noticias de "menor de edad comete feminicidio" sumen al eje NNA
+    MENOR_AGRESOR_PATTERNS = [
+        r'\b(?:imputan|detienen|acusan|procesan|vinculan|condenan|sentencian)\s+(?:a|al)\s+(?:un\s+)?menor\b',
+        r'\bmenor\s+(?:de\s+(?:edad|\d+\s+a[ñn]os)\s+)?(?:asesin[oó]|mat[oó]|dispar[oó]|atac[oó])\b',
+        r'\bmenor\s+(?:infractor|agresor|homicida|feminicida)\b',
+        r'\baprehenden\s+a\s+menor\b'
+    ]
+    is_menor_agresor = any(
+        re.search(p, combined_norm, re.IGNORECASE)
+        for p in MENOR_AGRESOR_PATTERNS
+    )
+    if is_menor_agresor:
+        score_nna *= 0.1  # Prácticamente eliminar el eje NNA
+        score_comp *= 0.6 # Reducir el score compuesto también
 
     # ── Penalización: solo feminicidio sin NNA → no es lo que buscamos ──
     # v8.0: Si SOLO hay señal de feminicidio pero NO de NNA, penalizar fuerte.
@@ -817,14 +839,44 @@ def collect_all_news(
                                 end_date=end_date,
                                 keep_all=keep_all
                             )
+                            if not articles:
+                                print(f"    [!] RSS falló o vacío. Intentando fallback HTML automático...")
+                                from urllib.parse import urlparse
+                                parsed = urlparse(source['url'])
+                                base_url = f"{parsed.scheme}://{parsed.netloc}/"
+                                
+                                raw_articles = scraper.scrape_source(
+                                    base_url,
+                                    method='html',
+                                    max_articles=15, # Conservador para el fallback
+                                    keywords=["feminicidio", "nna", "niñ", "menor", "huerfan", "hijo", "victima", "infant", "adolescente", "asesinat", "mujer", "violencia", "genero"]
+                                )
+                                for art in raw_articles:
+                                    enlace = art.get('enlace', base_url)
+                                    if enlace in seen_urls and not (start_date or end_date):
+                                        continue
+                                    if not _is_mexico_news(art.get('titulo', ''), art.get('contenido', ''), enlace):
+                                        continue
+                                    rel = score_relevance(art['titulo'], art['contenido'])
+                                    art.update(rel)
+                                    art['fuente'] = source['name']
+                                    art['scrape_method'] = 'html_fallback'
+                                    articles.append(art)
+                                    if enlace:
+                                        seen_urls.add(enlace)
+
                             for art in articles:
+                                # Asegurar que tengan fuente asignada (por si vienen del rss o del fallback)
                                 art['fuente'] = source['name']
                             all_articles.extend(articles)
                             _update_db_source_status(
                                 source['id'], 'ok', len(articles)
                             )
                             sources_ok += 1
-                            print(f"    → {len(articles)} artículos")
+                            if any(a.get('scrape_method') == 'html_fallback' for a in articles):
+                                print(f"    → {len(articles)} artículos (vía Fallback HTML)")
+                            else:
+                                print(f"    → {len(articles)} artículos")
                         else:
                             raw_articles = scraper.scrape_source(
                                 source['url'],
