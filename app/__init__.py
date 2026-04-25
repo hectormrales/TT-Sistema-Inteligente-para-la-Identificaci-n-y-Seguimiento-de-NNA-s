@@ -111,32 +111,43 @@ def _init_database(app: Flask) -> None:
     except ImportError:
         app.logger.warning("Modelos de noticias no disponibles")
 
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as e:
+        app.logger.warning(f"Error en create_all (posible concurrencia): {e}")
 
     # ── Migración: agregar columna is_predefined si no existe ──
-    inspector = inspect(db.engine)
-    if inspector.has_table('news_sources'):
-        columns = [c['name'] for c in inspector.get_columns('news_sources')]
-        if 'is_predefined' not in columns:
-            db.session.execute(text(
-                'ALTER TABLE news_sources '
-                'ADD COLUMN is_predefined BOOLEAN DEFAULT FALSE NOT NULL'
-            ))
-            db.session.commit()
-            app.logger.info("Columna 'is_predefined' agregada a news_sources")
+    try:
+        inspector = inspect(db.engine)
+        if inspector.has_table('news_sources'):
+            columns = [c['name'] for c in inspector.get_columns('news_sources')]
+            if 'is_predefined' not in columns:
+                db.session.execute(text(
+                    'ALTER TABLE news_sources '
+                    'ADD COLUMN is_predefined BOOLEAN DEFAULT FALSE NOT NULL'
+                ))
+                db.session.commit()
+                app.logger.info("Columna 'is_predefined' agregada a news_sources")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning(f"Error en migración (posible concurrencia): {e}")
 
     # ── Usuario admin ──
-    admin_password = os.environ.get('ADMIN_PASSWORD', 'Admin_NNA_2026!')
-    if not User.query.filter_by(username='admin').first():
-        admin = User(
-            username='admin',
-            email='admin@sistema-nna.local',
-            is_admin=True,
-        )
-        admin.set_password(admin_password)
-        db.session.add(admin)
-        db.session.commit()
-        app.logger.info("Usuario administrador creado")
+    try:
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'Admin_NNA_2026!')
+        if not User.query.filter_by(username='admin').first():
+            admin = User(
+                username='admin',
+                email='admin@sistema-nna.local',
+                is_admin=True,
+            )
+            admin.set_password(admin_password)
+            db.session.add(admin)
+            db.session.commit()
+            app.logger.info("Usuario administrador creado")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning(f"Error creando administrador (posible concurrencia): {e}")
 
     # ── Fuentes predeterminadas ──
     _seed_predefined_sources(app)

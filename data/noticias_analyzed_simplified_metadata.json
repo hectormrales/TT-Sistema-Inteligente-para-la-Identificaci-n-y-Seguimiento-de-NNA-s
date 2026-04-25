@@ -1,6 +1,6 @@
 {
-  "total_noticias": 20,
-  "noticias_con_nna": 0,
+  "total_noticias": 218,
+  "noticias_con_nna": 11,
   "alta_relevancia": 0,
   "media_relevancia": 0,
   "columnas_disponibles": [
@@ -15,6 +15,7 @@
     "clasificacion",
     "menores_identificados",
     "cluster",
+    "scrape_method",
     "titulo_limpio",
     "contenido_limpio",
     "texto_combinado",

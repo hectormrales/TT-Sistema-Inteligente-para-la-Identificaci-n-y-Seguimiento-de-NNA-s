@@ -236,7 +236,7 @@ def api_noticias():
         data = data.sort_values(sort_col, ascending=False)
     elif 'fecha' in data.columns:
         try:
-            data['_fecha_sort'] = pd.to_datetime(data['fecha'], errors='coerce')
+            data['_fecha_sort'] = pd.to_datetime(data['fecha'], errors='coerce', utc=True)
             data = data.sort_values('_fecha_sort', ascending=False, na_position='last')
             data = data.drop(columns=['_fecha_sort'])
         except Exception:
@@ -484,7 +484,7 @@ def api_charts_temporal():
     if 'fecha' not in df.columns:
         return jsonify({'labels': [], 'total': [], 'nna': []})
 
-    df['_fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
+    df['_fecha'] = pd.to_datetime(df['fecha'], errors='coerce', utc=True)
     df = df.dropna(subset=['_fecha'])
     df['_mes'] = df['_fecha'].dt.strftime('%Y-%m')
     grouped = df.groupby('_mes').agg(
