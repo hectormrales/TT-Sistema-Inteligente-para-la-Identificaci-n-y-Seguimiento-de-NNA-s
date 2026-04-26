@@ -97,6 +97,9 @@ class Noticia(db.Model):
         comment="ID de la ejecución/búsqueda",
     )
 
+    # Investigación profunda (LLM)
+    investigacion_json = db.Column(db.JSON, nullable=True)
+
     # Full-Text Search vector (tsvector)
     # Se puebla via trigger SQL o al insertar
     # La columna real se crea con init_fts_schema() en repository.py
@@ -145,6 +148,7 @@ class Noticia(db.Model):
             "menores_identificados": self.menores_identificados,
             "scrape_method": self.scrape_method,
             "batch_id": self.batch_id,
+            "investigacion_json": self.investigacion_json,
         }
 
     def __repr__(self):

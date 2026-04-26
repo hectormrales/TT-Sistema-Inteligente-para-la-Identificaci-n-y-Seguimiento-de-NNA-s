@@ -156,12 +156,14 @@ def api_stats():
         try:
             from src.database.repository import NoticiasRepository
             batch_id = request.args.get('batch_id')
-            if not batch_id:
+            if batch_id == 'latest':
                 batch_id = NoticiasRepository.get_latest_batch_id()
+            elif batch_id == 'all' or not batch_id:
+                batch_id = None
                 
             stats = NoticiasRepository.estadisticas(batch_id=batch_id)
             stats['data_source'] = 'postgresql'
-            stats['current_batch_id'] = batch_id
+            stats['current_batch_id'] = batch_id or 'all'
             return jsonify(stats)
         except Exception as e:
             logging.warning(f"Fallback a CSV: {e}")
@@ -191,8 +193,10 @@ def api_noticias():
     if _check_postgres():
         try:
             from src.database.repository import NoticiasRepository
-            if not batch_id:
+            if batch_id == 'latest':
                 batch_id = NoticiasRepository.get_latest_batch_id()
+            elif batch_id == 'all' or not batch_id:
+                batch_id = None
                 
             result = NoticiasRepository.listar(
                 page=page,
@@ -203,7 +207,7 @@ def api_noticias():
                 batch_id=batch_id,
             )
             result['data_source'] = 'postgresql'
-            result['current_batch_id'] = batch_id
+            result['current_batch_id'] = batch_id or 'all'
             return jsonify(result)
         except Exception as e:
             logging.warning(f"PostgreSQL fallback: {e}")
@@ -423,6 +427,19 @@ def api_analyze_status():
     with _analysis_lock:
         status = _analysis_status.copy()
     return jsonify(status)
+
+
+@main_bp.route('/api/export/csv/raw')
+@login_required
+def api_export_raw_csv():
+    """Exporta los datos crudos recolectados antes del filtrado."""
+    raw_path = os.path.join(DATA_DIR, 'noticias_raw.csv')
+    if not os.path.exists(raw_path):
+        return jsonify({'error': 'No hay datos crudos disponibles'}), 404
+    try:
+        return send_file(raw_path, as_attachment=True, download_name='noticias_scraper_raw.csv')
+    except Exception as e:
+        return jsonify({'error': f'Error exportando: {e}'}), 500
 
 
 @main_bp.route('/api/export/csv')
@@ -661,6 +678,116 @@ def health_check():
         'data_loaded': _current_data is not None,
         'data_size': len(_current_data) if _current_data is not None else 0,
     })
+
+
+@main_bp.route('/api/history/clear', methods=['POST'])
+@login_required
+def api_clear_history():
+    """Borra todo el historial (DB, CSVs y cache de URLs)."""
+    # 1. Borrar DB
+    db_cleared = False
+    if _check_postgres():
+        from src.database.repository import NoticiasRepository
+        db_cleared = NoticiasRepository.clear_history()
+    
+    # 2. Borrar CSVs
+    import glob
+    csv_files = glob.glob(os.path.join(DATA_DIR, '*.csv'))
+    for f in csv_files:
+        try:
+            os.remove(f)
+        except Exception:
+            pass
+            
+    # 3. Borrar cache de URLs para que el scraper vuelva a bajar todo
+    seen_urls_path = os.path.join(DATA_DIR, 'seen_urls.json')
+    if os.path.exists(seen_urls_path):
+        try:
+            os.remove(seen_urls_path)
+        except Exception:
+            pass
+            
+    # 4. Resetear variable global
+    global _current_data
+    _current_data = None
+    
+    return jsonify({
+        'status': 'success',
+        'message': 'Historial borrado correctamente. El próximo escaneo será desde cero.',
+        'db_cleared': db_cleared
+    })
+
+
+# ── Deep Investigation ──────────────────────────────────────
+
+_active_investigations = {}
+_investigation_lock = threading.Lock()
+
+def _run_investigation_bg(noticia_id, title, content, app):
+    from src.analysis.investigator import DeepInvestigator
+    from src.database.repository import NoticiasRepository
+    with app.app_context():
+        try:
+            investigator = DeepInvestigator()
+            result = investigator.investigate(title, content)
+            
+            # Guardar en base de datos
+            NoticiasRepository.save_investigation(noticia_id, result)
+            
+            with _investigation_lock:
+                _active_investigations[str(noticia_id)] = {
+                    'status': 'done',
+                    'result': result
+                }
+        except Exception as e:
+            logging.error(f"Error en investigación bg: {e}")
+            with _investigation_lock:
+                _active_investigations[str(noticia_id)] = {
+                    'status': 'error',
+                    'error': str(e)
+                }
+
+@main_bp.route('/api/investigate/<int:noticia_id>', methods=['POST'])
+@login_required
+def api_investigate(noticia_id):
+    from src.database.repository import NoticiasRepository
+    noticia = NoticiasRepository.get_noticia(noticia_id)
+    if not noticia:
+        return jsonify({'error': 'Noticia no encontrada'}), 404
+        
+    # Check if already investigated
+    if noticia.investigacion_json:
+        return jsonify({
+            'status': 'done',
+            'result': noticia.investigacion_json
+        })
+        
+    with _investigation_lock:
+        status_info = _active_investigations.get(str(noticia_id))
+        if status_info and status_info.get('status') == 'running':
+            return jsonify({'status': 'running'})
+            
+        _active_investigations[str(noticia_id)] = {'status': 'running'}
+        
+    from flask import current_app
+    app = current_app._get_current_object()
+    t = threading.Thread(target=_run_investigation_bg, args=(noticia_id, noticia.titulo, noticia.contenido, app))
+    t.start()
+    
+    return jsonify({'status': 'started'})
+
+@main_bp.route('/api/investigate/status/<int:noticia_id>', methods=['GET'])
+@login_required
+def api_investigate_status(noticia_id):
+    from src.database.repository import NoticiasRepository
+    with _investigation_lock:
+        status_info = _active_investigations.get(str(noticia_id))
+        if not status_info:
+            noticia = NoticiasRepository.get_noticia(noticia_id)
+            if noticia and noticia.investigacion_json:
+                return jsonify({'status': 'done', 'result': noticia.investigacion_json})
+            return jsonify({'status': 'not_started'})
+        return jsonify(status_info)
 
 
 # ── Errores ─────────────────────────────────────────────────

@@ -244,6 +244,25 @@
             text-decoration: none; display: flex; align-items: center; gap: 4px;
         }
         .btn-export:hover { background: var(--navy); border-color: var(--navy); color: white; }
+        
+        /* ── Investigation Panel ───────────────────────── */
+        .btn-investigate {
+            background: #fff; border: 1.5px solid #2a5298; color: #2a5298;
+            border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .btn-investigate:hover { background: #2a5298; color: #fff; }
+        .investigation-panel {
+            margin-top: 12px; padding: 12px; background: #f8f9fa;
+            border-radius: 8px; border-left: 3px solid #2a5298;
+            font-size: 12.5px; display: none;
+        }
+        .investigation-panel.active { display: block; }
+        .inv-field { margin-bottom: 6px; }
+        .inv-label { font-weight: 600; color: #495057; display: inline-block; width: 140px; }
+        .inv-val { color: #212529; }
+        .inv-summary { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #dee2e6; color: #495057; font-style: italic; }
+        
         /* ── News panel ─────────────────────────────────── */
         .news-panel {
             background: var(--card-bg); border-radius: 12px;
@@ -423,6 +442,16 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="text-danger fw-bold mb-2" style="font-size: 12px;"><i class="fas fa-trash-alt me-1"></i> ZONA DE PELIGRO</h6>
+                        <p class="text-muted mb-2" style="font-size: 11px;">
+                            Borrar el historial eliminará todas las noticias analizadas y crudas. El sistema volverá a recolectar todo desde cero en el próximo escaneo.
+                        </p>
+                        <button type="button" class="btn btn-outline-danger w-100 py-2" style="font-size: 12px; font-weight: 600; border-style: dashed;" onclick="confirmClearHistory()">
+                            Borrar todo el historial de noticias
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-footer bg-light border-0 p-3">
                     <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal" style="font-size: 13px; font-weight: 500;">Cancelar</button>
@@ -550,6 +579,9 @@
                     <button class="filter-btn f-nna"   id="fb-nna"   onclick="applyFilter('nna')">
                         <i class="fas fa-child" style="font-size:9px;"></i> NNA identificados
                     </button>
+                    <button class="filter-btn" id="fb-objetivo" onclick="applyFilter('objetivo')" style="border-color: #2a5298; color: #2a5298;">
+                        <i class="fas fa-crosshairs"></i> Casos Objetivo
+                    </button>
                     <div class="export-bar">
                         <span class="filter-label">Historial:</span>
                         <select id="batchSelect" class="form-select form-select-sm" style="font-size: 11px; width: auto; display: inline-block;" onchange="onBatchChange()">
@@ -562,8 +594,11 @@
                         <button class="filter-btn active" id="sort-relevancia" onclick="applySort('relevancia')">
                             <i class="fas fa-sort-amount-down" style="font-size:9px;"></i> Relevancia
                         </button>
-                        <a href="/api/export/csv" class="btn-export" title="Exportar datos a CSV">
-                            <i class="fas fa-file-csv"></i> CSV
+                        <a href="/api/export/csv" class="btn-export" title="Exportar datos analizados a CSV">
+                            <i class="fas fa-file-csv"></i> CSV Final
+                        </a>
+                        <a href="/api/export/csv/raw" class="btn-export" title="Descargar todas las noticias crudas recolectadas por el scraper" style="border-color: var(--amber); color: var(--amber);">
+                            <i class="fas fa-download"></i> CSV Raw
                         </a>
                     </div>
                 </div>
@@ -750,7 +785,7 @@
     function applyFilter(filter) {
         state.filter = filter; state.page = 1; state.search = '';
         document.getElementById('searchInput').value = '';
-        ['todas','alta','media','nna'].forEach(f => {
+        ['todas','alta','media','nna','objetivo'].forEach(f => {
             document.getElementById('fb-' + f).classList.toggle('active', f === filter);
         });
         loadNews();
@@ -776,9 +811,9 @@
                 url = '/api/search?q=' + encodeURIComponent(state.search);
                 if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
             } else {
-                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
-                if (state.filter === 'alta' || state.filter === 'media') {
-                    const cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
+                if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
+                    const cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                     url += '&clasificacion=' + encodeURIComponent(cls);
                 }
                 if (state.batchId) {
@@ -814,7 +849,8 @@
     }
 
     function buildCard(n) {
-        const cls = (n.clasificacion || '').toLowerCase();
+        // v5.1 fix: Usa clasificacion_final para que el badge coincida con el backend
+        const cls = ((n.clasificacion_final && n.clasificacion_final !== 'No relevante') ? n.clasificacion_final : (n.clasificacion || '')).toLowerCase();
         const rel = n.relevancia_final || n.score_compuesto || 0;
         const pct = (rel * 100).toFixed(0);
         const femPct = ((n.score_feminicidio || 0) * 100).toFixed(0);
@@ -836,8 +872,16 @@
         var bookmarkIcon = isSaved ? 'fas' : 'far';
         // Store the news id for the bookmark toggle
         var nId = n.id || 0;
+        
+        var invHtml = '';
+        if (state.filter === 'objetivo') {
+            invHtml = '<div class="mt-2 text-end">' +
+                      '<button class="btn-investigate" id="btn-inv-' + nId + '" onclick="startInvestigation(' + nId + ')"><i class="fas fa-search-plus"></i> Investigar más en web</button>' +
+                      '</div>' +
+                      '<div class="investigation-panel" id="inv-panel-' + nId + '"></div>';
+        }
 
-        return '<div class="news-item rel-' + cls + '">' +
+        var html = '<div class="news-item rel-' + cls + '">' +
             '<div class="news-header">' +
                 '<div class="news-title">' + esc(n.titulo || '') + '</div>' +
                 '<div class="badges">' +
@@ -859,7 +903,15 @@
                     (n.cluster !== undefined && n.cluster >= 0 ? '<span class="score-pill" title="Grupo temático">G' + n.cluster + '</span>' : '') +
                 '</div>' +
             '</div>' +
+            invHtml +
         '</div>';
+        
+        // Renderizar investigación si ya existe en JSON
+        if (state.filter === 'objetivo' && n.investigacion_json) {
+            setTimeout(() => renderInvestigationResult(nId, n.investigacion_json), 10);
+        }
+        
+        return html;
     }
 
     // ══════════════════════════════════════════════════════════
@@ -1186,6 +1238,50 @@
     }
 
     // ══════════════════════════════════════════════════════════
+    //  History Management
+    // ══════════════════════════════════════════════════════════
+    async function confirmClearHistory() {
+        if (confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente TODA la base de datos de noticias y archivos CSV. El sistema quedará vacío y volverá a recolectar todo desde cero en el próximo análisis.')) {
+            if (confirm('Última advertencia: No se puede deshacer. ¿Proceder?')) {
+                await clearHistory();
+            }
+        }
+    }
+
+    async function clearHistory() {
+        showToast('Borrando historial...', 'info');
+        try {
+            // Obtener el token CSRF del meta tag
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+            var r = await fetch('/api/history/clear', { 
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            });
+            var d = await r.json();
+            if (d.status === 'success') {
+                showToast(d.message, 'success');
+                // Cerrar modal si está abierto
+                var modalEl = document.getElementById('settingsModal');
+                if (modalEl) {
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                }
+                // Recargar dashboard
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast('Error: ' + d.error, 'error');
+            }
+        } catch(e) {
+            console.error('Clear history error:', e);
+            showToast('Error de conexión al borrar historial', 'error');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════
     //  Utilities
     // ══════════════════════════════════════════════════════════
     function showToast(msg, type) {
@@ -1223,11 +1319,15 @@
             var url;
             if (state.search) {
                 url = '/api/search?q=' + encodeURIComponent(state.search);
+                if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
             } else {
-                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
-                if (state.filter === 'alta' || state.filter === 'media') {
-                    var cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
+                if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
+                    var cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                     url += '&clasificacion=' + encodeURIComponent(cls);
+                }
+                if (state.batchId) {
+                    url += '&batch_id=' + encodeURIComponent(state.batchId);
                 }
             }
             var r = await fetch(url);
@@ -1237,7 +1337,7 @@
             _loadedNoticias = noticias; // cache for bookmarks
             state.total = data.total || data.resultados || noticias.length;
             state.totalPages = data.total_pages || 1;
-            var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados' };
+            var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados', 'objetivo': 'Casos Objetivo' };
             document.getElementById('resultsTitle').textContent = state.search
                 ? 'Resultados para "' + state.search + '"'
                 : labels[state.filter];
@@ -1249,6 +1349,98 @@
             container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
         }
     };
+
+    // ══════════════════════════════════════════════════════════
+    //  Deep Investigation
+    // ══════════════════════════════════════════════════════════
+    
+    window._investigationIntervals = window._investigationIntervals || {};
+
+    async function startInvestigation(id) {
+        var btn = document.getElementById('btn-inv-' + id);
+        var panel = document.getElementById('inv-panel-' + id);
+        if (btn) btn.disabled = true;
+        
+        panel.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Buscando información adicional y analizando contexto... (esto puede tardar 20-30 segundos)';
+        panel.classList.add('active');
+        
+        try {
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+            var r = await fetch('/api/investigate/' + id, { 
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken }
+            });
+            var d = await r.json();
+            
+            if (d.status === 'done') {
+                renderInvestigationResult(id, d.result);
+            } else if (d.status === 'started' || d.status === 'running') {
+                // Empezar a hacer polling
+                if (window._investigationIntervals[id]) clearInterval(window._investigationIntervals[id]);
+                window._investigationIntervals[id] = setInterval(() => pollInvestigation(id), 3000);
+            } else {
+                panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error: ' + esc(d.error || 'Desconocido') + '</span>';
+                if (btn) btn.disabled = false;
+            }
+        } catch(e) {
+            panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error de conexión</span>';
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    async function pollInvestigation(id) {
+        try {
+            var r = await fetch('/api/investigate/status/' + id);
+            var d = await r.json();
+            
+            if (d.status === 'done') {
+                clearInterval(window._investigationIntervals[id]);
+                renderInvestigationResult(id, d.result);
+            } else if (d.status === 'error') {
+                clearInterval(window._investigationIntervals[id]);
+                var panel = document.getElementById('inv-panel-' + id);
+                if (panel) panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error en análisis: ' + esc(d.error || 'Desconocido') + '</span>';
+                var btn = document.getElementById('btn-inv-' + id);
+                if (btn) btn.disabled = false;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    function renderInvestigationResult(id, result) {
+        var panel = document.getElementById('inv-panel-' + id);
+        var btn = document.getElementById('btn-inv-' + id);
+        if (!panel) return;
+        
+        if (btn) btn.style.display = 'none'; // Ocultar botón si ya se investigó
+        panel.classList.add('active');
+        
+        if (result.error) {
+            panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> ' + esc(result.mensaje || 'Error') + '</span>';
+            return;
+        }
+        
+        var html = '<div class="mb-2"><strong style="color:var(--navy);"><i class="fas fa-robot me-1"></i> Análisis de Múltiples Fuentes (IA)</strong></div>';
+        
+        html += '<div class="inv-field"><span class="inv-label">Ubicación:</span><span class="inv-val">' + esc(result.ubicacion || 'N/A') + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label">Víctimas directas:</span><span class="inv-val">' + esc(result.victimas || 'N/A') + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label">NNA Afectados:</span><span class="inv-val">' + esc(result.ninos_afectados || 'N/A') + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label">Edades NNA:</span><span class="inv-val">' + esc(result.edades || 'N/A') + '</span></div>';
+        
+        html += '<div class="inv-summary"><strong>Resumen del caso:</strong><br>' + esc(result.resumen || '') + '</div>';
+        
+        if (result.fuentes && result.fuentes.length > 0) {
+            html += '<div class="mt-2" style="font-size:11px;"><strong style="color:var(--text-muted);">Fuentes cruzadas:</strong><br>';
+            result.fuentes.forEach(f => {
+                html += '<a href="' + esc(f) + '" target="_blank" rel="noopener" style="display:inline-block; margin-right:8px; margin-top:3px; color:var(--navy-lt);"><i class="fas fa-external-link-alt"></i> ' + esc(new URL(f).hostname.replace('www.','')) + '</a>';
+            });
+            html += '</div>';
+        }
+        
+        panel.innerHTML = html;
+    }
 
     // ══════════════════════════════════════════════════════════
     //  Init

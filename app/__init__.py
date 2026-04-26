@@ -128,6 +128,17 @@ def _init_database(app: Flask) -> None:
                 ))
                 db.session.commit()
                 app.logger.info("Columna 'is_predefined' agregada a news_sources")
+        
+        if inspector.has_table('noticias'):
+            columns = [c['name'] for c in inspector.get_columns('noticias')]
+            if 'investigacion_json' not in columns:
+                db.session.execute(text(
+                    'ALTER TABLE noticias '
+                    'ADD COLUMN investigacion_json JSONB'
+                ))
+                db.session.commit()
+                app.logger.info("Columna 'investigacion_json' agregada a noticias")
+
     except Exception as e:
         db.session.rollback()
         app.logger.warning(f"Error en migración (posible concurrencia): {e}")

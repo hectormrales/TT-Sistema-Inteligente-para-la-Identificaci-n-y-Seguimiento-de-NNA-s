@@ -629,6 +629,77 @@ def score_relevance(title: str, content: str) -> dict:
 # Recolección RSS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+def collect_news_from_duckduckgo(query: str, seen_urls: set, session: StealthSession) -> list[dict]:
+    """Scrapea DuckDuckGo HTML buscando menciones en redes sociales."""
+    url = f"https://html.duckduckgo.com/html/?q={query.replace(' ', '+')}"
+    articles = []
+    try:
+        response = session.get(url, timeout=20)
+        if not response: return []
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        results = soup.find_all('div', class_='result')
+        
+        for res in results:
+            title_elem = res.find('a', class_='result__a')
+            snippet_elem = res.find('a', class_='result__snippet')
+            link_elem = res.find('a', class_='result__url')
+            
+            if not title_elem or not link_elem:
+                continue
+                
+            title_text = title_elem.get_text(strip=True)
+            desc_text = snippet_elem.get_text(strip=True) if snippet_elem else ""
+            
+            enlace_text = link_elem.get('href', '')
+            if enlace_text.startswith('//duckduckgo.com/l/?'):
+                import urllib.parse
+                parsed = urllib.parse.urlparse(enlace_text)
+                qs = urllib.parse.parse_qs(parsed.query)
+                if 'uddg' in qs:
+                    enlace_text = qs['uddg'][0]
+            
+            if not enlace_text.startswith('http'):
+                enlace_text = 'https://' + link_elem.get_text(strip=True).strip()
+
+            if enlace_text in seen_urls:
+                continue
+                
+            dt = datetime.now(timezone.utc)
+            rel = score_relevance(title_text, desc_text)
+            
+            if rel['clasificacion'] == 'No relevante':
+                if 'facebook.com' in enlace_text or 'twitter.com' in enlace_text or 'x.com' in enlace_text:
+                    rel['score_compuesto'] = 0.35
+                    rel['clasificacion'] = 'Media'
+                    rel['menores_identificados'] = 'Si' if 'niñ' in query or 'hijo' in query else 'No'
+                    rel['score_nna'] = 0.5
+                    rel['score_feminicidio'] = 0.5
+                else:
+                    continue
+
+            seen_urls.add(enlace_text)
+            
+            articles.append({
+                'titulo': title_text,
+                'contenido': desc_text,
+                'enlace': enlace_text,
+                'fuente': 'DuckDuckGo Search',
+                'fecha': dt.isoformat(),
+                'score_feminicidio': rel['score_feminicidio'],
+                'score_nna': rel['score_nna'],
+                'score_compuesto': rel['score_compuesto'],
+                'clasificacion': rel['clasificacion'],
+                'menores_identificados': rel['menores_identificados'],
+                'cluster': 0,
+            })
+            
+    except Exception as e:
+        logger.warning(f"Error DuckDuckGo ({query}): {e}")
+        
+    return articles
+
+
 def collect_news_from_rss(
     rss_url: str,
     seen_urls: set | None = None,
@@ -815,6 +886,20 @@ def collect_all_news(
                     sources_ok += 1
                 for art in articles:
                     art['fuente'] = 'Google News Search'
+                all_articles.extend(articles)
+
+            # ── 1.5 Fase Redes Sociales: DuckDuckGo HTML para FB ──
+            print("  ── Búsqueda en Redes Sociales (DuckDuckGo) ──")
+            SOCIAL_QUERIES = [
+                'feminicidio mexico deja niño facebook',
+                'feminicidio orfandad facebook mexico',
+                'feminicidio "redes sociales" hijos mexico',
+            ]
+            for query in SOCIAL_QUERIES:
+                print(f"  Buscando: {query}")
+                articles = collect_news_from_duckduckgo(query, seen_urls, shared_session)
+                if articles:
+                    sources_ok += 1
                 all_articles.extend(articles)
 
         # ── 2. Fase Específica: Fuentes configuradas por el usuario ──

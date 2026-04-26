@@ -78,6 +78,10 @@ RSS_FEEDS = [
     'https://news.google.com/rss/search?q=feminicidio+Nuevo+Le%C3%B3n+ni%C3%B1os&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+Guerrero+NNA+hu%C3%A9rfanos&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+Puebla+menores+hijos&hl=es-419&gl=MX&ceid=MX:es-419',
+    # ── Queries relacionados a Facebook y redes sociales ────
+    'https://news.google.com/rss/search?q=feminicidio+mexico+deja+ni%C3%B1o+facebook&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+orfandad+facebook+mexico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=%22feminicidio%22+%22redes+sociales%22+hijos+mexico&hl=es-419&gl=MX&ceid=MX:es-419',
 ]
 
 HTTP_HEADERS = {

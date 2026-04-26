@@ -606,3 +606,36 @@ class NoticiasRepository:
         df.to_csv(csv_path, index=False, encoding="utf-8")
 
         return len(df)
+
+    @staticmethod
+    def clear_history() -> bool:
+        """Elimina todos los registros de noticias de la base de datos."""
+        from src.database.models_noticias import Noticia
+        try:
+            Noticia.query.delete()
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error al borrar historial: {e}")
+            return False
+
+    @staticmethod
+    def get_noticia(noticia_id: int):
+        from src.database.models_noticias import Noticia
+        return Noticia.query.get(noticia_id)
+
+    @staticmethod
+    def save_investigation(noticia_id: int, result: dict) -> bool:
+        from src.database.models_noticias import Noticia
+        try:
+            noticia = Noticia.query.get(noticia_id)
+            if noticia:
+                noticia.investigacion_json = result
+                db.session.commit()
+                return True
+            return False
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error guardando investigacion: {e}")
+            return False
