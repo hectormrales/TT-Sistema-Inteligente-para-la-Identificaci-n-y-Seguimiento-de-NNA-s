@@ -661,6 +661,14 @@ class SimplifiedNewsAnalyzer:
                 if s_score > h_score and distance > 0.2:
                     score_final = max(h_score, score_final)  # BETO sube con confianza
 
+                # OVERRIDE NNA: Si menciona explícitamente a menores en el contexto, no debe bajar de Alta relevancia
+                is_nna = str(row.get("menores_identificados", "No")).strip().lower() in ("si", "sí", "true", "1")
+                h_score_fem = float(row.get("score_feminicidio", 0))
+                
+                # Si el score de feminicidio inicial era decente (>0.2) y hay NNA, forzar a Alta
+                if is_nna and h_score_fem > 0.2:
+                    score_final = max(score_final, 0.65)
+
                 # Clasificar por umbrales (v5.1: más estrictos)
                 if score_final >= 0.60:
                     clasificacion = "Alta"

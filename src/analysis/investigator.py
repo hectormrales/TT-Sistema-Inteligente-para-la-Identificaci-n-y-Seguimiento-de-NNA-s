@@ -2,7 +2,8 @@ import os
 import json
 import logging
 from bs4 import BeautifulSoup
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from urllib.parse import quote_plus
 
 from src.collection.scraper import StealthSession
@@ -11,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 # Configurar Gemini
 GEMINI_API_KEY = "AIzaSyC8Sff-dubqwO2bj-PCohSdVqRvEVFqq4g"
-genai.configure(api_key=GEMINI_API_KEY)
-# Usando gemini-1.5-flash ya que es el modelo estándar rápido (gemini-2.5-flash podría no existir según la versión de la librería)
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Usando la nueva librería google-genai con el modelo recomendado actual
+client = genai.Client(api_key=GEMINI_API_KEY)
+MODEL_NAME = 'gemini-2.5-flash'
 
 class DeepInvestigator:
     def __init__(self):
@@ -32,7 +33,7 @@ class DeepInvestigator:
         Solo devuelve la frase de búsqueda, sin comillas ni explicaciones.
         """
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model=MODEL_NAME, contents=prompt)
             query = response.text.strip().replace('"', '')
             return query
         except Exception as e:
@@ -43,25 +44,52 @@ class DeepInvestigator:
 
     def _duckduckgo_search(self, query: str) -> list[str]:
         """Busca en DuckDuckGo y retorna URLs."""
-        url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
+        # v5.2: Intenta con el sitio HTML y Lite de DDG para mayor robustez
         urls = []
-        try:
-            resp = self.session.get(url, timeout=15)
-            if not resp: return []
-            soup = BeautifulSoup(resp.text, 'html.parser')
-            for a in soup.find_all('a', class_='result__url'):
-                href = a.get('href')
-                if href and href.startswith('//duckduckgo.com/l/?'):
-                    import urllib.parse
-                    parsed = urllib.parse.urlparse(href)
-                    qs = urllib.parse.parse_qs(parsed.query)
-                    if 'uddg' in qs:
-                        href = qs['uddg'][0]
-                if href and href.startswith('http'):
-                    urls.append(href)
-        except Exception as e:
-            logger.error(f"Error buscando en DDG: {e}")
-        return urls[:5]  # Solo las primeras 5 para no exceder tokens
+        search_urls = [
+            f"https://html.duckduckgo.com/html/?q={quote_plus(query)}",
+            f"https://lite.duckduckgo.com/lite/?q={quote_plus(query)}"
+        ]
+        
+        for search_url in search_urls:
+            try:
+                logger.info(f"Probando búsqueda en: {search_url}")
+                resp = self.session.get(search_url, timeout=15)
+                if not resp or resp.status_code != 200: 
+                    logger.warning(f"Respuesta fallida de DDG ({search_url}): {resp.status_code if resp else 'No resp'}")
+                    continue
+                
+                soup = BeautifulSoup(resp.text, 'html.parser')
+                
+                # Probar múltiples selectores conocidos de DDG (HTML y Lite)
+                # .result__a (Link principal en HTML)
+                # .result-link (Link en Lite)
+                # .result__url (Link verde en HTML)
+                found_links = soup.select('a.result__a, a.result-link, a.result__url')
+                
+                for a in found_links:
+                    href = a.get('href')
+                    if not href: continue
+                    
+                    # Limpiar redirecciones de DDG
+                    if 'duckduckgo.com/l/?' in href or 'uddg=' in href:
+                        import urllib.parse
+                        parsed = urllib.parse.urlparse(href)
+                        qs = urllib.parse.parse_qs(parsed.query)
+                        if 'uddg' in qs:
+                            href = qs['uddg'][0]
+                    
+                    if href and href.startswith('http') and 'duckduckgo.com' not in href:
+                        if href not in urls:
+                            urls.append(href)
+                
+                if urls:
+                    logger.info(f"Éxito en {search_url}: {len(urls)} URLs encontradas")
+                    break # Si ya encontramos URLs en el primer método, no seguimos
+            except Exception as e:
+                logger.error(f"Error buscando en {search_url}: {e}")
+                
+        return urls[:8]  # Retornar un poco más para filtrar después
 
     def _scrape_content(self, url: str) -> str:
         """Extrae el texto de una URL."""
@@ -98,7 +126,7 @@ class DeepInvestigator:
         Devuelve SOLO el JSON válido, sin bloques de código markdown ni texto adicional.
         """
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model=MODEL_NAME, contents=prompt)
             # Limpiar posible markdown
             text = response.text.strip()
             if text.startswith('```json'): text = text[7:]
@@ -141,10 +169,17 @@ class DeepInvestigator:
                 fuentes_exitosas.append(u)
                 
         if not combined_text:
-            return {
-                "error": True,
-                "mensaje": "No se pudo extraer contenido adicional de la web."
-            }
+            logger.warning(f"No se pudieron obtener URLs mediante scraping manual para: {query}. Intentando con búsqueda nativa de Gemini...")
+            try:
+                res = self._investigate_with_gemini_search(title, query)
+                logger.info("Investigación nativa de Gemini completada.")
+                return res
+            except Exception as e:
+                logger.error(f"Fallo crítico en _investigate_with_gemini_search: {e}")
+                return {
+                    "error": True,
+                    "mensaje": f"Error al intentar búsqueda nativa: {e}"
+                }
             
         # 4. Generar resumen
         resultado = self._generate_summary(title, combined_text)
@@ -152,3 +187,45 @@ class DeepInvestigator:
         resultado["query_usada"] = query
         
         return resultado
+
+    def _investigate_with_gemini_search(self, title: str, query: str) -> dict:
+        """Usa el buscador nativo de Gemini como último recurso si el scraper falla."""
+        
+        prompt = f"""
+        Realiza una investigación profunda en la web sobre este evento: "{title}".
+        Usa la siguiente frase de búsqueda para encontrar detalles: "{query}".
+        
+        Necesito un informe estructurado en JSON con:
+        - "ubicacion": Ciudad y Estado.
+        - "victimas": Nombres de víctimas directas.
+        - "ninos_afectados": Número de niños huérfanos o afectados.
+        - "edades": Edades de los niños.
+        - "resumen": Un párrafo detallado sobre el evento y la situación de los menores.
+        - "fuentes": Una lista de las URLs que consultaste.
+        
+        Devuelve SOLO el JSON.
+        """
+        
+        try:
+            # Habilitar herramienta de búsqueda de Google en Gemini
+            search_tool = types.Tool(google_search=types.GoogleSearchRetrieval())
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=prompt,
+                config=types.GenerateContentConfig(tools=[search_tool])
+            )
+            
+            text = response.text.strip()
+            if '```json' in text:
+                text = text.split('```json')[1].split('```')[0].strip()
+            
+            res = json.loads(text)
+            res["metodo"] = "gemini_native_search"
+            res["query_usada"] = query
+            return res
+        except Exception as e:
+            logger.error(f"Error en investigación nativa de Gemini: {e}")
+            return {
+                "error": True,
+                "mensaje": f"No se pudo extraer contenido de la web ni mediante scraping ni mediante IA. Detalle: {e}"
+            }
