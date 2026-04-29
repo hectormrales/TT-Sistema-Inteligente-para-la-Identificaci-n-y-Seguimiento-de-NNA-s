@@ -345,9 +345,11 @@ class SimplifiedNewsAnalyzer:
             self.df_processed['relevancia_final'] = np.round(combined, 4)
 
             # Re-clasificar con el score combinado
-            # v5.1: Umbrales más estrictos para reducir falsos positivos
-            def _classify(score):
-                if score >= 0.50:
+            # v9.0: Clasificación usa has_orfandad_signal del heurístico
+            def _classify(row):
+                score = row.get('relevancia_final', 0)
+                has_orfandad = str(row.get('has_orfandad_signal', 'False')).strip().lower() in ('true', '1')
+                if score >= 0.50 and has_orfandad:
                     return 'Alta'
                 elif score >= 0.35:
                     return 'Media'
@@ -356,7 +358,7 @@ class SimplifiedNewsAnalyzer:
                 return 'No relevante'
 
             self.df_processed['clasificacion_final'] = (
-                self.df_processed['relevancia_final'].apply(_classify)
+                self.df_processed.apply(_classify, axis=1)
             )
 
             alta = (self.df_processed['clasificacion_final'] == 'Alta').sum()
@@ -661,20 +663,23 @@ class SimplifiedNewsAnalyzer:
                 if s_score > h_score and distance > 0.2:
                     score_final = max(h_score, score_final)  # BETO sube con confianza
 
-                # OVERRIDE NNA: Si menciona explícitamente a menores en el contexto, no debe bajar de Alta relevancia
-                is_nna = str(row.get("menores_identificados", "No")).strip().lower() in ("si", "sí", "true", "1")
+                # OVERRIDE NNA: Solo forzar a Alta si hay señal EXPLÍCITA de orfandad
+                # v9.0: Ya no basta con menores_identificados=Si; se necesita
+                # has_orfandad_signal para evitar falsos positivos de noticias
+                # que mencionan menores pero no son casos de orfandad.
+                has_orfandad = str(row.get("has_orfandad_signal", "False")).strip().lower() in ("true", "1")
                 h_score_fem = float(row.get("score_feminicidio", 0))
                 
-                # Si el score de feminicidio inicial era decente (>0.2) y hay NNA, forzar a Alta
-                if is_nna and h_score_fem > 0.2:
+                # Solo forzar a Alta si hay señal de orfandad + feminicidio fuerte
+                if has_orfandad and h_score_fem > 0.2:
                     score_final = max(score_final, 0.65)
 
-                # Clasificar por umbrales (v5.1: más estrictos)
-                if score_final >= 0.60:
+                # Clasificar por umbrales (v9.0: Alta requiere señal de orfandad)
+                if score_final >= 0.60 and has_orfandad:
                     clasificacion = "Alta"
-                elif score_final >= 0.40:
+                elif score_final >= 0.50:
                     clasificacion = "Media"
-                elif score_final >= 0.20:
+                elif score_final >= 0.25:
                     clasificacion = "Baja"
                 else:
                     clasificacion = "No relevante"

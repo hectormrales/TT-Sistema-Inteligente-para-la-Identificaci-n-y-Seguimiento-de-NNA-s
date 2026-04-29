@@ -583,10 +583,13 @@ def score_relevance(title: str, content: str) -> dict:
     # ── Penalización: Menor como agresor, no como víctima indirecta ──
     # Evita que noticias de "menor de edad comete feminicidio" sumen al eje NNA
     MENOR_AGRESOR_PATTERNS = [
-        r'\b(?:imputan|detienen|acusan|procesan|vinculan|condenan|sentencian)\s+(?:a|al)\s+(?:un\s+)?menor\b',
+        r'\b(?:imputan|detienen|acusan|procesan|vinculan|condenan|sentencian)\s+(?:a|al|por)\s+(?:un\s+)?(?:menor|adolescente)\b',
         r'\bmenor\s+(?:de\s+(?:edad|\d+\s+a[ñn]os)\s+)?(?:asesin[oó]|mat[oó]|dispar[oó]|atac[oó])\b',
         r'\bmenor\s+(?:infractor|agresor|homicida|feminicida)\b',
-        r'\baprehenden\s+a\s+menor\b'
+        r'\baprehenden\s+a\s+menor\b',
+        r'\bvinculan\s+(?:por\s+)?(?:feminicidio|homicidio)\s+a\s+(?:un\s+)?menor\b',
+        r'\bmenor\s+que\s+(?:asesin[oó]|mat[oó]|priv[oó])\b',
+        r'\b(?:uno\s+de\s+ellos|su\s+hijo|hijo)\s+(?:la\s+)?(?:asesin[oó]|mat[oó])\b',
     ]
     is_menor_agresor = any(
         re.search(p, combined_norm, re.IGNORECASE)
@@ -595,6 +598,81 @@ def score_relevance(title: str, content: str) -> dict:
     if is_menor_agresor:
         score_nna *= 0.1  # Prácticamente eliminar el eje NNA
         score_comp *= 0.6 # Reducir el score compuesto también
+
+    # ── Penalización: NNA es la víctima DIRECTA (asesinada), no indirecta ──
+    # Casos como "feminicidio de su hija de 8 años" — el menor es la víctima
+    # directa del feminicidio, no un huérfano que queda desamparado.
+    NNA_VICTIMA_DIRECTA_PATTERNS = [
+        r'\b(?:feminicidio|asesinato|homicidio|desaparici[oó]n)\s+de\s+(?:su\s+)?(?:hija|niña|menor|adolescente)\b',
+        r'\b(?:hija|niña|menor|adolescente)\s+(?:de\s+\d+\s+a[ñn]os\s+)?(?:asesinada|muerta|sin\s+vida|hallada|desaparecida)\b',
+        r'\b(?:asesinan|matan|privan\s+de\s+la\s+vida)\s+(?:a\s+)?(?:una\s+)?(?:niña|menor|adolescente)\b',
+        r'\bmenor\s+(?:fue\s+)?(?:asesinada|encontrada\s+sin\s+vida|hallada\s+muerta)\b',
+        r'\bfeminicidio\s+de\s+(?:una\s+)?(?:niña|menor|adolescente|pequeña)\b',
+    ]
+    is_nna_victima_directa = any(
+        re.search(p, combined_norm, re.IGNORECASE)
+        for p in NNA_VICTIMA_DIRECTA_PATTERNS
+    )
+    if is_nna_victima_directa:
+        score_nna *= 0.15  # NNA mencionado pero no como huérfano
+        score_comp *= 0.50
+
+    # ── Penalización: Documentales, retrospectivas, narrativas ──
+    # "narra la creación de documental", "la historia de", etc.
+    DOCUMENTAL_PATTERNS = [
+        r'\bdocumental\s+(?:sobre|de|del)\b',
+        r'\b(?:narra|cuenta|relata)\s+(?:la\s+)?(?:historia|creaci[oó]n|dif[ií]cil)\b',
+        r'\bpel[ií]cula\s+(?:sobre|de|del|basada)\b',
+        r'\blibro\s+(?:sobre|de|que\s+narra)\b',
+        r'\bretrospectiva\b',
+        r'\bhomenaje\s+(?:a|para)\b',
+    ]
+    is_documental = any(
+        re.search(p, combined_norm, re.IGNORECASE)
+        for p in DOCUMENTAL_PATTERNS
+    )
+    if is_documental and score_caso < 0.20:
+        score_comp *= 0.30
+
+    # ── Penalización: Programas institucionales de atención ──
+    # "Semujeres atiende a 328 menores" — son estadísticas institucionales
+    INSTITUCIONAL_PATTERNS = [
+        r'\b(?:semujeres|inmujeres|conavim|DIF|sipinna)\s+(?:atiende|apoya|brinda|entrega|otorga|beneficia)\b',
+        r'\b(?:atiende|apoya|brinda|entrega)\s+(?:a\s+)?\d+\s+(?:menores?|ni[ñn][oa]s?|v[ií]ctimas?|mujeres?)\b',
+        r'\bprev[eé]\s+(?:sumar|atender|ampliar|aumentar)\b',
+        r'\b\d+\s+menores?\s+(?:por|de|atendid)\b',
+    ]
+    is_institucional = any(
+        re.search(p, combined_norm, re.IGNORECASE)
+        for p in INSTITUCIONAL_PATTERNS
+    )
+    if is_institucional and score_caso < 0.20:
+        score_comp *= 0.25
+
+    # ── BOOST: Señales explícitas de orfandad / NNA desamparados ──
+    # Patrones que indican CLARAMENTE que hay menores que quedaron huérfanos
+    # o desamparados como consecuencia del feminicidio de su madre/cuidadora.
+    ORFANDAD_EXPLICITA_PATTERNS = [
+        r'\b(?:sus\s+)?hijos?\s+(?:est[aá]n|quedaron|quedan)\s+solos?\b',
+        r'\bera\s+madre\s+de\s+\d+\s+(?:ni[ñn]os?|hijos?|menores?)\b',
+        r'\b(?:trabajaba|luchaba|se\s+esforzaba)\s+(?:como\s+\w+\s+)?para\s+mantener\s+a\s+sus\s+(?:\w+\s+)?hijos?\b',
+        r'\bmanten(?:er|[ií]a)\s+a\s+sus\s+(?:\d+\s+)?hijos?\b',
+        r'\bdej[oó]\s+(?:\w+\s+){0,2}(?:hu[eé]rfan|en\s+orfandad|sin\s+madre|desamparad)\b',
+        r'\b(?:quedaron|quedan)\s+(?:\w+\s+){0,2}(?:hu[eé]rfan|en\s+orfandad|sin\s+madre|desamparad|sol[oa]s?)\b',
+        r'\bDIF\s+(?:resguarda|protege|acoge|recibe)\s+(?:a\s+)?(?:los\s+)?(?:hijos?|menores?|ni[ñn]os?)\b',
+        r'\bmenores?\s+(?:en|quedan\s+en)\s+(?:orfandad|desamparo)\b',
+        r'\b(?:madre|mam[aá])\s+(?:de\s+)?(?:familia\s+)?(?:que\s+)?(?:trabajaba|manten[ií]a|cuidaba|criaba)\b',
+    ]
+    orfandad_hits = sum(
+        1 for p in ORFANDAD_EXPLICITA_PATTERNS
+        if re.search(p, combined_norm, re.IGNORECASE)
+    )
+    has_orfandad_signal = orfandad_hits > 0
+
+    if has_orfandad_signal and score_fem > 0.15:
+        # Boost fuerte: señal de orfandad + feminicidio = caso objetivo
+        score_comp = min(1.0, score_comp * (1.40 + 0.15 * orfandad_hits))
+        score_nna = min(1.0, score_nna * 1.5)
 
     # ── Penalización: solo feminicidio sin NNA → no es lo que buscamos ──
     # v8.0: Si SOLO hay señal de feminicidio pero NO de NNA, penalizar fuerte.
@@ -606,9 +684,14 @@ def score_relevance(title: str, content: str) -> dict:
     if score_nna > 0.15 and score_fem < 0.05:
         score_comp *= 0.30
 
-    # Reclasificar después de penalizaciones
-    if score_comp >= 0.50:
+    # ── Clasificación final: Alta requiere señal de orfandad ──
+    # v9.0: Para ser "Alta" se necesita AMBOS ejes fuertes Y señal de
+    # orfandad/desamparo. Sin orfandad explícita, máximo "Media".
+    if score_comp >= 0.50 and has_orfandad_signal:
         clasificacion = 'Alta'
+    elif score_comp >= 0.50 and score_nna > 0.30 and score_fem > 0.30:
+        # Ambos ejes fuertes pero sin señal explícita de orfandad → Media+
+        clasificacion = 'Media'
     elif score_comp >= 0.35:
         clasificacion = 'Media'
     elif score_comp >= threshold:
@@ -622,6 +705,7 @@ def score_relevance(title: str, content: str) -> dict:
         'score_compuesto': round(score_comp, 4),
         'clasificacion': clasificacion,
         'menores_identificados': 'Si' if score_nna > 0.10 else 'No',
+        'has_orfandad_signal': has_orfandad_signal,
     }
 
 

@@ -80,18 +80,23 @@ CATEGORY_DESCRIPTIONS = {
     "relevante": (
         "Caso individual de feminicidio en México donde una mujer fue asesinada "
         "y sus hijos menores de edad quedaron huérfanos, desamparados o en orfandad. "
-        "Noticia que describe un evento específico: la víctima fue encontrada sin vida, "
-        "el agresor fue detenido, los niños quedaron solos, "
-        "menores de edad que perdieron a su madre por violencia feminicida, "
-        "DIF resguarda a los hijos de la víctima de feminicidio."
+        "Noticia que describe un evento específico: la madre fue encontrada sin vida, "
+        "sus hijos quedaron solos, los niños perdieron a su madre por violencia feminicida, "
+        "la víctima trabajaba para mantener a sus hijos, "
+        "DIF resguarda a los hijos de la víctima de feminicidio, "
+        "los menores fueron puestos bajo custodia tras el asesinato de su madre."
     ),
     "no_relevante": (
-        "Noticia general sin relación con feminicidio ni menores huérfanos. "
-        "Estadísticas y cifras de feminicidio sin caso concreto. "
-        "Política pública, leyes, reformas, programas de apoyo, becas. "
-        "Columna de opinión, editorial, marcha, conmemoración. "
-        "Deportes, entretenimiento, economía, clima, tecnología, "
-        "política internacional, cultura, espectáculos."
+        "Noticia que NO involucra menores huérfanos por feminicidio. "
+        "Estadísticas y cifras de feminicidio sin caso concreto de orfandad. "
+        "Programas institucionales: Semujeres atiende menores, becas, apoyos económicos. "
+        "Feminicidio de una niña o menor de edad como víctima directa. "
+        "Menor de edad detenido como agresor o feminicida. "
+        "Documental, película, libro o retrospectiva sobre feminicidio. "
+        "Marcha, conmemoración, día internacional, columna de opinión, editorial. "
+        "Política pública, leyes, reformas, protocolos. "
+        "Feminicidio sin mención de hijos o menores huérfanos. "
+        "Deportes, entretenimiento, economía, clima, tecnología."
     ),
 }
 
