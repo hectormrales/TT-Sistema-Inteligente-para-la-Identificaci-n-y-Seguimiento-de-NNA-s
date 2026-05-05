@@ -5905,3 +5905,367 @@ AttributeError: Can only use .dt accessor with datetimelike values
 2026-05-04 21:43:01,407 - root - INFO - Datos cargados: 357 noticias desde análisis
 2026-05-04 21:43:01,411 - root - INFO - Análisis background completado exitosamente
 2026-05-04 21:49:40,314 - root - INFO - Datos cargados: 357 noticias desde análisis
+2026-05-04 22:58:25,835 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-04 22:58:25,867 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 22:58:25,867 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 22:58:25,868 - app - INFO - Esquema FTS inicializado
+2026-05-04 22:58:25,868 - app - INFO - Esquema FTS inicializado
+2026-05-04 22:58:25,949 - root - INFO - Datos cargados: 357 noticias desde análisis
+2026-05-04 22:58:25,949 - root - INFO - Datos cargados: 357 noticias desde análisis
+2026-05-04 23:14:12,439 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-04 23:14:12,472 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 23:14:12,472 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 23:14:12,472 - app - INFO - Esquema FTS inicializado
+2026-05-04 23:14:12,472 - app - INFO - Esquema FTS inicializado
+2026-05-04 23:14:12,635 - root - INFO - Datos cargados: 357 noticias desde análisis
+2026-05-04 23:14:12,636 - root - INFO - Datos cargados: 357 noticias desde análisis
+2026-05-04 23:30:46,771 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 23:30:46,790 - app - INFO - Logout: hector
+2026-05-04 23:30:49,845 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 23:30:57,079 - app - ERROR - Exception on /api/noticias [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_cors/extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in api_noticias
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in <listcomp>
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 111, in _row_to_dict
+    'cluster': int(row.get('cluster', -1)),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+2026-05-04 23:30:58,763 - app - ERROR - Exception on /api/noticias [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_cors/extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in api_noticias
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in <listcomp>
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 111, in _row_to_dict
+    'cluster': int(row.get('cluster', -1)),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+2026-05-04 23:30:59,654 - app - INFO - Logout: hector
+2026-05-04 23:31:01,623 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 23:31:06,121 - app - ERROR - Exception on /api/noticias [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_cors/extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in api_noticias
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in <listcomp>
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 111, in _row_to_dict
+    'cluster': int(row.get('cluster', -1)),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+2026-05-04 23:31:13,201 - app - INFO - Logout: hector
+2026-05-04 23:31:15,041 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 23:31:15,108 - app - ERROR - Exception on /api/noticias [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_cors/extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in api_noticias
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in <listcomp>
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 111, in _row_to_dict
+    'cluster': int(row.get('cluster', -1)),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+2026-05-04 23:31:39,643 - app - ERROR - Exception on /api/noticias [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_cors/extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in api_noticias
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 255, in <listcomp>
+    noticias = [_row_to_dict(idx, row) for idx, row in paginated.iterrows()]
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/main/routes.py", line 111, in _row_to_dict
+    'cluster': int(row.get('cluster', -1)),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+2026-05-04 23:38:28,137 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-04&tbm=nws&hl=es-419&gl=MX
+2026-05-04 23:38:28,302 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-04&tbm=nws&hl=es-419&gl=MX
+2026-05-04 23:38:33,566 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-04&tbm=nws&hl=es-419&gl=MX
+2026-05-04 23:38:39,260 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+2026-05-04 23:38:39,260 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])
+2026-05-04 23:38:39,398 - src.collection.scraper - WARNING - Error HTTP en https://www.lajornadadeoriente.com.mx/feed/…: 523 Server Error: <none> for url: https://www.lajornadadeoriente.com.mx/feed/
+2026-05-04 23:38:39,399 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.lajornadadeoriente.com.mx/feed/ (Circuito abierto o fallo de conexión)
+2026-05-04 23:38:39,526 - src.collection.scraper - WARNING - Error HTTP en https://www.lajornadadeoriente.com.mx/…: 523 Server Error: <none> for url: https://www.lajornadadeoriente.com.mx/
+2026-05-04 23:38:39,526 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])
+2026-05-04 23:42:48,109 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-04 23:42:48,135 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 23:42:48,136 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 23:42:48,136 - app - INFO - Esquema FTS inicializado
+2026-05-04 23:42:48,137 - app - INFO - Esquema FTS inicializado
+2026-05-04 23:43:05,162 - app - INFO - Logout: hector
+2026-05-04 23:43:08,915 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 23:52:20,413 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-04&tbm=nws&hl=es-419&gl=MX
+2026-05-04 23:52:20,588 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-04&tbm=nws&hl=es-419&gl=MX
+2026-05-04 23:52:27,928 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-04&tbm=nws&hl=es-419&gl=MX
+2026-05-04 23:52:34,164 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.lajornadadeoriente.com.mx/…
+2026-05-04 23:52:34,165 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])
+2026-05-04 23:54:13,428 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.elfinanciero.com.mx/…
+2026-05-04 23:54:13,431 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elfinanciero.com.mx/… (métodos intentados: ['html'])
+2026-05-04 23:54:16,254 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+2026-05-04 23:54:16,254 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])
+2026-05-04 23:54:38,895 - src.collection.scraper - INFO - HTML listing: 6 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-04 23:54:42,919 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/30/celebran-dia-del… → activando stealth + intentando Google Cache
+2026-05-04 23:55:23,734 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 23:55:23,734 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 23:55:23,735 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estilos/2026/04/30/celebran-dia-del-nino-y-la-nina-con-una-gran-fiesta-infantil/
+2026-05-04 23:56:25,159 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y… → activando stealth + intentando Google Cache
+2026-05-04 23:56:58,997 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 23:56:58,998 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 23:56:58,998 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y-robots-juguetes-tech-que-han-evolucionado/
+2026-05-04 23:57:21,421 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-… → activando stealth + intentando Google Cache
+2026-05-04 23:57:43,380 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 23:57:43,380 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 23:57:43,381 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-regalos-nuevas-formas-de-celebrar-el-dia-de-la-nina-y-el-nino/
+2026-05-04 23:58:01,233 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/05/04/menor-muere-tras… → activando stealth + intentando Google Cache
+2026-05-04 23:58:42,720 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 23:58:42,721 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 23:58:42,721 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/05/04/menor-muere-tras-permanecer-mas-de-12-horas-encerrado-en-un-automovil-en-mexicali-detienen-a-la-madre/
+2026-05-04 23:59:27,672 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/04/cameron-… → activando stealth + intentando Google Cache
+2026-05-05 00:00:16,686 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-05 00:00:16,688 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-05 00:00:16,689 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/04/cameron-diaz-se-convierte-en-madre-de-su-tercer-hijo-a-los-53-anos/
+2026-05-05 00:00:47,778 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/04/20/registro-para-el… → activando stealth + intentando Google Cache
+2026-05-05 00:01:05,362 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-05 00:01:05,362 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-05 00:01:05,362 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/04/20/registro-para-el-apoyo-bienestar-mujeres-50-a-64-anos-estas-son-las-fechas-y-requisitos/
+2026-05-05 00:01:05,365 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-05 00:02:56,449 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-05 00:02:56,450 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-05 00:02:56,739 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-05 00:02:56,739 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-05 00:03:20,743 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-05 00:03:20,744 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-05 00:03:21,802 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-05 00:03:21,803 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-05 00:04:13,669 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-05 00:04:13,670 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-05 00:04:13,877 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+2026-05-05 00:04:13,878 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])
+2026-05-05 00:05:02,136 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 2s
+2026-05-05 00:05:07,825 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 6s
+2026-05-05 00:05:18,023 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 9s
+2026-05-05 00:05:18,023 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-05 00:05:26,575 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-05 00:05:26,576 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-05 00:05:26,749 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-05 00:05:34,699 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/econohabitat/sector-construc… → activando stealth + intentando Google Cache
+2026-05-05 00:05:51,994 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-05-05 00:05:51,995 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-05 00:05:51,995 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/econohabitat/sector-construccion-pierde-200-000-empleos-menor-gasto-infraestructura-20260504-811725.html
+2026-05-05 00:05:51,999 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-05 00:05:52,787 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-05 00:05:52,902 - src.analysis.dedup - INFO - Deduplicación: 1136 noticias de entrada
+2026-05-05 00:05:52,943 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 489 duplicados
+2026-05-05 00:05:53,112 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
+2026-05-05 00:05:53,577 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 13 duplicados
+2026-05-05 00:05:53,784 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 3 duplicados
+2026-05-05 00:05:53,804 - src.analysis.dedup - INFO -   Resultado: 1136 → 630 únicos (506 duplicados eliminados)
+2026-05-05 00:05:56,013 - src.analysis.dedup - INFO - Deduplicación: 630 noticias de entrada
+2026-05-05 00:05:56,042 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-05 00:05:56,151 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-05 00:05:56,450 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-05-05 00:05:56,559 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-05-05 00:05:56,562 - src.analysis.dedup - INFO -   Resultado: 630 → 630 únicos (0 duplicados eliminados)
+2026-05-05 00:06:05,145 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-05 00:06:05,146 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-05-05 00:06:05,260 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:06:05,261 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-05 00:06:05,274 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-05 00:06:05,354 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:06:05,367 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-05 00:06:05,444 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-05 00:06:05,531 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-05 00:06:05,696 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:06:05,708 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-05 00:06:05,806 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-05 00:06:05,885 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-05 00:06:05,983 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-05 00:06:06,085 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-05 00:06:06,190 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-05 00:06:06,268 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-05 00:06:06,358 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-05 00:06:09,106 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-05-05 00:08:11,568 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 630 documentos
+2026-05-05 00:08:32,025 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-05 00:08:32,130 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,142 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:32,217 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,228 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:32,230 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-05 00:08:32,313 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,334 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:32,410 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,423 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-05 00:08:32,496 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,507 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:32,580 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,591 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:32,664 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-05 00:08:32,736 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:32,747 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:33,097 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-05 00:08:33,174 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-05 00:08:33,268 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-05 00:08:33,342 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-05 00:08:33,414 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:33,426 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:33,563 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:33,575 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:33,647 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:33,659 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:33,732 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:33,744 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:33,866 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:33,878 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:33,950 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-05 00:08:34,030 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-05 00:08:44,866 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-05 00:08:45,262 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-05 00:08:45,274 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-05 00:08:45,350 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-05 00:08:45,358 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-05 00:09:28,118 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 229/630 (36.3%)
+2026-05-05 00:09:28,185 - src.analysis.bertopic_clustering - INFO - Clustering completado: 22 temas, outliers finales: 229/630 (36.3%)
+2026-05-05 00:09:45,785 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-05 00:09:46,904 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-05 00:09:48,775 - src.database.repository - INFO - Batch insert: 630 noticias insertadas
+2026-05-05 00:09:49,992 - src.analysis.bertopic_clustering - INFO - Guardados 23 clusters en PostgreSQL
+2026-05-05 00:09:50,030 - root - INFO - Datos cargados: 630 noticias desde análisis
+2026-05-05 00:09:50,033 - root - INFO - Análisis background completado exitosamente

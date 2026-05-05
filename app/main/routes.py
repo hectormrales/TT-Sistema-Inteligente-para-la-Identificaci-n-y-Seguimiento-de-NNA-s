@@ -99,6 +99,16 @@ def _get_stats() -> dict | None:
 
 def _row_to_dict(idx, row) -> dict:
     """Convierte una fila del DataFrame a diccionario para la API."""
+    import pandas as pd
+    
+    def safe_int(val, default=-1):
+        if pd.isna(val):
+            return default
+        try:
+            return int(float(val))
+        except (ValueError, TypeError):
+            return default
+            
     contenido = str(row.get('contenido', ''))
     return {
         'id': int(idx),
@@ -108,13 +118,13 @@ def _row_to_dict(idx, row) -> dict:
         'fuente': row.get('fuente', ''),
         'enlace': row.get('enlace', ''),
         'menores_identificados': row.get('menores_identificados', 'No'),
-        'cluster': int(row.get('cluster', -1)),
-        'topic_id': int(row.get('topic_id', -1)),
-        'similitud': float(row.get('max_similarity', 0)),
-        'score_feminicidio': float(row.get('score_feminicidio', 0)),
-        'score_nna': float(row.get('score_nna', 0)),
-        'score_compuesto': float(row.get('score_compuesto', 0)),
-        'relevancia_final': float(row.get('relevancia_final', row.get('score_compuesto', 0))),
+        'cluster': safe_int(row.get('cluster', -1)),
+        'topic_id': safe_int(row.get('topic_id', -1)),
+        'similitud': float(row.get('max_similarity', 0)) if not pd.isna(row.get('max_similarity')) else 0.0,
+        'score_feminicidio': float(row.get('score_feminicidio', 0)) if not pd.isna(row.get('score_feminicidio')) else 0.0,
+        'score_nna': float(row.get('score_nna', 0)) if not pd.isna(row.get('score_nna')) else 0.0,
+        'score_compuesto': float(row.get('score_compuesto', 0)) if not pd.isna(row.get('score_compuesto')) else 0.0,
+        'relevancia_final': float(row.get('relevancia_final', row.get('score_compuesto', 0))) if not pd.isna(row.get('relevancia_final')) else 0.0,
         'clasificacion': row.get('clasificacion_final', row.get('clasificacion', 'No relevante')),
     }
 

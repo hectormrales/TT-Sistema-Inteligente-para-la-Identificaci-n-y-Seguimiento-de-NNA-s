@@ -41,6 +41,118 @@ from email.utils import parsedate_to_datetime
 import config
 from src.collection.scraper import DynamicScraper, StealthSession
 from src.analysis.dedup import NewsDeduplicator
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+
+def _is_url_in_db(url: str) -> bool:
+    """Verifica si la URL ya existe en la base de datos PostgreSQL."""
+    try:
+        from src.database.models_noticias import Noticia
+        exists = Noticia.query.filter_by(enlace=url).first() is not None
+        return exists
+    except Exception as e:
+        logger.warning(f"Error verificando BD para URL: {e}")
+        return False
+
+def _inject_date_operators(url: str, start_date: str | None, end_date: str | None) -> str:
+    """Inyecta after:YYYY-MM-DD y before:YYYY-MM-DD en el parámetro q de la URL de Google News."""
+    if not start_date and not end_date:
+        return url
+        
+    parsed = urlparse(url)
+    qs = parse_qs(parsed.query)
+    
+    if 'q' not in qs:
+        return url
+        
+    q_val = qs['q'][0]
+    
+    # Prevenir duplicados removiendo operadores previos si existen
+    q_val = re.sub(r'\s+after:\S+', '', q_val)
+    q_val = re.sub(r'\s+before:\S+', '', q_val)
+        
+    if start_date:
+        q_val += f" after:{start_date}"
+    if end_date:
+        q_val += f" before:{end_date}"
+        
+    qs['q'] = [q_val]
+    new_query = urlencode(qs, doseq=True)
+    return urlunparse(parsed._replace(query=new_query))
+
+def _scrape_google_search_html(query: str, start_date: str | None, end_date: str | None, session: StealthSession) -> list:
+    """Scrapea la pestaña de noticias de Google Search para resultados históricos."""
+    q_str = query
+    if start_date:
+        q_str += f" after:{start_date}"
+    if end_date:
+        q_str += f" before:{end_date}"
+        
+    qs = {'q': q_str, 'tbm': 'nws', 'hl': 'es-419', 'gl': 'MX'}
+    url = f"https://www.google.com/search?{urlencode(qs)}"
+    logger.info(f"Scraping Google Search Histórico: {url}")
+    
+    try:
+        response = session.get(url)
+        if response.status_code != 200:
+            logger.warning(f"Google Search retornó status {response.status_code}")
+            return []
+            
+        soup = BeautifulSoup(response.text, 'html.parser')
+        links = []
+        for a in soup.find_all('a', href=True):
+            href = a['href']
+            
+            # Limpiar ofuscación de Google si existe
+            if href.startswith('/url?q='):
+                href = href.replace('/url?q=', '').split('&')[0]
+                from urllib.parse import unquote
+                href = unquote(href)
+                
+            # Ignorar links internos de Google o incompletos
+            if not href.startswith('http'):
+                continue
+                
+            ignored_domains = ['google.com', 'accounts.google', 'support.google', 'policies.google']
+            if any(domain in href for domain in ignored_domains):
+                continue
+                
+            # Usar enfoque genérico: extraer todo el texto visible del tag <a>
+            title = a.get_text(' ', strip=True)
+            
+            # Heurística: si el texto tiene > 25 caracteres, lo consideramos el título
+            if not title or len(title) < 25:
+                continue
+                
+            # Intentar extraer un snippet mirando a su padre
+            snippet = ""
+            parent = a.parent
+            if parent:
+                parent_text = parent.get_text(' ', strip=True)
+                # Si el padre tiene sustancialmente más texto, es posible que contenga el snippet
+                if len(parent_text) > len(title) + 15:
+                    snippet_candidate = parent_text.replace(title, '').strip()
+                    if len(snippet_candidate) > 20:
+                        snippet = snippet_candidate
+            
+            links.append({
+                'titulo': title,
+                'enlace': href,
+                'contenido': snippet,
+                'fecha': datetime.now(timezone.utc).isoformat(),
+                'fuente': 'Google Search Histórico'
+            })
+            
+        # Deduplicar localmente
+        unique_links = {}
+        for l in links:
+            if l['enlace'] not in unique_links:
+                unique_links[l['enlace']] = l
+                
+        return list(unique_links.values())
+        
+    except Exception as e:
+        logger.error(f"Error en HTML fallback Google Search: {e}")
+        return []
 
 logger = logging.getLogger(__name__)
 
@@ -806,9 +918,14 @@ def collect_news_from_rss(
             # v8.0: Si se especifica un rango de fechas, permitimos re-analizar URLs 'vistas'
             # para darles una segunda oportunidad con el analizador mejorado,
             # siempre que el Repositorio de DB se encargue de evitar duplicados finales.
-            if enlace_text and enlace_text in seen_urls and not (start_date or end_date):
-                skipped_seen += 1
-                continue
+            if enlace_text:
+                if enlace_text in seen_urls and not (start_date or end_date):
+                    skipped_seen += 1
+                    continue
+                # Verificación estricta contra la BD para búsquedas históricas (evita reprocesar en BETO)
+                if (start_date or end_date) and _is_url_in_db(enlace_text):
+                    skipped_seen += 1
+                    continue
 
             # Extraer contenido: preferir content:encoded > description
             if content_encoded and content_encoded.text:
@@ -929,6 +1046,8 @@ def collect_all_news(
             print("  ── Búsqueda General en Google News ──")
             google_news_feeds = [f for f in config.RSS_FEEDS if 'news.google.com' in f]
             for feed in google_news_feeds:
+                # Inyectar operadores de fecha para búsqueda histórica profunda
+                feed = _inject_date_operators(feed, start_date, end_date)
                 feed_label = feed[:70] + '…' if len(feed) > 70 else feed
                 print(f"  Google News: {feed_label}")
                 articles = collect_news_from_rss(
@@ -954,6 +1073,33 @@ def collect_all_news(
                 if articles:
                     sources_ok += 1
                 all_articles.extend(articles)
+
+            # ── 1.8 Fase Histórica: Google Search HTML ──
+            if scraper_type in ['all', 'google'] and (start_date or end_date):
+                print("  ── Búsqueda en Google Search (Fallback Histórico HTML) ──")
+                historico_queries = [
+                    'feminicidio "víctimas indirectas" niños méxico',
+                    'huérfanos feminicidio méxico',
+                    'niños "hijos" asesinan mujer méxico'
+                ]
+                for query in historico_queries:
+                    print(f"  Buscando en Google HTML: {query}")
+                    articles = _scrape_google_search_html(query, start_date, end_date, shared_session)
+                    valid_articles = []
+                    for art in articles:
+                        if _is_url_in_db(art['enlace']):
+                            continue
+                        if not _is_mexico_news(art['titulo'], art['contenido'], art['enlace']):
+                            continue
+                        rel = score_relevance(art['titulo'], art['contenido'])
+                        if keep_all or rel['relevancia_final'] >= threshold:
+                            art.update(rel)
+                            valid_articles.append(art)
+                            seen_urls.add(art['enlace'])
+                    
+                    if valid_articles:
+                        sources_ok += 1
+                    all_articles.extend(valid_articles)
 
         # ── 2. Fase Específica: Fuentes configuradas por el usuario ──
         if scraper_type in ['all', 'custom']:
@@ -993,6 +1139,8 @@ def collect_all_news(
                                     enlace = art.get('enlace', base_url)
                                     if enlace in seen_urls and not (start_date or end_date):
                                         continue
+                                    if (start_date or end_date) and _is_url_in_db(enlace):
+                                        continue
                                     if not _is_mexico_news(art.get('titulo', ''), art.get('contenido', ''), enlace):
                                         continue
                                     rel = score_relevance(art['titulo'], art['contenido'])
@@ -1026,6 +1174,8 @@ def collect_all_news(
                                 enlace = art.get('enlace', source['url'])
                                 # v8.0: Bypass seen_urls if custom dates are provided
                                 if enlace in seen_urls and not (start_date or end_date):
+                                    continue
+                                if (start_date or end_date) and _is_url_in_db(enlace):
                                     continue
                                 if not _is_mexico_news(
                                     art.get('titulo', ''),

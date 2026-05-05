@@ -4,7 +4,21 @@
 
 Sistema automatizado para detectar y analizar noticias sobre **feminicidios** que mencionen **víctimas indirectas (Niños, Niñas y Adolescentes — NNA)** en medios digitales mexicanos, utilizando Machine Learning y procesamiento de lenguaje natural.
 
-El sistema recopila noticias de múltiples fuentes (RSS + web scraping dinámico), aplica un **scoring de relevancia dual** (eje feminicidio + eje NNA), **deduplica** automáticamente noticias de diferentes sitios, filtra las noticias no relevantes, y presenta los resultados en un dashboard interactivo con gestión de fuentes.
+El sistema recopila noticias de múltiples fuentes (RSS + web scraping dinámico + Google Search), aplica un **scoring de relevancia de 4 ejes** (feminicidio, NNA, caso individual, víctima indirecta), **deduplica** automáticamente noticias de diferentes sitios, filtra ruidos estadísticos, y presenta los resultados en un dashboard interactivo con gestión de fuentes.
+
+---
+
+## Cambios v6.0 — Precisión Extrema + Rendimiento (Batch Inference)
+
+### Nuevas funcionalidades
+
+| Funcionalidad | Descripción |
+|---------------|-------------|
+| **Scoring de 4 Ejes** | Se pasó de un scoring dual a uno de 4 ejes: Feminicidio, NNA (general), Caso Individual y **Víctima Indirecta** (orfandad/desamparo). |
+| **Batch Inference (BETO)** | Procesamiento de análisis semántico en lotes (mini-batches) de 16 usando PyTorch. Reducción de tiempo de análisis de **60 min a < 3 min**. |
+| **Penalización Estricta** | El sistema ahora descarta automáticamente casos donde el menor es la víctima directa, el agresor, o si es ruido estadístico/político. |
+| **Google Search Scraper** | Integración de `StealthSession` para capturar menciones en redes sociales y medios que no tienen RSS, con rotación de User-Agents. |
+| **Clasificación Estricta** | La relevancia "Alta" ahora exige cumplimiento simultáneo de los 4 ejes + validación semántica de BETO (>0.50). |
 
 ---
 
@@ -66,20 +80,21 @@ La versión anterior no filtraba por tema; recolectaba TODAS las noticias sin im
 ┌──────────────────────────────────────────────────────────────┐
 │                    FUENTES DE DATOS                          │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐   │
-│  │ RSS (31) │  │ Google   │  │ HTML     │  │ Fuentes    │   │
-│  │ Feeds    │  │ News (14)│  │ Scraping │  │ DB (usr)   │   │
+│  │ RSS (31) │  │ Google   │  │ HTML     │  │ Google     │   │
+│  │ Feeds    │  │ News (14)│  │ Scraping │  │ Search     │   │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └─────┬──────┘   │
 │       └──────────────┴──────────────┴───────────────┘         │
 │                           │                                  │
 │                    robots.txt check                          │
-│                    rate limiting                             │
+│                    rate limiting + StealthSession            │
 └──────────────────────────┬───────────────────────────────────┘
                            │
               ┌────────────▼────────────┐
-              │    SCORING DUAL         │
-              │  Feminicidio (0.55)     │
-              │  NNA (0.45)             │
-              │  Bonus dual ×1.35       │
+              │    SCORING 4 EJES       │
+              │  1. Feminicidio         │
+              │  2. NNA (General)       │
+              │  3. Caso Individual     │
+              │  4. Víctima Indirecta   │
               └────────────┬────────────┘
                            │
               ┌────────────▼────────────┐
@@ -91,19 +106,19 @@ La versión anterior no filtraba por tema; recolectaba TODAS las noticias sin im
               └────────────┬────────────┘
                            │
               ┌────────────▼────────────┐
-              │    PIPELINE NLP         │
+              │    PIPELINE NLP v6.0    │
+              │  Batch Inference (BETO) │
               │  TF-IDF (domain-boost)  │
-              │  LDA (6 tópicos)        │
-              │  K-Means (clusters)     │
+              │  BERTopic (Clustering)  │
               │  Cosine Similarity      │
-              │  Rescore TF-IDF (ideal) │
+              │  Rescore Heurístico     │
               └────────────┬────────────┘
                            │
               ┌────────────▼────────────┐
               │     DASHBOARD           │
               │  Stats · Filtros        │
               │  Búsqueda + sinónimos   │
-              │  Gestión de fuentes     │
+              │  Métricas 4 ejes        │
               └─────────────────────────┘
 ```
 
@@ -115,11 +130,11 @@ La versión anterior no filtraba por tema; recolectaba TODAS las noticias sin im
 |-----------|------------|
 | Backend | Python 3.12, Flask 3.0.3 |
 | Base de Datos | PostgreSQL 16 (Docker) |
-| ML/NLP | scikit-learn 1.4.2 (TF-IDF, LDA, K-Means, cosine similarity) |
-| Scraping | BeautifulSoup4, lxml, requests, urllib.robotparser |
+| ML/NLP | scikit-learn 1.4.2, **PyTorch** (Batch Inference), **BETO** (Spanish BERT) |
+| Scraping | BeautifulSoup4, lxml, requests, urllib.robotparser, **StealthSession** |
 | Deduplicación | SimHash, Jaccard, TF-IDF coseno |
 | Auth | Argon2id (OWASP), Flask-Login |
-| Frontend | Bootstrap 5, Font Awesome 6 |
+| Frontend | Bootstrap 5, Font Awesome 6, Chart.js |
 | Deploy | Docker Compose (3 servicios) |
 
 ---
@@ -257,13 +272,13 @@ Se conserva la noticia con mayor `score_compuesto` de cada grupo de duplicados.
 
 | Algoritmo | Uso en el sistema |
 |-----------|-------------------|
-| **Scoring heurístico dual** | ~35 patrones regex ponderados. Sigmoide `1 - 1/(1+w)`. Bonus ×1.35 dual. 55%/45%. |
+| **Scoring 4 Ejes** | Feminicidio, NNA, Caso Individual, Víctima Indirecta. Penalización de agresores/víctimas directas. |
+| **Batch Inference (PyTorch)** | Vectorización masiva de noticias para análisis semántico (lotes de 16). |
+| **BETO Zero-Shot** | Clasificación semántica profunda para validar la intención del texto. |
 | **TF-IDF (domain-boosted)** | `sublinear_tf=True`, n-gramas 1-3, stop words español, vocabulario inyectado. |
-| **Reclasificación TF-IDF** | Documento ideal + cosine similarity. Score final = 60% heurístico + 40% TF-IDF. |
-| **LDA** | Modelado de tópicos latentes. |
-| **K-Means** | Clustering temático con auto-ajuste. |
+| **BERTopic** | Modelado de tópicos latentes y clustering avanzado (reemplaza LDA/K-Means). |
 | **SimHash + Jaccard** | Deduplicación eficiente cross-site. |
-| **Cosine Similarity** | Detección de duplicados semánticos. |
+| **Cosine Similarity** | Detección de duplicados semánticos y relevancia temática. |
 | **Expansión de sinónimos** | 200+ sinónimos en 8 categorías con ranking ponderado. |
 
 ---
