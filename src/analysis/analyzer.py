@@ -497,7 +497,7 @@ class SimplifiedNewsAnalyzer:
 
         self.step_3_vectorize_text()
         self.step_4_topic_modeling(num_topics=num_topics)
-        self.step_5_clustering(n_clusters=n_clusters)
+        # self.step_5_clustering(n_clusters=n_clusters) # Desactivado: redundante con BERTopic
         self.step_6_similarity_analysis()
         self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
@@ -571,7 +571,7 @@ class SimplifiedNewsAnalyzer:
         # Ejecutar pasos 3-8 (análisis NLP)
         self.step_3_vectorize_text()
         self.step_4_topic_modeling(num_topics=num_topics)
-        self.step_5_clustering(n_clusters=n_clusters)
+        # self.step_5_clustering(n_clusters=n_clusters) # Desactivado: redundante con BERTopic
         self.step_6_similarity_analysis()
         self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
@@ -620,26 +620,22 @@ class SimplifiedNewsAnalyzer:
             scores_semanticos = []
             total = len(self.df_processed)
 
-            for i, (_, row) in enumerate(self.df_processed.iterrows()):
-                titulo = str(row.get("titulo", ""))
-                contenido = str(row.get("contenido", ""))
+            # Uso de inferencia por lotes para mayor velocidad
+            titulos = self.df_processed["titulo"].fillna("").astype(str).tolist()
+            contenidos = self.df_processed["contenido"].fillna("").astype(str).tolist()
 
-                try:
-                    # v5.1 Fix: El método correcto es predict(), no detect()
-                    result = detector.predict(titulo, contenido)
-                    score = result.get("score_semantico", 0.0)
-                except Exception:
-                    score = 0.0
-
-                scores_semanticos.append(score)
-
-                if (i + 1) % 50 == 0:
-                    print(f"  Procesadas {i + 1}/{total} noticias")
+            try:
+                # Utilizamos predict_batch para procesar todas las noticias a la vez
+                resultados_batch = detector.predict_batch(titulos, contenidos)
+                scores_semanticos = [r.get("score_semantico", 0.0) for r in resultados_batch]
+            except Exception as e:
+                logger.error(f"Error en predict_batch: {e}")
+                scores_semanticos = [0.0] * total
 
             self.df_processed["score_semantico"] = scores_semanticos
             self.df_processed["modo_deteccion"] = "hybrid"
 
-            # Combinar con heurístico usando fórmula alpha-weighted
+            # Combinar con heurístico usando fórmula alpha-weighted y clasificación estricta
             for i, (idx, row) in enumerate(self.df_processed.iterrows()):
                 h_score = float(row.get("relevancia_final", row.get("score_compuesto", 0)))
                 s_score = float(row.get("score_semantico", 0))
@@ -654,37 +650,44 @@ class SimplifiedNewsAnalyzer:
                     alpha = 0.3  # Baja confianza → peso al heurístico
 
                 score_final = alpha * s_score + (1 - alpha) * h_score
-                # v5.1: Permitir que BETO BAJE el score si detecta no-relevante.
-                # Antes: max(h_score, score_final) impedía que BETO corrigiera
-                # falsos positivos del heurístico.
-                # Ahora: solo subir si BETO tiene confianza alta
+                
+                # Solo subir si BETO tiene confianza alta
                 if s_score > h_score and distance > 0.2:
                     score_final = max(h_score, score_final)  # BETO sube con confianza
 
-                # OVERRIDE NNA: Si menciona explícitamente a menores en el contexto, no debe bajar de Alta relevancia
-                is_nna = str(row.get("menores_identificados", "No")).strip().lower() in ("si", "sí", "true", "1")
-                h_score_fem = float(row.get("score_feminicidio", 0))
-                
-                # Si el score de feminicidio inicial era decente (>0.2) y hay NNA, forzar a Alta
-                if is_nna and h_score_fem > 0.2:
-                    score_final = max(score_final, 0.65)
+                # --- NUEVA LÓGICA DE CLASIFICACIÓN ESTRICTA ---
+                # Extraemos los scores individuales
+                score_fem = float(row.get("score_feminicidio", 0))
+                score_v_ind = float(row.get("score_victima_indirecta", 0))
+                score_caso = float(row.get("score_caso", 0))
 
-                # Clasificar por umbrales (v5.1: más estrictos)
-                if score_final >= 0.60:
+                # Condición estricta para ALTA relevancia
+                es_alta_relevancia = (
+                    score_fem > 0.15 and
+                    score_v_ind > 0.25 and
+                    score_caso > 0.15 and
+                    s_score > 0.50
+                )
+
+                if es_alta_relevancia:
                     clasificacion = "Alta"
-                elif score_final >= 0.40:
-                    clasificacion = "Media"
-                elif score_final >= 0.20:
-                    clasificacion = "Baja"
+                    # Asegurar que el score_final refleje la alta relevancia
+                    score_final = max(score_final, 0.65)
                 else:
-                    clasificacion = "No relevante"
+                    # Si no cumple las 4 condiciones, se clasifica por el score general pero nunca como "Alta"
+                    if score_final >= 0.40:
+                        clasificacion = "Media"
+                    elif score_final >= 0.20:
+                        clasificacion = "Baja"
+                    else:
+                        clasificacion = "No relevante"
 
                 self.df_processed.at[idx, "relevancia_final"] = round(score_final, 4)
                 self.df_processed.at[idx, "clasificacion_final"] = clasificacion
 
             avg_sem = np.mean(scores_semanticos)
             print(f"  Score semántico promedio: {avg_sem:.4f}")
-            print(f"  {total} noticias procesadas con BETO")
+            print(f"  {total} noticias procesadas con BETO (Batch Inference)")
 
         except ImportError as e:
             print(f"  [!] Módulo semántico no disponible: {e}")

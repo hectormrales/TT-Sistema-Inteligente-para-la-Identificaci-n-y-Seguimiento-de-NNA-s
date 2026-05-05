@@ -78,20 +78,19 @@ FINETUNED_DIR = os.environ.get("FINETUNED_MODEL_DIR", "models/finetuned")
 # v2.0: Descripciones mucho más específicas para el caso de uso exacto.
 CATEGORY_DESCRIPTIONS = {
     "relevante": (
-        "Caso individual de feminicidio en México donde una mujer fue asesinada "
-        "y sus hijos menores de edad quedaron huérfanos, desamparados o en orfandad. "
-        "Noticia que describe un evento específico: la víctima fue encontrada sin vida, "
-        "el agresor fue detenido, los niños quedaron solos, "
-        "menores de edad que perdieron a su madre por violencia feminicida, "
-        "DIF resguarda a los hijos de la víctima de feminicidio."
+        "Caso individual, particular y concreto de feminicidio en México donde una mujer fue asesinada, "
+        "y como consecuencia directa, sus propios hijos (niños, niñas o adolescentes) "
+        "quedaron huérfanos, desamparados o fueron resguardados por el DIF u otra autoridad. "
+        "Noticia que relata un evento criminal específico detallando la pérdida de la madre y el impacto directo en sus hijos menores."
     ),
     "no_relevante": (
-        "Noticia general sin relación con feminicidio ni menores huérfanos. "
-        "Estadísticas y cifras de feminicidio sin caso concreto. "
-        "Política pública, leyes, reformas, programas de apoyo, becas. "
-        "Columna de opinión, editorial, marcha, conmemoración. "
-        "Deportes, entretenimiento, economía, clima, tecnología, "
-        "política internacional, cultura, espectáculos."
+        "Noticia general que NO relata un caso de orfandad por feminicidio. "
+        "ESTO INCLUYE Y DEBE CLASIFICARSE COMO NO RELEVANTE: "
+        "1. Cifras, estadísticas, informes anuales o reportes trimestrales de violencia. "
+        "2. Políticas públicas, leyes, debates en el congreso, programas de becas o entregas de apoyos económicos. "
+        "3. Feminicidios donde la persona asesinada (víctima directa) es una niña, menor de edad o adolescente. "
+        "4. Crímenes donde el agresor o asesino es un menor de edad o el propio hijo de la víctima. "
+        "5. Marchas, protestas, columnas de opinión o conferencias sin relatar un crimen en particular."
     ),
 }
 
@@ -482,10 +481,71 @@ class SemanticDetector:
                             "modo": "finetuned",
                         })
         else:
-            # Zero-shot: uno por uno (embeddings con cache)
-            for text in texts:
-                results.append(self._predict_zero_shot(text))
+            # Zero-shot: procesamiento por lotes vectorizado
+            results = self._predict_zero_shot_batch(texts)
 
+        return results
+
+    def _get_embeddings_batch(self, texts: list[str]) -> np.ndarray:
+        """Obtiene embeddings [CLS] de BETO para un lote de textos."""
+        all_embeddings = []
+        
+        # Procesar en mini-lotes para no desbordar RAM/VRAM
+        for i in range(0, len(texts), BATCH_SIZE):
+            batch_texts = texts[i:i + BATCH_SIZE]
+            inputs = self.tokenizer(
+                batch_texts,
+                max_length=MAX_SEQ_LENGTH,
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+            ).to(self.device)
+
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+
+            # [CLS] token embeddings (batch_size, 768)
+            cls_embs = outputs.last_hidden_state[:, 0, :].cpu().numpy()
+            
+            # Normalización L2 por fila
+            norms = np.linalg.norm(cls_embs, axis=1, keepdims=True)
+            norms[norms == 0] = 1  # Evitar división por cero
+            cls_embs = cls_embs / norms
+            
+            all_embeddings.extend(cls_embs)
+            
+        return np.array(all_embeddings)
+
+    def _predict_zero_shot_batch(self, texts: list[str]) -> list[dict]:
+        """Clasificación zero-shot por lotes."""
+        if not texts:
+            return []
+            
+        text_embs = self._get_embeddings_batch(texts)  # (N, 768)
+        
+        cat_rel = self._category_embeddings["relevante"]  # (768,)
+        cat_norel = self._category_embeddings["no_relevante"]
+        
+        # Similitud coseno (al estar normalizados, es solo producto punto)
+        sim_relevante = np.dot(text_embs, cat_rel)  # (N,)
+        sim_no_relevante = np.dot(text_embs, cat_norel)  # (N,)
+        
+        # Normalizar a probabilidad con softmax y temperatura
+        exp_rel = np.exp(sim_relevante * 5)
+        exp_norel = np.exp(sim_no_relevante * 5)
+        scores = exp_rel / (exp_rel + exp_norel)
+        
+        results = []
+        for i in range(len(texts)):
+            s = float(scores[i])
+            results.append({
+                "score_semantico": round(s, 4),
+                "es_relevante": s >= 0.5,
+                "confianza": self._confidence_level(s),
+                "modo": "zero_shot",
+                "sim_relevante": round(float(sim_relevante[i]), 4),
+                "sim_no_relevante": round(float(sim_no_relevante[i]), 4),
+            })
         return results
 
     @staticmethod

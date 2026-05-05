@@ -403,8 +403,8 @@ class DomainCircuitBreaker:
     """
 
     FAILURE_THRESHOLD = 3       # Fallos consecutivos para abrir circuito
-    COOLDOWN_SECONDS = 300      # 5 minutos de cooldown total
-    HALF_OPEN_AFTER = 180       # Intenta 1 request después de 3 minutos
+    COOLDOWN_SECONDS = 600      # 10 minutos de cooldown total (enfriamiento más agresivo)
+    HALF_OPEN_AFTER = 300       # Intenta 1 request después de 5 minutos
 
     def __init__(self):
         # Contador de fallos consecutivos por dominio
@@ -648,6 +648,9 @@ class StealthSession:
     MIN_DELAY = 2.0
     MAX_DELAY_CAP = 60.0
 
+    # Soporte para rotación de proxies (tomado de config.py si existe)
+    PROXIES = getattr(config, 'PROXIES', [])
+
     def __init__(self, test_mode: bool = False):
         self._sessions: dict[str, requests.Session] = {}
         self._domain_ua: dict[str, str] = {}
@@ -689,6 +692,16 @@ class StealthSession:
             # Asignar un UA fijo por dominio (como haría un navegador real)
             ua = _random_user_agent()
             self._domain_ua[domain] = ua
+
+            # Asignar proxy rotativo si hay configurados
+            if self.PROXIES:
+                proxy = random.choice(self.PROXIES)
+                session.proxies = {
+                    'http': proxy,
+                    'https': proxy
+                }
+                logger.debug(f"Proxy asignado para {domain}: {proxy}")
+
             self._sessions[domain] = session
         return self._sessions[domain]
 

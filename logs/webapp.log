@@ -5695,3 +5695,213 @@ AttributeError: Can only use .dt accessor with datetimelike values
 2026-04-30 12:18:50,638 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
 2026-04-30 12:18:50,646 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
 2026-04-30 13:55:24,190 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-05-04 20:52:58,485 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 20:52:58,486 - app - INFO - Esquema FTS inicializado
+2026-05-04 20:52:58,514 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 20:52:58,515 - app - INFO - Esquema FTS inicializado
+2026-05-04 20:52:58,592 - root - INFO - Datos cargados: 476 noticias desde análisis
+2026-05-04 20:52:58,592 - root - INFO - Datos cargados: 476 noticias desde análisis
+2026-05-04 21:00:35,977 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 21:00:35,978 - app - INFO - Esquema FTS inicializado
+2026-05-04 21:00:36,037 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 21:00:36,038 - app - INFO - Esquema FTS inicializado
+2026-05-04 21:00:36,053 - root - INFO - Datos cargados: 476 noticias desde análisis
+2026-05-04 21:00:36,100 - root - INFO - Datos cargados: 476 noticias desde análisis
+2026-05-04 21:00:50,716 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 21:00:50,725 - app - INFO - Logout: hector
+2026-05-04 21:00:54,617 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 21:01:05,375 - app - INFO - Logout: hector
+2026-05-04 21:01:08,256 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-04 21:08:43,158 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-04 21:08:43,158 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-04 21:08:49,716 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:08:49,788 - src.collection.scraper - INFO - Activando stealth mid-scrape para news.google.com
+2026-05-04 21:09:23,960 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:09:41,590 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:10:05,013 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:11:09,946 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:11:32,621 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:11:46,285 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:12:10,897 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:12:36,436 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:12:36,438 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:12:53,817 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:12:53,818 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:13:00,550 - src.collection.scraper - INFO - HTML listing: 13 enlaces (después del filtrado) en https://www.elsoldemexico.com.mx/…
+2026-05-04 21:15:12,654 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldemexico.com.mx/esto/mundial-2026/mundial-2…: 404 Client Error: Not Found for url: https://www.elsoldemexico.com.mx/esto/mundial-2026/mundial-2026-panini-inaugura-exposicion-de-mega-estampillas-29791020
+2026-05-04 21:15:44,595 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldemexico.com.mx/esto/futbol-internacional/g…: 404 Client Error: Not Found for url: https://www.elsoldemexico.com.mx/esto/futbol-internacional/gianni-infantino-intenta-una-foto-de-paz-entre-dirigentes-de-palestina-e-israel-durante-congreso-fifa-29754606
+2026-05-04 21:16:03,533 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldemexico.com.mx/esto/mundial-2026/gianni-in…: 404 Client Error: Not Found for url: https://www.elsoldemexico.com.mx/esto/mundial-2026/gianni-infantino-confirma-que-iran-jugara-sus-partidos-del-mundial-en-estados-unidos-29750562
+2026-05-04 21:16:03,533 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.elsoldemexico.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-04 21:16:14,451 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:16:14,451 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:16:37,176 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:17:17,153 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:17:34,427 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:18:02,141 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:18:05,010 - src.collection.scraper - INFO - HTML listing: 6 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-04 21:18:12,582 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/30/celebran-dia-del… → activando stealth + intentando Google Cache
+2026-05-04 21:19:21,761 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y… → activando stealth + intentando Google Cache
+2026-05-04 21:19:38,797 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 21:19:38,797 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 21:19:38,797 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y-robots-juguetes-tech-que-han-evolucionado/
+2026-05-04 21:20:26,380 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-… → activando stealth + intentando Google Cache
+2026-05-04 21:20:51,452 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 21:20:51,452 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 21:20:51,452 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-regalos-nuevas-formas-de-celebrar-el-dia-de-la-nina-y-el-nino/
+2026-05-04 21:21:30,803 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/05/04/menor-muere-tras… → activando stealth + intentando Google Cache
+2026-05-04 21:21:50,320 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 21:21:50,320 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 21:21:50,320 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/05/04/menor-muere-tras-permanecer-mas-de-12-horas-encerrado-en-un-automovil-en-mexicali-detienen-a-la-madre/
+2026-05-04 21:22:10,514 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/04/cameron-… → activando stealth + intentando Google Cache
+2026-05-04 21:22:40,656 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 21:22:40,656 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 21:22:40,657 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/04/cameron-diaz-se-convierte-en-madre-de-su-tercer-hijo-a-los-53-anos/
+2026-05-04 21:23:06,677 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/04/20/registro-para-el… → activando stealth + intentando Google Cache
+2026-05-04 21:23:33,665 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 21:23:33,665 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 21:23:33,666 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/04/20/registro-para-el-apoyo-bienestar-mujeres-50-a-64-anos-estas-son-las-fechas-y-requisitos/
+2026-05-04 21:23:33,669 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-04 21:23:34,555 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:24:11,570 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:24:38,730 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:25:00,230 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:25:41,188 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:26:10,974 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:27:02,725 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:27:12,899 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:27:46,467 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:27:47,467 - src.collection.scraper - INFO - HTML listing: 10 enlaces (después del filtrado) en https://www.diariodexalapa.com.mx/…
+2026-05-04 21:28:56,431 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodexalapa.com.mx/esto/mundial-2026/mundial-…: 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/esto/mundial-2026/mundial-2026-panini-inaugura-exposicion-de-mega-estampillas-29791020
+2026-05-04 21:29:15,018 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodexalapa.com.mx/esto/futbol-internacional/…: 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/esto/futbol-internacional/gianni-infantino-intenta-una-foto-de-paz-entre-dirigentes-de-palestina-e-israel-durante-congreso-fifa-29754606
+2026-05-04 21:29:34,481 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodexalapa.com.mx/esto/mundial-2026/gianni-i…: 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/esto/mundial-2026/gianni-infantino-confirma-que-iran-jugara-sus-partidos-del-mundial-en-estados-unidos-29750562
+2026-05-04 21:29:34,482 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariodexalapa.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-04 21:29:39,296 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:30:39,595 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiywFBVV95cUxQR3NqSy1DTUVIZXJlV2pWY2JlT0F6NnBiS0xXdXk1akNGQmRhTk9sT0EtVkFleENTS0EzUHB4V1VXY3Y5SGFyZ3lvVlhtWmU0aHhoWGJnTzBTTFRCeUZueEJYMG40MF92ck9HY1ppWkFOTGp1SjdzRmNtZUNGTlRkTnRtRWF4cVZXM18teE93UjRqV0F5Yng1aEZMM0Q4VXpmU3FPNmZ6WGNqenpJd3BCZ3Fxem1nOFI1WXhoa1ZYbHF0MnZXMkZ1UmpJa9IBywFBVV95cUxQYkJCTnZiZnNaYmdPMlpycVFfbHdBTUk1WTd4WEthWWpSNmp4NlMtc2Fzb0JUNkMyODFVaF9XYWh3Q0prb0habEg3S1dadDNEdjZOb2xTX2g3NVdTZGlhY29mbWZCYnVvdG5MMi1iWjFTREwtRTNGbUNib2NDYWprcFhGS2locm9yaGlodHkybE1LSVhqaXNjbHpHeDFwU1VoTWpYTmNHMW0xeWNqZUFnN1FWTHJuWllPVU5nRE5fTUxoTkV2Y3JYVDlLSQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:30:59,557 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:31:32,511 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:31:32,511 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:31:51,108 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:31:51,109 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:31:51,707 - src.collection.scraper - INFO - HTML listing: 7 enlaces (después del filtrado) en https://www.elsoldepuebla.com.mx/…
+2026-05-04 21:33:24,644 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldepuebla.com.mx/esto/mundial-2026/mundial-2…: 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/esto/mundial-2026/mundial-2026-panini-inaugura-exposicion-de-mega-estampillas-29791020
+2026-05-04 21:33:30,484 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldepuebla.com.mx/esto/futbol-internacional/g…: 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/esto/futbol-internacional/gianni-infantino-intenta-una-foto-de-paz-entre-dirigentes-de-palestina-e-israel-durante-congreso-fifa-29754606
+2026-05-04 21:33:58,249 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldepuebla.com.mx/esto/mundial-2026/gianni-in…: 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/esto/mundial-2026/gianni-infantino-confirma-que-iran-jugara-sus-partidos-del-mundial-en-estados-unidos-29750562
+2026-05-04 21:33:58,250 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.elsoldepuebla.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-04 21:33:58,747 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:33:58,748 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:33:59,064 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-04 21:33:59,064 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-04 21:34:16,656 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-04 21:34:16,656 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-04 21:34:45,512 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:34:45,512 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:34:45,804 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-04 21:34:45,804 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-04 21:35:11,852 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:35:11,853 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:35:24,684 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:35:24,684 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:36:06,443 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:36:14,462 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:36:27,119 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:36:44,015 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMisgFBVV95cUxOOG9QSGNyVk1qSWZsTXotaG96QnktWUJvOG1JUzVJTEZ0MjUyNXpyNW1jZFRJcVJIcExPV3o2YUhUZHkzbnVsQXBMTC1RZmhtemxuRjZZaWtIMUxnVmZLVGFLVWVDR250dXhMekRUSFBvVElpX1c4Nl9lTE5lbXZUVlFuQ0N6dnEwRDRXaWlpWTlpcU0zLTB1eC1IRUhRenlFb3JhVUttZ09fNUgxclVXWVNn?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-04 21:37:21,855 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:37:21,856 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:37:39,176 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:37:39,176 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:38:08,862 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:38:08,863 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:38:09,100 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 2s
+2026-05-04 21:38:16,627 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 6s
+2026-05-04 21:38:23,846 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 12s
+2026-05-04 21:38:23,849 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-04 21:38:38,633 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-04 21:38:38,634 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-04 21:38:38,822 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-04 21:38:45,638 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/econohabitat/sector-construc… → activando stealth + intentando Google Cache
+2026-05-04 21:39:09,344 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-04 21:39:09,345 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-04 21:39:09,345 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/econohabitat/sector-construccion-pierde-200-000-empleos-menor-gasto-infraestructura-20260504-811725.html
+2026-05-04 21:39:09,349 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-04 21:39:09,980 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-04 21:39:09,981 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-04 21:39:09,985 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-04 21:39:10,071 - src.analysis.dedup - INFO - Deduplicación: 393 noticias de entrada
+2026-05-04 21:39:10,127 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 7 duplicados
+2026-05-04 21:39:10,347 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-04 21:39:10,577 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 28 duplicados
+2026-05-04 21:39:10,724 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 1 duplicados
+2026-05-04 21:39:10,730 - src.analysis.dedup - INFO -   Resultado: 393 → 357 únicos (36 duplicados eliminados)
+2026-05-04 21:39:12,375 - src.analysis.dedup - INFO - Deduplicación: 357 noticias de entrada
+2026-05-04 21:39:12,413 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-04 21:39:12,459 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-04 21:39:12,664 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-05-04 21:39:12,764 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-05-04 21:39:12,766 - src.analysis.dedup - INFO -   Resultado: 357 → 357 únicos (0 duplicados eliminados)
+2026-05-04 21:39:19,407 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-04 21:39:19,407 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-05-04 21:39:19,524 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:39:19,538 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-04 21:39:19,626 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:39:19,627 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-04 21:39:19,641 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-04 21:39:19,723 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-04 21:39:19,803 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-04 21:39:19,958 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:39:19,971 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-04 21:39:20,075 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-04 21:39:20,154 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-04 21:39:20,256 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-04 21:39:20,389 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-04 21:39:20,537 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-04 21:39:20,616 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-04 21:39:20,697 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-04 21:39:25,713 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-05-04 21:41:58,475 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 357 documentos
+2026-05-04 21:42:14,630 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-04 21:42:14,738 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:14,749 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:14,829 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:14,840 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:14,842 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-04 21:42:14,913 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:14,924 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:14,998 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:15,009 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-04 21:42:15,104 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:15,122 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:17,237 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:17,251 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:17,328 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-04 21:42:17,406 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:17,417 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:17,799 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-04 21:42:17,883 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-04 21:42:17,960 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-04 21:42:18,037 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-04 21:42:18,111 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:18,126 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:18,206 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:18,218 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:18,298 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:18,312 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:18,388 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:18,412 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:18,984 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:18,999 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:21,372 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-04 21:42:21,452 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-04 21:42:24,518 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-04 21:42:24,841 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-04 21:42:24,853 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-04 21:42:24,932 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-04 21:42:24,936 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-04 21:42:47,857 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 58/357 (16.2%)
+2026-05-04 21:42:47,938 - src.analysis.bertopic_clustering - INFO - Clustering completado: 9 temas, outliers finales: 58/357 (16.2%)
+2026-05-04 21:42:58,511 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-04 21:42:59,640 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-04 21:43:00,996 - src.database.repository - INFO - Batch insert: 357 noticias insertadas
+2026-05-04 21:43:01,352 - src.analysis.bertopic_clustering - INFO - Guardados 10 clusters en PostgreSQL
+2026-05-04 21:43:01,407 - root - INFO - Datos cargados: 357 noticias desde análisis
+2026-05-04 21:43:01,411 - root - INFO - Análisis background completado exitosamente
+2026-05-04 21:49:40,314 - root - INFO - Datos cargados: 357 noticias desde análisis

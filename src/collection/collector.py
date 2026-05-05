@@ -158,6 +158,26 @@ NNA_KEYWORDS: list[Tuple[str, float]] = [
     (r'\b\d{1,2}\s+a[ñn]os\s+de\s+edad\b', 0.45),
 ]
 
+# ── Eje 2.5: NNA (víctimas indirectas específico) ──────────────
+VICTIMA_INDIRECTA_NNA_KEYWORDS: list[Tuple[str, float]] = [
+    # Orfandad / quedaron solos
+    (r'\b(?:dej[oó]|dejaron|quedan|quedaron)\s+(?:\w+\s+){0,3}(?:hu[eé]rfan|sin\s+madre|sol[oa]s?|desamparad)\b', 1.0),
+    (r'\bhu[eé]rfan[oa]s?\b', 1.0),
+    (r'\borfandad\b', 1.0),
+    (r'\bv[ií]ctimas?\s+indirectas?\b', 1.0),
+    # El menor presenció / estaba presente
+    (r'\bfrente\s+a\s+sus?\s+(?:hijos?|hijas?|menores?)\b', 1.0),
+    (r'\bpresenci[oó]\b.*\b(?:asesinat|feminicidio|muerte|crimen)\b', 1.0),
+    (r'\b(?:hijos?|hijas?|menores?)\s+(?:presenciaron|vieron|estaban\s+presentes)\b', 1.0),
+    # DIF / custodia por orfandad
+    (r'\bDIF\s+(?:resguard|entreg|recib|custodi)\b', 0.95),
+    (r'\b(?:entregad|resguardad|puestos?\s+bajo)\s+(?:\w+\s+){0,2}DIF\b', 0.95),
+    (r'\bcustodia\s+(?:de|del)\s+(?:DIF|estado|abuelos?|familiares)\b', 0.9),
+    # N hijos quedan en orfandad
+    (r'\b(?:dos|tres|cuatro|cinco|\d)\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\s+(?:quedan|quedaron|en\s+orfandad)\b', 1.0),
+    (r'\b(?:hijos?|hijas?)\s+(?:de\s+)?(?:la\s+)?v[ií]ctima\b', 0.85),
+]
+
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Filtro geográfico: Solo noticias de México
@@ -479,18 +499,23 @@ def score_relevance(title: str, content: str) -> dict:
     nna_content = _score_axis(content_norm, NNA_KEYWORDS)
     score_nna = min(1.0, (nna_title + nna_content) / (1.0 + title_boost))
 
+    # ── Eje 2.5: ¿Es NNA víctima indirecta? ──
+    v_ind_title = _score_axis(title_norm, VICTIMA_INDIRECTA_NNA_KEYWORDS) * title_boost
+    v_ind_content = _score_axis(content_norm, VICTIMA_INDIRECTA_NNA_KEYWORDS)
+    score_victima_indirecta = min(1.0, (v_ind_title + v_ind_content) / (1.0 + title_boost))
+
     # ── Eje 3: ¿Es un caso individual? ──
     caso_title = _score_axis(title_norm, CASO_INDIVIDUAL_KEYWORDS) * title_boost
     caso_content = _score_axis(content_norm, CASO_INDIVIDUAL_KEYWORDS)
     score_caso = min(1.0, (caso_title + caso_content) / (1.0 + title_boost))
 
     # Score compuesto ponderado
-    score_comp = w_fem * score_fem + w_nna * score_nna
+    score_comp = w_fem * score_fem + w_nna * max(score_nna, score_victima_indirecta)
 
     # ── Bonus: solo si AMBOS ejes principales son fuertes ──
     # v8.0: Más selectivo — ambos ejes deben tener señal significativa
-    if score_fem > 0.15 and score_nna > 0.15:
-        dual_strength = min(score_fem, score_nna)
+    if score_fem > 0.15 and (score_nna > 0.15 or score_victima_indirecta > 0.15):
+        dual_strength = min(score_fem, max(score_nna, score_victima_indirecta))
         if dual_strength > 0.30:
             score_comp = min(1.0, score_comp * 1.45)
         elif dual_strength > 0.20:
@@ -535,27 +560,31 @@ def score_relevance(title: str, content: str) -> dict:
         r'\bestadísticas?\s+de\s+(?:feminicidio|violencia|género)\b',
         r'\b(?:sube|baja|aumenta|disminuye|incrementa|reduce|suma|sumar)\s+(?:el\s+)?(?:número|cifra|índice|tasa|casos)\b',
         r'\binforme\s+(?:anual|mensual|trimestral|semestral|de\s+cifras|del?\s+\d{4})\b',
-        r'\breporte\s+(?:anual|mensual|estadístico|de\s+incidencia)\b',
+        r'\breporte\s+(?:anual|mensual|estadístico|de\s+incidencia|trimestral)\b',
         r'\b\d+\s+(?:feminicidios|víctimas|casos)\s+(?:en|durante|al|del?)\s+(?:el\s+)?\d{4}\b',
         r'\btasa\s+de\s+(?:feminicidio|incidencia)\b',
-        r'\bencuesta\s+(?:nacional|sobre)\b',
-        r'\bregistr[oó]\s+(?:un\s+)?(?:total|aumento|incremento|descenso)\b',
+        r'\bencuesta\s+(?:nacional|sobre|ENDIREH)\b',
+        r'\bregistr[oó]\s+(?:un\s+)?(?:total|aumento|incremento|descenso|disminuci[oó]n)\b',
+        r'\bSESNSP\b', r'\bINEGI\b', r'\bdatos\s+(?:del?|oficiales?)\b',
         # Política pública y legislación
-        r'\b(?:ley|decreto|reforma|iniciativa|dictamen)\s+(?:de|para|contra|sobre)\s+(?:feminicidio|violencia|género)\b',
+        r'\b(?:ley|decreto|reforma|iniciativa|dictamen|propuesta)\s+(?:de|para|contra|sobre)\s+(?:feminicidio|violencia|género)\b',
         r'\bpresupuesto\s+(?:para|de|contra)\b',
         r'\bpol[ií]tica\s+p[uú]blica\b',
         r'\bprotocolo\s+(?:de|para|contra)\b',
         r'\bcomisi[oó]n\s+(?:de|para|sobre)\b',
-        r'\bsemujeres\b',
+        r'\bsemujeres\b', r'\bINMUJERES\b', r'\bCONAVIM\b',
         r'\bforo\s+(?:de|sobre|para|contra)\b',
         r'\bjornada\s+(?:de|contra|sobre)\b',
         r'\bcampa[ñn]a\s+(?:de|contra|para)\b',
         r'\bsesi[oó]n\s+(?:de|del|solemne|ordinaria|extraordinaria)\b',
+        r'\bconferencia\s+(?:de\s+prensa|matutina|ma[ñn]anera)\b',
         # Programas de apoyo (no son casos)
         r'\bprograma\s+(?:de\s+)?(?:apoyo|atenci[oó]n|prevenci[oó]n|protecci[oó]n)\b',
         r'\bbeca\s+(?:para|de)\s+(?:hu[eé]rfan|menores?|hijos?|NNA|ni[ñn])\b',
         r'\bapoyo\s+(?:econ[oó]mico|a\s+(?:hu[eé]rfan|menores?|v[ií]ctimas?))\b',
         r'\bfondo\s+(?:de|para)\s+(?:v[ií]ctimas?|apoyo|atenci[oó]n)\b',
+        r'\bentrega\s+(?:de\s+)?(?:apoyos?|recursos?|becas?)\b',
+        r'\bbeneficiari[oa]s?\b',
         # Columnas de opinión y editoriales
         r'\bcolumna\b.*\bopini[oó]n\b',
         r'\beditorial\b',
@@ -583,10 +612,11 @@ def score_relevance(title: str, content: str) -> dict:
     # ── Penalización: Menor como agresor, no como víctima indirecta ──
     # Evita que noticias de "menor de edad comete feminicidio" sumen al eje NNA
     MENOR_AGRESOR_PATTERNS = [
-        r'\b(?:imputan|detienen|acusan|procesan|vinculan|condenan|sentencian)\s+(?:a|al)\s+(?:un\s+)?menor\b',
-        r'\bmenor\s+(?:de\s+(?:edad|\d+\s+a[ñn]os)\s+)?(?:asesin[oó]|mat[oó]|dispar[oó]|atac[oó])\b',
-        r'\bmenor\s+(?:infractor|agresor|homicida|feminicida)\b',
-        r'\baprehenden\s+a\s+menor\b'
+        r'\b(?:imputan|detienen|acusan|procesan|vinculan|condenan|sentencian|aprehenden)\s+(?:a|al)\s+(?:un\s+)?(?:menor|adolescente)\b',
+        r'\b(?:menor|adolescente)\s+(?:de\s+(?:edad|\d+\s+a[ñn]os)\s+)?(?:asesin[oó]|mat[oó]|dispar[oó]|atac[oó]|apu[ñn]al[oó])\b',
+        r'\b(?:menor|adolescente)\s+(?:infractor|agresor|homicida|feminicida)\b',
+        r'\bhijo\s+(?:asesin[oó]|mat[oó]|apu[ñn]al[oó]|atac[oó]|golpe[oó])\s+a\s+su\s+(?:madre|mam[aá])\b',
+        r'\bmatricidio\b',
     ]
     is_menor_agresor = any(
         re.search(p, combined_norm, re.IGNORECASE)
@@ -594,16 +624,36 @@ def score_relevance(title: str, content: str) -> dict:
     )
     if is_menor_agresor:
         score_nna *= 0.1  # Prácticamente eliminar el eje NNA
-        score_comp *= 0.6 # Reducir el score compuesto también
+        score_victima_indirecta *= 0.0 # Eliminar por completo el eje de víctima indirecta
+        score_comp *= 0.4 # Reducir el score compuesto drásticamente
+
+    # ── Penalización: Menor como víctima directa del feminicidio ──
+    # Evita confundir "feminicidio de niña" con "niña huérfana por feminicidio"
+    MENOR_VICTIMA_DIRECTA_PATTERNS = [
+        r'\bfeminicidio\s+(?:de|a)\s+(?:una?\s+)?(?:ni[ñn]a|menor|adolescente)\b',
+        r'\b(?:ni[ñn]a|menor|adolescente)\s+(?:fue\s+)?(?:asesinada|encontrada\s+sin\s+vida|privada\s+de\s+la\s+vida)\b',
+        r'\basesinan\s+a\s+(?:una?\s+)?(?:ni[ñn]a|menor|adolescente)\b',
+        r'\b(?:hallan|encuentran)\s+(?:muerta|sin\s+vida)\s+a\s+(?:una?\s+)?(?:ni[ñn]a|menor|adolescente)\b',
+        r'\bfeminicidio\s+(?:de\s+)?su\s+hija\b',
+        r'\bmat[oó]\s+a\s+su\s+(?:propia\s+)?hija\b',
+    ]
+    is_menor_victima_directa = any(
+        re.search(p, combined_norm, re.IGNORECASE)
+        for p in MENOR_VICTIMA_DIRECTA_PATTERNS
+    )
+    if is_menor_victima_directa:
+        score_victima_indirecta *= 0.1 # Muy baja probabilidad de que sea víctima indirecta
+        if score_comp > 0.4:
+            score_comp *= 0.6 # Reducir relevancia compuesta si estaba alta por feminicidio y menor
 
     # ── Penalización: solo feminicidio sin NNA → no es lo que buscamos ──
     # v8.0: Si SOLO hay señal de feminicidio pero NO de NNA, penalizar fuerte.
     # El usuario busca casos donde hay MENORES afectados específicamente.
-    if score_fem > 0.15 and score_nna < 0.05:
+    if score_fem > 0.15 and max(score_nna, score_victima_indirecta) < 0.05:
         score_comp *= 0.30  # Sin mención a NNA → muy baja relevancia
 
     # ── Penalización: solo NNA sin feminicidio → tampoco relevante ──
-    if score_nna > 0.15 and score_fem < 0.05:
+    if max(score_nna, score_victima_indirecta) > 0.15 and score_fem < 0.05:
         score_comp *= 0.30
 
     # Reclasificar después de penalizaciones
@@ -619,9 +669,12 @@ def score_relevance(title: str, content: str) -> dict:
     return {
         'score_feminicidio': round(score_fem, 4),
         'score_nna': round(score_nna, 4),
+        'score_victima_indirecta': round(score_victima_indirecta, 4),
+        'score_caso': round(score_caso, 4),
         'score_compuesto': round(score_comp, 4),
         'clasificacion': clasificacion,
-        'menores_identificados': 'Si' if score_nna > 0.10 else 'No',
+        'menores_identificados': 'Si' if score_nna > 0.10 or score_victima_indirecta > 0.10 else 'No',
+        'nna_victima_indirecta': 'Si' if score_victima_indirecta > 0.25 else 'No',
     }
 
 
