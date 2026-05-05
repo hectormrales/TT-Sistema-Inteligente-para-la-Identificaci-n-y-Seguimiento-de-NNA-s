@@ -5101,3 +5101,597 @@ AttributeError: Can only use .dt accessor with datetimelike values
 2026-04-26 18:44:36,791 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/rss/… (métodos intentados: ['rss', 'sitemap', 'html'])
 2026-04-26 18:45:14,210 - src.collection.scraper - INFO - robots.txt bloquea news.google.com → activando modo stealth (cloudscraper + delays lognormales + UA rotation)
 2026-04-26 18:45:23,986 - src.collection.scraper - INFO - robots.txt bloquea news.google.com → activando modo stealth (cloudscraper + delays lognormales + UA rotation)
+2026-04-30 06:48:02,128 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-30 06:48:02,190 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 06:48:02,190 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 06:48:02,191 - app - INFO - Esquema FTS inicializado
+2026-04-30 06:48:02,191 - app - INFO - Esquema FTS inicializado
+2026-04-30 06:48:02,359 - root - INFO - Datos cargados: 370 noticias desde análisis
+2026-04-30 06:48:02,359 - root - INFO - Datos cargados: 370 noticias desde análisis
+2026-04-30 06:49:04,715 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 06:49:04,743 - app - INFO - Logout: hectormorales
+2026-04-30 06:49:08,526 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 06:50:16,169 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-30 06:50:16,221 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 06:50:16,221 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 06:50:16,222 - app - INFO - Esquema FTS inicializado
+2026-04-30 06:50:16,222 - app - INFO - Esquema FTS inicializado
+2026-04-30 06:50:16,360 - root - INFO - Datos cargados: 370 noticias desde análisis
+2026-04-30 06:50:16,366 - root - INFO - Datos cargados: 370 noticias desde análisis
+2026-04-30 06:50:41,222 - app - INFO - Logout: hectormorales
+2026-04-30 06:50:44,848 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 06:51:40,764 - app - INFO - Logout: hectormorales
+2026-04-30 06:51:42,725 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 06:58:41,767 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-30 06:58:41,770 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://elpais.com/mexico/rss/ (Circuito abierto o fallo de conexión)
+2026-04-30 06:58:42,070 - src.collection.scraper - INFO - HTTP 403 en https://elpais.com/… Reintento 1/3 en 2s
+2026-04-30 06:58:59,465 - src.collection.scraper - INFO - HTTP 403 en https://elpais.com/… Reintento 2/3 en 4s
+2026-04-30 06:59:13,521 - src.collection.scraper - INFO - HTTP 403 en https://elpais.com/… Reintento 3/3 en 12s
+2026-04-30 06:59:13,525 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para elpais.com — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 06:59:24,279 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://elpais.com/…
+2026-04-30 06:59:24,280 - src.collection.scraper - WARNING - No se encontraron artículos en https://elpais.com/… (métodos intentados: ['html'])
+2026-04-30 06:59:26,169 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-30 06:59:26,171 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 06:59:26,730 - src.collection.scraper - INFO - HTML listing: 7 enlaces (después del filtrado) en https://www.bbc.com/…
+2026-04-30 06:59:36,523 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/audio/play/w3ct9880… → activando stealth + intentando Google Cache
+2026-04-30 07:00:22,343 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/news/articles/c70vzj1nrddo… → activando stealth + intentando Google Cache
+2026-04-30 07:01:45,618 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/news/videos/czd21r472nmo… → activando stealth + intentando Google Cache
+2026-04-30 07:02:15,570 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/news/articles/c20zgjzz0e4o… → activando stealth + intentando Google Cache
+2026-04-30 07:03:29,903 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/future/article/20260423-hay-fever-nine-t… → activando stealth + intentando Google Cache
+2026-04-30 07:04:41,876 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/reel/video/p0nh8p0v/watch… → activando stealth + intentando Google Cache
+2026-04-30 07:05:25,146 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/travel/article/20260312-the-tasty-dinosa… → activando stealth + intentando Google Cache
+2026-04-30 07:05:54,812 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-30 07:05:54,814 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sdpnoticias.com/feed (Circuito abierto o fallo de conexión)
+2026-04-30 07:05:55,122 - src.collection.scraper - INFO - HTML listing: 6 enlaces (después del filtrado) en https://www.sdpnoticias.com/…
+2026-04-30 07:06:10,013 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/cdmx/esposo-de-carolina-… → activando stealth + intentando Google Cache
+2026-04-30 07:07:31,742 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/por-una-ninez-con-derech… → activando stealth + intentando Google Cache
+2026-04-30 07:08:14,442 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/mexico/suegra-de-carolina-flores… → activando stealth + intentando Google Cache
+2026-04-30 07:12:54,568 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/mexico/no-entendieron-nada-lenia… → activando stealth + intentando Google Cache
+2026-04-30 07:13:45,975 - src.collection.scraper - WARNING - Timeout en https://webcache.googleusercontent.com/search?q=cache:https:… (intento 1)
+2026-04-30 07:13:55,452 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/internacional/interpol-emite-fic… → activando stealth + intentando Google Cache
+2026-04-30 07:14:49,446 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/cdmx/caen-cuatro-por-ase… → activando stealth + intentando Google Cache
+2026-04-30 07:15:23,969 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 3s
+2026-04-30 07:16:23,245 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 2/3 en 5s
+2026-04-30 07:16:41,995 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-30 07:16:41,997 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.debate.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 07:16:41,999 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.debate.com.mx/rss/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 07:16:42,456 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 1/3 en 3s
+2026-04-30 07:17:12,769 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.debate.com.mx/…
+2026-04-30 07:17:12,771 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.debate.com.mx/… (métodos intentados: ['html'])
+2026-04-30 07:17:15,561 - src.collection.scraper - INFO - HTML listing: 7 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-04-30 07:17:32,482 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/30/infancias-bajo-so… → activando stealth + intentando Google Cache
+2026-04-30 07:18:02,010 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/30/con-acceso-a-tele… → activando stealth + intentando Google Cache
+2026-04-30 07:19:29,252 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/opinion/2026/04/30/leer-tambien-es-… → activando stealth + intentando Google Cache
+2026-04-30 07:20:45,035 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/30/celebran-dia-del… → activando stealth + intentando Google Cache
+2026-04-30 07:21:58,261 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y… → activando stealth + intentando Google Cache
+2026-04-30 07:24:22,136 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-… → activando stealth + intentando Google Cache
+2026-04-30 07:25:29,749 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/04/29/hoy-no-circula-ju… → activando stealth + intentando Google Cache
+2026-04-30 07:26:04,188 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-30 07:26:04,190 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eluniversal.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 07:26:05,765 - src.collection.scraper - INFO - HTML listing: 12 enlaces (después del filtrado) en https://www.eluniversal.com.mx/…
+2026-04-30 07:26:16,729 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/otro-multiasesinato… → activando stealth + intentando Google Cache
+2026-04-30 07:27:00,068 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/video-asi-defendia-aml… → activando stealth + intentando Google Cache
+2026-04-30 07:27:38,512 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/estados/ruben-rocha-moya-aseg… → activando stealth + intentando Google Cache
+2026-04-30 07:28:40,690 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/mochilazo-en-el-tiemp… → activando stealth + intentando Google Cache
+2026-04-30 07:29:34,846 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/detienen-en-venezue… → activando stealth + intentando Google Cache
+2026-04-30 07:30:30,537 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/concierto-de-31-min… → activando stealth + intentando Google Cache
+2026-04-30 07:31:47,803 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/espectaculos/camerino-de-beli… → activando stealth + intentando Google Cache
+2026-04-30 07:32:41,312 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/destinos/actividades-para-cel… → activando stealth + intentando Google Cache
+2026-04-30 07:32:56,741 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/descubre-y-compra/dia-del-nin… → activando stealth + intentando Google Cache
+2026-04-30 07:33:45,894 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/descubre-y-compra/como-hacer-… → activando stealth + intentando Google Cache
+2026-04-30 10:01:40,012 - src.collection.scraper - WARNING - Error conexión https://www.eluniversal.com.mx/tendencias/llega-a-hbo-max-ap…: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-30 10:01:44,350 - src.collection.scraper - WARNING - Error conexión https://www.eluniversal.com.mx/tendencias/llega-a-hbo-max-ap…: HTTPSConnectionPool(host='www.eluniversal.com.mx', port=443): Max retries exceeded with url: /tendencias/llega-a-hbo-max-aprendemos-juntos-kids-una-produccion-de-bbva-con-gran-valor-educativo/ (Caused by NameResolutionError("HTTPSConnection(host='www.eluniversal.com.mx', port=443): Failed to resolve 'www.eluniversal.com.mx' ([Errno -2] Name or service not known)"))
+2026-04-30 10:02:01,548 - src.collection.scraper - WARNING - Error conexión https://www.eluniversal.com.mx/tendencias/llega-a-hbo-max-ap…: HTTPSConnectionPool(host='www.eluniversal.com.mx', port=443): Max retries exceeded with url: /tendencias/llega-a-hbo-max-aprendemos-juntos-kids-una-produccion-de-bbva-con-gran-valor-educativo/ (Caused by NameResolutionError("HTTPSConnection(host='www.eluniversal.com.mx', port=443): Failed to resolve 'www.eluniversal.com.mx' ([Errno -2] Name or service not known)"))
+2026-04-30 10:02:01,549 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eluniversal.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 10:02:01,550 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eluniversal.com.mx/tendencias/llega-a-hbo-max-ap…
+2026-04-30 10:02:02,314 - src.collection.scraper - WARNING - Error conexión https://www.zocalo.com.mx/rss.xml…: HTTPSConnectionPool(host='www.zocalo.com.mx', port=443): Max retries exceeded with url: /rss.xml (Caused by NameResolutionError("HTTPSConnection(host='www.zocalo.com.mx', port=443): Failed to resolve 'www.zocalo.com.mx' ([Errno -2] Name or service not known)"))
+2026-04-30 10:09:08,129 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-04-30 10:09:08,181 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 10:09:08,182 - app - INFO - Esquema FTS inicializado
+2026-04-30 10:09:08,191 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 10:09:08,192 - app - INFO - Esquema FTS inicializado
+2026-04-30 10:09:18,903 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 10:09:18,920 - app - INFO - Logout: hectormorales
+2026-04-30 10:09:23,330 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 10:15:13,913 - src.collection.scraper - WARNING - Error HTTP en https://www.sdpnoticias.com/feed…: 404 Client Error: Not Found for url: https://www.sdpnoticias.com/feed/
+2026-04-30 10:15:13,915 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sdpnoticias.com/feed (Circuito abierto o fallo de conexión)
+2026-04-30 10:15:14,231 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://www.sdpnoticias.com/…
+2026-04-30 10:15:16,847 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/cdmx/esposo-de-carolina-… → activando stealth + intentando Google Cache
+2026-04-30 10:15:44,033 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:15:44,034 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:15:44,035 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/estados/cdmx/esposo-de-carolina-flores-revela-conversacion-con-su-madre-antes-del-feminicidio/
+2026-04-30 10:16:21,367 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/opinion/por-una-ninez-con-derech… → activando stealth + intentando Google Cache
+2026-04-30 10:16:52,084 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:16:52,085 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:16:52,086 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/opinion/por-una-ninez-con-derechos-plenos/
+2026-04-30 10:17:08,951 - src.collection.scraper - INFO - Bloqueo detectado en https://www.sdpnoticias.com/estados/cdmx/caen-cuatro-por-ase… → activando stealth + intentando Google Cache
+2026-04-30 10:17:19,171 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:17:19,172 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:17:19,173 - trafilatura.core - WARNING - discarding data: https://www.sdpnoticias.com/estados/cdmx/caen-cuatro-por-asesinato-de-una-familia-en-azcapotzalco/
+2026-04-30 10:17:19,182 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.sdpnoticias.com/… (métodos intentados: ['html'])
+2026-04-30 10:17:19,855 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 1/3 en 3s
+2026-04-30 10:17:31,255 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/rss/rss.xml… Reintento 2/3 en 5s
+2026-04-30 10:17:48,345 - src.collection.scraper - WARNING - Error HTTP en https://www.debate.com.mx/rss/rss.xml…: 404 Client Error: Not Found for url: https://www.debate.com.mx/rss/rss.xml
+2026-04-30 10:17:48,347 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.debate.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 10:17:48,350 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.debate.com.mx/rss/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 10:17:48,706 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 1/3 en 3s
+2026-04-30 10:17:58,523 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 2/3 en 6s
+2026-04-30 10:18:20,641 - src.collection.scraper - INFO - HTTP 403 en https://www.debate.com.mx/… Reintento 3/3 en 11s
+2026-04-30 10:18:20,642 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.debate.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 10:18:31,205 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.debate.com.mx/…
+2026-04-30 10:18:31,207 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.debate.com.mx/… (métodos intentados: ['html'])
+2026-04-30 10:18:32,625 - src.collection.scraper - WARNING - Error HTTP en https://www.eluniversal.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.eluniversal.com.mx/rss.xml
+2026-04-30 10:18:32,627 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eluniversal.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 10:18:33,084 - src.collection.scraper - INFO - HTML listing: 16 enlaces (después del filtrado) en https://www.eluniversal.com.mx/…
+2026-04-30 10:18:41,409 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/otro-multiasesinato… → activando stealth + intentando Google Cache
+2026-04-30 10:19:00,699 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:19:00,700 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:19:00,701 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/metropoli/otro-multiasesinato-en-azcapotzalco-7-muertos-en-dos-dias/
+2026-04-30 10:19:26,625 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/nacion/video-asi-defendia-aml… → activando stealth + intentando Google Cache
+2026-04-30 10:20:00,121 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:20:00,122 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:20:00,122 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/nacion/video-asi-defendia-amlo-a-ruben-rocha-acusado-de-pactar-con-el-cartel-de-sinaloa-afirmo-que-violencia-era-culpa-de-eu/
+2026-04-30 10:20:21,422 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/opinion/mochilazo-en-el-tiemp… → activando stealth + intentando Google Cache
+2026-04-30 10:21:06,606 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:21:06,615 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:21:06,616 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/opinion/mochilazo-en-el-tiempo/el-congreso-para-la-ninez-que-lanzo-el-universal/
+2026-04-30 10:21:23,668 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/fiscalia-capitalina… → activando stealth + intentando Google Cache
+2026-04-30 10:22:24,222 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:22:24,223 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:22:24,224 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/metropoli/fiscalia-capitalina-trabaja-en-extradicion-de-erika-maria-fue-detenida-en-venezuela-tras-huir-del-pais-por-el-feminicidio-de-su-nuera-carolina-flores/
+2026-04-30 10:22:35,005 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/detienen-en-venezue… → activando stealth + intentando Google Cache
+2026-04-30 10:23:35,902 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:23:35,904 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:23:35,905 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/metropoli/detienen-en-venezuela-a-suegra-que-habia-asesinado-a-su-nuera-en-polanco-interpol-le-habia-emitido-ficha-roja-para-su-localizacion/
+2026-04-30 10:23:49,477 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/metropoli/concierto-de-31-min… → activando stealth + intentando Google Cache
+2026-04-30 10:24:21,980 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:24:21,981 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:24:21,981 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/metropoli/concierto-de-31-minutos-reservaciones-en-terrazas-del-zocalo-alcanzan-los-890-pesos-ofrecen-desde-menus-especiales-hasta-buffets/
+2026-04-30 10:24:41,677 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/tendencias/dia-del-nino-2026-… → activando stealth + intentando Google Cache
+2026-04-30 10:25:01,467 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:25:01,468 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:25:01,469 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/tendencias/dia-del-nino-2026-las-mejores-frases-e-imagenes-para-dedicar-este-30-de-abril-consulta-aqui/
+2026-04-30 10:25:19,148 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/mundo/trump-se-lanza-de-nuevo… → activando stealth + intentando Google Cache
+2026-04-30 10:25:38,420 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:25:38,422 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:25:38,423 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/mundo/trump-se-lanza-de-nuevo-contra-jimmy-kimmel-cuando-lo-van-a-despedir-cuestiona/
+2026-04-30 10:26:40,443 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/espectaculos/conmocion-por-la… → activando stealth + intentando Google Cache
+2026-04-30 10:27:39,246 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:27:39,248 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:27:39,250 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/espectaculos/conmocion-por-la-muere-a-los-14-anos-de-juan-cristobal-hijo-de-la-conductora-josemith-bermudez-fallecida-en-2021/
+2026-04-30 10:27:52,744 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/espectaculos/k-pop-huntrx-se-… → activando stealth + intentando Google Cache
+2026-04-30 10:28:10,622 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:28:10,624 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:28:10,626 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/espectaculos/k-pop-huntrx-se-lleva-el-premio-mujer-del-ano-en-los-billboard-women-in-music-2026/
+2026-04-30 10:28:49,714 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/espectaculos/es-hora-de-sonar… → activando stealth + intentando Google Cache
+2026-04-30 10:29:15,511 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:29:15,513 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:29:15,514 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/espectaculos/es-hora-de-sonar-en-el-mundo-de-matilda/
+2026-04-30 10:29:57,854 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/destinos/actividades-para-cel… → activando stealth + intentando Google Cache
+2026-04-30 10:31:03,377 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:31:03,380 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:31:03,382 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/destinos/actividades-para-celebrar-dia-del-nino-en-cdmx/
+2026-04-30 10:32:01,897 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/descubre-y-compra/dia-del-nin… → activando stealth + intentando Google Cache
+2026-04-30 10:32:32,416 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-04-30 10:32:32,419 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:32:32,421 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/descubre-y-compra/dia-del-nino-2026-regalos-para-tu-nino-interior-que-si-valen-la-pena/
+2026-04-30 10:32:51,531 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/descubre-y-compra/como-hacer-… → activando stealth + intentando Google Cache
+2026-04-30 10:33:09,212 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:33:09,215 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:33:09,217 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/descubre-y-compra/como-hacer-un-peinado-loco-para-el-dia-del-nino-guia-completa-con-ideas-y-accesorios-creativos/
+2026-04-30 10:33:20,275 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eluniversal.com.mx/tendencias/llega-a-hbo-max-ap… → activando stealth + intentando Google Cache
+2026-04-30 10:33:50,284 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:33:50,286 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:33:50,288 - trafilatura.core - WARNING - discarding data: https://www.eluniversal.com.mx/tendencias/llega-a-hbo-max-aprendemos-juntos-kids-una-produccion-de-bbva-con-gran-valor-educativo/
+2026-04-30 10:33:50,354 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eluniversal.com.mx/… (métodos intentados: ['html'])
+2026-04-30 10:33:51,367 - src.collection.scraper - WARNING - Error HTTP en https://www.zocalo.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.zocalo.com.mx/rss.xml
+2026-04-30 10:33:51,370 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.zocalo.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 10:33:51,877 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.zocalo.com.mx/…
+2026-04-30 10:33:51,879 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.zocalo.com.mx/… (métodos intentados: ['html'])
+2026-04-30 10:33:55,191 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:33:55,454 - src.collection.scraper - INFO - Activando stealth mid-scrape para news.google.com
+2026-04-30 10:34:11,169 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:34:39,318 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:34:58,071 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:35:27,390 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:35:48,097 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:36:11,686 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:36:30,572 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:36:45,798 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:37:13,629 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:37:29,365 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:37:48,103 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:37:49,306 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-30 10:37:49,308 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-30 10:38:08,427 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:38:24,718 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:38:50,619 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:39:17,793 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:40:20,602 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:41:14,031 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:41:29,515 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:42:01,303 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:42:13,413 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:43:15,703 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:43:51,970 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:44:10,774 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:44:34,489 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:44:50,849 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:45:27,212 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:45:39,705 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:46:09,842 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:46:25,036 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:46:26,530 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-30 10:46:26,532 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-30 10:46:28,647 - src.collection.scraper - INFO - HTML listing: 4 enlaces (después del filtrado) en https://aristeguinoticias.com/…
+2026-04-30 10:46:37,367 - src.collection.scraper - INFO - Bloqueo detectado en https://aristeguinoticias.com/2404/kiosko/marcas-en-los-dien… → activando stealth + intentando Google Cache
+2026-04-30 10:48:14,011 - src.collection.scraper - INFO - Bloqueo detectado en https://aristeguinoticias.com/2504/opinion/violencia-atmosfe… → activando stealth + intentando Google Cache
+2026-04-30 10:49:05,926 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:49:05,928 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:49:05,930 - trafilatura.core - WARNING - discarding data: https://aristeguinoticias.com/2504/opinion/violencia-atmosfera-y-experiencia-articulo-de-mario-luis-fuentes/
+2026-04-30 10:49:39,396 - src.collection.scraper - INFO - Bloqueo detectado en https://aristeguinoticias.com/2503/opinion/desmantelar-todas… → activando stealth + intentando Google Cache
+2026-04-30 10:49:52,510 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:49:52,512 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:49:52,514 - trafilatura.core - WARNING - discarding data: https://aristeguinoticias.com/2503/opinion/desmantelar-todas-las-violencias-contra-las-mujeres-articulo-de-ana-lorena-delgadillo-perez/
+2026-04-30 10:50:22,472 - src.collection.scraper - INFO - Bloqueo detectado en https://aristeguinoticias.com/1902/mexico/arrestan-y-luego-l… → activando stealth + intentando Google Cache
+2026-04-30 10:51:18,290 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:51:18,292 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:51:18,294 - trafilatura.core - WARNING - discarding data: https://aristeguinoticias.com/1902/mexico/arrestan-y-luego-liberan-a-mujer-que-mordio-a-ciclista-en-polanco-afirmo-ser-nieta-de-exalcalde-de-naucalpan/
+2026-04-30 10:51:18,321 - src.collection.scraper - WARNING - No se encontraron artículos en https://aristeguinoticias.com/… (métodos intentados: ['html'])
+2026-04-30 10:51:21,341 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 10:51:54,882 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:52:42,122 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 10:52:43,313 - src.collection.scraper - WARNING - Error HTTP en https://www.animalpolitico.com/feed/…: 404 Client Error: Not Found for url: https://animalpolitico.com/feed
+2026-04-30 10:52:43,315 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.animalpolitico.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-30 10:52:44,162 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.animalpolitico.com/…
+2026-04-30 10:52:44,166 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.animalpolitico.com/… (métodos intentados: ['html'])
+2026-04-30 10:53:21,768 - src.collection.scraper - WARNING - Error HTTP en https://www.excelsior.com.mx/rss.xml…: 404 Client Error: Not Found for url: https://www.excelsior.com.mx/rss.xml
+2026-04-30 10:53:21,770 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.excelsior.com.mx/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 10:53:22,532 - src.collection.scraper - INFO - HTML listing: 8 enlaces (después del filtrado) en https://www.excelsior.com.mx/…
+2026-04-30 10:53:30,430 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/estilo-de-vida/dia-nino-2026-fr… → activando stealth + intentando Google Cache
+2026-04-30 10:54:11,658 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:54:11,661 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:54:11,662 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/estilo-de-vida/dia-nino-2026-frases-para-reconectar-con-nino-interior
+2026-04-30 10:54:46,611 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/espectaculos/quienes-son-patita… → activando stealth + intentando Google Cache
+2026-04-30 10:55:15,844 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:55:15,847 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:55:15,849 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/espectaculos/quienes-son-patita-perro-banda-rock-infantil-mexico
+2026-04-30 10:55:42,132 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/dia-nino-autismo-y-din… → activando stealth + intentando Google Cache
+2026-04-30 10:56:49,887 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/nacional/dia-nino-2026-juego-co… → activando stealth + intentando Google Cache
+2026-04-30 10:57:11,239 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:57:11,241 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:57:11,243 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/nacional/dia-nino-2026-juego-como-radar-refugio-crianza
+2026-04-30 10:57:22,376 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/estilo-de-vida/que-hacer-con-ni… → activando stealth + intentando Google Cache
+2026-04-30 10:57:56,661 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:57:56,664 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:57:56,667 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/estilo-de-vida/que-hacer-con-ninos-restaurantes-con-juegos-y-menus-infantiles-cdmx
+2026-04-30 10:58:11,681 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/cultura/inventos-con-origen-dis… → activando stealth + intentando Google Cache
+2026-04-30 10:58:36,533 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/estilo-de-vida/juegos-construcc… → activando stealth + intentando Google Cache
+2026-04-30 10:58:46,188 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:58:46,189 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:58:46,192 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/estilo-de-vida/juegos-construccion-para-ninos-cuales-comprar-beneficios-y-edad-ideal-para-empezar
+2026-04-30 10:58:55,924 - src.collection.scraper - INFO - Bloqueo detectado en https://www.excelsior.com.mx/estilo-de-vida/dia-nino-por-que… → activando stealth + intentando Google Cache
+2026-04-30 10:59:58,582 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 10:59:58,584 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 10:59:58,586 - trafilatura.core - WARNING - discarding data: https://www.excelsior.com.mx/estilo-de-vida/dia-nino-por-que-celebra-30-abril-y-20-noviembre
+2026-04-30 10:59:58,612 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.excelsior.com.mx/… (métodos intentados: ['html'])
+2026-04-30 10:59:59,001 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/feed/… Reintento 1/3 en 2s
+2026-04-30 11:00:42,841 - src.collection.scraper - WARNING - Error HTTP en https://www.reporteindigo.com/feed/…: 404 Client Error: Not Found for url: https://www.reporteindigo.com/feed/
+2026-04-30 11:00:42,843 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.reporteindigo.com/feed/ (Circuito abierto o fallo de conexión)
+2026-04-30 11:00:43,030 - src.collection.scraper - INFO - HTTP 403 en https://www.reporteindigo.com/… Reintento 1/3 en 3s
+2026-04-30 11:01:04,762 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.reporteindigo.com/…
+2026-04-30 11:01:04,765 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.reporteindigo.com/… (métodos intentados: ['html'])
+2026-04-30 11:01:13,077 - src.collection.scraper - WARNING - Error HTTP en https://www.milenio.com/rss…: 404 Client Error: Not Found for url: https://www.milenio.com/rss
+2026-04-30 11:01:13,079 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.milenio.com/rss (Circuito abierto o fallo de conexión)
+2026-04-30 11:01:15,952 - src.collection.scraper - INFO - HTML listing: 12 enlaces (después del filtrado) en https://www.milenio.com/…
+2026-04-30 11:04:49,166 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:05:33,709 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:06:10,442 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:06:34,548 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:07:37,062 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:08:02,959 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:08:03,855 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 1/3 en 3s
+2026-04-30 11:08:16,996 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 2/3 en 6s
+2026-04-30 11:08:28,672 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/feed/… Reintento 3/3 en 10s
+2026-04-30 11:08:28,674 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 11:08:38,761 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/feed/…
+2026-04-30 11:08:38,764 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.sinembargo.mx/feed/ (Circuito abierto o fallo de conexión)
+2026-04-30 11:08:39,186 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 1/3 en 3s
+2026-04-30 11:08:44,184 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 2/3 en 7s
+2026-04-30 11:08:53,203 - src.collection.scraper - INFO - HTTP 403 en https://www.sinembargo.mx/… Reintento 3/3 en 14s
+2026-04-30 11:08:53,205 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.sinembargo.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 11:09:08,085 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.sinembargo.mx/…
+2026-04-30 11:09:08,087 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.sinembargo.mx/… (métodos intentados: ['html'])
+2026-04-30 11:09:11,919 - src.collection.scraper - WARNING - Error HTTP en https://elpais.com/mexico/rss/…: 404 Client Error: Not Found for url: https://elpais.com/mexico/rss/
+2026-04-30 11:09:11,920 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://elpais.com/mexico/rss/ (Circuito abierto o fallo de conexión)
+2026-04-30 11:09:12,417 - src.collection.scraper - INFO - HTTP 403 en https://elpais.com/… Reintento 1/3 en 4s
+2026-04-30 11:10:07,758 - src.collection.scraper - INFO - HTTP 403 en https://elpais.com/… Reintento 2/3 en 5s
+2026-04-30 11:10:14,258 - src.collection.scraper - INFO - HTTP 403 en https://elpais.com/… Reintento 3/3 en 16s
+2026-04-30 11:10:14,261 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para elpais.com — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 11:10:31,121 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://elpais.com/…
+2026-04-30 11:10:31,123 - src.collection.scraper - WARNING - No se encontraron artículos en https://elpais.com/… (métodos intentados: ['html'])
+2026-04-30 11:10:33,464 - src.collection.scraper - WARNING - Error HTTP en https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml…: 404 Client Error: Not Found for url: https://www.bbc.com/mundo/rss.xml
+2026-04-30 11:10:33,466 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.bbc.com/mundo/topics/c1038w01gqqt/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 11:10:34,268 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.bbc.com/…
+2026-04-30 11:10:54,286 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/audio/play/w3ct9880… → activando stealth + intentando Google Cache
+2026-04-30 11:11:20,426 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:11:20,430 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:11:20,432 - trafilatura.core - WARNING - discarding data: https://www.bbc.com/audio/play/w3ct9880
+2026-04-30 11:11:26,871 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/audio/play/p0nhm9hz… → activando stealth + intentando Google Cache
+2026-04-30 11:11:47,923 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:11:47,926 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:11:47,928 - trafilatura.core - WARNING - discarding data: https://www.bbc.com/audio/play/p0nhm9hz
+2026-04-30 11:12:05,207 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/future/article/20260423-hay-fever-nine-t… → activando stealth + intentando Google Cache
+2026-04-30 11:12:42,217 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:12:42,219 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:12:42,221 - trafilatura.core - WARNING - discarding data: https://www.bbc.com/future/article/20260423-hay-fever-nine-tips-for-coping-better-with-pollen
+2026-04-30 11:13:00,465 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/reel/video/p0nh8p0v/watch… → activando stealth + intentando Google Cache
+2026-04-30 11:13:19,439 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:13:19,441 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:13:19,443 - trafilatura.core - WARNING - discarding data: https://www.bbc.com/reel/video/p0nh8p0v/watch
+2026-04-30 11:13:48,325 - src.collection.scraper - INFO - Bloqueo detectado en https://www.bbc.com/travel/article/20260312-the-tasty-dinosa… → activando stealth + intentando Google Cache
+2026-04-30 11:14:18,809 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:14:18,811 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:14:18,813 - trafilatura.core - WARNING - discarding data: https://www.bbc.com/travel/article/20260312-the-tasty-dinosaur-egg-returning-from-extinction
+2026-04-30 11:14:18,837 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.bbc.com/… (métodos intentados: ['html'])
+2026-04-30 11:14:21,318 - src.collection.scraper - INFO - HTML listing: 12 enlaces (después del filtrado) en https://www.elsoldetoluca.com.mx/…
+2026-04-30 11:16:22,157 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldetoluca.com.mx/esto/mundial-2026/panini-se…: 404 Client Error: Not Found for url: https://www.elsoldetoluca.com.mx/esto/mundial-2026/panini-se-equivoca-7-veces-en-el-album-del-mundial-2026-con-la-convocatoria-de-la-seleccion-mexicana-29710472
+2026-04-30 11:17:59,095 - src.collection.scraper - INFO - HTML listing: 10 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-04-30 11:18:08,299 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/30/con-acceso-a-tele… → activando stealth + intentando Google Cache
+2026-04-30 11:18:23,400 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:18:23,402 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:18:23,404 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/04/30/con-acceso-a-telefonos-inteligentes-8-de-cada-10/
+2026-04-30 11:18:48,957 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/04/30/infancias-bajo-so… → activando stealth + intentando Google Cache
+2026-04-30 11:19:03,087 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:19:03,089 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:19:03,091 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/04/30/infancias-bajo-sombra-de-violencia/
+2026-04-30 11:19:34,303 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/opinion/2026/04/30/leer-tambien-es-… → activando stealth + intentando Google Cache
+2026-04-30 11:19:54,184 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:19:54,186 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:19:54,188 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/opinion/2026/04/30/leer-tambien-es-cuestion-de-genero/
+2026-04-30 11:20:00,731 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/30/celebran-dia-del… → activando stealth + intentando Google Cache
+2026-04-30 11:20:38,773 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:20:38,776 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:20:38,778 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estilos/2026/04/30/celebran-dia-del-nino-y-la-nina-con-una-gran-fiesta-infantil/
+2026-04-30 11:21:11,934 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y… → activando stealth + intentando Google Cache
+2026-04-30 11:21:36,698 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:21:36,700 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:21:36,702 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/tecnologia/2026/04/29/tamagotchis-y-robots-juguetes-tech-que-han-evolucionado/
+2026-04-30 11:21:57,433 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-… → activando stealth + intentando Google Cache
+2026-04-30 11:22:13,142 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:22:13,143 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:22:13,145 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estilos/2026/04/28/mas-alla-de-los-regalos-nuevas-formas-de-celebrar-el-dia-de-la-nina-y-el-nino/
+2026-04-30 11:23:15,347 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/04/30/maru-campos-inau… → activando stealth + intentando Google Cache
+2026-04-30 11:23:54,964 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/04/29/hoy-no-circula-ju… → activando stealth + intentando Google Cache
+2026-04-30 11:24:42,723 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:24:42,726 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:24:42,728 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/ciudad/2026/04/29/hoy-no-circula-jueves-30-de-abril-de-2026-aplica-para-estos-autos-en-cdmx-y-edomex/
+2026-04-30 11:24:58,663 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/04/30/31-minut… → activando stealth + intentando Google Cache
+2026-04-30 11:25:25,117 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:25:25,119 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:25:25,122 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/04/30/31-minutos-en-el-zocalo-donde-ver-la-transmision-en-vivo-por-el-dia-del-nino/
+2026-04-30 11:25:39,161 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/04/29/reportan-detencio… → activando stealth + intentando Google Cache
+2026-04-30 11:26:00,534 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:26:00,535 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:26:00,537 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/ciudad/2026/04/29/reportan-detencion-de-erika-n-en-venezuela-por-feminicidio-de-carolina-flores/
+2026-04-30 11:26:00,571 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-04-30 11:26:11,388 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-04-30 11:26:31,746 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 5s
+2026-04-30 11:26:52,748 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 15s
+2026-04-30 11:26:52,750 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 300s
+2026-04-30 11:27:08,024 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-04-30 11:27:08,026 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-04-30 11:27:08,951 - src.collection.scraper - INFO - HTML listing: 4 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-04-30 11:27:14,263 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/empresas/planes-dia-nino-exp… → activando stealth + intentando Google Cache
+2026-04-30 11:28:10,699 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:28:10,701 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:28:10,703 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/empresas/planes-dia-nino-experiencias-familia-20260428-809266.html
+2026-04-30 11:28:56,983 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/el-empresario/dia-nino-negoc… → activando stealth + intentando Google Cache
+2026-04-30 11:29:34,954 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:29:34,956 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:29:34,958 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/el-empresario/dia-nino-negocios-suenan-futuros-emprendedores-20260430-810992.html
+2026-04-30 11:30:22,894 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/politica/maru-campos-inaugur… → activando stealth + intentando Google Cache
+2026-04-30 11:31:12,629 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:31:12,632 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:31:12,633 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/politica/maru-campos-inaugura-primer-centro-adaptacion-neurobiologica-pais-ninas-ninos-adolescentes-20260430-811311.html
+2026-04-30 11:31:47,817 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/arteseideas/machosfera-inter… → activando stealth + intentando Google Cache
+2026-04-30 11:32:01,436 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-04-30 11:32:01,438 - trafilatura.core - ERROR - empty HTML tree: None
+2026-04-30 11:32:01,440 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/arteseideas/machosfera-internet-incuba-violencia-asaltado-teotihuacan-dos-universidades-mexico-20260429-811209.html
+2026-04-30 11:32:01,460 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-04-30 11:32:06,553 - src.collection.scraper - INFO - HTML listing: 10 enlaces (después del filtrado) en https://www.diariodexalapa.com.mx/…
+2026-04-30 11:34:17,090 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodexalapa.com.mx/esto/mundial-2026/panini-s…: 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/esto/mundial-2026/panini-se-equivoca-7-veces-en-el-album-del-mundial-2026-con-la-convocatoria-de-la-seleccion-mexicana-29710472
+2026-04-30 11:35:14,868 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-04-30 11:35:14,871 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-04-30 11:35:31,551 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:36:20,797 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:36:39,637 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:37:24,531 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:37:49,544 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:38:25,939 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:39:07,824 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:39:30,029 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:40:32,271 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:40:52,880 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:41:24,048 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:41:53,540 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:42:44,896 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:43:00,583 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:43:11,535 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:43:48,011 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:44:50,640 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:45:07,204 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:45:08,660 - src.collection.scraper - WARNING - Error HTTP en https://www.elheraldodemexico.com/rss.xml…: 404 Client Error: Not Found for url: https://heraldodemexico.com.mx/rss.xml
+2026-04-30 11:45:08,662 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.elheraldodemexico.com/rss.xml (Circuito abierto o fallo de conexión)
+2026-04-30 11:45:09,322 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.elheraldodemexico.com/…
+2026-04-30 11:45:09,324 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elheraldodemexico.com/… (métodos intentados: ['html'])
+2026-04-30 11:45:44,684 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:46:16,733 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:46:29,117 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:47:13,190 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:48:08,876 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:48:17,288 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMiwwFBVV95cUxOekV0NFBZa09lNkVURzFFcUNvdUU3eFA3dkZYTDdvZjNpRnRQWlBUS3dsM2hSQlNHaFN0Z0lwVGxaM3pYY096MXlRNTROX1Fjd2l0TjJsQ3hpcWVKYV80T0thdkVWMTdWc1B1UHFoMGtkeUY1WTdTck9PSmtaQWFQeGhUanBlT3NVRloxbzQ1ZHZtNDhoT2RoNUc5ZHNBS1dhY1pYREtSQnI2b2NaX2JoVlNQbVE2Ql9DV2tVSDh3Vk1lemvSAdcBQVVfeXFMTkpQWmoxMVZDa1JhYlZBTmxPeVZsMjdXOWlvSDVUYml5Qk9OYUZ6a2lQazFwNmV3NDluZUh0VlVDY18teEJkQjI4SEx5VlUtNkU0VjhUOXh6RWV0VVhodEE3NzVjZFBPOVRkNzZOMTB5ZWUtd19OcC1qLXlLREpLNFFPSWlpV3BiaHAzMlBfTkNZWm1CQ2ZpMmNiVUdKTDFuazNBTlJPS3ZBeUIyQ2VtY19lLVF1U3VDMzd6WFNKdzNseWdOdlhkT3UzbTlMcDhIbXJnMW1aazA?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:48:33,693 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-04-30 11:48:33,695 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-04-30 11:49:29,955 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:50:05,520 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:50:11,056 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:50:29,757 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://news.google.com/…
+2026-04-30 11:50:37,688 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi_wFBVV95cUxPX2twd3VRYlZ6cTkxZXhDMzF6N0tXb2JyXzlIbTBpXzJEYVlvZFFMUHFRV2szLWNXUF9zR1lhS2ZBUHpVdUhoRnBETURTQTI5Y3ZPZ0dGX0hJRXZ3MWkzUVZnMHlHZEQzdDhrcVhkdjJzUG1Ubko4YVZxQllpa0duVGtfUTZHckpQbkpmbTFkODd0Ylp0bzRGbnIyMWdyYndFZS1yLTRTRjNfSEF4MGhYbnFTWFljajFUc1A0ZkdkWTFqRHgya0dxUjBUWHdwTHpESUJ0V2F0cFRCLW95TWZyM1JaMXFJU2VJdjctZDFHX2xSYnNaenNjcnpJU2t1Y1k?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:51:14,168 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi4gFBVV95cUxQSG9YSUh0U212ZHotbFRETXVITmxCTXlfb0VPejc3dDBLTVlJNlFuX1JRS2V1V09VVXExcDJKV0tJdjZPN1NTeDNtODdvblpSZ3o3YVpNamVfVHd4eWVPVUVialVEQ1dSTEl4NGpBT29vYlhFZlhZMlRMUDB4bkpjbXJibDQ5bGhNUVRwTUtMdW1IZkJsc2xNek9rdzZWdG9Bb3ZYN0doWThsUkFDZThwQzR0TW51Q3NZZlFWWmg5dWtmdEJ5S3ppT3l6cDk1dGs2QXlzcVljZ1BtdURVVDJqY3N3?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:51:24,021 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMioAJBVV95cUxPeG8yeDJ1Y05neGZ4ajNiNjF3eEgxZGxXV1NDNm83M1dyQlZyenJGU3BELTh6Vmd0VGdtUzF2N2czbzRIVDVoR0VtcmVwSXFmME5KcGZfSW9rZ1lJZXZlSlhZazliSjIwS0IxODZNck44N3BqZm1uTXBoemhvazdGNXlRTUFlV1gxSFFzdjVIT21BUDM0djNFVTBxUGZ2YzVPZ19nSFByajViTjA5UV9jQ2gwOUZPcTF6WFk5anlKak0tdEFqT2xPcW55bzQtYTdRSXZNLXpLRHgxWV9qbXU4MFNCYUg0T1V1TVo1N2ZvcXhZUGQ0eUdFYkhhbXg4WDlJN0QwMG9FRXlkeHkzTGxHaU5VTVZ4MXNjVFNPVkdDeUc?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-04-30 11:51:24,157 - src.collection.collector - WARNING - Circuit breaker OPEN para www.sinembargo.mx: 3 fallos consecutivos
+2026-04-30 11:51:24,159 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-04-30 11:51:24,161 - src.collection.collector - WARNING - Circuit breaker OPEN para www.debate.com.mx: 3 fallos consecutivos
+2026-04-30 11:51:24,929 - src.analysis.dedup - INFO - Deduplicación: 508 noticias de entrada
+2026-04-30 11:51:25,349 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 9 duplicados
+2026-04-30 11:51:25,839 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-04-30 11:51:28,397 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 19 duplicados
+2026-04-30 11:51:29,996 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 2 duplicados
+2026-04-30 11:51:30,048 - src.analysis.dedup - INFO -   Resultado: 508 → 478 únicos (30 duplicados eliminados)
+2026-04-30 11:51:45,265 - src.analysis.dedup - INFO - Deduplicación: 478 noticias de entrada
+2026-04-30 11:51:45,670 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-04-30 11:51:47,813 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 2 duplicados
+2026-04-30 11:51:50,036 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-04-30 11:51:50,748 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-04-30 11:51:50,759 - src.analysis.dedup - INFO -   Resultado: 478 → 476 únicos (2 duplicados eliminados)
+2026-04-30 11:52:32,292 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-04-30 11:52:32,294 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-04-30 11:52:32,577 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 11:52:32,581 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-30 11:52:32,618 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-30 11:52:32,797 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 11:52:32,840 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-30 11:52:32,962 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-30 11:52:33,092 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-30 11:52:33,606 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 11:52:33,635 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-04-30 11:52:33,961 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-04-30 11:52:34,065 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-04-30 11:52:34,208 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-04-30 11:52:34,333 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-04-30 11:52:34,478 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-04-30 11:52:34,625 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-04-30 11:52:34,748 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-04-30 11:52:53,405 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-04-30 12:09:31,130 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 476 documentos
+2026-04-30 12:10:05,073 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-04-30 12:10:05,377 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:05,401 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:05,509 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:05,584 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:05,587 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-04-30 12:10:05,708 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:05,751 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:05,851 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:05,976 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-04-30 12:10:06,091 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:06,187 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:06,282 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:06,306 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:06,424 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-04-30 12:10:06,524 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:06,588 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:07,281 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-04-30 12:10:07,375 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-30 12:10:07,463 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-30 12:10:07,909 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-04-30 12:10:08,211 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:08,482 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:09,712 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:10,350 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:12,375 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:12,467 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:12,568 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:12,586 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:12,709 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:12,757 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:12,845 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-30 12:10:12,973 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-30 12:10:20,101 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-30 12:10:21,521 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-30 12:10:24,616 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-04-30 12:10:25,374 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-04-30 12:10:25,999 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-04-30 12:11:23,010 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 123/476 (25.8%)
+2026-04-30 12:11:23,149 - src.analysis.bertopic_clustering - INFO - Clustering completado: 11 temas, outliers finales: 123/476 (25.8%)
+2026-04-30 12:11:25,954 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-04-30 12:11:48,719 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-04-30 12:11:53,280 - src.database.repository - INFO - Batch insert: 476 noticias insertadas
+2026-04-30 12:12:01,004 - src.analysis.bertopic_clustering - INFO - Guardados 12 clusters en PostgreSQL
+2026-04-30 12:12:01,136 - root - INFO - Datos cargados: 476 noticias desde análisis
+2026-04-30 12:12:01,143 - root - INFO - Análisis background completado exitosamente
+2026-04-30 12:12:24,631 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 12:12:24,717 - app - INFO - Logout: hectormorales
+2026-04-30 12:12:28,391 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
+2026-04-30 12:12:28,989 - root - INFO - Datos cargados: 476 noticias desde análisis
+2026-04-30 12:16:18,963 - src.analysis.investigator - INFO - Iniciando investigación para: Vinculan a proceso a mujer en Puebla por desaparic...
+2026-04-30 12:16:18,964 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-30 12:16:22,188 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-04-30 12:16:22,199 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-04-30 12:16:22,201 - src.analysis.investigator - INFO - Query generada: Vinculan a proceso a mujer en
+2026-04-30 12:16:22,202 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Vinculan+a+proceso+a+mujer+en
+2026-04-30 12:16:23,326 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Vinculan+a+proceso+a+mujer+en
+2026-04-30 12:16:24,242 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Vinculan+a+proceso+a+mujer+en+Puebla+por+desaparic
+2026-04-30 12:16:43,857 - src.collection.scraper - WARNING - Error conexión https://html.duckduckgo.com/html/?q=Vinculan+a+proceso+a+muj…: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-04-30 12:16:57,730 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Vinculan+a+proceso+a+mujer+en+Puebla+por+desaparic
+2026-04-30 12:16:59,700 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-04-30 12:16:59,701 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Vinculan a proceso a mujer en. Intentando con búsqueda nativa de Gemini...
+2026-04-30 12:16:59,703 - google_genai._common - WARNING - Type mismatch in Tool.google_search: expected GoogleSearch, got GoogleSearchRetrieval
+2026-04-30 12:16:59,709 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-30 12:17:16,830 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-30 12:17:16,853 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-04-30 12:18:08,156 - src.analysis.investigator - INFO - Iniciando investigación para: Asesinan a una mujer frente a sus hijos en la 247 ...
+2026-04-30 12:18:08,159 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-30 12:18:11,999 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-30 12:18:12,006 - src.analysis.investigator - INFO - Query generada: asesinan mujer hijos 247 Cancún
+2026-04-30 12:18:12,008 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=asesinan+mujer+hijos+247+Canc%C3%BAn
+2026-04-30 12:18:13,301 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=asesinan+mujer+hijos+247+Canc%C3%BAn
+2026-04-30 12:18:14,322 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+a+una+mujer+frente+a+sus+hijos+en+la+247+
+2026-04-30 12:18:29,581 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+a+una+mujer+frente+a+sus+hijos+en+la+247+
+2026-04-30 12:18:30,675 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-04-30 12:18:30,676 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: asesinan mujer hijos 247 Cancún. Intentando con búsqueda nativa de Gemini...
+2026-04-30 12:18:30,678 - google_genai._common - WARNING - Type mismatch in Tool.google_search: expected GoogleSearch, got GoogleSearchRetrieval
+2026-04-30 12:18:30,680 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-04-30 12:18:50,638 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-30 12:18:50,646 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-04-30 13:55:24,190 - app - INFO - Login exitoso: hectormorales desde 172.19.0.1
