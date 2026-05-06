@@ -683,59 +683,91 @@ class SimplifiedNewsAnalyzer:
                 score_v_ind = float(row.get("score_victima_indirecta", 0))
                 score_caso = float(row.get("score_caso", 0))
 
-                # ── NIVEL 3: Contexto de Clúster BERTopic ──
-                # Si BERTopic ya corrió, topic_id está disponible.
-                # Outliers (topic_id == -1) son noticias genéricas/extrañas:
-                #   → se eleva el umbral BETO de 0.50 a 0.65
-                # Clústeres válidos (topic_id >= 0) mantienen umbral normal.
-                topic_id_val = row.get("topic_id", -1)
-                try:
-                    topic_id_int = int(topic_id_val) if pd.notna(topic_id_val) else -1
-                except (ValueError, TypeError):
-                    topic_id_int = -1
-                es_outlier_cluster = (topic_id_int == -1)
-
-                umbral_beto_alta = 0.65 if es_outlier_cluster else 0.50
-                umbral_beto_rapida = 0.50 if es_outlier_cluster else 0.35
-
-                # Condición estricta para ALTA relevancia (ruta principal)
-                es_alta_relevancia = (
-                    score_fem > 0.15 and
-                    score_v_ind > 0.25 and
-                    score_caso > 0.15 and
-                    s_score > umbral_beto_alta
+                # ── NIVEL 0: BYPASS DE ORO (independiente de BETO) ──
+                # Si el collector ya confirmó Keywords de Oro
+                # (score_v_ind >= 0.80 implica que _check_keywords_de_oro() fue True),
+                # la clasificación es "Alta" OBLIGATORIAMENTE.
+                # BETO no puede contradecir una coincidencia de texto exacta.
+                es_bypass_oro = (
+                    score_v_ind >= 0.80 and
+                    score_fem > 0.10
                 )
 
-                # ── Vía Rápida: señal v_ind moderada + feminicidio + BETO ──
-                # v9.1: Umbral bajado de 0.60 a 0.40 para capturar
-                # "presenció feminicidio" (v_ind≈0.50) y patrones similares
-                es_via_rapida = (
-                    score_v_ind > 0.40 and
+                # ── NIVEL 0.5: Collector ya clasificó Alta con score fuerte ──
+                # Si el collector asignó score_compuesto >= 0.70, respetar.
+                es_collector_alta = (
+                    h_score >= 0.70 and
                     score_fem > 0.15 and
-                    s_score > umbral_beto_rapida
+                    (score_v_ind > 0.25 or float(row.get("score_nna", 0)) > 0.25)
                 )
 
-                if es_alta_relevancia or es_via_rapida:
+                if es_bypass_oro or es_collector_alta:
                     clasificacion = "Alta"
-                    score_final = max(score_final, 0.65)
-                    ctx = "outlier" if es_outlier_cluster else f"t{topic_id_int}"
-                    if es_via_rapida and not es_alta_relevancia:
+                    score_final = max(h_score, 0.85)
+                    if es_bypass_oro:
                         logger.info(
-                            f"  ★ Vía Rápida [{ctx}]: v_ind={score_v_ind:.2f}, "
-                            f"fem={score_fem:.2f}, BETO={s_score:.2f} → Alta"
+                            f"  ★ Bypass de Oro: v_ind={score_v_ind:.2f}, "
+                            f"fem={score_fem:.2f} → Alta (BETO ignorado)"
                         )
-                    elif es_outlier_cluster:
+                    else:
                         logger.info(
-                            f"  ⚡ Alta en outlier cluster: BETO={s_score:.2f} "
-                            f"(umbral={umbral_beto_alta}) → Alta"
+                            f"  ★ Collector Alta confirmado: h_score={h_score:.2f}, "
+                            f"fem={score_fem:.2f}, v_ind={score_v_ind:.2f} → Alta"
                         )
                 else:
-                    if score_final >= 0.40:
-                        clasificacion = "Media"
-                    elif score_final >= 0.20:
-                        clasificacion = "Baja"
+                    # ── NIVEL 3: Contexto de Clúster BERTopic ──
+                    # Si BERTopic ya corrió, topic_id está disponible.
+                    # Outliers (topic_id == -1) son noticias genéricas/extrañas:
+                    #   → se eleva el umbral BETO de 0.50 a 0.65
+                    # Clústeres válidos (topic_id >= 0) mantienen umbral normal.
+                    topic_id_val = row.get("topic_id", -1)
+                    try:
+                        topic_id_int = int(topic_id_val) if pd.notna(topic_id_val) else -1
+                    except (ValueError, TypeError):
+                        topic_id_int = -1
+                    es_outlier_cluster = (topic_id_int == -1)
+
+                    umbral_beto_alta = 0.65 if es_outlier_cluster else 0.50
+                    umbral_beto_rapida = 0.50 if es_outlier_cluster else 0.35
+
+                    # Condición estricta para ALTA relevancia (ruta principal)
+                    es_alta_relevancia = (
+                        score_fem > 0.15 and
+                        score_v_ind > 0.25 and
+                        score_caso > 0.15 and
+                        s_score > umbral_beto_alta
+                    )
+
+                    # ── Vía Rápida: señal v_ind moderada + feminicidio + BETO ──
+                    # v9.1: Umbral bajado de 0.60 a 0.40 para capturar
+                    # "presenció feminicidio" (v_ind≈0.50) y patrones similares
+                    es_via_rapida = (
+                        score_v_ind > 0.40 and
+                        score_fem > 0.15 and
+                        s_score > umbral_beto_rapida
+                    )
+
+                    if es_alta_relevancia or es_via_rapida:
+                        clasificacion = "Alta"
+                        score_final = max(score_final, 0.65)
+                        ctx = "outlier" if es_outlier_cluster else f"t{topic_id_int}"
+                        if es_via_rapida and not es_alta_relevancia:
+                            logger.info(
+                                f"  ★ Vía Rápida [{ctx}]: v_ind={score_v_ind:.2f}, "
+                                f"fem={score_fem:.2f}, BETO={s_score:.2f} → Alta"
+                            )
+                        elif es_outlier_cluster:
+                            logger.info(
+                                f"  ⚡ Alta en outlier cluster: BETO={s_score:.2f} "
+                                f"(umbral={umbral_beto_alta}) → Alta"
+                            )
                     else:
-                        clasificacion = "No relevante"
+                        if score_final >= 0.40:
+                            clasificacion = "Media"
+                        elif score_final >= 0.20:
+                            clasificacion = "Baja"
+                        else:
+                            clasificacion = "No relevante"
 
                 self.df_processed.at[idx, "relevancia_final"] = round(score_final, 4)
                 self.df_processed.at[idx, "clasificacion_final"] = clasificacion
