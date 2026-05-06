@@ -291,6 +291,68 @@ VICTIMA_INDIRECTA_NNA_KEYWORDS: list[Tuple[str, float]] = [
 ]
 
 
+# ── Eje 2.6: Keywords de Oro — Inmunidad contra penalizaciones ──────
+# Frases que indican INEQUÍVOCAMENTE que un NNA es víctima indirecta.
+# Si alguna de estas aparece, la noticia queda "inmune" a las penalizaciones
+# de "menor víctima directa" y "menor agresor", que de otro modo destruirían
+# el score de noticias como:
+#   "Feminicidio de Cindy... dejó a dos menores en orfandad"
+#   "Doble feminicidio... niña de 3 años fue robada"
+#   "Asesinan a una mujer frente a sus hijos"
+#   "Erika Camila está bajo resguardo del DIF tras el feminicidio de su madre"
+#
+# Los patrones son flexibles para atrapar variaciones naturales del español.
+KEYWORDS_DE_ORO: list[str] = [
+    # ── Orfandad (variaciones amplias) ──
+    r'\b(?:dej[oó]|dejaron|dejar[aá]n?)\s+(?:\w+\s+){0,4}(?:en\s+)?orfandad\b',
+    r'\b(?:quedan?|quedaron|qued[oó])\s+(?:\w+\s+){0,3}(?:hu[eé]rfan[oa]s?|en\s+orfandad)\b',
+    r'\b(?:menores?|ni[ñn][oa]s?|hijos?|hijas?)\s+(?:\w+\s+){0,2}(?:en\s+)?orfandad\b',
+    r'\bhu[eé]rfan[oa]s?\s+(?:por|tras|del?|a\s+causa)\b',
+    r'\borfandad\s+(?:por|tras|del?|a\s+causa)\s+(?:\w+\s+){0,3}(?:feminicidio|asesinato|homicidio|muerte)\b',
+    # ── Resguardo / custodia DIF ──
+    r'\b(?:bajo|en)\s+(?:resguardo|custodia|protecci[oó]n)\s+(?:del?\s+)?DIF\b',
+    r'\bDIF\s+(?:resguarda|tiene|protege|acoge|recibi[oó]|entreg[oó])\b',
+    r'\b(?:resguardad[oa]s?|acogid[oa]s?|protegid[oa]s?)\s+(?:por|en)\s+(?:el\s+)?DIF\b',
+    r'\b(?:entreg|puestos?|llevad[oa]s?)\s+(?:\w+\s+){0,2}(?:al?\s+)?DIF\b',
+    # ── Frente a sus hijos / presenció ──
+    r'\bfrente\s+a\s+sus?\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b',
+    r'\b(?:delante|enfrente|presencia)\s+de\s+sus?\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b',
+    r'\b(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\s+(?:\w+\s+){0,4}(?:presenciaron|vieron|observaron|estaban?\s+presentes?)\b',
+    r'\b(?:asesinada|matada|muerta|baleada)\s+(?:\w+\s+){0,3}frente\s+a\s+(?:sus?\s+)?(?:hijos?|hijas?|menores?)\b',
+    # ── Huérfanos directos ──
+    r'\b(?:quedaron?|quedan?|dejan?|dejaron)\s+(?:\w+\s+){0,3}hu[eé]rfan[oa]s?\b',
+    r'\bhu[eé]rfan[oa]s?\s+(?:de\s+)?(?:madre|padre|ambos)\b',
+    r'\b(?:dos|tres|cuatro|cinco|\d+)\s+(?:menores?|ni[ñn][oa]s?|hijos?|hijas?)\s+(?:\w+\s+){0,2}hu[eé]rfan[oa]s?\b',
+    # ── Niño/a robado/a tras el feminicidio (caso especial) ──
+    r'\b(?:ni[ñn][oa]|menor|beb[eé]|hija?)\s+(?:\w+\s+){0,3}(?:fue\s+)?(?:robad[oa]|sustra[ií]d[oa]|raptad[oa]|secuestrad[oa]|llevad[oa])\b',
+    r'\b(?:robaron|sustrajeron|raptaron|secuestraron|llevaron)\s+(?:\w+\s+){0,3}(?:a\s+)?(?:la\s+)?(?:ni[ñn]a|menor|beb[eé]|hija)\b',
+    # ── Sin madre / desamparados ──
+    r'\b(?:menores?|ni[ñn][oa]s?|hijos?|hijas?)\s+(?:\w+\s+){0,2}(?:sin\s+(?:su\s+)?madre|desamparad[oa]s?|desprotegid[oa]s?|sol[oa]s?)\b',
+    r'\b(?:dej[oó]|dejaron)\s+(?:\w+\s+){0,4}(?:sin\s+(?:su\s+)?madre|desamparad[oa]s?|sol[oa]s?)\b',
+]
+
+
+def _check_keywords_de_oro(text_norm: str) -> bool:
+    """
+    Verifica si el texto contiene alguna 'Keyword de Oro'.
+
+    Estas frases indican inequívocamente que un NNA es víctima indirecta
+    de un feminicidio. Su presencia activa un mecanismo de inmunidad
+    contra las penalizaciones de 'menor víctima directa' y 'menor agresor'.
+
+    Args:
+        text_norm: Texto normalizado (NFKD + minúsculas).
+
+    Returns:
+        True si se detecta al menos una keyword de oro.
+    """
+    for pattern in KEYWORDS_DE_ORO:
+        if re.search(pattern, text_norm, re.IGNORECASE):
+            return True
+    return False
+
+
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Filtro geográfico: Solo noticias de México
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -721,8 +783,29 @@ def score_relevance(title: str, content: str) -> dict:
         else:
             score_comp *= 0.40  # Penalización moderada
 
+    # ── Keywords de Oro: Inmunidad contra penalizaciones ──
+    # Si hay keywords de oro, la noticia es un verdadero positivo de NNA
+    # como víctima indirecta. Se anula cualquier penalización posterior.
+    has_golden_keywords = _check_keywords_de_oro(combined_norm)
+    if has_golden_keywords:
+        # Boost masivo al score_victima_indirecta
+        score_victima_indirecta = max(score_victima_indirecta, 0.85)
+        # Recalcular score compuesto con el boost
+        score_comp = w_fem * score_fem + w_nna * max(score_nna, score_victima_indirecta)
+        # Re-aplicar bonus dual si aplica
+        if score_fem > 0.15:
+            dual_strength = min(score_fem, score_victima_indirecta)
+            if dual_strength > 0.30:
+                score_comp = min(1.0, score_comp * 1.45)
+            elif dual_strength > 0.20:
+                score_comp = min(1.0, score_comp * 1.30)
+            if score_caso > 0.15:
+                score_comp = min(1.0, score_comp * 1.25)
+        logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")
+
     # ── Penalización: Menor como agresor, no como víctima indirecta ──
     # Evita que noticias de "menor de edad comete feminicidio" sumen al eje NNA
+    # NOTA: Si hay keywords de oro, esta penalización se ANULA.
     MENOR_AGRESOR_PATTERNS = [
         r'\b(?:imputan|detienen|acusan|procesan|vinculan|condenan|sentencian|aprehenden)\s+(?:a|al)\s+(?:un\s+)?(?:menor|adolescente)\b',
         r'\b(?:menor|adolescente)\s+(?:de\s+(?:edad|\d+\s+a[ñn]os)\s+)?(?:asesin[oó]|mat[oó]|dispar[oó]|atac[oó]|apu[ñn]al[oó])\b',
@@ -734,13 +817,14 @@ def score_relevance(title: str, content: str) -> dict:
         re.search(p, combined_norm, re.IGNORECASE)
         for p in MENOR_AGRESOR_PATTERNS
     )
-    if is_menor_agresor:
+    if is_menor_agresor and not has_golden_keywords:
         score_nna *= 0.1  # Prácticamente eliminar el eje NNA
         score_victima_indirecta *= 0.0 # Eliminar por completo el eje de víctima indirecta
         score_comp *= 0.4 # Reducir el score compuesto drásticamente
 
     # ── Penalización: Menor como víctima directa del feminicidio ──
     # Evita confundir "feminicidio de niña" con "niña huérfana por feminicidio"
+    # NOTA: Si hay keywords de oro, esta penalización se ANULA.
     MENOR_VICTIMA_DIRECTA_PATTERNS = [
         r'\bfeminicidio\s+(?:de|a)\s+(?:una?\s+)?(?:ni[ñn]a|menor|adolescente)\b',
         r'\b(?:ni[ñn]a|menor|adolescente)\s+(?:fue\s+)?(?:asesinada|encontrada\s+sin\s+vida|privada\s+de\s+la\s+vida)\b',
@@ -753,7 +837,7 @@ def score_relevance(title: str, content: str) -> dict:
         re.search(p, combined_norm, re.IGNORECASE)
         for p in MENOR_VICTIMA_DIRECTA_PATTERNS
     )
-    if is_menor_victima_directa:
+    if is_menor_victima_directa and not has_golden_keywords:
         score_victima_indirecta *= 0.1 # Muy baja probabilidad de que sea víctima indirecta
         if score_comp > 0.4:
             score_comp *= 0.6 # Reducir relevancia compuesta si estaba alta por feminicidio y menor

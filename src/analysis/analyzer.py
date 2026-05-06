@@ -661,7 +661,7 @@ class SimplifiedNewsAnalyzer:
                 score_v_ind = float(row.get("score_victima_indirecta", 0))
                 score_caso = float(row.get("score_caso", 0))
 
-                # Condición estricta para ALTA relevancia
+                # Condición estricta para ALTA relevancia (ruta principal)
                 es_alta_relevancia = (
                     score_fem > 0.15 and
                     score_v_ind > 0.25 and
@@ -669,12 +669,30 @@ class SimplifiedNewsAnalyzer:
                     s_score > 0.50
                 )
 
-                if es_alta_relevancia:
+                # ── Vía Rápida: Keywords de Oro con BETO moderado ──
+                # Si score_victima_indirecta es muy alto (boosted por keywords
+                # de oro en collector.py) y hay señal clara de feminicidio,
+                # permitir "Alta" con umbral BETO más relajado (0.35).
+                # Esto rescata verdaderos positivos donde BETO duda por
+                # complejidad narrativa (suicidio del agresor, secuestro, etc.)
+                es_via_rapida = (
+                    score_v_ind > 0.60 and
+                    score_fem > 0.15 and
+                    s_score > 0.35
+                )
+
+                if es_alta_relevancia or es_via_rapida:
                     clasificacion = "Alta"
                     # Asegurar que el score_final refleje la alta relevancia
                     score_final = max(score_final, 0.65)
+                    if es_via_rapida and not es_alta_relevancia:
+                        logger.info(
+                            f"  ★ Vía Rápida activada: v_ind={score_v_ind:.2f}, "
+                            f"fem={score_fem:.2f}, BETO={s_score:.2f} → Alta"
+                        )
                 else:
-                    # Si no cumple las 4 condiciones, se clasifica por el score general pero nunca como "Alta"
+                    # Si no cumple las 4 condiciones ni la vía rápida,
+                    # se clasifica por el score general pero nunca como "Alta"
                     if score_final >= 0.40:
                         clasificacion = "Media"
                     elif score_final >= 0.20:
