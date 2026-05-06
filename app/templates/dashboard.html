@@ -34,14 +34,14 @@
         }
         /* ── Topbar ─────────────────────────────────────── */
         .topbar {
-            background: var(--navy);
+            background: linear-gradient(90deg, var(--navy-dk) 0%, var(--navy) 100%);
             color: white;
             padding: 0 1.5rem;
-            height: 60px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.3);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -51,14 +51,17 @@
             text-decoration: none; color: white;
         }
         .brand-icon {
-            width: 36px; height: 36px;
-            background: var(--crimson); border-radius: 8px;
+            width: 40px; height: 40px;
+            background: var(--crimson);
+            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
+            font-size: 19px;
+            box-shadow: 0 2px 8px rgba(176,48,48,0.5);
         }
-        .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
-        .brand-title { font-weight: 700; font-size: 14px; letter-spacing: 0.02em; }
-        .brand-sub   { font-size: 10px; color: rgba(255,255,255,0.65); font-weight: 400; }
+        .brand-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.2); }
+        .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+        .brand-title { font-weight: 700; font-size: 14.5px; letter-spacing: 0.02em; }
+        .brand-sub   { font-size: 10.5px; color: rgba(255,255,255,0.6); font-weight: 400; }
         .topbar-nav  { display: flex; align-items: center; gap: 6px; }
         .btn-nav {
             background: rgba(255,255,255,0.12);
@@ -150,29 +153,32 @@
             gap: 14px; margin-bottom: 1.5rem;
         }
         .stat-card {
-            background: var(--card-bg); border-radius: 12px;
-            padding: 18px 16px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            background: var(--card-bg); border-radius: 14px;
+            padding: 20px 18px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+            border: 1px solid var(--border);
             border-top: 4px solid var(--border);
             display: flex; flex-direction: column; gap: 6px;
+            transition: box-shadow 0.2s, transform 0.2s; cursor: default;
         }
+        .stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
         .stat-card.c-total   { border-top-color: var(--navy-lt); }
         .stat-card.c-nna     { border-top-color: var(--teal-lt); }
         .stat-card.c-alta    { border-top-color: var(--crimson-lt); }
         .stat-card.c-media   { border-top-color: var(--amber-lt); }
         .stat-card.c-cluster { border-top-color: #7c5cbf; }
         .stat-icon {
-            width: 38px; height: 38px; border-radius: 9px;
+            width: 42px; height: 42px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 16px; margin-bottom: 4px;
+            font-size: 17px; margin-bottom: 6px;
         }
         .c-total .stat-icon   { background: #e8edf8; color: var(--navy-lt); }
         .c-nna .stat-icon     { background: #e3f5f1; color: var(--teal-lt); }
         .c-alta .stat-icon    { background: #fbeaea; color: var(--crimson-lt); }
         .c-media .stat-icon   { background: #fdf3e3; color: var(--amber-lt); }
         .c-cluster .stat-icon { background: #f0ebfb; color: #7c5cbf; }
-        .stat-value { font-size: 26px; font-weight: 700; line-height: 1; color: var(--text-main); }
-        .stat-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
+        .stat-label { font-size: 10.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
         /* ── Charts ─────────────────────────────────────── */
         .charts-grid {
             display: grid;
@@ -247,21 +253,89 @@
         
         /* ── Investigation Panel ───────────────────────── */
         .btn-investigate {
-            background: #fff; border: 1.5px solid #2a5298; color: #2a5298;
-            border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;
+            background: #fff; border: 1.5px solid var(--navy-lt); color: var(--navy-lt);
+            border-radius: 6px; padding: 5px 12px; font-size: 11.5px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px;
+            letter-spacing: 0.02em;
         }
-        .btn-investigate:hover { background: #2a5298; color: #fff; }
+        .btn-investigate:hover { background: var(--navy-lt); color: #fff; box-shadow: 0 2px 8px rgba(42,82,152,0.25); }
         .investigation-panel {
-            margin-top: 12px; padding: 12px; background: #f8f9fa;
-            border-radius: 8px; border-left: 3px solid #2a5298;
-            font-size: 12.5px; display: none;
+            margin-top: 14px; padding: 16px; background: #f4f7fd;
+            border-radius: 10px; border-left: 4px solid var(--navy-lt);
+            font-size: 13px; display: none;
         }
         .investigation-panel.active { display: block; }
-        .inv-field { margin-bottom: 6px; }
-        .inv-label { font-weight: 600; color: #495057; display: inline-block; width: 140px; }
-        .inv-val { color: #212529; }
-        .inv-summary { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #dee2e6; color: #495057; font-style: italic; }
+        .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .inv-field {
+            background: white; border-radius: 8px; padding: 10px 14px;
+            border: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px;
+        }
+        .inv-label { font-weight: 700; color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .inv-val { color: var(--text-main); font-size: 13px; font-weight: 500; }
+        .inv-summary {
+            margin-top: 12px; padding: 14px; border-radius: 8px;
+            background: white; border: 1px solid var(--border);
+            color: var(--text-main); line-height: 1.6; font-size: 13px;
+        }
+        /* ── Identificar Caso Tab ─────────────────────────── */
+        .identify-hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-lt) 100%);
+            border-radius: 14px; padding: 32px 36px; margin-bottom: 20px;
+            color: white; position: relative; overflow: hidden;
+        }
+        .identify-hero::before {
+            content: ''; position: absolute; right: -40px; top: -40px;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .identify-hero h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+        .identify-hero p { font-size: 13px; color: rgba(255,255,255,0.8); margin: 0; max-width: 600px; }
+        .identify-url-bar {
+            display: flex; gap: 10px; margin-top: 22px;
+        }
+        .identify-url-bar input {
+            flex: 1; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.3);
+            border-radius: 10px; padding: 12px 18px; color: white; font-size: 14px;
+            font-family: inherit; outline: none; transition: all 0.2s;
+        }
+        .identify-url-bar input::placeholder { color: rgba(255,255,255,0.5); }
+        .identify-url-bar input:focus { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.6); }
+        .btn-analyze {
+            background: white; color: var(--navy); border: none; border-radius: 10px;
+            padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer;
+            font-family: inherit; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+            white-space: nowrap;
+        }
+        .btn-analyze:hover { background: #f0f4ff; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transform: translateY(-1px); }
+        .identify-result-card {
+            background: var(--card-bg); border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .identify-result-header {
+            padding: 16px 24px; border-bottom: 1px solid var(--border);
+            background: linear-gradient(90deg, #f0f4ff, #f8f9fa);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .identify-result-title { font-weight: 700; font-size: 14px; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+        .identify-result-body { padding: 24px; }
+        .identify-steps {
+            display: flex; gap: 24px; margin-bottom: 24px;
+        }
+        .identify-step {
+            flex: 1; background: var(--gray-bg); border-radius: 10px; padding: 14px 16px;
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .identify-step-icon {
+            width: 34px; height: 34px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .step-1 .identify-step-icon { background: #e8edf8; color: var(--navy-lt); }
+        .step-2 .identify-step-icon { background: #e3f5f1; color: var(--teal-lt); }
+        .step-3 .identify-step-icon { background: #fbeaea; color: var(--crimson); }
+        .identify-step-text { font-size: 12px; color: var(--text-muted); }
+        .identify-step-text strong { display: block; color: var(--text-main); font-size: 12.5px; margin-bottom: 2px; }
         
         /* ── News panel ─────────────────────────────────── */
         .news-panel {
@@ -355,12 +429,12 @@
         }
         .tab-btn {
             border: none; background: transparent; color: var(--text-muted);
-            padding: 8px 18px; font-size: 13px; font-weight: 500;
-            border-radius: 6px; cursor: pointer; font-family: inherit;
-            transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+            padding: 9px 20px; font-size: 13px; font-weight: 500;
+            border-radius: 8px; cursor: pointer; font-family: inherit;
+            transition: all 0.18s; display: flex; align-items: center; gap: 7px;
         }
         .tab-btn:hover { background: var(--gray-bg); color: var(--text-main); }
-        .tab-btn.active { background: var(--navy); color: white; }
+        .tab-btn.active { background: var(--navy); color: white; box-shadow: 0 2px 8px rgba(26,58,107,0.25); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         /* ── Footer ─────────────────────────────────────── */
@@ -467,9 +541,10 @@
     <nav class="topbar">
         <a class="topbar-brand" href="#">
             <div class="brand-icon"><i class="fas fa-child"></i></div>
+            <div class="brand-divider"></div>
             <div class="brand-text">
                 <span class="brand-title">Plataforma NNA</span>
-                <span class="brand-sub">Víctimas Indirectas del Feminicidio</span>
+                <span class="brand-sub">Sistema de Seguimiento · Víctimas Indirectas del Feminicidio</span>
             </div>
         </a>
         <div class="topbar-nav">
@@ -545,6 +620,9 @@
             <button class="tab-btn" data-tab="guardadas" onclick="switchTab('guardadas', this)">
                 <i class="fas fa-bookmark"></i> Guardadas
                 <span id="savedCount" style="background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:10px;display:none;">0</span>
+            </button>
+            <button class="tab-btn" data-tab="identificar" onclick="switchTab('identificar', this)">
+                <i class="fas fa-search-plus"></i> Identificar caso
             </button>
         </div>
 
@@ -678,13 +756,83 @@
             </div>
         </div>
 
+        <!-- ╔═══ TAB: Identificar Caso ═══╗ -->
+        <div id="tab-identificar" class="tab-content">
+
+            <!-- Hero de entrada -->
+            <div class="identify-hero">
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                        <div style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="fas fa-search-plus"></i></div>
+                        <h2 class="mb-0">Identificar Caso por Noticia</h2>
+                    </div>
+                    <p>Pega el enlace de cualquier noticia web. La IA extraerá su contenido, buscará fuentes cruzadas y generará un informe estructurado del caso con datos sobre NNA afectados.</p>
+                    <div class="identify-url-bar">
+                        <input type="url" id="identifyUrlInput"
+                            placeholder="https://www.elfinanciero.com.mx/estados/2025/05/08/noticia..."
+                            autocomplete="off"
+                            onkeydown="if(event.key==='Enter') identifyLink()">
+                        <button class="btn-analyze" onclick="identifyLink()" id="btnAnalyze">
+                            <i class="fas fa-robot"></i> Analizar caso
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pasos del proceso (siempre visibles) -->
+            <div class="identify-steps">
+                <div class="identify-step step-1">
+                    <div class="identify-step-icon"><i class="fas fa-download"></i></div>
+                    <div class="identify-step-text">
+                        <strong>1. Extracción</strong>
+                        El sistema descarga y procesa el texto completo de la noticia ingresada.
+                    </div>
+                </div>
+                <div class="identify-step step-2">
+                    <div class="identify-step-icon"><i class="fas fa-globe"></i></div>
+                    <div class="identify-step-text">
+                        <strong>2. Búsqueda cruzada</strong>
+                        Genera queries con IA y busca noticias relacionadas en la web para enriquecer el análisis.
+                    </div>
+                </div>
+                <div class="identify-step step-3">
+                    <div class="identify-step-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="identify-step-text">
+                        <strong>3. Informe estructurado</strong>
+                        Consolida toda la información en un reporte con ubicación, víctimas y NNA afectados.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de resultado -->
+            <div id="identifyResultContainer" class="identify-result-card" style="display:none;">
+                <div class="identify-result-header">
+                    <span class="identify-result-title">
+                        <i class="fas fa-shield-alt" style="color:var(--teal);"></i>
+                        Informe del Caso — Análisis IA
+                    </span>
+                    <span style="font-size:11px;color:var(--text-muted);background:white;border:1px solid var(--border);border-radius:6px;padding:3px 10px;">
+                        <i class="fas fa-robot me-1"></i>Gemini AI Engine
+                    </span>
+                </div>
+                <div class="identify-result-body">
+                    <div id="identifyResultPanel"></div>
+                </div>
+            </div>
+        </div>
+
     </div><!-- /main-content -->
 
     <footer class="site-footer">
-        <strong>Plataforma NNA — Seguimiento de Víctimas Indirectas del Feminicidio</strong><br>
-        Sistema de monitoreo exclusivo para organizaciones sin fines de lucro · República Mexicana<br>
-        <small>Los datos provienen de medios de comunicación mexicanos verificados.
-        Esta plataforma no sustituye asesoría legal o psicosocial.</small>
+        <strong>Plataforma NNA — Sistema Inteligente de Seguimiento</strong><br>
+        <span style="color:var(--text-muted);">Identificación y Seguimiento de Derechos de NNA Afectados por Feminicidios en México</span>
+        <div class="footer-badges">
+            <span class="footer-badge"><i class="fas fa-shield-alt"></i> Uso exclusivo institucional</span>
+            <span class="footer-badge"><i class="fas fa-map-marker-alt"></i> República Mexicana</span>
+            <span class="footer-badge"><i class="fas fa-robot"></i> Powered by Gemini AI</span>
+            <span class="footer-badge"><i class="fas fa-database"></i> PostgreSQL + BETO NLP</span>
+        </div>
+        <div style="margin-top:10px;font-size:10.5px;color:var(--border);">Los datos provienen de medios de comunicación mexicanos verificados. Esta plataforma no sustituye asesoría legal o psicosocial.</div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -1413,30 +1561,85 @@
         var panel = document.getElementById('inv-panel-' + id);
         var btn = document.getElementById('btn-inv-' + id);
         if (!panel) return;
-        
-        if (btn) btn.style.display = 'none'; // Ocultar botón si ya se investigó
+        if (btn) btn.style.display = 'none';
         panel.classList.add('active');
+        renderInvestigationResultInto('inv-panel-' + id, result);
+    }
+
+    async function identifyLink() {
+        const urlInput = document.getElementById('identifyUrlInput');
+        const url = urlInput.value.trim();
+        if (!url) { showToast('Por favor ingresa una URL válida', 'error'); return; }
+        
+        const container = document.getElementById('identifyResultContainer');
+        const panel = document.getElementById('identifyResultPanel');
+        const btn = document.getElementById('btnAnalyze');
+        
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando...'; }
+        container.style.display = 'block';
+        panel.innerHTML = '<div style="text-align:center;padding:36px 20px;"><div style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:#e8edf8;border-radius:50%;margin-bottom:16px;"><i class="fas fa-spinner fa-spin" style="font-size:24px;color:var(--navy-lt);"></i></div><div style="font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;">Procesando caso con IA</div><div style="font-size:13px;color:var(--text-muted);">Extrayendo contenido · Buscando fuentes · Generando informe<br><small>Esto puede tomar hasta 40 segundos</small></div></div>';
+        
+        try {
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+            
+            const r = await fetch('/api/identify-link', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ url: url })
+            });
+            
+            const data = await r.json();
+            if (data.error) {
+                panel.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ' + esc(data.mensaje || data.error) + '</div>';
+            } else {
+                // Reutilizamos la lógica de renderizado de investigaciones
+                // Pero con un estilo ligeramente diferente para este panel
+                renderInvestigationResultInto('identifyResultPanel', data);
+            }
+        } catch (e) {
+            console.error(e);
+            panel.innerHTML = '<div style="padding:20px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;color:#b91c1c;"><i class="fas fa-exclamation-triangle me-2"></i>Error de conexión al servidor. Intente nuevamente.</div>';
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-robot"></i> Analizar caso'; }
+        }
+    }
+
+    function renderInvestigationResultInto(panelId, result) {
+        const panel = document.getElementById(panelId);
+        if (!panel) return;
         
         if (result.error) {
-            panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> ' + esc(result.mensaje || 'Error') + '</span>';
+            panel.innerHTML = '<div style="padding:20px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;color:#b91c1c;"><i class="fas fa-exclamation-triangle me-2"></i>' + esc(result.mensaje || result.error || 'Error desconocido') + '</div>';
             return;
         }
         
-        var html = '<div class="mb-2"><strong style="color:var(--navy);"><i class="fas fa-robot me-1"></i> Análisis de Múltiples Fuentes (IA)</strong></div>';
+        let html = '<div class="inv-grid">';
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-map-marker-alt me-1"></i>Ubicación</span><span class="inv-val">' + esc(result.ubicacion || 'No especificado') + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val">' + esc(result.victimas || 'No especificado') + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val">' + esc(String(result.ninos_afectados || 'No especificado')) + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val">' + esc(result.edades || 'No especificado') + '</span></div>';
+        html += '</div>';
         
-        html += '<div class="inv-field"><span class="inv-label">Ubicación:</span><span class="inv-val">' + esc(result.ubicacion || 'N/A') + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label">Víctimas directas:</span><span class="inv-val">' + esc(result.victimas || 'N/A') + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label">NNA Afectados:</span><span class="inv-val">' + esc(result.ninos_afectados || 'N/A') + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label">Edades NNA:</span><span class="inv-val">' + esc(result.edades || 'N/A') + '</span></div>';
-        
-        html += '<div class="inv-summary"><strong>Resumen del caso:</strong><br>' + esc(result.resumen || '') + '</div>';
+        html += '<div class="inv-summary"><strong style="display:block;margin-bottom:8px;color:var(--navy);font-size:12px;text-transform:uppercase;letter-spacing:0.05em;"><i class="fas fa-align-left me-1"></i>Resumen ejecutivo del caso</strong>' + esc(result.resumen || '') + '</div>';
         
         if (result.fuentes && result.fuentes.length > 0) {
-            html += '<div class="mt-2" style="font-size:11px;"><strong style="color:var(--text-muted);">Fuentes cruzadas:</strong><br>';
+            html += '<div class="mt-3 pt-3" style="border-top:1px solid var(--border);">';
+            html += '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;"><i class="fas fa-link me-1"></i>Fuentes consultadas para validación</div>';
+            html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
             result.fuentes.forEach(f => {
-                html += '<a href="' + esc(f) + '" target="_blank" rel="noopener" style="display:inline-block; margin-right:8px; margin-top:3px; color:var(--navy-lt);"><i class="fas fa-external-link-alt"></i> ' + esc(new URL(f).hostname.replace('www.','')) + '</a>';
+                try {
+                    html += '<a href="' + esc(f) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:500;color:var(--navy-lt);background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:4px 10px;text-decoration:none;"><i class="fas fa-external-link-alt" style="font-size:9px;"></i>' + esc(new URL(f).hostname.replace('www.','')) + '</a>';
+                } catch(e) {}
             });
-            html += '</div>';
+            html += '</div></div>';
+        }
+        
+        if (result.query_usada) {
+            html += '<div class="mt-3" style="font-size:11px;color:var(--text-muted);"><i class="fas fa-search me-1"></i>Query generada: <em>' + esc(result.query_usada) + '</em></div>';
         }
         
         panel.innerHTML = html;

@@ -295,7 +295,7 @@ class SemanticDetector:
 
         self.model = BETOClassifier(num_classes=2)
         self.model.load_state_dict(
-            torch.load(finetuned_path, map_location=self.device)
+            torch.load(finetuned_path, map_location=self.device, weights_only=True)
         )
         self.model.to(self.device)
         self.model.eval()

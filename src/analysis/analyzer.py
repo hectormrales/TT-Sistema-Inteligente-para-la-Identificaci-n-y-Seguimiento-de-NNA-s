@@ -12,9 +12,12 @@ Pipeline de análisis NLP con filtrado inteligente (v5.0 — TT2):
     7. Reclasificación TF-IDF: re-score usando los vectores aprendidos
     8. Búsqueda con sinónimos
 
-  Nuevos pasos TT2:
-    9.  Detección semántica con BETO (OE-1)
-    10. Clustering semántico con BERTopic (OE-4)
+  Nuevos pasos TT2 (orden de ejecución real):
+    10. Clustering semántico con BERTopic (OE-4) — Mapa global de contexto
+        Procesa TODAS las noticias (600+) para dar volumen a UMAP/HDBSCAN.
+    9.  Detección semántica con BETO (OE-1) — Sensible al clúster
+        Usa topic_id de BERTopic: outliers (topic_id=-1) exigen umbral
+        BETO más alto (0.65 vs 0.50) para clasificar como "Alta".
     11. Persistencia en PostgreSQL con FTS (OE-3)
 
 Cambios v5.0:
@@ -28,6 +31,7 @@ import os
 import re
 import json
 import logging
+from datetime import datetime
 import unicodedata
 from typing import Dict, Tuple, Optional
 
@@ -390,6 +394,16 @@ class SimplifiedNewsAnalyzer:
 
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
+        # Fallback defensivo: garantizar que las columnas existen
+        if 'relevancia_final' not in self.df_processed.columns:
+            self.df_processed['relevancia_final'] = self.df_processed.get(
+                'score_compuesto', pd.Series(0.0, index=self.df_processed.index)
+            )
+        if 'clasificacion_final' not in self.df_processed.columns:
+            self.df_processed['clasificacion_final'] = self.df_processed.get(
+                'clasificacion', pd.Series('No relevante', index=self.df_processed.index)
+            )
+
         # Ordenar por fecha descendente (más reciente primero)
         if 'fecha' in self.df_processed.columns:
             try:
@@ -426,16 +440,15 @@ class SimplifiedNewsAnalyzer:
             'columnas_disponibles': list(self.df_processed.columns),
             'version': 'relevance_analyzer_v5.0_TT2',
             'algoritmos_usados': [
-                'Scoring Dual Heurístico (Feminicidio × NNA)',
+                'Scoring Dual Heurístico (Feminicidio × NNA × Caso Individual)',
                 'TF-IDF (domain-boosted, sublinear, n-grams 1-3)',
-                'LDA (topic modeling)',
-                'K-Means (clustering temático)',
                 'Similitud Coseno + Deduplicación Semántica',
-                'Reclasificación TF-IDF (doc ideal)',
+                'Keywords de Oro (inmunidad contra penalizaciones v9.1)',
                 'Web Scraping Dinámico (robots.txt)',
                 'Dedup Cross-Site (Hash + Jaccard + SimHash + TF-IDF)',
                 'Detección Semántica BETO (OE-1, zero-shot/hybrid)',
-                'BERTopic: BETO + UMAP + HDBSCAN + c-TF-IDF (OE-4)',
+                'Lógica Neuro-Simbólica (Bypass de Oro + Vía Rápida + Clúster)',
+                'BERTopic: MiniLM-L12 + UMAP + HDBSCAN + c-TF-IDF (OE-4)',
                 'PostgreSQL FTS con tsvector/GIN (OE-3)',
             ],
         }
@@ -480,7 +493,6 @@ class SimplifiedNewsAnalyzer:
         print("  PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO")
         print("=" * 60)
 
-        from datetime import datetime
         self.current_batch_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         print(f"  Batch ID de ejecución: {self.current_batch_id}")
 
@@ -496,19 +508,25 @@ class SimplifiedNewsAnalyzer:
             self.step_2_save_initial_data()
 
         self.step_3_vectorize_text()
-        self.step_4_topic_modeling(num_topics=num_topics)
-        # self.step_5_clustering(n_clusters=n_clusters) # Desactivado: redundante con BERTopic
+        # step_4 (LDA) y step_5 (K-Means) desactivados: redundantes con BERTopic
+        # self.step_4_topic_modeling(num_topics=num_topics)
+        # self.step_5_clustering(n_clusters=n_clusters)
         self.step_6_similarity_analysis()
-        self.step_7_tfidf_rescore()
+        # step_7 (TF-IDF rescore) ELIMINADO: sobrescribía clasificacion_final
+        # del collector con un blend 60/40 que destruía las "Alta" reales.
+        # self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
 
-        # Paso 9: Detección semántica BETO (OE-1)
-        if enable_semantic:
-            self.step_9_semantic_detection()
-
-        # Paso 10: Clustering BERTopic (OE-4)
+        # Paso 10: Clustering BERTopic (OE-4) — ANTES de BETO
+        # BERTopic necesita volumen (600+ docs) para que UMAP/HDBSCAN
+        # encuentren clústeres reales. Asigna topic_id a TODAS las filas.
         if enable_bertopic:
             self.step_10_bertopic_clustering()
+
+        # Paso 9: Detección semántica BETO (OE-1) — sensible al clúster
+        # Usa topic_id de BERTopic para ajustar umbrales de exigencia.
+        if enable_semantic:
+            self.step_9_semantic_detection()
 
         # Guardar CSV (siempre, para backward compatibility)
         self.save_final_results()
@@ -542,7 +560,6 @@ class SimplifiedNewsAnalyzer:
         print("  PIPELINE DE ANÁLISIS v5.0 — SOLO ANÁLISIS (sin scraping)")
         print("=" * 60)
 
-        from datetime import datetime
         self.current_batch_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         print(f"  Batch ID de ejecución: {self.current_batch_id}")
 
@@ -570,19 +587,22 @@ class SimplifiedNewsAnalyzer:
 
         # Ejecutar pasos 3-8 (análisis NLP)
         self.step_3_vectorize_text()
-        self.step_4_topic_modeling(num_topics=num_topics)
-        # self.step_5_clustering(n_clusters=n_clusters) # Desactivado: redundante con BERTopic
+        # step_4 (LDA) y step_5 (K-Means) desactivados: redundantes con BERTopic
+        # self.step_4_topic_modeling(num_topics=num_topics)
+        # self.step_5_clustering(n_clusters=n_clusters)
         self.step_6_similarity_analysis()
-        self.step_7_tfidf_rescore()
+        # step_7 (TF-IDF rescore) ELIMINADO: sobrescribía clasificacion_final
+        # del collector con un blend 60/40 que destruía las "Alta" reales.
+        # self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
 
-        # Paso 9: Detección semántica BETO (OE-1)
-        if enable_semantic:
-            self.step_9_semantic_detection()
-
-        # Paso 10: Clustering BERTopic (OE-4)
+        # Paso 10: Clustering BERTopic (OE-4) — ANTES de BETO
         if enable_bertopic:
             self.step_10_bertopic_clustering()
+
+        # Paso 9: Detección semántica BETO (OE-1) — sensible al clúster
+        if enable_semantic:
+            self.step_9_semantic_detection()
 
         # Guardar CSV
         self.save_final_results()
@@ -637,7 +657,9 @@ class SimplifiedNewsAnalyzer:
 
             # Combinar con heurístico usando fórmula alpha-weighted y clasificación estricta
             for i, (idx, row) in enumerate(self.df_processed.iterrows()):
-                h_score = float(row.get("relevancia_final", row.get("score_compuesto", 0)))
+                # IMPORTANTE: Leer score_compuesto DIRECTO del collector,
+                # NO relevancia_final (que puede estar contaminada por step_7)
+                h_score = float(row.get("score_compuesto", 0))
                 s_score = float(row.get("score_semantico", 0))
 
                 # Alpha ponderado: si el score semántico es fuerte, confiar más en él
@@ -655,44 +677,59 @@ class SimplifiedNewsAnalyzer:
                 if s_score > h_score and distance > 0.2:
                     score_final = max(h_score, score_final)  # BETO sube con confianza
 
-                # --- NUEVA LÓGICA DE CLASIFICACIÓN ESTRICTA ---
+                # --- LÓGICA NEURO-SIMBÓLICA CON CONTEXTO DE CLÚSTER ---
                 # Extraemos los scores individuales
                 score_fem = float(row.get("score_feminicidio", 0))
                 score_v_ind = float(row.get("score_victima_indirecta", 0))
                 score_caso = float(row.get("score_caso", 0))
+
+                # ── NIVEL 3: Contexto de Clúster BERTopic ──
+                # Si BERTopic ya corrió, topic_id está disponible.
+                # Outliers (topic_id == -1) son noticias genéricas/extrañas:
+                #   → se eleva el umbral BETO de 0.50 a 0.65
+                # Clústeres válidos (topic_id >= 0) mantienen umbral normal.
+                topic_id_val = row.get("topic_id", -1)
+                try:
+                    topic_id_int = int(topic_id_val) if pd.notna(topic_id_val) else -1
+                except (ValueError, TypeError):
+                    topic_id_int = -1
+                es_outlier_cluster = (topic_id_int == -1)
+
+                umbral_beto_alta = 0.65 if es_outlier_cluster else 0.50
+                umbral_beto_rapida = 0.50 if es_outlier_cluster else 0.35
 
                 # Condición estricta para ALTA relevancia (ruta principal)
                 es_alta_relevancia = (
                     score_fem > 0.15 and
                     score_v_ind > 0.25 and
                     score_caso > 0.15 and
-                    s_score > 0.50
+                    s_score > umbral_beto_alta
                 )
 
-                # ── Vía Rápida: Keywords de Oro con BETO moderado ──
-                # Si score_victima_indirecta es muy alto (boosted por keywords
-                # de oro en collector.py) y hay señal clara de feminicidio,
-                # permitir "Alta" con umbral BETO más relajado (0.35).
-                # Esto rescata verdaderos positivos donde BETO duda por
-                # complejidad narrativa (suicidio del agresor, secuestro, etc.)
+                # ── Vía Rápida: señal v_ind moderada + feminicidio + BETO ──
+                # v9.1: Umbral bajado de 0.60 a 0.40 para capturar
+                # "presenció feminicidio" (v_ind≈0.50) y patrones similares
                 es_via_rapida = (
-                    score_v_ind > 0.60 and
+                    score_v_ind > 0.40 and
                     score_fem > 0.15 and
-                    s_score > 0.35
+                    s_score > umbral_beto_rapida
                 )
 
                 if es_alta_relevancia or es_via_rapida:
                     clasificacion = "Alta"
-                    # Asegurar que el score_final refleje la alta relevancia
                     score_final = max(score_final, 0.65)
+                    ctx = "outlier" if es_outlier_cluster else f"t{topic_id_int}"
                     if es_via_rapida and not es_alta_relevancia:
                         logger.info(
-                            f"  ★ Vía Rápida activada: v_ind={score_v_ind:.2f}, "
+                            f"  ★ Vía Rápida [{ctx}]: v_ind={score_v_ind:.2f}, "
                             f"fem={score_fem:.2f}, BETO={s_score:.2f} → Alta"
                         )
+                    elif es_outlier_cluster:
+                        logger.info(
+                            f"  ⚡ Alta en outlier cluster: BETO={s_score:.2f} "
+                            f"(umbral={umbral_beto_alta}) → Alta"
+                        )
                 else:
-                    # Si no cumple las 4 condiciones ni la vía rápida,
-                    # se clasifica por el score general pero nunca como "Alta"
                     if score_final >= 0.40:
                         clasificacion = "Media"
                     elif score_final >= 0.20:

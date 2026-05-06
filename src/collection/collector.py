@@ -43,6 +43,8 @@ from src.collection.scraper import DynamicScraper, StealthSession
 from src.analysis.dedup import NewsDeduplicator
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
+logger = logging.getLogger(__name__)
+
 def _is_url_in_db(url: str) -> bool:
     """Verifica si la URL ya existe en la base de datos PostgreSQL."""
     try:
@@ -153,8 +155,6 @@ def _scrape_google_search_html(query: str, start_date: str | None, end_date: str
     except Exception as e:
         logger.error(f"Error en HTML fallback Google Search: {e}")
         return []
-
-logger = logging.getLogger(__name__)
 
 # Archivo de URLs ya procesadas (evita re-scraping cada ciclo)
 _SEEN_URLS_FILE = os.path.join(
@@ -277,10 +277,34 @@ VICTIMA_INDIRECTA_NNA_KEYWORDS: list[Tuple[str, float]] = [
     (r'\bhu[eé]rfan[oa]s?\b', 1.0),
     (r'\borfandad\b', 1.0),
     (r'\bv[ií]ctimas?\s+indirectas?\b', 1.0),
-    # El menor presenció / estaba presente
-    (r'\bfrente\s+a\s+sus?\s+(?:hijos?|hijas?|menores?)\b', 1.0),
+    # El menor presenció / estaba presente — v9.0: cuantificadores entre "sus" e "hijos"
+    (r'\bfrente\s+a\s+sus?\s+(?:(?:dos|tres|cuatro|cinco|\d+)\s+)?(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b', 1.0),
+    (r'\bfrente\s+a\s+(?:su|el|la|un)\s+(?:hijo|hija|menor|ni[ñn][oa])\b', 1.0),
     (r'\bpresenci[oó]\b.*\b(?:asesinat|feminicidio|muerte|crimen)\b', 1.0),
     (r'\b(?:hijos?|hijas?|menores?)\s+(?:presenciaron|vieron|estaban\s+presentes)\b', 1.0),
+    # v9.0: Testimonio / relato del menor ("narró", "contó", "dijo", "revelan testimonio")
+    (r'\b(?:hijo|hija|ni[ñn][oa]|menor)\s+(?:\w+\s+){0,3}(?:narr[oó]|cont[oó]|relat[oó]|declar[oó]|dijo|revel[oó])\b', 1.0),
+    (r'\b(?:narr[oó]|cont[oó]|relat[oó]|declar[oó]|dijo|revel[oó])\s+(?:\w+\s+){0,3}(?:el\s+)?(?:hijo|hija|ni[ñn][oa]|menor)\b', 1.0),
+    (r'\btestimonio\s+(?:de|del)\s+(?:un\s+)?(?:ni[ñn][oa]|menor|hijo|hija)\b', 1.0),
+    (r'\b(?:revelan?|publican?)\s+(?:\w+\s+){0,2}testimonio\b', 0.95),
+    # v9.0: Hijo/a convivía / presenció sin verbo explícito ("llamó a su hijo")
+    (r'\b(?:llam[oó]|avis[oó]|alert[oó])\s+a\s+su\s+(?:hijo|hija)\b', 0.90),
+    (r'\bsu\s+(?:hijo|hija)\s+(?:\w+\s+){0,2}(?:escuch|oy[oó]|presenci)\b', 0.95),
+    # v9.1: "llamó a su hijo para contarle/decirle" (sin requerir verbo final específico)
+    (r'\b(?:llam[oó]|avis[oó])\s+a\s+su\s+(?:hijo|hija)\s+(?:para|y)\s+(?:contarle|decirle|informarle|avisarle)\b', 1.0),
+    # v9.1: "iba a dejar/llevar a sus hijos" (hijos presentes en momento de asesinato)
+    (r'\b(?:iba|iban)\s+(?:a\s+)?(?:dejar|llevar|recoger)\s+a\s+sus?\s+(?:hijos?|hijas?|ni[ñn][oa]s?)\b', 0.90),
+    # v9.0: "madre de N hijos" + contexto de asesinato
+    (r'\b(?:madre|mamá)\s+de\s+(?:dos|tres|cuatro|cinco|\d+)\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b', 0.95),
+    (r'\bera\s+madre\s+de\s+(?:dos|tres|cuatro|cinco|\d+)\b', 0.90),
+    # v9.0: "sus hijos están solos" / "hijos quedaron solos"
+    (r'\b(?:hijos?|hijas?)\s+(?:est[aá]n|quedan|quedaron)\s+sol[oa]s?\b', 1.0),
+    # v9.0: Sustracción de hijo/a (no solo niña/menor)
+    (r'\bsustra[ei]r\s+(?:a\s+)?su\s+(?:hijo|hija)\b', 0.95),
+    (r'\b(?:rob[oó]|sustrajo|rapt[oó]|secuestr[oó]|llev[oó])\s+(?:a\s+)?su\s+(?:hijo|hija)\b', 0.95),
+    # v9.0: Protección / justicia para sus hijos (post-feminicidio)
+    (r'\bprotecci[oó]n\s+(?:para|de)\s+sus\s+(?:hijos?|hijas?|menores?)\b', 0.90),
+    (r'\bjusticia\s+(?:para|por)\s+(?:\w+\s+){0,3}(?:sus\s+)?(?:hijos?|hijas?)\b', 0.85),
     # DIF / custodia por orfandad
     (r'\bDIF\s+(?:resguard|entreg|recib|custodi)\b', 0.95),
     (r'\b(?:entregad|resguardad|puestos?\s+bajo)\s+(?:\w+\s+){0,2}DIF\b', 0.95),
@@ -314,22 +338,53 @@ KEYWORDS_DE_ORO: list[str] = [
     r'\bDIF\s+(?:resguarda|tiene|protege|acoge|recibi[oó]|entreg[oó])\b',
     r'\b(?:resguardad[oa]s?|acogid[oa]s?|protegid[oa]s?)\s+(?:por|en)\s+(?:el\s+)?DIF\b',
     r'\b(?:entreg|puestos?|llevad[oa]s?)\s+(?:\w+\s+){0,2}(?:al?\s+)?DIF\b',
-    # ── Frente a sus hijos / presenció ──
-    r'\bfrente\s+a\s+sus?\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b',
-    r'\b(?:delante|enfrente|presencia)\s+de\s+sus?\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b',
+    # ── v9.0: Protesta/demanda frente al DIF ("protestan frente al DIF") ──
+    r'\b(?:protestan?|exigen|demandan|piden)\s+(?:\w+\s+){0,3}(?:frente\s+al?\s+)?DIF\b',
+    # ── Frente a sus hijos / presenció — v9.0: permite cuantificadores ──
+    r'\bfrente\s+a\s+sus?\s+(?:(?:dos|tres|cuatro|cinco|\d+)\s+)?(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b',
+    r'\bfrente\s+a\s+(?:su|el|la|un)\s+(?:hijo|hija|menor|ni[ñn][oa])\s+(?:de\s+\d+)?\b',
+    r'\b(?:delante|enfrente|presencia)\s+de\s+sus?\s+(?:(?:\d+|dos|tres|cuatro|cinco)\s+)?(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\b',
     r'\b(?:hijos?|hijas?|menores?|ni[ñn][oa]s?)\s+(?:\w+\s+){0,4}(?:presenciaron|vieron|observaron|estaban?\s+presentes?)\b',
     r'\b(?:asesinada|matada|muerta|baleada)\s+(?:\w+\s+){0,3}frente\s+a\s+(?:sus?\s+)?(?:hijos?|hijas?|menores?)\b',
+    # ── v9.0: Testimonio / relato / declaración del menor ──
+    r'\b(?:hijo|hija|ni[ñn][oa]|menor)\s+(?:\w+\s+){0,4}(?:narr[oó]|cont[oó]|relat[oó]|declar[oó]|dijo)\b',
+    r'\b(?:narr[oó]|cont[oó]|relat[oó]|declar[oó]|dijo|revel[oó])\s+(?:\w+\s+){0,4}(?:el\s+)?(?:hijo|hija|ni[ñn][oa]|menor)\b',
+    r'\btestimonio\s+(?:de|del)\s+(?:un\s+)?(?:ni[ñn][oa]|menor|hijo|hija)\b',
+    r'\b(?:revelan?|publican?)\s+(?:\w+\s+){0,2}testimonio\s+(?:de|del)\s+(?:un\s+)?(?:ni[ñn][oa]|menor|hijo|hija)\b',
+    # ── v9.0: "llamó/avisó a su hijo" (el menor se enteró del crimen) ──
+    r'\b(?:llam[oó]|avis[oó]|alert[oó])\s+a\s+su\s+(?:hijo|hija)\s+(?:\w+\s+){0,3}(?:cont|decir|narr|inform)\b',
+    # ── v9.1: "llamó a su hijo para contarle" (sin requerir match extenso) ──
+    r'\b(?:llam[oó]|avis[oó])\s+a\s+su\s+(?:hijo|hija)\s+(?:para|y)\s+(?:contarle|decirle|informarle|avisarle)\b',
+    # ── v9.1: "presenció feminicidio/asesinato" (directamente) ──
+    r'\b(?:presenci[oó]|atestigu[oó]|vio|vi[oó])\s+(?:el\s+)?(?:feminicidio|asesinato|crimen|homicidio)\b',
+    # ── v9.1: "testimonio de niño que presenció" (título periodístico) ──
+    r'\btestimonio\s+de\s+(?:un\s+)?(?:ni[ñn][oa]|menor|hijo|hija)\s+(?:que\s+)?(?:presenci|atestigu|vi[oó])\b',
+    # ── v9.1: "dejar/llevar a sus hijos a la escuela" (hijos presentes) ──
+    r'\b(?:iba|iban)\s+(?:a\s+)?(?:dejar|llevar|recoger)\s+a\s+sus?\s+(?:hijos?|hijas?|ni[ñn][oa]s?)\b',
     # ── Huérfanos directos ──
     r'\b(?:quedaron?|quedan?|dejan?|dejaron)\s+(?:\w+\s+){0,3}hu[eé]rfan[oa]s?\b',
     r'\bhu[eé]rfan[oa]s?\s+(?:de\s+)?(?:madre|padre|ambos)\b',
     r'\b(?:dos|tres|cuatro|cinco|\d+)\s+(?:menores?|ni[ñn][oa]s?|hijos?|hijas?)\s+(?:\w+\s+){0,2}hu[eé]rfan[oa]s?\b',
-    # ── Niño/a robado/a tras el feminicidio (caso especial) ──
-    r'\b(?:ni[ñn][oa]|menor|beb[eé]|hija?)\s+(?:\w+\s+){0,3}(?:fue\s+)?(?:robad[oa]|sustra[ií]d[oa]|raptad[oa]|secuestrad[oa]|llevad[oa])\b',
-    r'\b(?:robaron|sustrajeron|raptaron|secuestraron|llevaron)\s+(?:\w+\s+){0,3}(?:a\s+)?(?:la\s+)?(?:ni[ñn]a|menor|beb[eé]|hija)\b',
-    # ── Sin madre / desamparados ──
+    # ── Niño/a robado/a o sustraído/a tras el feminicidio ──
+    r'\b(?:ni[ñn][oa]|menor|beb[eé]|hija?|hijo)\s+(?:\w+\s+){0,3}(?:fue\s+)?(?:robad[oa]|sustra[ií]d[oa]|raptad[oa]|secuestrad[oa]|llevad[oa])\b',
+    r'\b(?:robaron|sustrajeron|raptaron|secuestraron|llevaron)\s+(?:\w+\s+){0,3}(?:a\s+)?(?:la\s+|el\s+)?(?:ni[ñn][oa]|menor|beb[eé]|hija|hijo)\b',
+    r'\bsustra[ei]r\s+(?:a\s+)?su\s+(?:hijo|hija)\b',
+    # ── Sin madre / desamparados / solos ──
     r'\b(?:menores?|ni[ñn][oa]s?|hijos?|hijas?)\s+(?:\w+\s+){0,2}(?:sin\s+(?:su\s+)?madre|desamparad[oa]s?|desprotegid[oa]s?|sol[oa]s?)\b',
     r'\b(?:dej[oó]|dejaron)\s+(?:\w+\s+){0,4}(?:sin\s+(?:su\s+)?madre|desamparad[oa]s?|sol[oa]s?)\b',
+    # ── v9.0: "sus hijos están solos" (sin verbo dejó) ──
+    r'\b(?:sus\s+)?(?:hijos?|hijas?)\s+(?:est[aá]n|quedan|quedaron)\s+sol[oa]s?\b',
+    # ── v9.0: "madre de N hijos" + contexto violento ──
+    r'\b(?:madre|mamá)\s+de\s+(?:dos|tres|cuatro|cinco|\d+)\s+(?:hijos?|hijas?|ni[ñn][oa]s?|menores?)\b',
+    r'\bera\s+madre\s+de\s+(?:dos|tres|cuatro|cinco|\d+)\b',
+    # ── v9.0: Protección / justicia para hijos post-feminicidio ──
+    r'\bprotecci[oó]n\s+(?:para|de)\s+sus\s+(?:hijos?|hijas?)\b',
+    r'\b(?:justicia|protecci[oó]n)\s+(?:para|por)\s+(?:su\s+)?feminicidio\s+(?:y\s+)?(?:protecci[oó]n\s+(?:para|de)\s+)?(?:sus\s+)?(?:hijos?|hijas?)\b',
 ]
+
+
+# Pre-compilar patrones de oro para rendimiento (~40 regex × 600 noticias)
+_COMPILED_KEYWORDS_DE_ORO = [re.compile(p, re.IGNORECASE) for p in KEYWORDS_DE_ORO]
 
 
 def _check_keywords_de_oro(text_norm: str) -> bool:
@@ -346,10 +401,7 @@ def _check_keywords_de_oro(text_norm: str) -> bool:
     Returns:
         True si se detecta al menos una keyword de oro.
     """
-    for pattern in KEYWORDS_DE_ORO:
-        if re.search(pattern, text_norm, re.IGNORECASE):
-            return True
-    return False
+    return any(p.search(text_norm) for p in _COMPILED_KEYWORDS_DE_ORO)
 
 
 
@@ -1176,7 +1228,7 @@ def collect_all_news(
                         if not _is_mexico_news(art['titulo'], art['contenido'], art['enlace']):
                             continue
                         rel = score_relevance(art['titulo'], art['contenido'])
-                        if keep_all or rel['relevancia_final'] >= threshold:
+                        if keep_all or rel['score_compuesto'] >= threshold:
                             art.update(rel)
                             valid_articles.append(art)
                             seen_urls.add(art['enlace'])

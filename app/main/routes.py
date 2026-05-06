@@ -192,8 +192,14 @@ def api_stats():
 @login_required
 def api_noticias():
     """Listado paginado de noticias con filtros de relevancia."""
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
+    try:
+        page = max(1, int(request.args.get('page', 1)))
+    except (ValueError, TypeError):
+        page = 1
+    try:
+        per_page = max(1, min(int(request.args.get('per_page', 10)), 100))
+    except (ValueError, TypeError):
+        per_page = 10
     only_nna = request.args.get('only_nna', 'false').lower() == 'true'
     clasificacion = request.args.get('clasificacion', '').strip()
     orden = request.args.get('orden', 'fecha')
@@ -798,6 +804,24 @@ def api_investigate_status(noticia_id):
                 return jsonify({'status': 'done', 'result': noticia.investigacion_json})
             return jsonify({'status': 'not_started'})
         return jsonify(status_info)
+
+@main_bp.route('/api/identify-link', methods=['POST'])
+@login_required
+def api_identify_link():
+    """Identifica un caso a partir de un link externo, investigando en la web."""
+    data = request.json
+    url = data.get('url', '').strip()
+    if not url:
+        return jsonify({'error': 'URL requerida'}), 400
+        
+    from src.analysis.investigator import DeepInvestigator
+    try:
+        investigator = DeepInvestigator()
+        result = investigator.investigate_url(url)
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error identificando link: {e}")
+        return jsonify({'error': str(e)}), 500
 
 
 # ── Errores ─────────────────────────────────────────────────

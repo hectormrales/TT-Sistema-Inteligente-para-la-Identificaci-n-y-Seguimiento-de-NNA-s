@@ -92,15 +92,27 @@ class DeepInvestigator:
         return urls[:8]  # Retornar un poco más para filtrar después
 
     def _scrape_content(self, url: str) -> str:
-        """Extrae el texto de una URL."""
+        """Extrae el texto de una URL de forma más limpia."""
         try:
-            resp = self.session.get(url, timeout=10)
-            if not resp: return ""
+            resp = self.session.get(url, timeout=15)
+            if not resp or resp.status_code != 200: 
+                logger.warning(f"No se pudo acceder a {url}: {resp.status_code if resp else 'Sin respuesta'}")
+                return ""
+                
             soup = BeautifulSoup(resp.text, 'html.parser')
-            for tag in soup(['script', 'style', 'nav', 'header', 'footer']):
+            
+            # Limpieza profunda de ruido HTML
+            for tag in soup(['script', 'style', 'nav', 'header', 'footer', 'aside', 'form', 'iframe', 'button', 'noscript']):
                 tag.decompose()
-            text = soup.get_text(separator=' ', strip=True)
-            return text[:3000]  # Limitar tamaño
+                
+            # Intentar extraer solo el cuerpo del artículo si existe
+            article = soup.find('article') or soup.find('main') or soup
+            text = article.get_text(separator=' ', strip=True)
+            
+            # Limpiar espacios múltiples
+            text = " ".join(text.split())
+            
+            return text[:4000]  # Aumentamos un poco el contexto
         except Exception as e:
             logger.error(f"Error scrapeando {url}: {e}")
             return ""
@@ -188,6 +200,37 @@ class DeepInvestigator:
         
         return resultado
 
+    def investigate_url(self, url: str) -> dict:
+        """Extrae el contenido de una URL e investiga el caso."""
+        logger.info(f"Identificando caso desde URL: {url}")
+        content = self._scrape_content(url)
+        if not content or len(content) < 200:
+            return {
+                "error": True,
+                "mensaje": "No se pudo extraer suficiente contenido de la URL proporcionada. Verifique que el enlace sea público y contenga texto."
+            }
+            
+        # Intentar extraer el título de los primeros caracteres
+        prompt = f"""Analiza este fragmento de noticia y genera un título corto (máx 10 palabras).
+        Si el texto parece ser un error de acceso, aviso de cookies o no es una noticia, devuelve 'NOTICIA_INVALIDA'.
+        
+        TEXTO: {content[:2000]}"""
+        
+        try:
+            response = client.models.generate_content(model=MODEL_NAME, contents=prompt)
+            title = response.text.strip().replace('"', '')
+            
+            if "NOTICIA_INVALIDA" in title or len(title) < 5:
+                return {
+                    "error": True,
+                    "mensaje": "El contenido extraído de la URL no parece ser una noticia válida (posible bloqueo de sitio)."
+                }
+        except Exception as e:
+            logger.error(f"Error generando título: {e}")
+            title = "Noticia externa"
+            
+        return self.investigate(title, content)
+
     def _investigate_with_gemini_search(self, title: str, query: str) -> dict:
         """Usa el buscador nativo de Gemini como último recurso si el scraper falla."""
         
@@ -207,8 +250,9 @@ class DeepInvestigator:
         """
         
         try:
-            # Habilitar herramienta de búsqueda de Google en Gemini
-            search_tool = types.Tool(google_search=types.GoogleSearchRetrieval())
+            # v5.3: Corregido según la última especificación de google-genai
+            # Usar GoogleSearch() en lugar de GoogleSearchRetrieval()
+            search_tool = types.Tool(google_search=types.GoogleSearch())
             response = client.models.generate_content(
                 model=MODEL_NAME,
                 contents=prompt,

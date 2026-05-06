@@ -1,8 +1,8 @@
 {
-  "total_noticias": 632,
-  "noticias_con_nna": 223,
+  "total_noticias": 620,
+  "noticias_con_nna": 231,
   "alta_relevancia": 0,
-  "media_relevancia": 67,
+  "media_relevancia": 88,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -18,29 +18,26 @@
     "titulo_limpio",
     "contenido_limpio",
     "texto_combinado",
-    "topic_id",
-    "topic_probability",
-    "topic_description",
     "most_similar_doc_idx",
     "max_similarity",
-    "tfidf_relevance",
-    "relevancia_final",
-    "clasificacion_final",
+    "topic_id",
+    "topic_description",
     "score_semantico",
-    "modo_deteccion"
+    "modo_deteccion",
+    "relevancia_final",
+    "clasificacion_final"
   ],
   "version": "relevance_analyzer_v5.0_TT2",
   "algoritmos_usados": [
-    "Scoring Dual Heurístico (Feminicidio × NNA)",
+    "Scoring Dual Heurístico (Feminicidio × NNA × Caso Individual)",
     "TF-IDF (domain-boosted, sublinear, n-grams 1-3)",
-    "LDA (topic modeling)",
-    "K-Means (clustering temático)",
     "Similitud Coseno + Deduplicación Semántica",
-    "Reclasificación TF-IDF (doc ideal)",
+    "Keywords de Oro (inmunidad contra penalizaciones v9.1)",
     "Web Scraping Dinámico (robots.txt)",
     "Dedup Cross-Site (Hash + Jaccard + SimHash + TF-IDF)",
     "Detección Semántica BETO (OE-1, zero-shot/hybrid)",
-    "BERTopic: BETO + UMAP + HDBSCAN + c-TF-IDF (OE-4)",
+    "Lógica Neuro-Simbólica (Bypass de Oro + Vía Rápida + Clúster)",
+    "BERTopic: MiniLM-L12 + UMAP + HDBSCAN + c-TF-IDF (OE-4)",
     "PostgreSQL FTS con tsvector/GIN (OE-3)"
   ]
 }
