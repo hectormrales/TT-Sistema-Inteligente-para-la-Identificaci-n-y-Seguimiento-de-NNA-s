@@ -1,0 +1,832 @@
+% CAPÍTULO 2: MARCO TEÓRICO
+% (Asegúrate de que la orden \chapter{Marco Teórico} esté en tu archivo main.tex)
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 2.1: CONTEXTO SOCIAL Y LEGAL
+%----------------------------------------------------------------------------------------
+\section{Contexto del Problema Social}
+\label{sec:contexto_social}
+
+\subsection{Feminicidio en México}
+\label{subsec:feminicidio}
+El feminicidio es el asesinato de mujeres por razones de género. México enfrenta una crisis en esta materia según el SESNSP. El proyecto usa el marco legal y definiciones de feminicidio para buscar y clasificar información, sin pretender tipificar delitos.
+
+\subsection{Derechos de Niñas, Niños y Adolescentes}
+\label{subsec:derechos_nna}
+La Convención sobre los Derechos del Niño y la LGDNNA establecen el "interés superior de la niñez" como principio rector. Cuando ocurre un feminicidio los NNA en orfandad se convierten en víctimas indirectas con derechos vulnerados: protección, salud, educación y reparación integral.
+
+La invisibilidad estadística de estos NNA es el problema que el proyecto busca mitigar mediante tecnología para su identificación y seguimiento.
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 2.2: FUNDAMENTOS DE RECOLECCIÓN DE DATOS
+%----------------------------------------------------------------------------------------
+\section{Estrategia Híbrida de Recolección de Datos}
+\label{sec:web_scraping}
+
+El Web Scraping es un conjunto de técnicas de software para extraer información de sitios web de forma automatizada. Dado que la información sobre los casos de NNA se encuentra dispersa en múltiples portales de noticias, esta metodología es fundamental para el proyecto (RF-02). Este proyecto implementa una estrategia híbrida de tres fuentes complementarias.
+
+\subsection{Arquitectura de Triple Fuente}
+\label{subsec:triple_fuente}
+
+Para maximizar la cobertura y minimizar la dependencia de una sola fuente, el sistema implementa tres canales paralelos de recolección:
+
+\begin{enumerate}
+    \item \textbf{RSS Feeds (10 medios):} Fuente primaria que recolecta $\sim$70 noticias por ejecución.
+    \item \textbf{Google News API (5 queries):} Fuente secundaria que expande la cobertura con $\sim$150 noticias adicionales mediante búsquedas dirigidas.
+    \item \textbf{Búsqueda Histórica (6 meses):} Fuente retrospectiva que recupera $\sim$250 noticias pasadas para análisis longitudinal.
+\end{enumerate}
+
+Esta arquitectura genera $\sim$470 noticias brutas que, después de deduplicación por URL, resultan en $\sim$280-300 noticias únicas por ejecución completa.
+
+\subsection{Estrategias de Extracción por Fuente}
+\label{subsec:estrategias_extraccion}
+
+No existe una técnica única de scraping; la estrategia debe adaptarse a cada fuente:
+
+\subsubsection{Feeds RSS - Fuente Primaria}
+\label{subsubsec:rss_feeds}
+
+Los feeds RSS (Really Simple Syndication) son archivos XML que los medios de comunicación proveen para distribuir su contenido. Esta es la forma más ética, eficiente y robusta de recolección, ya que el medio da permiso explícito para consumir los datos de forma estructurada.
+
+\textbf{Implementación en \texttt{data\_collector.py}:}
+\begin{itemize}
+    \item \textbf{Parser:} Utiliza la librería \texttt{feedparser} para analizar XML.
+    \item \textbf{Extracción:} Por cada entrada del feed, extrae:
+    \begin{itemize}
+        \item Título (\texttt{entry.title})
+        \item Descripción/resumen (\texttt{entry.description})
+        \item URL única (\texttt{entry.link})
+        \item Fecha de publicación (\texttt{entry.published})
+        \item Fuente del medio
+    \end{itemize}
+    \item \textbf{Fuentes Configuradas (10 medios):}
+    \begin{itemize}
+        \item Especializados en género: CIMAC Noticias, SEM México
+        \item Nacionales principales: La Jornada, Proceso, Aristegui Noticias
+        \item Generales: Animal Político, Sin Embargo, Forbes México
+        \item Regionales: El Sol de México, El Financiero
+    \end{itemize}
+\end{itemize}
+
+\textbf{Ventajas:} Estructura estable, actualización continua, permiso explícito del medio.
+
+\textbf{Limitación:} Volumen limitado ($\sim$70 noticias), solo contenido reciente (últimas 24-48h).
+
+\subsubsection{Google News API - Fuente Secundaria}
+\label{subsubsec:google_news}
+
+Para expandir la cobertura más allá de los RSS configurados, se utiliza la librería \texttt{GoogleNews} que consulta el índice de Google News mediante búsquedas programáticas.
+
+\textbf{Implementación:}
+\begin{itemize}
+    \item \textbf{Configuración:} \texttt{GoogleNews(lang='es', country='MX')} enfoca búsquedas en medios mexicanos.
+    \item \textbf{Queries Dirigidas (5 búsquedas):}
+    \begin{enumerate}
+        \item ``feminicidio niños''
+        \item ``feminicidio menores''
+        \item ``feminicidio huérfanos''
+        \item ``asesinato mujer hijos''
+        \item ``violencia género niños''
+    \end{enumerate}
+    Cada query retorna $\sim$30 resultados, totalizando $\sim$150 noticias.
+    \item \textbf{Rate Limiting:} Implementa delays aleatorios (2-5 segundos) entre peticiones para evitar bloqueos HTTP 429. Incluye checkpoints cada 30 búsquedas con pausas extendidas de 10 segundos.
+\end{itemize}
+
+\textbf{Ventajas:} Mayor volumen, fuentes diversas (incluyendo medios sin RSS).
+
+\textbf{Desafío Técnico:} Google News limita la tasa de peticiones. El sistema implementa throttling adaptativo para cumplir con estos límites sin perder datos.
+
+\subsubsection{Búsqueda Histórica - Fuente Retrospectiva}
+\label{subsubsec:historico}
+
+Implementada en \texttt{historical\_scraper.py}, esta fuente utiliza la misma librería \texttt{GoogleNews} pero con rango temporal extendido.
+
+\textbf{Implementación:}
+\begin{itemize}
+    \item \textbf{Rango Temporal:} Desde (fecha\_actual - 6 meses) hasta fecha\_actual.
+    \item \textbf{Volumen:} 5 queries × 50 resultados = $\sim$250 noticias históricas.
+    \item \textbf{Propósito:} Permite análisis longitudinal de tendencias y construcción de corpus inicial para modelos de PNL.
+\end{itemize}
+
+\textbf{Ventajas:} Crea base de datos histórica sin necesidad de ejecutar el sistema diariamente por meses.
+
+\subsection{Estrategias Adicionales (Planeadas para TT2)}
+\label{subsec:estrategias_futuras}
+
+\subsubsection{Scraping Estático (HTML)}
+Para sitios sin RSS, se utilizará \texttt{BeautifulSoup} para analizar la estructura HTML de la página y extraer el contenido basándose en selectores CSS o etiquetas. Es efectivo en páginas simples estáticas.
+
+\subsubsection{Scraping Dinámico (JavaScript)}
+Muchos sitios modernos cargan su contenido dinámicamente con JavaScript. Para estos, se requerirá automatizar un navegador real con \textit{Selenium} o \textit{Playwright} que ejecute el JavaScript y espere a que aparezca el contenido. Esta técnica es más lenta y compleja, reservada para fuentes que bloquean otros métodos.
+
+\subsection{Consideraciones Éticas y Técnicas}
+\label{subsec:etica_scraping}
+
+Un scraper debe ser "buen ciudadano" de la web. Este proyecto se adhiere a las siguientes prácticas:
+
+\begin{itemize}
+    \item \textbf{Priorización de RSS:} Al usar feeds RSS como fuente primaria, se respeta el canal que los medios diseñaron explícitamente para distribución automatizada.
+    
+    \item \textbf{Rate Limiting Adaptativo:} 
+    \begin{itemize}
+        \item Delays aleatorios: 2-5 segundos entre peticiones
+        \item Checkpoints: Pausa de 10s cada 30 búsquedas
+        \item Evita comportamiento similar a ataques DDoS
+    \end{itemize}
+    
+    \item \textbf{Respeto a \texttt{robots.txt}:} Para TT2, cuando se implemente scraping directo, se verificará el archivo \texttt{robots.txt} antes de cada sitio.
+    
+    \item \textbf{Identificación (User-Agent):} El sistema se identifica en las cabeceras HTTP, como se implementa en \texttt{config.py}, permitiendo a los administradores de sitios identificar y controlar el acceso si lo desean.
+    
+    \item \textbf{Encoding Responsable:} Uso de UTF-8-sig (UTF-8 con BOM) para garantizar la correcta representación de caracteres especiales en español (ñ, é, á), respetando la integridad de la información original.
+    
+    \item \textbf{Deduplicación por URL:} El sistema elimina automáticamente duplicados exactos (misma URL) para no almacenar información redundante y optimizar el procesamiento.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 2.3: FUNDAMENTOS DE PROCESAMIENTO DE LENGUAJE NATURAL
+%----------------------------------------------------------------------------------------
+\section{Procesamiento de Lenguaje Natural (PLN)}
+\label{sec:pln}
+
+El PLN es una rama de la Inteligencia Artificial que permite a las computadoras entender y procesar el lenguaje humano. En este proyecto, es el núcleo para transformar las noticias (texto no estructurado) en datos analizables. El flujo de PNL implementado se basa en los siguientes conceptos:
+
+\subsection{Detección Especializada con Expresiones Regulares}
+\label{subsec:regex_detector}
+
+Antes de aplicar técnicas de vectorización, el sistema implementa un módulo de detección especializado (\texttt{feminicide\_detector.py}) que utiliza expresiones regulares (regex) para identificar casos relevantes.
+
+\subsubsection{Patrones de Feminicidio (40+ regex)}
+\label{subsubsec:patrones_feminicidio}
+
+El detector implementa más de 40 patrones regex para identificar menciones de feminicidio en diferentes contextos:
+
+\begin{itemize}
+    \item \textbf{Términos directos:} \texttt{\textbackslash bfeminicidio[s]?\textbackslash b}, \texttt{\textbackslash bfemicidio[s]?\textbackslash b}
+    \item \textbf{Contextos de asesinato:} \texttt{\textbackslash bmujer\textbackslash s+(asesinada|hallada\textbackslash s+muerta)}
+    \item \textbf{Términos especializados:} \texttt{\textbackslash bviolencia\textbackslash s+feminicida}, \texttt{\textbackslash bcrimen\textbackslash s+de\textbackslash s+género}
+    \item \textbf{Contextos legales:} \texttt{\textbackslash bcarpeta.*feminicidio}, \texttt{\textbackslash bfiscalía.*feminicidio}
+\end{itemize}
+
+\subsubsection{Patrones de NNA (15+ regex)}
+\label{subsubsec:patrones_nna}
+
+Para identificar la mención de víctimas indirectas (objetivo central del TT):
+
+\begin{itemize}
+    \item \texttt{\textbackslash bhijo[s]?\textbackslash b}, \texttt{\textbackslash bhija[s]?\textbackslash b}
+    \item \texttt{\textbackslash bhuérfano[s]?\textbackslash b}, \texttt{\textbackslash borfandad\textbackslash b}
+    \item \texttt{\textbackslash bniño[s]?\textbackslash b}, \texttt{\textbackslash bniña[s]?\textbackslash b}
+    \item \texttt{\textbackslash bmenor[es]?\textbackslash s+de\textbackslash s+edad}
+    \item \texttt{\textbackslash bvíctima[s]?\textbackslash s+indirecta[s]?}
+\end{itemize}
+
+\subsubsection{Patrones de Exclusión (17 regex)}
+\label{subsubsec:patrones_exclusion}
+
+Una contribución clave del sistema es la capacidad de filtrar falsos positivos mediante patrones de exclusión que identifican noticias irrelevantes:
+
+\begin{itemize}
+    \item \textbf{Estadísticas y reportes:} \texttt{\textbackslash bestadística[s]?\textbackslash s+}, \texttt{\textbackslash bconcentra.*cuarta\textbackslash s+parte}
+    \item \textbf{Trata de personas:} \texttt{\textbackslash btrata\textbackslash s+de\textbackslash s+personas} (diferente de feminicidio)
+    \item \textbf{Programas sociales:} \texttt{\textbackslash bprograma\textbackslash s+social}, \texttt{\textbackslash bcampaña}
+    \item \textbf{Eventos:} \texttt{\textbackslash bforo\textbackslash s+}, \texttt{\textbackslash bconferencia\textbackslash s+}
+    \item \textbf{Legislación:} \texttt{\textbackslash bdiputad[oa]s?}, \texttt{\textbackslash bsenador[a]?s?}
+\end{itemize}
+
+\subsubsection{Cálculo de Confianza y Prioridad}
+\label{subsubsec:confianza_prioridad}
+
+El detector combina los patrones para calcular:
+
+\begin{equation}
+\text{Confianza} = \frac{\text{matches\_feminicidio} + \text{matches\_nna}}{\text{total\_patrones}} \times 100
+\end{equation}
+
+Si se detectan patrones de exclusión, la confianza se reduce a 0 automáticamente.
+
+La prioridad se clasifica según la confianza:
+
+\begin{equation}
+\text{Prioridad} = \begin{cases}
+\text{ALTA} & \text{si confianza} \geq 70\% \\
+\text{MEDIA} & \text{si } 40\% \leq \text{confianza} < 70\% \\
+\text{BAJA} & \text{si } 20\% \leq \text{confianza} < 40\% \\
+\text{IRRELEVANTE} & \text{si confianza} < 20\%
+\end{cases}
+\end{equation}
+
+Este enfoque basado en reglas logra una tasa de detección de 44.8\% (126 de 281 noticias), superando el 28.1\% de versiones previas sin patrones de exclusión.
+
+\subsection{Modelo de Espacio Vectorial (VSM) y TF-IDF}
+\label{subsec:tfidf}
+
+Los algoritmos de aprendizaje automático trabajan con números, no con palabras directamente. El Modelo de Espacio Vectorial (VSM) permite convertir documentos de texto en vectores numéricos.
+
+En este proyecto utilizamos TF-IDF (Term Frequency-Inverse Document Frequency), implementado con \texttt{TfidfVectorizer} de scikit-learn. Esta técnica combina dos métricas:
+
+\subsubsection{Frecuencia de Término (TF)}
+\label{subsubsec:tf}
+
+La Frecuencia de Término mide qué tan frecuente es una palabra en un documento específico:
+
+\begin{equation}
+TF(t,d) = \frac{\text{frecuencia del término } t \text{ en documento } d}{\text{total de términos en documento } d}
+\end{equation}
+
+Por ejemplo, si ``huérfanos'' aparece 5 veces en un documento de 100 palabras: $TF = 5/100 = 0.05$
+
+\subsubsection{Frecuencia Inversa de Documento (IDF)}
+\label{subsubsec:idf}
+
+La Frecuencia Inversa de Documento mide qué tan rara o común es una palabra en toda la colección:
+
+\begin{equation}
+IDF(t) = \log\left(\frac{\text{total de documentos}}{\text{documentos que contienen } t}\right)
+\end{equation}
+
+Palabras muy comunes como ``el'' o ``la'' tienen IDF bajo (aparecen en casi todos los documentos). Palabras significativas como ``huérfano'' tienen IDF alto (aparecen en pocos documentos).
+
+\subsubsection{Cálculo TF-IDF}
+\label{subsubsec:calculo_tfidf}
+
+La combinación final:
+
+\begin{equation}
+TF\text{-}IDF(t,d) = TF(t,d) \times IDF(t)
+\end{equation}
+
+Esto genera una matriz dispersa donde:
+\begin{itemize}
+    \item Cada fila = una noticia (126 documentos después de filtrado)
+    \item Cada columna = una palabra o bigrama (3000 features)
+    \item Cada celda = importancia TF-IDF del término en ese documento
+\end{itemize}
+
+\subsubsection{Configuración Implementada}
+\label{subsubsec:config_tfidf}
+
+\begin{verbatim}
+TfidfVectorizer(
+    max_features=3000,      # Top 3000 términos más importantes
+    min_df=1,               # Mínimo 1 documento
+    max_df=0.8,             # Máximo 80% de documentos
+    ngram_range=(1, 2),     # Unigramas + bigramas
+    encoding='utf-8-sig'    # Soporte caracteres especiales
+)
+\end{verbatim}
+
+\textbf{Justificación de Bigramas (n=2):} Permite capturar expresiones específicas del dominio:
+\begin{itemize}
+    \item ``víctima indirecta'' (2 palabras juntas, significado específico)
+    \item ``madre asesinada'' (contexto más claro que palabras separadas)
+    \item ``niños huérfanos'' (concepto completo)
+\end{itemize}
+
+Esta matriz TF-IDF es la representación numérica que alimenta los algoritmos de análisis subsecuentes.
+
+\subsection{Modelado de Tópicos con LDA}
+\label{subsec:lda}
+
+Para descubrir los temas abstractos presentes en el corpus utilizamos Latent Dirichlet Allocation (LDA), un modelo generativo probabilístico.
+
+\subsubsection{Fundamento Teórico}
+\label{subsubsec:fundamento_lda}
+
+LDA asume dos hipótesis:
+\begin{enumerate}
+    \item Cada documento es una mezcla de varios tópicos
+    \item Cada tópico es una distribución de probabilidades sobre palabras
+\end{enumerate}
+
+Matemáticamente, LDA modela la probabilidad de una palabra $w$ en un documento $d$ como:
+
+\begin{equation}
+P(w|d) = \sum_{t=1}^{T} P(w|t) \cdot P(t|d)
+\end{equation}
+
+Donde:
+\begin{itemize}
+    \item $T$ = número de tópicos (8 en nuestra implementación)
+    \item $P(w|t)$ = probabilidad de la palabra $w$ dado el tópico $t$
+    \item $P(t|d)$ = probabilidad del tópico $t$ en el documento $d$
+\end{itemize}
+
+\subsubsection{Configuración Implementada}
+\label{subsubsec:config_lda}
+
+\begin{verbatim}
+LatentDirichletAllocation(
+    n_components=8,         # 8 tópicos
+    random_state=42,        # Reproducibilidad
+    max_iter=10             # 10 iteraciones
+)
+\end{verbatim}
+
+\subsubsection{Interpretación de Resultados}
+\label{subsubsec:interpretacion_lda}
+
+El modelo genera dos tipos de distribuciones:
+
+\textbf{1. Distribución de palabras por tópico:}
+
+Ejemplo del Tópico 4 (Huérfanos):
+\begin{itemize}
+    \item ``huérfanos'': 35\% (palabra más representativa)
+    \item ``víctimas'': 22\%
+    \item ``niños'': 18\%
+    \item ``madres'': 15\%
+    \item ``asesinadas'': 10\%
+\end{itemize}
+
+\textbf{2. Distribución de tópicos por documento:}
+
+Una noticia puede contener múltiples tópicos:
+\begin{itemize}
+    \item Tópico 4 (Huérfanos): 45\% $\leftarrow$ Tema principal
+    \item Tópico 0 (Feminicidios generales): 30\%
+    \item Tópico 7 (Justicia): 25\%
+\end{itemize}
+
+Esta asignación múltiple refleja la realidad: las noticias son multi-temáticas.
+
+\subsubsection{Diferencia con Clustering}
+\label{subsubsec:topicos_vs_clustering}
+
+Es importante distinguir:
+\begin{itemize}
+    \item \textbf{Tópicos (LDA):} Responde ``¿DE QUÉ hablan las noticias?'' - Análisis temático conceptual
+    \item \textbf{Clustering (DBSCAN):} Responde ``¿QUÉ noticias son similares entre sí?'' - Agrupación de documentos
+\end{itemize}
+
+Una noticia puede tener múltiples tópicos, pero pertenece a un solo cluster (o es outlier).
+
+\subsection{Agrupación de Documentos con DBSCAN}
+\label{subsec:dbscan}
+
+Para agrupar documentos similares (mismo caso reportado por múltiples medios), el sistema utiliza DBSCAN (Density-Based Spatial Clustering of Applications with Noise).
+
+\subsubsection{Fundamento Teórico}
+\label{subsubsec:fundamento_dbscan}
+
+A diferencia de K-Means (que fuerza una cantidad predefinida de clusters), DBSCAN:
+\begin{itemize}
+    \item Encuentra clusters basándose en densidad de puntos
+    \item No requiere especificar número de clusters a priori
+    \item Permite identificar outliers (puntos aislados)
+\end{itemize}
+
+\textbf{Parámetros principales:}
+\begin{itemize}
+    \item \textbf{eps ($\epsilon$):} Radio de vecindad. En nuestro caso, eps=0.8 con métrica coseno significa que dos documentos deben tener $\geq$20\% de similitud para estar en el mismo cluster.
+    \item \textbf{min\_samples:} Mínimo de puntos para formar un cluster denso. Usamos min\_samples=2.
+\end{itemize}
+
+\subsubsection{Algoritmo}
+\label{subsubsec:algoritmo_dbscan}
+
+DBSCAN clasifica cada punto en tres categorías:
+
+\begin{enumerate}
+    \item \textbf{Core Point (Punto Núcleo):} Tiene $\geq$ min\_samples vecinos dentro de eps.
+    \item \textbf{Border Point (Punto Frontera):} Está dentro de eps de un core point, pero no tiene suficientes vecinos propios.
+    \item \textbf{Noise/Outlier (Ruido):} No cumple ninguna condición anterior. Marcado con cluster = -1.
+\end{enumerate}
+
+\subsubsection{Justificación sobre K-Means}
+\label{subsubsec:mt_justificacion_dbscan}
+
+La decisión de usar DBSCAN sobre K-Means es crítica para este dominio:
+
+\textbf{Problema con K-Means:}
+\begin{itemize}
+    \item K-Means fuerza la creación de $k$ clusters predefinidos
+    \item En feminicidios, cada caso es único (diferente ubicación, contexto, víctimas)
+    \item Forzar agrupación genera clusters heterogéneos sin coherencia real
+    \item Resultado: Silhouette Score = 0.23 (malo)
+\end{itemize}
+
+\textbf{Ventaja de DBSCAN:}
+\begin{itemize}
+    \item Permite que casos únicos sean outliers (cluster = -1)
+    \item Solo agrupa casos genuinamente similares (mismo evento, diferentes fuentes)
+    \item Resultado: Silhouette Score = 0.48 (bueno) - mejora de 109\%
+\end{itemize}
+
+\subsubsection{Configuración Implementada}
+\label{subsubsec:config_dbscan}
+
+\begin{verbatim}
+DBSCAN(
+    eps=0.8,              # Distancia coseno máxima
+    min_samples=2,        # Mínimo 2 documentos
+    metric='cosine'       # Apropiado para texto
+)
+\end{verbatim}
+
+\subsubsection{Interpretación de Resultados}
+\label{subsubsec:interpretacion_dbscan}
+
+Distribución típica:
+\begin{itemize}
+    \item \textbf{6 clusters pequeños} (2-6 noticias cada uno): Representan el mismo caso reportado por múltiples medios
+    \item \textbf{214 outliers} (81\% del corpus): Casos únicos de feminicidio
+\end{itemize}
+
+\textbf{Nota Importante:} Un 81\% de outliers NO es un error. En el contexto de feminicidios, esto es \textbf{esperado y correcto}. Cada feminicidio es un evento único con características particulares. Los clusters pequeños indican duplicados o alta cobertura mediática de casos específicos.
+
+\subsection{Similitud de Vectores: Detección de Duplicados}
+\label{subsec:similitud_coseno}
+
+Para identificar noticias duplicadas (mismo caso de diferentes fuentes), el sistema calcula la similitud entre todos los pares de documentos.
+
+\subsubsection{Similitud Coseno}
+\label{subsubsec:similitud_coseno}
+
+La Similitud Coseno mide el ángulo entre dos vectores en el espacio TF-IDF:
+
+\begin{equation}
+\text{similitud}(\mathbf{v}_i, \mathbf{v}_j) = \frac{\mathbf{v}_i \cdot \mathbf{v}_j}{\|\mathbf{v}_i\| \|\mathbf{v}_j\|} = \cos(\theta)
+\end{equation}
+
+Donde:
+\begin{itemize}
+    \item $\mathbf{v}_i \cdot \mathbf{v}_j$ = producto punto de los vectores
+    \item $\|\mathbf{v}\|$ = norma (magnitud) del vector
+    \item $\theta$ = ángulo entre vectores
+\end{itemize}
+
+\textbf{Interpretación:}
+\begin{itemize}
+    \item Similitud $\approx$ 1: Vectores casi idénticos (mismo contenido)
+    \item Similitud $\approx$ 0.75: Alta similitud (probable duplicado)
+    \item Similitud $\approx$ 0: Vectores ortogonales (contenido totalmente diferente)
+\end{itemize}
+
+\subsubsection{Threshold de Duplicación}
+\label{subsubsec:threshold_duplicados}
+
+El sistema marca como duplicadas las noticias con similitud $\geq$ 0.75 (75\%).
+
+\textbf{Calibración empírica:}
+\begin{itemize}
+    \item \textbf{$<$70\%:} Genera falsos positivos (noticias diferentes marcadas como duplicadas)
+    \item \textbf{75\%:} Balance óptimo - detecta mismo caso con redacción diferente
+    \item \textbf{$>$80\%:} Demasiado estricto - pierde duplicados legítimos
+\end{itemize}
+
+\subsubsection{Resultados}
+\label{subsubsec:mt_resultados_duplicados}
+
+En un corpus típico de 126 noticias NNA:
+\begin{itemize}
+    \item \textbf{6 duplicados} detectados en 2 grupos
+    \item \textbf{120 noticias únicas} (95.2\%)
+    \item \textbf{Tasa de duplicación:} 4.8\%
+\end{itemize}
+
+Esta baja tasa valida que las fuentes RSS y Google News tienen poca superposición, justificando la estrategia de múltiples fuentes.
+
+\subsection{Búsqueda Mejorada por Sinónimos}
+\label{subsec:sinonimos}
+
+Una limitación de los modelos TF-IDF es que tratan ``feminicidio'' y ``asesinato de mujer'' como términos completamente diferentes. Para resolver esto, se implementa un tesauro especializado.
+
+\subsubsection{Diccionario de Sinónimos Especializado}
+\label{subsubsec:diccionario_sinonimos}
+
+El módulo \texttt{synonym\_dictionary.py} contiene 143 términos curados manualmente para el dominio específico, basados en vocabularios oficiales:
+
+\begin{itemize}
+    \item \textbf{UN Women:} Glosario de Género y Violencia
+    \item \textbf{CEPAL:} Terminología Especializada en Violencia
+    \item \textbf{INMUJERES:} Vocabulario Institucional
+\end{itemize}
+
+\textbf{Ejemplos de expansión:}
+\begin{itemize}
+    \item ``NNA'' $\rightarrow$ [``niño'', ``niña'', ``menor'', ``adolescente'', ``infante'']
+    \item ``huérfano'' $\rightarrow$ [``orfandad'', ``víctima indirecta'', ``hijo de víctima'']
+    \item ``feminicidio'' $\rightarrow$ [``femicidio'', ``asesinato de mujer'', ``violencia feminicida'']
+\end{itemize}
+
+\subsubsection{Expansión de Queries}
+\label{subsubsec:expansion_queries}
+
+Cuando un usuario busca un término, el sistema:
+\begin{enumerate}
+    \item Consulta el diccionario de sinónimos
+    \item Expande el término a todos sus sinónimos
+    \item Busca documentos que contengan cualquiera de los términos expandidos
+\end{enumerate}
+
+\textbf{Ejemplo:}
+\begin{verbatim}
+Búsqueda original: "huérfanos"
+Expansión automática: ["huérfanos", "orfandad", 
+                       "víctimas indirectas", 
+                       "hijos de víctima"]
+Resultado: Mayor exhaustividad (Recall) de búsqueda
+\end{verbatim}
+
+Esto mejora significativamente la capacidad del sistema para encontrar casos relevantes que usen terminología variada.
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 2.4: FUNDAMENTOS DE ARQUITECTURA DE SOFTWARE
+%----------------------------------------------------------------------------------------
+\section{Arquitectura de Software para Sistemas de Datos}
+\label{sec:mt_arquitectura}
+
+El sistema no es solo un script, sino una aplicación web completa con procesamiento automático en background. La elección de la arquitectura define su escalabilidad, mantenibilidad y capacidad de deployment en producción.
+
+\subsection{Arquitectura de Microservicios con Docker}
+\label{subsec:microservicios}
+
+A diferencia de un enfoque monolítico (donde todo el código reside en una sola aplicación), este proyecto adopta una arquitectura de \textbf{microservicios} implementada con contenedores Docker.
+
+\subsubsection{Separación de Servicios}
+\label{subsubsec:separacion_servicios}
+
+La lógica se divide en servicios independientes y desacoplados que se comunican entre sí:
+
+\begin{enumerate}
+    \item \textbf{Servicio de Análisis (\texttt{nna-analyzer}):}
+    \begin{itemize}
+        \item Worker dedicado exclusivamente a ejecutar el flujo de recolección y análisis
+        \item Ejecuta \texttt{demo\_docker.py} cada 24 horas (configurable)
+        \item Procesa: Recolección (3 fuentes) $\rightarrow$ Detección $\rightarrow$ Vectorización $\rightarrow$ LDA $\rightarrow$ DBSCAN $\rightarrow$ Duplicados
+        \item Persiste resultados en archivos CSV/JSON en volumen compartido
+        \item Puede fallar y reiniciarse sin afectar la webapp
+    \end{itemize}
+    
+    \item \textbf{Servicio Web (\texttt{nna-webapp}):}
+    \begin{itemize}
+        \item API REST + Dashboard web (Flask)
+        \item Sirve datos ya procesados en puerto 5000
+        \item Lee archivos CSV/JSON del volumen compartido
+        \item Permanece disponible 24/7 independientemente del analyzer
+        \item Provee 6 endpoints REST para consulta de datos
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Ventajas de la Arquitectura de Microservicios}
+\label{subsubsec:ventajas_microservicios}
+
+\begin{itemize}
+    \item \textbf{Separación de Responsabilidades:} El análisis (CPU-intensivo) no bloquea la interfaz web.
+    \item \textbf{Resiliencia:} Si el analyzer falla, la webapp sigue funcionando con datos previos.
+    \item \textbf{Escalabilidad Independiente:} En TT2, se podrá escalar el analyzer (más instancias) sin escalar la webapp.
+    \item \textbf{Mantenibilidad:} Cada servicio puede actualizarse independientemente.
+    \item \textbf{Despliegue Sencillo:} Un solo comando (\texttt{docker-compose up}) levanta toda la arquitectura.
+\end{itemize}
+
+\subsection{Contenerización: Docker}
+\label{subsec:docker}
+
+Para gestionar la complejidad de los microservicios y asegurar la portabilidad del proyecto, se utiliza \textbf{Docker}.
+
+\subsubsection{Conceptos Fundamentales}
+\label{subsubsec:conceptos_docker}
+
+\begin{description}
+    \item[Imagen Docker:] Plantilla inmutable que contiene:
+    \begin{itemize}
+        \item Sistema operativo base (Python 3.11-slim en nuestro caso)
+        \item Código fuente del proyecto
+        \item Dependencias instaladas (\texttt{requirements.txt})
+        \item Configuración del entorno
+    \end{itemize}
+    
+    \item[Contenedor:] Instancia en ejecución de una imagen. Es un proceso aislado que ejecuta la aplicación con su propio sistema de archivos, red y recursos.
+    
+    \item[Volumen:] Directorio compartido entre el host y el contenedor (o entre contenedores) para persistir datos. En nuestro caso, \texttt{./data} y \texttt{./logs} son volúmenes compartidos.
+    
+    \item[Red Docker:] Red virtual que permite la comunicación entre contenedores. Nuestros servicios se comunican a través de \texttt{nna-network}.
+\end{description}
+
+\subsubsection{Dockerfile: Definición de Imagen}
+\label{subsubsec:dockerfile}
+
+El archivo \texttt{Dockerfile} define cómo construir la imagen:
+
+\begin{verbatim}
+FROM python:3.11-slim          # Imagen base ligera
+WORKDIR /app                   # Directorio de trabajo
+COPY requirements.txt .        # Copiar dependencias
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .                       # Copiar código fuente
+CMD ["python", "app_docker.py"] # Comando por defecto
+\end{verbatim}
+
+Esta estructura garantiza que el entorno sea idéntico en:
+\begin{itemize}
+    \item Desarrollo local (laptop donde desarrollamos)
+    \item Pruebas (servidor de integración continua)
+    \item Producción (servidor cloud AWS/Azure)
+\end{itemize}
+
+Resolviendo el clásico problema de "en mi máquina funciona".
+
+\subsubsection{Docker Compose: Orquestación Multi-Contenedor}
+\label{subsubsec:docker_compose}
+
+\texttt{docker-compose.yml} define la orquestación de múltiples servicios:
+
+\begin{verbatim}
+version: '3.8'
+services:
+  nna-analyzer:
+    build: .
+    command: python demo_docker.py
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - nna-network
+    restart: unless-stopped
+    
+  nna-webapp:
+    build: .
+    command: python app_docker.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - nna-network
+    depends_on:
+      - nna-analyzer
+    restart: unless-stopped
+
+networks:
+  nna-network:
+    driver: bridge
+\end{verbatim}
+
+\textbf{Características clave:}
+\begin{itemize}
+    \item \textbf{volumes:} Persisten datos entre reinicios de contenedores
+    \item \textbf{networks:} Aíslan servicios del host pero permiten comunicación interna
+    \item \textbf{restart: unless-stopped:} Reinicia automáticamente en caso de fallo
+    \item \textbf{depends\_on:} Define dependencias de inicio
+\end{itemize}
+
+\subsubsection{Ventajas de Docker para este Proyecto}
+\label{subsubsec:ventajas_docker}
+
+\begin{enumerate}
+    \item \textbf{Portabilidad:} El proyecto funciona idénticamente en Windows, Linux y macOS.
+    \item \textbf{Aislamiento:} Las dependencias del proyecto no interfieren con el sistema host.
+    \item \textbf{Reproducibilidad:} Cualquier persona puede ejecutar el sistema con un solo comando.
+    \item \textbf{Mantenibilidad:} Actualizaciones de dependencias controladas y versionadas.
+\end{enumerate}
+
+\subsection{Framework Web: Flask}
+\label{subsec:flask}
+
+Para implementar el servicio web (\texttt{nna-webapp}), se seleccionó \textbf{Flask}, un micro-framework de Python conocido por su ligereza y flexibilidad.
+
+\subsubsection{Arquitectura REST (Representational State Transfer)}
+\label{subsubsec:rest}
+
+Flask permite implementar APIs REST, el estándar para comunicación entre servicios web. Una API REST se basa en:
+
+\begin{itemize}
+    \item \textbf{Recursos:} Entidades accesibles vía URLs (ej. \texttt{/api/noticias})
+    \item \textbf{Métodos HTTP:} GET (leer), POST (crear), PUT (actualizar), DELETE (eliminar)
+    \item \textbf{Representación JSON:} Datos intercambiados en formato JSON
+    \item \textbf{Stateless:} Cada petición es independiente, sin sesión en servidor
+\end{itemize}
+
+\subsubsection{Endpoints Implementados}
+\label{subsubsec:endpoints}
+
+El sistema expone 6 endpoints REST:
+
+\begin{table}[h]
+\centering
+\caption{API REST del Sistema}
+\label{tab:api_rest}
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Endpoint} & \textbf{Método} & \textbf{Descripción} \\
+\hline
+\texttt{/api/stats} & GET & Estadísticas generales (total noticias, casos NNA, clusters) \\
+\hline
+\texttt{/api/noticias} & GET & Lista paginada de noticias con filtros \\
+\hline
+\texttt{/api/search?q=texto} & GET & Búsqueda en 3 campos (título, contenido, fuente) \\
+\hline
+\texttt{/api/analyze} & POST & Ejecuta el flujo de análisis completo \\
+\hline
+\texttt{/api/export/csv} & GET & Descarga datos en formato CSV \\
+\hline
+\texttt{/api/health} & GET & Estado del sistema (health check) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Ventajas de Flask}
+\label{subsubsec:ventajas_flask}
+
+\begin{itemize}
+    \item \textbf{Ligero:} Mínima sobrecarga, ideal para APIs simples
+    \item \textbf{Flexible:} No impone estructura rígida, adaptable a necesidades
+    \item \textbf{Pythonic:} Integración natural con librerías de PNL (pandas, scikit-learn)
+    \item \textbf{Documentación:} Amplia comunidad y recursos de aprendizaje
+\end{itemize}
+
+\subsection{Interfaz de Usuario: Dashboard Web}
+\label{subsec:mt_dashboard}
+
+El sistema incluye un dashboard web interactivo implementado con Bootstrap 5 para visualización de resultados.
+
+\subsubsection{Componentes del Dashboard}
+\label{subsubsec:componentes_dashboard}
+
+\begin{enumerate}
+    \item \textbf{Panel de Estadísticas:}
+    \begin{itemize}
+        \item Total de noticias recolectadas
+        \item Casos con mención de NNA
+        \item Distribución por prioridad (ALTA/MEDIA/BAJA/IRRELEVANTE)
+    \end{itemize}
+    
+    \item \textbf{Búsqueda Inteligente:}
+    \begin{itemize}
+        \item Búsqueda en 3 campos (título, contenido, fuente)
+        \item Expansión automática de sinónimos
+    \end{itemize}
+    
+    \item \textbf{Análisis ML (desplegable):}
+    \begin{itemize}
+        \item Visualización de 6 clusters de DBSCAN
+        \item 8 tópicos de LDA con palabras clave
+        \item Ocultable bajo botón ``Detalles del Análisis''
+    \end{itemize}
+    
+    \item \textbf{Tabla de Noticias:}
+    \begin{itemize}
+        \item Paginación automática (20 noticias/página)
+        \item Filtros por prioridad
+        \item Exportación CSV
+        \item Indicadores visuales de prioridad (badges de colores)
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Diseño Responsivo}
+\label{subsubsec:diseno_responsivo}
+
+Bootstrap 5 garantiza que el dashboard sea accesible desde:
+\begin{itemize}
+    \item Escritorio (resolución completa)
+    \item Tablet (layout adaptativo)
+    \item Móvil (columnas apiladas)
+\end{itemize}
+
+Esto permite que organizaciones de la sociedad civil accedan al sistema desde cualquier dispositivo.
+
+\subsection{Persistencia de Datos}
+\label{subsec:persistencia}
+
+\subsubsection{Almacenamiento Actual: CSV + JSON}
+\label{subsubsec:csv_json}
+
+Para TT1, los datos se persisten en archivos planos:
+
+\begin{itemize}
+    \item \textbf{noticias.csv:} Noticias con metadata (281 registros típicos)
+    \item \textbf{noticias\_analyzed.csv:} Noticias con análisis ML (126 NNA)
+    \item \textbf{clusters\_info.csv:} Información de clusters DBSCAN
+    \item \textbf{synonym\_dictionary.json:} Tesauro de 143 términos
+    \item \textbf{metadata.json:} Metadatos del análisis (fecha, parámetros, métricas)
+\end{itemize}
+
+\textbf{Ventajas:}
+\begin{itemize}
+    \item Simplicidad (sin dependencia de DBMS)
+    \item Portabilidad (archivos pueden transferirse fácilmente)
+\end{itemize}
+
+\textbf{Limitaciones:}
+\begin{itemize}
+    \item No escalable a $>$10,000 registros
+    \item Sin índices (búsquedas lentas en corpus grande)
+    \item Sin transacciones (riesgo de corrupción en escritura concurrente)
+\end{itemize}
+
+\subsubsection{Migración Propuesta para TT2: PostgreSQL}
+\label{subsubsec:postgresql_tt2}
+
+Para TT2, con corpus acumulado de $>$2000 noticias, se propone migrar a PostgreSQL:
+
+\begin{itemize}
+    \item \textbf{Índices B-tree:} Búsquedas rápidas por fecha, prioridad, fuente
+    \item \textbf{Full-Text Search:} Búsqueda nativa en texto con ranking de relevancia
+    \item \textbf{JSON columns:} Almacenar metadata de tópicos y clusters
+    \item \textbf{Transacciones ACID:} Garantizar integridad de datos
+    \item \textbf{Replicación:} Preparar para deployment distribuido
+\end{itemize}
+
+Esta arquitectura de datos permitirá escalar el sistema a nivel producción manteniendo tiempos de respuesta $<$100ms en consultas complejas.

@@ -1,0 +1,43 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces API REST del Sistema}}{28}{table.2.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Comparación de Técnicas de Vectorización}}{35}{table.3.1}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Comparación de Técnicas de Modelado de Tópicos}}{36}{table.3.2}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Comparación de Algoritmos de Clustering}}{38}{table.3.3}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Justificación de Técnicas Implementadas}}{42}{table.3.4}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Roadmap Técnico TT1 $\rightarrow $ TT2}}{43}{table.3.5}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Fuentes RSS del Prototipo 1}}{45}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Comparativa K-Means vs. DBSCAN en Prototipo 2}}{52}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Resultados del Prototipo 2 (Ejecución del 18 de Noviembre 2025)}}{53}{table.4.3}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Evolución de métricas clave entre prototipos}}{54}{table.4.4}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Validación funcional del Prototipo 2}}{55}{table.4.5}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces Hipótesis técnicas validadas en el TT1}}{57}{table.4.6}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Plan de evolución por componente}}{59}{table.4.7}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Requerimientos funcionales y su implementación evolutiva}}{61}{table.5.1}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Evolución del stack tecnológico entre prototipos}}{64}{table.5.2}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Comparativa de recolección P1 vs. P2}}{71}{table.5.3}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces Mejora en detección P1 → P2}}{74}{table.5.4}%
+\contentsline {table}{\numberline {5.5}{\ignorespaces Análisis de clusters K-Means en P1}}{77}{table.5.5}%
+\contentsline {table}{\numberline {5.6}{\ignorespaces Comparativa cuantitativa K-Means (P1) vs. DBSCAN (P2)}}{78}{table.5.6}%
+\contentsline {table}{\numberline {5.7}{\ignorespaces API REST del Prototipo 2}}{81}{table.5.7}%
+\contentsline {table}{\numberline {5.8}{\ignorespaces Validación multi-plataforma del P2}}{85}{table.5.8}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Fuentes de datos del Prototipo 2}}{87}{table.6.1}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Configuración de hiperparámetros del Prototipo 2}}{88}{table.6.2}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces Desglose de noticias recolectadas por fuente}}{88}{table.6.3}%
+\contentsline {table}{\numberline {6.4}{\ignorespaces Muestra de datos recolectados en \texttt {noticias\_raw.csv} (primeras 3 filas)}}{89}{table.6.4}%
+\contentsline {table}{\numberline {6.5}{\ignorespaces Resultados del FeminicideDetector (Prototipo 2)}}{90}{table.6.5}%
+\contentsline {table}{\numberline {6.6}{\ignorespaces Distribución de noticias por tópico LDA}}{92}{table.6.6}%
+\contentsline {table}{\numberline {6.7}{\ignorespaces Composición de clusters DBSCAN}}{92}{table.6.7}%
+\contentsline {table}{\numberline {6.8}{\ignorespaces Comparación de métricas de clustering (P1 vs P2)}}{93}{table.6.8}%
+\contentsline {table}{\numberline {6.9}{\ignorespaces Validación de endpoints de la API}}{94}{table.6.9}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Distribución de limitaciones por prototipo (TT2)}}{108}{table.7.1}%
+\contentsline {table}{\numberline {7.2}{\ignorespaces Métricas de comparación TT1 vs TT2}}{108}{table.7.2}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces Distribución de objetivos por prototipo (TT2)}}{112}{table.8.1}%
+\addvspace {10\p@ }

@@ -1,0 +1,113 @@
+% !TeX root = proyecto.tex
+
+%========================================================================================
+% CAPÍTULO 3: MARCO TEÓRICO
+%========================================================================================
+
+\chapter{Marco Teórico}
+\label{cap:marcoteorico}
+
+Para comprender a cabalidad la arquitectura neuro-simbólica y los algoritmos implementados en el \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA}, es imperativo establecer el fundamento matemático y conceptual subyacente. Este capítulo detalla las tecnologías habilitadoras que sustentan el flujo de trabajo del sistema, abarcando desde la adquisición automatizada de datos hasta el análisis semántico de última generación.
+
+\section{Procesamiento de Lenguaje Natural (PLN) y Modelos de Lenguaje}
+\label{sec:mt_pln}
+
+El Procesamiento de Lenguaje Natural (PLN) ha experimentado un cambio de paradigma radical en los últimos años, transitando de enfoques estadísticos clásicos (como TF-IDF y modelos ocultos de Markov) hacia arquitecturas profundas basadas en redes neuronales.
+
+\subsection{Evolución hacia la Arquitectura Transformer y Mecanismos de Atención}
+El punto de inflexión contemporáneo en la literatura de PLN es la introducción de la arquitectura \textit{Transformer} \cite{vaswani2017attention}. A diferencia de las Redes Neuronales Recurrentes (RNN) y las redes Long Short-Term Memory (LSTM), que procesan las secuencias de texto de manera estrictamente lineal y sufren de desvanecimiento de gradiente en secuencias largas, el Transformer prescinde de la recurrencia. En su lugar, emplea un mecanismo denominado Auto-Atención (\textit{Self-Attention}).
+
+El mecanismo de atención permite al modelo ponderar la relevancia de todas las palabras en una oración simultáneamente al procesar una palabra específica, independientemente de la distancia posicional entre ellas. Matemáticamente, la atención se calcula mediante la función \textit{Scaled Dot-Product Attention}:
+\begin{equation}
+    \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+\end{equation}
+Donde $Q$ (Queries), $K$ (Keys) y $V$ (Values) son proyecciones lineales de los estados de entrada, y $d_k$ es la dimensión de las claves, utilizada como factor de escalado para evitar regiones de gradientes extremadamente pequeños en la función \textit{softmax} \cite{vaswani2017attention}.
+
+\subsection{BETO: BERT Preentrenado en Español}
+Basado en la arquitectura Transformer, el modelo BERT (\textit{Bidirectional Encoder Representations from Transformers}) revolucionó la inferencia contextual al entrenar representaciones profundas de manera bidireccional conjunta \cite{devlin2018bert}. Para mitigar la barrera del idioma en el análisis de fuentes periodísticas mexicanas, este proyecto adopta BETO \cite{canete2020spanish}. 
+
+BETO es un modelo BERT base (con 12 capas ocultas, 12 cabezales de atención y 110 millones de parámetros) entrenado exclusivamente sobre un corpus masivo en español, derivado de Wikipedia y el proyecto OPUS. La principal ventaja de BETO radica en su capacidad para codificar texto produciendo \textit{embeddings} (vectores de 768 dimensiones) que capturan la semántica contextual dependiente; es decir, una misma palabra posee un vector distinto dependiendo de las palabras que la rodean.
+
+\subsection{Zero-Shot Classification vs. Fine-Tuning}
+Convencionalmente, adaptar un modelo preentrenado a una tarea específica requiere \textit{Fine-Tuning}, un proceso computacionalmente intensivo donde se actualizan los pesos del modelo utilizando un conjunto de datos etiquetado específico del dominio. Sin embargo, dada la escasez de corpus etiquetados en el dominio de la violencia feminicida, este proyecto emplea \textit{Zero-Shot Classification} \cite{yin2019benchmarking}.
+
+La clasificación \textit{Zero-Shot} permite categorizar texto en clases arbitrarias sin entrenamiento explícito previo en dichas clases. Esto se logra reformulando la tarea de clasificación como un problema de Inferencia de Lenguaje Natural (NLI). El modelo evalúa una premisa (el texto a analizar) contra una hipótesis construida dinámicamente (ej. ``Este texto trata sobre NNA en orfandad''). Si el modelo infiere que la premisa conlleva lógicamente a la hipótesis (\textit{entailment}), la secuencia se clasifica positivamente sin necesidad de un entrenamiento a medida, dotando al sistema de una alta flexibilidad.
+
+\section{Clustering y Agrupación Semántica}
+\label{sec:mt_clustering}
+
+Para consolidar el vasto volumen de noticias en eventos fácticos discretos y descubrir tópicos emergentes, el sistema emplea BERTopic \cite{grootendorst2022bertopic}, un algoritmo de modelado de tópicos secuencial altamente modular. 
+
+A nivel conceptual y matemático, la arquitectura de BERTopic se desglosa en las siguientes etapas fundamentales:
+
+\subsection{Reducción de Dimensionalidad con UMAP}
+Los \textit{embeddings} generados por modelos Transformer (como BETO) residen en espacios de altísima dimensión (768 ejes). Aplicar algoritmos de \textit{clustering} directamente sobre estos espacios resulta ineficaz debido a la ``Maldición de la Dimensionalidad'', donde la métrica de distancia pierde significancia. BERTopic soluciona esto utilizando UMAP (\textit{Uniform Manifold Approximation and Projection}) \cite{mcinnes2018umap}.
+
+UMAP se basa en la geometría Riemanniana y la topología algebraica. Construye una aproximación de variedad (\textit{manifold}) topológica difusa de los datos en alta dimensión y, posteriormente, optimiza un espacio de baja dimensión (típicamente 5 dimensiones) para mantener la misma estructura topológica. La función de costo minimizada es la entropía cruzada difusa entre las representaciones topológicas de alta y baja dimensión, garantizando la conservación de estructuras globales y vecindarios locales de manera superior a algoritmos tradicionales como PCA o t-SNE.
+
+\subsection{Clustering Basado en Densidad con HDBSCAN}
+Una vez reducido el espacio, se requiere agrupar los documentos. Dado que el volumen de noticias por evento periodístico es altamente asimétrico y ruidoso, algoritmos como K-Means (que asumen clústeres globulares y requieren especificar la cantidad de centroides) fallan. Por ello, se implementa HDBSCAN (\textit{Hierarchical Density-Based Spatial Clustering of Applications with Noise}) \cite{campello2013density}.
+
+HDBSCAN transforma el espacio según la distancia de alcanzabilidad mutua (\textit{mutual reachability distance}) para separar regiones escasas, construyendo un árbol de expansión mínima (\textit{Minimum Spanning Tree}). A partir de este, extrae una jerarquía de clústeres y selecciona la partición óptima basándose en la estabilidad topológica de los mismos. Los documentos que no caen en regiones densas son etiquetados heurísticamente como ruido, filtrando noticias irrelevantes.
+
+\subsection{Representación de Tópicos con c-TF-IDF}
+Una vez agrupados los documentos, BERTopic extrae la representación del tópico utilizando un TF-IDF modificado basado en clases (c-TF-IDF). En lugar de evaluar la importancia de una palabra por documento, evalúa su importancia por clúster:
+\begin{equation}
+    W_{t, c} = \text{tf}_{t, c} \times \log\left(1 + \frac{A}{\text{tf}_t}\right)
+\end{equation}
+Donde $\text{tf}_{t, c}$ es la frecuencia del término $t$ concatenado en todos los documentos del clúster $c$, $A$ es el promedio de palabras por clúster, y $\text{tf}_t$ es la frecuencia del término en todos los clústeres. Esto asegura la extracción de palabras clave exclusivas y representativas para cada tópico generado.
+
+\section{Técnicas de Deduplicación Cross-Site}
+\label{sec:mt_deduplicacion}
+
+La dispersión de información conlleva a la redundancia mediática; diferentes agencias periodísticas reportan el mismo evento fáctico. El sistema implementa una cascada de deduplicación para mitigar este ruido, fundamentada en diversas métricas.
+
+\subsection{Hashing Exacto (MD5)}
+La primera barrera es la detección de copias bit a bit. Se emplea el algoritmo de digestión de mensajes MD5 (\textit{Message-Digest Algorithm 5}) \cite{rivest1992md5}, una función criptográfica de hash unidireccional que toma un texto de longitud arbitraria y retorna un valor hash de 128 bits. Cualquier alteración mínima en la cadena de texto de entrada provocará un efecto avalancha, alterando el hash resultante por completo. Se utiliza para eliminar noticias insertadas en base de datos de manera duplicada de forma computacionalmente trivial.
+
+\subsection{Similitud de Conjuntos (Índice de Jaccard)}
+Para evaluar superposiciones de vocabulario exacto a nivel token (como en títulos de noticias), se utiliza el Coeficiente de Jaccard \cite{jaccard1912distribution}. Define la similitud entre dos conjuntos $A$ y $B$ como la razón entre el tamaño de su intersección y la magnitud de su unión:
+\begin{equation}
+    J(A, B) = \frac{|A \cap B|}{|A \cup B|}
+\end{equation}
+
+\subsection{Hashing Localmente Sensible (SimHash)}
+A diferencia de MD5, el algoritmo SimHash \cite{charikar2002similarity} es un hash localmente sensible (\textit{Locality-Sensitive Hashing}). El propósito de SimHash es generar \textit{fingerprints} (huellas digitales) tales que los documentos similares produzcan hashes con una baja Distancia de Hamming. El algoritmo extrae características del texto (ej. n-gramas), las hasea individualmente en bits y pondera la frecuencia vectorial. Es ideal para detectar documentos casi idénticos (\textit{near-duplicates}) tolerando ediciones menores, alteraciones gramaticales o reescrituras de formato.
+
+\subsection{Similitud del Coseno sobre Matrices TF-IDF}
+Para consolidar documentos donde la redacción difiere drásticamente pero el contenido semántico fáctico es el mismo, se implementa la Similitud del Coseno. Los documentos se vectorizan usando TF-IDF clásico, y se calcula el coseno del ángulo entre los dos vectores resultantes:
+\begin{equation}
+    \cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\|\|\mathbf{B}\|} = \frac{\sum_{i=1}^{n} A_i B_i}{\sqrt{\sum_{i=1}^{n}A_i^2}\sqrt{\sum_{i=1}^{n}B_i^2}}
+\end{equation}
+Un valor cercano a 1 indica que los documentos, dimensionalmente proyectados, son semánticamente paralelos.
+
+\section{Web Scraping Dinámico y Evasión}
+\label{sec:mt_scraping}
+
+La recolección masiva de OSINT requiere interactuar programáticamente con la arquitectura web. La simple extracción de modelos de objetos del documento (DOM parsing) resulta inoperante ante infraestructuras modernas de seguridad perimetral.
+
+\subsection{Protocolo de Exclusión de Robots y Ética de Extracción}
+El protocolo \texttt{robots.txt} \cite{koster1994robots} es un estándar \textit{de facto} donde los administradores web declaran explícitamente qué segmentos del servidor están restringidos para los rastreadores automatizados (\textit{crawlers}). El sistema respeta estas directivas para mantener la extracción dentro del marco de la ética hacker y evitar la sobrecarga maliciosa en infraestructuras de terceros.
+
+\subsection{Técnicas Avanzadas de Evasión}
+Ante bloqueos sistemáticos (ej. HTTP 403 Forbidden) orquestados por Firewalls de Aplicaciones Web (WAF) como Cloudflare o Akamai, el sistema adopta heurísticas de evasión:
+\begin{itemize}
+    \item \textbf{Simulación de User-Agents:} Rotación dinámica de cabeceras HTTP que declaran versiones legítimas y recientes de navegadores comerciales de escritorio y móviles, disimulando la firma de la librería de solicitudes en Python.
+    \item \textbf{Stealth Sessions y Evasión de Fingerprinting TLS/JA3:} Los WAF modernos examinan los metadatos del saludo TLS (\textit{TLS handshake}) para identificar clientes automatizados. Las \textit{Stealth Sessions} implican forzar parámetros de cifrado (\textit{ciphers}) y extensiones TLS idénticas a las emitidas por navegadores reales \cite{tlsfingerprint}.
+    \item \textbf{Resolución de Rate Limiting:} Implementación de control de concurrencia y mecanismos de \textit{Exponential Backoff}. Ante un código HTTP 429 (\textit{Too Many Requests}), el hilo de extracción suspende su ejecución por un intervalo que aumenta logarítmicamente para disipar la sanción antes de reintentar la conexión.
+\end{itemize}
+
+\section{Persistencia y Búsqueda Textual}
+\label{sec:mt_persistencia}
+
+El rendimiento analítico a escala del sistema demanda un soporte de persistencia capaz de operar en arquitecturas concurrentes y resolver búsquedas semánticas sobre millones de tokens en tiempo real. 
+
+\subsection{Bases de Datos Relacionales (PostgreSQL)}
+El sistema descarta arquitecturas de almacenamiento plano e implementa PostgreSQL, un Sistema de Gestión de Bases de Datos Relacional-Objeto (ORDBMS) que cumple estrictamente con las propiedades ACID (Atomicidad, Consistencia, Aislamiento, Durabilidad) \cite{stonebraker1986design}. Garantiza la integridad referencial entre los modelos lógicos de entidades (Medios, Artículos, Clusters y Georreferencias).
+
+\subsection{Full-Text Search (FTS) e Índices Especializados}
+Una de las capacidades más robustas de PostgreSQL es su motor nativo de Full-Text Search (FTS). A diferencia del operador \texttt{LIKE}, que impone un escaneo secuencial (\textit{Seq Scan}) evaluando expresiones regulares sobre cada fila, FTS opera preprocesando el texto.
+
+El flujo FTS convierte el texto bruto en un documento \texttt{tsvector}, optimizando la cadena mediante \textit{stemming} (eliminación de sufijos, reduciendo la palabra a su raíz lingüística) y remoción de \textit{stopwords}. Las consultas del usuario se transforman paralelamente en formato \texttt{tsquery}. 
+
+Para dotar al sistema de respuestas en latencias sub-milisegundo, se utilizan índices invertidos generalizados (GIN - \textit{Generalized Inverted Index}) \cite{ramakrishnan2000database}. Un índice GIN asocia cada lexema único de la base de datos con un árbol B (B-Tree) que contiene apuntadores físicos directos a todas las tuplas donde dicho lexema es referenciado, evitando recorrer la tabla completa y posibilitando analíticas operacionales complejas sobre volúmenes masivos de registros periodísticos históricos.

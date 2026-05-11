@@ -1,0 +1,30 @@
+# Archivos auxiliares de compilacion de LaTeX
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+
+# El PDF final (es mejor generarlo que guardarlo,
+# pero puedes quitar la línea si SÍ quieres guardarlo)
+*.pdf
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Instaladores y archivos ejecutables grandes
+*.exe
+*.msi
+*.dmg
+*.zip
+*.rar
+*.7z
+
+# Documentos de Word
+*.docx
+*.doc

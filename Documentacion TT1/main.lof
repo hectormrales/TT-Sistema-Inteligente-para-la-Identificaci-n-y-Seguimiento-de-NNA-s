@@ -1,0 +1,29 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Arquitectura de microservicios del Prototipo 2 con triple fuente de datos.}}{49}{figure.4.1}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Arquitectura de Microservicios del Prototipo 2: Worker produce datos vía volumen compartido, Webapp consume y expone API REST.}}{68}{figure.5.1}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Interfaz web del Prototipo 2 mostrando los resultados del análisis.}}{97}{figure.6.1}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Diagrama de contexto del sistema}}{120}{figure.Alph1.1}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Diagrama de casos de uso del sistema}}{121}{figure.Alph1.2}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Diagrama de componentes del sistema}}{122}{figure.Alph1.3}%
+\contentsline {figure}{\numberline {A.4}{\ignorespaces Diagrama de componentes del módulo de análisis}}{123}{figure.Alph1.4}%
+\contentsline {figure}{\numberline {A.5}{\ignorespaces Diagrama de flujo completo del sistema}}{124}{figure.Alph1.5}%
+\contentsline {figure}{\numberline {A.6}{\ignorespaces Diagrama de flujo de metodologías}}{125}{figure.Alph1.6}%
+\contentsline {figure}{\numberline {A.7}{\ignorespaces Diagrama del detector de feminicidios en dos etapas}}{126}{figure.Alph1.7}%
+\contentsline {figure}{\numberline {A.8}{\ignorespaces Arquitectura Docker del sistema}}{127}{figure.Alph1.8}%
+\contentsline {figure}{\numberline {A.9}{\ignorespaces Evolución de prototipos del sistema}}{128}{figure.Alph1.9}%
+\contentsline {figure}{\numberline {A.10}{\ignorespaces Mockup de la pantalla de login}}{129}{figure.Alph1.10}%
+\contentsline {figure}{\numberline {A.11}{\ignorespaces Mockup de la pantalla principal (Home)}}{130}{figure.Alph1.11}%
+\contentsline {figure}{\numberline {A.12}{\ignorespaces Mockup de la pantalla de resumen general}}{130}{figure.Alph1.12}%
+\contentsline {figure}{\numberline {A.13}{\ignorespaces Mockup del recolector de noticias}}{131}{figure.Alph1.13}%
+\contentsline {figure}{\numberline {A.14}{\ignorespaces Mockup de gestión de fuentes}}{132}{figure.Alph1.14}%
+\contentsline {figure}{\numberline {A.15}{\ignorespaces Mockup de la pantalla de filtros}}{132}{figure.Alph1.15}%
+\contentsline {figure}{\numberline {A.16}{\ignorespaces Mockup del perfil de usuario}}{133}{figure.Alph1.16}%

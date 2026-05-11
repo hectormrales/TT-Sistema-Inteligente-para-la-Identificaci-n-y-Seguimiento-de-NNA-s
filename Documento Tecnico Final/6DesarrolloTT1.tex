@@ -1,0 +1,64 @@
+% !TeX root = proyecto.tex
+
+%========================================================================================
+% CAPÍTULO 6: DESARROLLO DEL TT1
+%========================================================================================
+
+\chapter{Desarrollo del TT1: Antecedentes y Prototipos Iniciales}
+\label{cap:desarrolloTT1}
+
+El presente capítulo constituye un análisis retrospectivo y profundamente autocrítico del trabajo de ingeniería de \textit{software} realizado durante el primer semestre del proyecto (Trabajo Terminal I). El desarrollo se orquestó a través de tres iteraciones fundacionales (P0, P1 y P2). A continuación, se documentan empíricamente los éxitos parciales obtenidos, los fracasos arquitectónicos frente a barreras de seguridad perimetral, y las limitaciones algorítmicas insoslayables que fungieron como el catalizador insustituible para la evolución hacia la arquitectura neuro-simbólica desplegada en el Trabajo Terminal II.
+
+\section{Prototipo 0: Web Scraping Directo (El Fracaso Documentado)}
+\label{sec:tt1_prototipo0}
+
+La aproximación arquitectónica inicial (P0) presuponía ingenuamente que la extracción masiva de texto periodístico podía lograrse mediante un ciclo iterativo de peticiones HTTP estándar acoplado a un análisis estático del Modelo de Objetos del Documento (DOM) utilizando librerías de \textit{parsing} como \texttt{BeautifulSoup}. 
+
+Esta hipótesis resultó ser un fracaso ingenieril de documentación crítica frente a la realidad del ecosistema web moderno. Al someter el prototipo a pruebas contra portales informativos de alto tráfico en México, la ingesta de datos colapsó casi inmediatamente. Los sistemas de recolección se toparon de frente con \textit{Firewalls} de Aplicaciones Web (WAF) de grado empresarial, tales como \textit{Cloudflare} y \textit{Akamai}. Estos WAFs no operan mediante simples listas negras de direcciones IP, sino que emplean técnicas avanzadas de \textit{fingerprinting} de clientes, analizando la asimetría en el saludo criptográfico (\textit{TLS/JA3 fingerprinting}) y exigiendo la resolución de desafíos \textit{JavaScript} computacionalmente costosos para validar la naturaleza humana del cliente. Ante la incapacidad del prototipo para emular un navegador legítimo, el WAF denegó sistemáticamente el acceso, retornando persistentes códigos \texttt{HTTP 403 Forbidden}.
+
+De manera paralela, las pocas extracciones exitosas evidenciaron una segunda vulnerabilidad insuperable: la volatilidad de las interfaces de usuario. Los portales modernos de noticias están construidos sobre \textit{frameworks} reactivos (como React.js o Vue.js) que generan el DOM dinámicamente. Las etiquetas HTML, los identificadores de contenedores (\texttt{<div>}) y los nombres de las clases CSS mutan a diario por motivos de ofuscación o despliegue continuo (\textit{CI/CD}). Esta inestabilidad estructural rompió incesantemente los \textit{scripts} de extracción diseñados paramétricamente, demostrando categóricamente que el \textit{web scraping} frontal y estático es una metodología inviable y computacionalmente insostenible para monitorear un ecosistema de fuentes abiertas heterogéneas a largo plazo.
+
+\section{Prototipo 1: RSS + K-Means (La Línea Base)}
+\label{sec:tt1_prototipo1}
+
+Para evadir la barrera insalvable de los WAFs y la inestabilidad del DOM, la arquitectura del Prototipo 1 (P1) pivotó hacia un paradigma de recolección pasiva. Se adoptó la ingestión estandarizada mediante canales de Sindicación Realmente Simple (RSS) legítimamente expuestos por 8 medios periodísticos nacionales. Esto garantizó un flujo de datos constante, inherentemente estructurado en formato XML, y completamente exento de bloqueos de infraestructura, permitiendo recolectar los primeros lotes estables de noticias.
+
+Para otorgar valor analítico a este \textit{corpus} crudo, se procedió a vectorizar el texto utilizando la métrica de Frecuencia de Término – Frecuencia Inversa de Documento (TF-IDF) clásica, alimentando posteriormente al algoritmo de agrupamiento particional \textit{K-Means}. Aunque esta iteración logró establecer la línea base (\textit{baseline}) del proyecto, la calidad del \textit{clustering} fue deficiente. 
+
+La vectorización TF-IDF sufre de la ``maldición de la dimensionalidad''; crea matrices dispersas (\textit{sparse matrices}) donde cada palabra única es una dimensión ortogonal, asumiendo erróneamente que palabras diferentes no tienen relación semántica (ej. ``asesinato'' y ``homicidio'' son vistas como dimensiones inconexas). Al introducir estos tensores esféricos de alta dimensión en \textit{K-Means}, el algoritmo fue incapaz de converger lógicamente. \textit{K-Means} fuerza geométricamente a que todas las noticias pertenezcan a uno de los $K$ centroides predefinidos, asumiendo varianzas isotrópicas. En el periodismo, donde un evento trágico puede generar docenas de notas y otro evento solo una, la estructura de los datos no es esférica ni uniforme, sino densa y asimétrica. Esto provocó agrupaciones "sucias", donde noticias de economía terminaban forzadas en \textit{clusters} de violencia de género meramente por el ruido estadístico de conectores y determinantes compartidos, restando toda validez metodológica a la agrupación.
+
+\section{Prototipo 2: Triple Fuente y Detección Heurística}
+\label{sec:tt1_prototipo2}
+
+El Prototipo 2 (P2) representó el pináculo del desarrollo durante el cierre del TT1. La recolección se sofisticó transicionando hacia una arquitectura de ``Triple Fuente''. Se integraron consultas automatizadas adaptativas contra la API de Google News y \textit{scripts} de recuperación histórica, expandiendo masivamente el espectro de captura más allá de la limitada cobertura temporal de los canales RSS.
+
+La innovación central de P2 fue la delegación de la clasificación de relevancia a un módulo heurístico denominado \texttt{FeminicideDetector}. Este componente operaba sobre un árbol de decisión cimentado en diccionarios léxicos exhaustivos y complejas reglas de Expresiones Regulares (RegEx). El algoritmo evaluaba la proximidad de términos de violencia (\textit{feminicidio, homicidio, hallada sin vida}) con términos de minoría de edad (\textit{hijo, hija, orfandad, menor}), asignando penalizaciones o bonificaciones ponderadas para generar un \textit{score} de pertinencia. Simultáneamente, el ineficiente \textit{K-Means} fue sustituido por \textit{DBSCAN}, un algoritmo de agrupamiento basado en densidad que permitió identificar grupos temáticos de forma orgánica, desechando automáticamente las noticias periféricas sin forzarlas a pertenecer a un clúster fáctico.
+
+\section{Métricas de Desempeño y Limitaciones Identificadas}
+\label{sec:tt1_metricas}
+
+Al someter la arquitectura P2 a un ciclo de estrés en un entorno de producción controlado de dos semanas, se obtuvieron las siguientes métricas cuantificables, conformando el desempeño base del sistema:
+
+\begin{itemize}
+    \item \textbf{Volumen de Ingesta:} $\sim$281 artículos periodísticos únicos depurados.
+    \item \textbf{Precisión Heurística (Recall):} $\sim$52 noticias identificadas algorítmicamente y marcadas con relevancia "Alta" o "Media".
+    \item \textbf{Tasa de Falsos Positivos:} $\sim$10\% tras un proceso de validación cruzada y auditoría manual.
+\end{itemize}
+
+Si bien se documentó un avance superlativo frente a los prototipos anteriores, una tasa de error residual del 10\% constituye un margen algorítmicamente inaceptable cuando el objetivo del \textit{software} es el monitoreo sensible de derechos humanos e infancias vulneradas. 
+
+\section{Conclusiones del TT1 (Motivación Absoluta para el TT2)}
+\label{sec:tt1_conclusiones}
+
+El cierre académico del Trabajo Terminal I culminó con una deducción irrefutable: la arquitectura del Prototipo 2 había alcanzado su límite asintótico de optimización. Las heurísticas basadas en reglas eran insuficientes para construir una herramienta de grado institucional.
+
+El análisis forense profundo de la tasa de falsos positivos dejó al descubierto la deficiencia estructural de las Expresiones Regulares: \textbf{la ceguera sintáctica absoluta frente a la semántica del lenguaje natural}. Un modelo RegEx simplemente busca la concurrencia espacial de los caracteres, pero es incapaz de abstraer el sujeto, verbo y predicado de una oración. Esto generó escenarios de falla sistémica altamente perjudiciales. Por ejemplo:
+\begin{enumerate}
+    \item \textbf{El Agresor Menor de Edad:} Ante un titular como \textit{"Un menor infractor fue detenido por cometer feminicidio"}, el modelo RegEx detectaba los tokens ``menor'' y ``feminicidio'' muy próximos entre sí, detonando erróneamente la alerta de un NNA en estado de orfandad, cuando en realidad el menor era el perpetrador del delito.
+    \item \textbf{La Víctima Directa Menor de Edad:} Frente a crónicas reportando que \textit{"Una menor de 14 años fue víctima directa de feminicidio"}, el sistema sumaba un "falso positivo de orfandad", siendo incapaz de discernir que la tragedia recaía directamente sobre la menor, y no como un daño colateral hacia la descendencia de una víctima adulta.
+    \item \textbf{Ruido Estadístico Gubernamental:} Notas periodísticas que citaban \textit{"La entidad concentra 10 feminicidios mensuales, dejando 5 huérfanos en promedio"}, disparaban las alarmas con prioridad máxima al encontrar todos los términos detonantes en un solo párrafo, mezclando reportes macroeconómicos con verdaderas urgencias fácticas emergentes.
+\end{enumerate}
+
+Sumado a la incapacidad cognitiva del analizador de texto, la persistencia de los datos presentaba un serio cuello de botella. El almacenamiento dependía exclusivamente de archivos planos (\textit{CSV}). La lectura, escritura y vectorización concurrente "al vuelo" de estos archivos consumía gigabytes de memoria RAM, volviendo prohibitivamente lenta la carga del tablero interactivo y eliminando cualquier posibilidad de realizar búsquedas transaccionales complejas (\textit{queries}).
+
+Estas fronteras operativas representaron la motivación técnica absoluta para la segunda fase del proyecto. El Trabajo Terminal II nació bajo la directriz innegociable de desechar la inferencia sintáctica en favor de modelos de inteligencia artificial neuro-simbólicos de atención profunda (BETO) capaces de abstraer la intencionalidad del lenguaje, y la migración total de la persistencia plana hacia motores relacionales transaccionales (PostgreSQL).

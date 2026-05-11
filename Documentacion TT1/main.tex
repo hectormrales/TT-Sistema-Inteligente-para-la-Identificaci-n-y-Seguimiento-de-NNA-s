@@ -1,0 +1,93 @@
+\documentclass[12pt, letterpaper]{report}
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc}
+% Usar la opción 'mexico' en lugar de 'es-mexico' para compatibilidad con babel
+\usepackage[spanish,mexico]{babel}
+\usepackage{geometry}
+\geometry{letterpaper, margin=2.5cm}
+\usepackage{graphicx}
+\graphicspath{{imagenes/}} % Ruta de imágenes
+\usepackage{booktabs}
+\usepackage{xcolor} % Para colores en listings
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb} % Para símbolos como \checkmark
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+
+% --- CONFIGURACIÓN DE CÓDIGO (LISTINGS) ---
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red}
+}
+
+% --- INFORMACIÓN DEL DOCUMENTO ---
+\title{Sistema Inteligente para la Identificación y Seguimiento de Derechos de Niñas, Niños y Adolescentes (NNA) afectados por feminicidios en México}
+\author{Tu Nombre Completo}
+\date{Octubre 2025}
+
+% --- INICIO DEL DOCUMENTO ---
+\begin{document}
+
+% --- PORTADA Y FORMALIDADES ---
+\input{portada.tex}
+
+% --- RESUMEN (ABSTRACT) ---
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+\input{capitulo_resumen.tex}
+
+% --- ÍNDICES ---
+\tableofcontents
+\listoftables
+\listoffigures
+
+% --- CAPÍTULO 1: INTRODUCCIÓN ---
+\chapter{Introducción}
+\input{capitulo_introduccion.tex}
+
+% --- CAPÍTULO 2: MARCO TEÓRICO ---
+\chapter{Marco Teórico}
+\input{capitulo_marcoteorico.tex}
+
+% --- CAPÍTULO 3: ESTADO DEL ARTE ---
+\chapter{Estado del Arte}
+\input{capitulo_estadoarte.tex}
+
+% --- CAPÍTULO 4: METODOLOGÍA DE DESARROLLO ---
+\chapter{Metodología de Desarrollo}
+\input{capitulo_metodologia.tex}
+
+% --- CAPÍTULO 5: DESARROLLO Y ARQUITECTURA DE LA SOLUCIÓN ---
+\chapter{Desarrollo y Arquitectura de la Solución}
+\input{capitulo_desarrollo.tex}
+
+% --- CAPÍTULO 6: RESULTADOS PRELIMINARES Y PRUEBAS ---
+\chapter{Resultados Preliminares y Pruebas}
+\input{capitulo_resultados.tex}
+
+% --- CAPÍTULO 7: CONCLUSIONES PARCIALES ---
+\chapter{Conclusiones Parciales}
+\input{capitulo_conclusiones.tex}
+
+% --- CAPÍTULO 8: TRABAJO A FUTURO ---
+\chapter{Trabajo a Futuro}
+\input{capitulo_trabajo_futuro.tex}
+
+% --- BIBLIOGRAFÍA ---
+\nocite{*} % Incluye todas las referencias del archivo .bib, aunque no estén citadas
+\bibliographystyle{apalike}
+\bibliography{bibliografia}
+
+% --- ANEXOS ---
+\appendix
+\chapter{Anexos}
+\input{anexos.tex}
+
+\end{document}

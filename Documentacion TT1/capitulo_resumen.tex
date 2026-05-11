@@ -1,0 +1,13 @@
+% RESUMEN (ABSTRACT)
+% Máximo 1 página - Síntesis del proyecto completo
+
+Los feminicidios en México han dejado a miles de niñas, niños y adolescentes en orfandad. No existe una base de datos centralizada para rastrear estos casos ni evaluar el impacto en los derechos de las infancias afectadas. La información permanece dispersa en notas periodísticas y reportes gubernamentales, dificultando el seguimiento de casos y el diseño de políticas públicas.
+
+Este trabajo desarrolla un sistema automatizado para recolectar, analizar y estructurar información sobre feminicidios y NNA afectados. El proyecto ha evolucionado a través de tres prototipos: P0 intentó web scraping directo pero los bloqueos técnicos lo hicieron inviable; P1 usó 8 fuentes RSS recolectando 96 noticias con clustering K-Means; P2 combina RSS, Google News y scraping histórico alcanzando 281 noticias únicas, usa DBSCAN para agrupación y emplea un detector especializado en dos etapas para identificar menciones de NNA huérfanos.
+
+El sistema procesa noticias mediante extracción de múltiples fuentes, detección dual (feminicidio + NNA), vectorización TF-IDF, clustering DBSCAN y modelado de tópicos LDA. 
+
+El prototipo actual presenta limitaciones: clasificación sintáctica, cobertura de seis meses, almacenamiento CSV y falta de extracción de entidades, las cuales se retomaran en TT2.
+
+\vspace{1cm}
+\noindent\textbf{Palabras clave:} feminicidios, derechos NNA, procesamiento lenguaje natural, web scraping.

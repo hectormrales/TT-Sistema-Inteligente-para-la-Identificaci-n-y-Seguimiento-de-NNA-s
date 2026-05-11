@@ -1,0 +1,83 @@
+% CAPÍTULO 1: INTRODUCCIÓN
+% (Asegúrate de que la orden \chapter{Introducción} esté en tu archivo main.tex)
+
+\section{Planteamiento del Problema}
+\label{sec:planteamiento_problema}
+
+Entre 2010 y 2023 más de 8,000 mujeres fueron víctimas de feminicidio en México según la Secretaría de Gobernación. Detrás de estas cifras existen miles de niños, niñas y adolescentes que quedaron huérfanos. REDIM estima al menos 3,500 NNA que perdieron a su madre por feminicidio, pero sin censo oficial ni sistema de seguimiento.
+
+La información está dispersa y los datos sobre los hijos de una víctima pueden aparecer en el periódico local, en el comunicado de la fiscalía estatal o en archivos de alguna organización civil. Sin embargo sin conexión entre fragmentos, resulta imposible rastrear qué pasó con esos niños: atención psicológica recibida, acceso a educación, reparación del daño.
+
+Las consecuencias son directas: organizaciones civiles no pueden dimensionar patrones geográficos o temporales, autoridades carecen de datos para evaluar sus programas, y familiares desconocen derechos e instituciones de apoyo.
+
+Revisar manualmente decenas de sitios de noticias cada día es inviable. Se requiere un sistema automatizado que recolecte, procese y estructure esta información.
+
+\section{Justificación}
+\label{sec:justificacion}
+
+\subsection{Justificación Social}
+La Fundación Futuro con Derechos dedica varias horas semanales a revisar manualmente sitios de noticias buscando casos donde se mencione a hijos de víctimas de feminicidio. Reconocen que muchos casos pasan desapercibidos porque es imposible revisar todas las fuentes disponibles.
+
+Esta situación se repite en organizaciones similares con recursos limitados. El Mapa de Feminicidios en México ha documentado miles de casos mediante trabajo voluntario, pero su metodología manual dificulta mantener la cobertura.
+
+Un sistema automatizado actúa como filtro inicial: procesa cientos de noticias diarias, identifica las potencialmente relevantes y las presenta estructuradas para que las organizaciones dediquen su tiempo al seguimiento de casos concretos.
+
+\subsection{Justificación Tecnológica}
+Durante el desarrollo probamos tres enfoques. El primero fracasó: scraping directo bloqueado por Cloudflare. El segundo funcionó parcialmente: feeds RSS con 96 noticias en dos semanas. El tercero combinó RSS, Google News API y scraping histórico alcanzando 281 noticias únicas.
+
+Este proceso evidenció dos capas técnicas: recolectar datos desde fuentes protegidas, y procesar lenguaje natural para distinguir menciones relevantes de irrelevantes.
+
+Las técnicas de PLN permiten vectorizar noticias, agrupar casos similares mediante clustering y modelar tópicos principales, transformando texto no estructurado en datos consultables.
+
+\section{Objetivos}
+\label{sec:objetivos}
+
+\subsection{Objetivo General}
+Desarrollar un sistema automatizado que recolecte, analice y estructure información sobre NNA afectados por feminicidios en México, procesando noticias de fuentes públicas mediante web scraping y procesamiento de lenguaje natural.
+
+\subsection{Objetivos Específicos}
+\begin{itemize}
+    \item Implementar un sistema de recolección combinando RSS, APIs y scraping histórico para cubrir fuentes periodísticas nacionales y estatales.
+    
+    \item Desarrollar un detector especializado que identifique noticias de feminicidios y filtre aquellas que mencionan NNA afectados.
+    
+    \item Diseñar un sistema de PLN con limpieza de texto, vectorización TF-IDF, modelado de tópicos LDA y clustering para agrupar casos similares.
+    
+    \item Construir una API REST y dashboard web para consultar noticias procesadas, visualizar métricas y explorar clusters identificados.
+\end{itemize}
+
+\section{Alcances y Limitaciones (Fase TT1)}
+\label{sec:alcances_limitaciones}
+
+El proyecto se divide en dos semestres. TT1 valida la viabilidad técnica mediante prototipos incrementales; TT2 construirá un sistema completo.
+
+\subsection{Alcances de TT1}
+El trabajo presenta tres prototipos desarrollados:
+
+\begin{itemize}
+    \item \textbf{Prototipo 0 (P0):} Web scraping directo que fracasó por bloqueos Cloudflare y HTTP 403. Este fracaso temprano forzó replantear la estrategia de recolección.
+    
+    \item \textbf{Prototipo 1 (P1):} Recolección con 8 fuentes RSS, procesamiento K-Means y almacenamiento CSV. Recolectó aproximadamente  100 noticias en dos semanas.
+    
+    \item \textbf{Prototipo 2 (P2):} Triple estrategia (10 RSS + Google News + scraping histórico) alcanzando hasta 300 noticias. Reemplazó K-Means por DBSCAN y usó detector dual-etapa que redujo falsos positivos de 40\% a 10\%.
+\end{itemize}
+
+El sistema incluye arquitectura Docker separando análisis de servidor web, API REST con 6 endpoints y dashboard para visualizar métricas. Los resultados muestran capacidad para procesar noticias e identificar patrones.
+
+\subsection{Limitaciones de TT1}
+Los prototipos identificaron cinco limitaciones técnicas:
+
+\begin{itemize}
+    \item \textbf{Clasificación sintáctica:} Detector basado en regex y keywords. Funciona para casos explícitos pero falla en menciones indirectas. Precisión 90\% con 10\% falsos positivos.
+    
+    \item \textbf{Cobertura temporal:} Solo los últimos 6 meses. Sin capacidad para un análisis histórico mas allá de ese periodo.
+    
+    \item \textbf{Almacenamiento archivos:} Los datos en CSV limitan búsquedas, dificultan las consultas complejas y no soportan el acceso concurrente.
+    
+    \item \textbf{Clustering básico:} TF-IDF con DBSCAN agrupa sintácticamente pero no captura similitud semántica. Las noticias del mismo caso con redacción distinta quedan separadas.
+    
+    \item \textbf{Sin extracción entidades:} No identifica nombres de víctimas, ubicaciones ni organizaciones. Hasta el momento la información permanece como texto plano.
+\end{itemize}
+
+Estas limitaciones definen el alcance del TT2.
+

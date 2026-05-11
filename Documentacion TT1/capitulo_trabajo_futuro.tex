@@ -1,0 +1,202 @@
+% CAPÍTULO 8: TRABAJO A FUTURO (PLAN DETALLADO PARA TT2)
+%----------------------------------------------------------------------------------------
+% INTRODUCCIÓN AL CAPÍTULO
+%----------------------------------------------------------------------------------------
+El Trabajo Terminal 1 ha cumplido exitosamente con su objetivo de \textbf{validar la viabilidad técnica} del sistema, estableciendo una línea base robusta con métricas cuantificables. Los resultados del Capítulo 6 y las conclusiones del Capítulo 7 demostraron que:
+
+\begin{enumerate}
+    \item La arquitectura de flujo de 7 etapas es \textbf{funcional y extensible}.
+    \item Los algoritmos actuales (FeminicideDetector, DBSCAN) son \textbf{efectivos para un prototipo}, pero tienen limitaciones conocidas.
+    \item Existen \textbf{5 limitaciones críticas} (detección sintáctica, cobertura temporal, almacenamiento CSV, clustering léxico, ausencia de NER) que impiden considerar el sistema como producto final.
+\end{enumerate}
+
+El Trabajo Terminal 2 (febrero-junio 2026) abordará sistemáticamente estas limitaciones mediante el desarrollo de los \textbf{Prototipos 3 y 4}, transformando el baseline funcional del TT1 en un \textbf{sistema de producción} listo para uso por organizaciones de la sociedad civil.
+
+Este capítulo presenta el plan de trabajo detallado para el TT2, incluyendo: objetivos específicos, líneas de acción técnicas, cronograma por prototipo, diseño de interfaz de usuario (mockups), y métricas de validación.
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 8.1: OBJETIVO GENERAL Y OBJETIVOS ESPECÍFICOS DE TT2
+%----------------------------------------------------------------------------------------
+\section{Objetivo General del Trabajo Terminal 2}
+\label{sec:objetivo_tt2}
+
+\textbf{Desarrollar y validar la versión "final"del "Sistema Inteligente para la Identificación y Seguimiento de NNA"}, evolucionando el prototipo 2 del TT1 mediante la integración de modelos semánticos (BETO/BERT), almacenamiento relacional (PostgreSQL), clustering semántico (BERTopic), extracción de entidades (NER), y una interfaz web completa, logrando un sistema de producción capaz de:
+
+\begin{itemize}
+    \item Reducir falsos positivos de 10\% a $\leq$3\%.
+    \item Incrementar cobertura temporal de 6 meses a 3 años (2023-2025).
+    \item Proveer interfaz web funcional con autenticación, filtros avanzados, y exportación de reportes.
+    \item Extraer información estructurada (nombres, ubicaciones, número de NNA) automáticamente.
+\end{itemize}
+
+\subsection{Objetivos Específicos del TT2}
+\label{subsec:objetivos_especificos_tt2}
+
+\begin{enumerate}
+    \item \textbf{OE-1: Migrar de detección sintáctica a semántica}
+    \begin{itemize}
+        \item Implementar clasificador binario con BETO/BERT fine-tuned.
+        \item Lograr precisión $\geq$95\% y recall $\geq$90\% en detección de casos objetivo.
+        \item Reducir falsos positivos a $\leq$3\%.
+    \end{itemize}
+    
+    \item \textbf{OE-2: Ampliar cobertura temporal y volumen de datos}
+    \begin{itemize}
+        \item Extender Historical Scraper a 3 años (enero 2023 - diciembre 2025).
+        \item Recolectar $\geq$1,500 noticias históricas adicionales.
+        \item Habilitar análisis de series temporales (tendencias, estacionalidad).
+    \end{itemize}
+    
+    \item \textbf{OE-3: Migrar almacenamiento CSV a PostgreSQL}
+    \begin{itemize}
+        \item Diseñar esquema relacional normalizado (noticias, detecciones, clusters, entidades).
+        \item Implementar consultas SQL con Full-Text Search (FTS) e índices.
+        \item Lograr tiempos de respuesta <100ms en consultas complejas.
+    \end{itemize}
+    
+    \item \textbf{OE-4: Implementar clustering semántico con BERTopic}
+    \begin{itemize}
+        \item Migrar de DBSCAN+TF-IDF a BERTopic (BETO embeddings + HDBSCAN).
+        \item Reducir outliers de 81.4\% a 50-60\%.
+        \item Generar etiquetas semánticas automáticas para clusters.
+    \end{itemize}
+    
+    \item \textbf{OE-5: Implementar extracción de entidades (NER)}
+    \begin{itemize}
+        \item Integrar pipeline spaCy + BETO para NER (PER, LOC, ORG).
+        \item Extraer nombres de víctimas, ubicaciones, y número de NNA automáticamente.
+        \item Lograr precisión $\geq$80\% en extracción de entidades.
+    \end{itemize}
+    
+    \item \textbf{OE-6: Desarrollar interfaz web completa con autenticación y filtros}
+    \begin{itemize}
+        \item Implementar sistema de login con roles (Administrador, Analista, Visualizador).
+        \item Desarrollar módulo de búsqueda con filtros avanzados (fecha, ubicación, prioridad, fuente).
+        \item Implementar panel de administración para agregar/configurar fuentes RSS/scraping.
+        \item Generar reportes exportables (PDF, CSV, Excel).
+    \end{itemize}
+\end{enumerate}
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 8.2: PROTOTIPOS 3 Y 4 - DISTRIBUCIÓN DE TRABAJO
+%----------------------------------------------------------------------------------------
+\section{Arquitectura de Desarrollo: Prototipos 3 y 4}
+\label{sec:lineas_trabajo_tt2}
+
+El TT2 se divide en dos prototipos incrementales, cada uno abordando un subconjunto de las 5 limitaciones identificadas:
+
+\begin{table}[h]
+\centering
+\caption{Distribución de objetivos por prototipo (TT2)}
+\label{tab:prototipos_tt2}
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{Prototipo} & \textbf{Componentes} & \textbf{Objetivos Específicos} \\ \hline
+\textbf{Prototipo 3} & - BETO clasificación & OE-1: Detección semántica \\
+(Semántica básica) & - PostgreSQL & OE-2: Cobertura 3 años \\
+Feb-Mar 2026 & - Historical 3 años & OE-3: Base de datos relacional \\ \hline
+\textbf{Prototipo 4} & - BERTopic clustering & OE-4: Clustering semántico \\
+(Semántica avanzada) & - spaCy NER & OE-5: Extracción entidades \\
+Abr-Jun 2026 & - Interfaz web completa & OE-6: UI con login/filtros \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Justificación de la división:} El Prototipo 3 establece la infraestructura base (BETO, PostgreSQL, datos 3 años) que es \textbf{prerrequisito} para el Prototipo 4 (BERTopic y NER requieren embeddings BETO y almacenamiento estructurado para funcionar correctamente).
+
+\subsection{Prototipo 3: Migración a Arquitectura Semántica (Feb-Mar 2026)}
+\label{subsec:prototipo3}
+
+El Prototipo 3 transforma el sistema de detección basada en patrones regex a detección basada en comprensión semántica.
+
+\subsubsection{Componente 1: Clasificador Binario con BETO (OE-1)}
+\label{subsubsec:beto_clasificador}
+
+\textbf{Problema actual:} El \texttt{FeminicideDetector} con 72 patrones regex no entiende contexto, generando 10\% de falsos positivos en noticias sobre legislación, campañas y estadísticas.
+
+\textbf{Solución propuesta:}
+
+\begin{enumerate}
+    \item \textbf{Fine-tuning de BETO:}
+    \begin{itemize}
+        \item Modelo base: BETO (BERT en español, 110M parámetros).
+        \item Arquitectura: BETO base + capa densa (768 → 128 → 2) + softmax.
+        \item Dataset de entrenamiento:
+        \begin{itemize}
+            \item \textbf{Positivos:} 52 noticias objetivo validadas manualmente (TT1).
+            \item \textbf{Negativos:} 190 noticias irrelevantes (legislación, campañas, estadísticas).
+            \item \textbf{Balanceo:} SMOTE para oversample minoritaria (52 → 190).
+            \item \textbf{Split:} 70\% train (169), 15\% validation (36), 15\% test (37).
+        \end{itemize}
+        \item Hiperparámetros:
+        \begin{itemize}
+            \item Learning rate: 2e-5
+            \item Batch size: 16
+            \item Epochs: 5
+            \item Max sequence length: 512 tokens
+        \end{itemize}
+    \end{itemize}
+    
+    \item \textbf{Pipeline de inferencia:}
+    \begin{verbatim}
+    noticia → tokenización BETO → embeddings [CLS] 
+           → capa densa → probabilidad [objetivo, no-objetivo]
+    \end{verbatim}
+    
+    \item \textbf{Integración en pipeline:}
+    \begin{itemize}
+        \item Reemplazar \texttt{FeminicideDetector.detect()} por \texttt{BETOClassifier.predict()}.
+        \item Mantener patrones regex como \textbf{fallback} (si BETO no disponible).
+        \item Guardar probabilidades en PostgreSQL para análisis posterior.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Métricas de éxito:}
+\begin{itemize}
+    \item Precisión $\geq$95\% (reducir FP de 10\% a $\leq$5\%).
+    \item Recall $\geq$90\% (no perder casos verdaderos).
+    \item F1-Score $\geq$92\%.
+    \item Validación cruzada con 100 noticias nuevas (recolectadas enero-febrero 2026).
+\end{itemize}
+
+\subsubsection{Componente 2: Ampliación de Cobertura Temporal a 3 Años (OE-2)}
+\label{subsubsec:historical_3years}
+
+\textbf{Problema actual:} El Historical Scraper solo cubre 6 meses (mayo-noviembre 2025), impidiendo análisis de tendencias temporales.
+
+\textbf{Solución propuesta:}
+
+\begin{enumerate}
+    \item \textbf{Modificar Historical Scraper:}
+    \begin{itemize}
+        \item Extender rango de fechas: \textbf{1 enero 2023 - 31 diciembre 2025} (36 meses).
+        \item Implementar scraping incremental por mes (cachear resultados en PostgreSQL para evitar re-scraping).
+        \item Volumen estimado: ~1,500 noticias adicionales (500/año × 3 años).
+    \end{itemize}
+    
+    \item \textbf{Optimizaciones para scraping largo:}
+    \begin{itemize}
+        \item Paralelización: 3 workers concurrentes (1 por año 2023, 2024, 2025).
+        \item Checkpoints cada 50 noticias (persistir en PostgreSQL).
+        \item Estimación de tiempo: 6-8 horas para scraping completo de 3 años.
+        \item Logging detallado: barra de progreso con \texttt{tqdm}, logs por mes.
+    \end{itemize}
+    
+    \item \textbf{Análisis temporal habilitado:}
+    \begin{itemize}
+        \item Series temporales: casos por mes/trimestre/año.
+        \item Detección de anomalías: incrementos repentinos (ej: alertas COVID-19).
+        \item Correlación con datos oficiales: INEGI, Secretariado Ejecutivo del SNSP.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Métricas de éxito:}
+\begin{itemize}
+    \item $\geq$1,500 noticias históricas recolectadas.
+    \item Cobertura temporal: 36 meses (2023-2025).
+    \item Tiempo de ejecución: $\leq$8 horas (con paralelización).
+\end{itemize}
+
+\subsubsection{Componente 3: Migración de CSV a PostgreSQL (OE-3)}
+\label{subsubsec:postgresql}
+
+\textbf{Problema actual:} Archivos CSV no soportan consultas complejas, acceso concurrente, ni integridad referencial.

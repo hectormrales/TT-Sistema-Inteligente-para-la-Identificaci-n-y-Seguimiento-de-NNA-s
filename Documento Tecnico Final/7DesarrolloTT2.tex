@@ -1,0 +1,116 @@
+% !TeX root = proyecto.tex
+
+%========================================================================================
+% CAPÍTULO 7: DESARROLLO DEL TT2
+%========================================================================================
+
+\chapter{Desarrollo del TT2: Prototipos 3 y 4}
+\label{cap:desarrolloTT2}
+
+El presente capítulo vertebra el núcleo ingenieril y arquitectónico del Trabajo Terminal II. Tras haber documentado exhaustivamente las limitaciones operativas, algorítmicas y de persistencia inherentes a los prototipos preliminares, esta sección desglosa analíticamente la conceptualización, diseño, codificación y despliegue de los Prototipos 3 y 4. Estos artefactos representan la cristalización del protocolo de registro 2026-A135, materializando la transición definitiva de un sistema sintáctico-estático hacia una plataforma neuro-simbólica robusta, tolerante a fallos e impulsada por modelos fundacionales de Procesamiento de Lenguaje Natural (NLP).
+
+\section{Prototipo 3: Migración a la Arquitectura Semántica}
+\label{sec:tt2_prototipo3}
+
+El diseño del Prototipo 3 fue regido por el imperativo absoluto de erradicar la ceguera contextual del sistema. Para lograr este cometido, fue indispensable refactorizar el código base desde sus cimientos, comenzando por la capa de persistencia de datos hasta culminar con el motor de inferencia neuronal.
+
+\subsection{Evolución del Almacenamiento: De Archivos Planos a Entidades Relacionales}
+\label{subsec:tt2_almacenamiento}
+
+Durante el primer semestre (TT1), la capa de datos operaba de manera efímera y rudimentaria. El \textit{corpus} textual extraído se volcaba incondicionalmente sobre archivos separados por comas (CSV). La indexación, transformación y vectorización matemática recaía enteramente en el uso de estructuras en memoria RAM a través de \textit{DataFrames} de Pandas. Si bien este paradigma es estandarizado en la experimentación inicial de ciencia de datos, en un entorno de producción transaccional generaba una penalización asintótica en el rendimiento temporal: a medida que el número de noticias crecía, la complejidad computacional para la simple lectura y cruce de datos ($O(n^2)$ en el peor de los casos para búsquedas no indexadas) saturaba la memoria del servidor. 
+
+Además, los archivos planos carecen intrínsecamente de las propiedades ACID (\textit{Atomicity, Consistency, Isolation, Durability}). La ausencia total de integridad referencial imposibilitaba trazar relaciones complejas bidireccionales, como vincular de forma segura y consistente un clúster semántico con los artículos individuales que lo conforman, o gestionar el estado de revisión manual sin el riesgo inherente de corrupción por escrituras concurrentes (\textit{race conditions}).
+
+Para solventar esta falla sistémica, en el Prototipo 3 se diseñó y desplegó una capa de base de datos relacional altamente normalizada utilizando PostgreSQL 16. La orquestación de la base de datos se maneja a través del patrón arquitectónico \textit{Object-Relational Mapping} (ORM) implementado con SQLAlchemy. Este cambio paradigmático liberó a los procesos de Python de la pesada carga del filtrado de datos. Ahora, el sistema delega la búsqueda transaccional masiva al motor relacional, aprovechando la inserción de índices invertidos especializados (\textit{GIN Indexing}) para las capacidades nativas de \textit{Full-Text Search} de PostgreSQL. Las búsquedas de subcadenas o cruces de llaves foráneas entre las tablas \texttt{noticias}, \texttt{detecciones} y \texttt{clusters} se ejecutan en tiempos logarítmicos ($O(\log n)$), dotando al ecosistema de una tolerancia a concurrencia indispensable para un colector asíncrono.
+
+\subsection{El Motor de Detección BETO: Arquitectura de Inferencias}
+\label{subsec:tt2_beto}
+
+El componente lógico responsable de dotar de "comprensión" al sistema reside en el módulo \texttt{semantic\_detector.py}. Tras el descarte del inoperante motor heurístico de RegEx, se procedió a instanciar \textbf{BETO} (\textit{BERT para español}), un modelo transformador bidireccional masivo entrenado sobre un vasto corpus hispanohablante.
+
+El funcionamiento interno del clasificador transcurre en una secuencia metodológica rigurosa. En primer lugar, el texto bruto extraído de la noticia es sometido a un algoritmo de fragmentación sub-palabra denominado \textit{WordPiece Tokenization}. Este mecanismo descompone palabras complejas u ortográficamente atípicas en sufijos y prefijos vectorizados, mitigando el problema crítico de palabras fuera del vocabulario (\textit{Out-Of-Vocabulary}). El arreglo de \textit{tokens} resultante se trunca estrictamente a la dimensión máxima de entrada del modelo (512 secuencias posicionales) y es inyectado en el paso hacia adelante (\textit{forward pass}) a través de doce capas sucesivas de mecanismos de autoatención (\textit{Self-Attention}). Estas capas permiten a cada \textit{token} recalcular su valor en estricta dependencia del contexto que lo rodea, tanto a su izquierda como a su derecha (bidireccionalidad profunda). 
+
+El vector final de 768 dimensiones extraído del \textit{token} especial \texttt{[CLS]} actúa como la representación latente global del documento. Al no contar con un conjunto masivo de decenas de miles de notas periodísticas sobre orfandad por feminicidio pre-etiquetadas manualmente para un entrenamiento supervisado, la red fue implementada para operar bajo el paradigma de clasificación \textit{Zero-Shot} (Transferencia de Aprendizaje de Cero Disparos). El modelo inyecta el documento en un espacio latente junto con declaraciones premisa (e.g. \textit{"Esta noticia trata sobre un feminicidio donde un menor quedó en orfandad"}) y calcula la similitud del coseno entre ambos tensores.
+
+Para transformar estos puntajes de similitud crudos y a menudo muy cercanos entre sí en una distribución probabilística discretizada (una certidumbre útil para la lógica del programa), se implementó una agresiva función termodinámica denominada \textbf{\textit{Temperature Scaling}}. Multiplicando empíricamente la similitud por un factor de escala de valor 5 antes de aplicar la exponencial euclidiana de la función \textit{Softmax}, el algoritmo fuerza a la distribución a polarizarse.
+
+\begin{lstlisting}[language=Python, caption={Cálculo Matemático de Probabilidad Zero-Shot mediante Temperature Scaling}, label={lst:temp_scaling}]
+# La variable sim_relevante es el producto escalar normalizado (coseno)
+# entre el embedding de la noticia y el embedding del target semantico.
+# Un multiplicador termico alto (5) amplifica artificialmente la diferencia
+# latente antes de que Softmax asimile las probabilidades.
+
+exp_rel = np.exp(sim_relevante * 5)
+exp_norel = np.exp(sim_no_relevante * 5)
+
+# Probabilidad final distribuida y polarizada
+score_final = exp_rel / (exp_rel + exp_norel)
+\end{lstlisting}
+
+Este escalamiento evita un "colapso de confianza" en escenarios donde la red dudaba entre una probabilidad de 0.55 y 0.45. La temperatura amplifica la varianza, separando radicalmente el puntaje a un contundente 0.82 contra un 0.18, permitiendo que las subsecuentes capas de umbral lógico tomen decisiones booleanas irrefutables.
+
+\subsection{Estrategias de Scraping Dinámico y Ofuscación}
+\label{subsec:tt2_scraping}
+
+El colector de datos original (\texttt{collector.py}) exhibía una extrema ingenuidad técnica. Dependía de firmas de red por defecto provenientes de bibliotecas estándar (como \textit{Requests} o \textit{urllib}). Frente a la fortificación digital del ecosistema periodístico, estas peticiones eran bloqueadas de inmediato.
+
+En el Prototipo 3 se instituyeron las \textit{StealthSessions}. La arquitectura de red fue reescrita para manipular y enmascarar los protocolos criptográficos del apretón de manos (\textit{handshake} de TLS). Modificando la configuración de encriptación \textit{ciphers} y el orden de negociación de las extensiones, el \textit{script} de recolección pasó de emitir un \textit{fingerprint} de un servidor Linux desatendido a simular con una precisión criptográfica milimétrica la petición proveniente de un navegador Chrome corriendo en un sistema operativo Windows convencional. 
+
+Paralelamente, se implementó una rotación estocástica de \textit{User-Agents} y se establecieron algoritmos de \textit{backoff} exponencial (\textit{Exponential Backoff}). Esta dilación asíncrona de los intervalos de recolección simula los tiempos fisiológicos de lectura humana, eludiendo proactivamente cualquier monitor de frecuencia de peticiones (\textit{Rate Limiting}) de los servidores comerciales, y permitiendo escalar la recolección sin arriesgar un veto por dirección IP.
+
+\section{Prototipo 4: Sistema Neuro-Simbólico y Agrupamiento Global}
+\label{sec:tt2_prototipo4}
+
+La conceptualización del Prototipo 4 respondió a la necesidad de fusionar las ventajas del discernimiento de la Inteligencia Artificial (conexionismo) con las garantías de la lógica estricta y tradicional (simbolismo), resultando en la creación formal del \textbf{\textit{pipeline} neuro-simbólico} definitivo.
+
+\subsection{El Gran Filtro: BERTopic como Contexto Macro}
+\label{subsec:tt2_bertopic}
+
+Históricamente, los procesos de \textit{clustering} actuaban al final del ciclo de vida de los datos, intentando ordenar lo que previamente la inteligencia artificial había aprobado. El Prototipo 4 subvirtió este paradigma arquitectónico, trasladando \textbf{BERTopic} hacia las capas iniciales del flujo, posicionándolo como "El Gran Filtro" contextual.
+
+Antes de forzar a BETO a intentar discernir el significado aislado de una noticia, el sistema introduce el volumen completo del acervo documental a BERTopic. La arquitectura interna de este modelo utiliza primero UMAP (\textit{Uniform Manifold Approximation and Projection}) para contraer topológicamente los vectores semánticos de alta dimensionalidad hacia un espacio manejable tridimensional. Inmediatamente después, el módulo HDBSCAN (\textit{Hierarchical Density-Based Spatial Clustering of Applications with Noise}) identifica densidades no lineales dentro de esa contracción. 
+
+El resultado de esta orquestación técnica es un "mapa global" de la realidad periodística. El sistema adquiere conciencia inmediata de que, por ejemplo, cuarenta noticias distintas están correlacionadas y orbitan semánticamente alrededor de un mismo evento crítico. Al inyectar posteriormente este identificador de clúster a BETO, la red neuronal opera con una ventaja incalculable: ya no analiza una noticia huérfana en el vacío, sino que evalúa el texto respaldada por la fuerza gravitacional del contexto temático de sus pares.
+
+\subsection{Lógica Híbrida de Clasificación (El Árbol Inquebrantable)}
+\label{subsec:tt2_logica_hibrida}
+
+La fase analítica más profunda reside en la función \texttt{step\_9\_semantic\_detection}. Para combatir la ocasional, aunque desastrosa, alucinación de los modelos fundacionales masivos, se diseñó un flujo de decisión neuro-simbólico. BETO provee el componente neuronal (un puntaje probabilístico no determinista derivado del análisis de atención latente), mientras que el código Python impone el componente simbólico (una lógica dura, booleana e inquebrantable derivada de axiomas sintácticos).
+
+Este árbol de decisión interviene el puntaje crudo mediante tres niveles arquitectónicos de control jerárquico:
+
+\begin{description}
+    \item[Nivel 1 (Bypass de Oro):] Se analizan vectores heurísticos generados directamente por el motor de recolección. Si la noticia posee un \textit{score} de orfandad puro $\ge 0.80$ (indiscutible presencia del trinomio agresor, víctima y mención de descendencia), el sistema simbólico impone un \textit{override} absoluto sobre la IA. Se confiere a la noticia el estatus máximo (\textit{Alta Prioridad}), bypassando el escrutinio profundo para acelerar el procesamiento y evitar que la IA desestime un caso obvio por ruidos estadísticos o formato literario atípico.
+
+    \item[Nivel 2 (Bozal de Penalización):] Actuando como la antítesis del nivel anterior, se busca el descarte draconiano de los falsos positivos comprobados matemáticamente en TT1. Si el puntaje heurístico decreta un nivel infractor $\le 0.15$ (típicamente notas de agresores menores de edad o víctimas de acoso sin homicidio documentado), la lógica impone un "bozal". El puntaje arrojado por BETO es intencionalmente dividido a la mitad y empujado artificialmente por debajo del umbral de rechazo, blindando el sistema de alarmas nocivas.
+    
+    \item[Nivel 3 (Inferencia Ponderada de $\alpha$):] El núcleo matemático de la fusión neuro-simbólica. Para aquellas noticias ambiguas que eluden el "Bypass de Oro" y el "Bozal", la confianza neuronal se combina con el vector analítico a través de una sumatoria ponderada controlada por un factor $\alpha$ completamente dinámico. El grado de injerencia que la IA (\texttt{beto\_score}) tiene sobre la nota depende de qué tan segura esté la propia IA de su respuesta. La certidumbre se mide calculando la distancia absoluta del \textit{score} respecto a la frontera de duda (0.5). Si BETO emite un puntaje de 0.99, $\alpha$ crece exponencialmente, otorgando casi el 100\% del peso decisivo a la red neuronal. Si BETO emite un 0.51, $\alpha$ disminuye, forzando a que la decisión dependa matemáticamente de los indicios numéricos (\texttt{heuristic\_score}) generados durante el raspado web.
+\end{description}
+
+\begin{lstlisting}[language=Python, caption={Bypass de Oro y Fusión Simbólica mediante ponderación $\alpha$}, label={lst:alpha_ponderation}]
+# NIVEL 1: Bypass de Oro (Regla Simbolica Estricta)
+if heuristic_score >= 0.80:
+    return max(0.90, beto_score)
+
+# NIVEL 2: Bozal de Penalizacion (Castigo Heuristico)
+if heuristic_score <= 0.15:
+    return beto_score * 0.5
+
+# NIVEL 3: Fusion Neuro-Simbolica (Alpha Dinamico)
+# Distancia hacia la incertidumbre (0.5). A mayor distancia, mas peso a BETO.
+distancia_certidumbre = abs(beto_score - 0.5) * 2.0  
+alpha_beto = 0.5 + (0.5 * distancia_certidumbre) 
+alpha_heuristic = 1.0 - alpha_beto
+
+# Puntaje final fusionado matematicamente
+final_score = (beto_score * alpha_beto) + (heuristic_score * alpha_heuristic)
+\end{lstlisting}
+
+\subsection{El Dashboard de Visualización y Explotación de Datos}
+\label{subsec:tt2_dashboard}
+
+El ciclo de recolección y análisis carece de valor empírico sin una interfaz de explotación para el usuario no técnico final (e.g. organizaciones civiles, periodistas de datos). El diseño arquitectónico del tablero web (\textit{Dashboard}) representó la culminación del Prototipo 4. 
+
+Construida sobre el micro-framework \textit{Flask Blueprint}, la interfaz expone la monumental base de datos PostgreSQL de manera simplificada e intuitiva. Las densidades matemáticas inescrutables arrojadas por HDBSCAN en el clúster semántico son renderizadas lógicamente bajo la nomenclatura visual de "Grupos Temáticos". La interfaz le otorga a cada "Grupo" un espacio cohesivo, traduciendo la cercanía topológica de UMAP en tarjetas legibles que compilan instantáneamente distintas fuentes sobre un mismo caso criminal. 
+
+Además, la plataforma expone el nivel de confianza de la clasificación neuro-simbólica mediante identificadores cromáticos y porcentajes de certidumbre. El operador final solo visualiza un producto periodístico curado, exento de duplicados e indexado bajo estricto orden de criticidad fáctica de orfandad, demostrando que la complejidad teórica subyacente ha sido completamente dominada a favor de la usabilidad operativa en la protección de los derechos de la infancia.

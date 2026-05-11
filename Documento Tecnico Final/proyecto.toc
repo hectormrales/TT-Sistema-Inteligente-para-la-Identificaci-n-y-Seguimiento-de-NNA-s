@@ -1,0 +1,88 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Planteamiento del Problema}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Justificación}{2}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Justificación Social y Operativa}{2}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Justificación Tecnológica}{2}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Objetivos}{3}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Objetivo General}{3}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Objetivos Específicos}{3}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}Evolución y Alcances del Proyecto}{3}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Justificación y Alcance del Proyecto}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Justificación Social}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Justificación Tecnológica}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Justificación Ética y Moral: Protección de la Privacidad de los NNA}{6}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Principio rector: El interés superior del niño}{7}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Naturaleza de la información procesada}{7}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}¿Por qué el sistema no proporciona nombres de NNA?}{7}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Fortaleza ética del enfoque adoptado}{8}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}Compromiso de privacidad}{8}{subsection.2.3.5}%
+\contentsline {section}{\numberline {2.4}Alcance del Sistema}{8}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Alcance funcional}{8}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Alcance geográfico y temporal}{9}{subsection.2.4.2}%
+\contentsline {section}{\numberline {2.5}Limitaciones y Exclusiones}{9}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Exclusiones explícitas del alcance}{9}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Limitaciones técnicas conocidas}{9}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}Alineación con el Protocolo 2026-A135}{10}{section.2.6}%
+\contentsline {chapter}{\numberline {3}Marco Teórico}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Procesamiento de Lenguaje Natural (PLN) y Modelos de Lenguaje}{11}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Evolución hacia la Arquitectura Transformer y Mecanismos de Atención}{11}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}BETO: BERT Preentrenado en Español}{12}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Zero-Shot Classification vs. Fine-Tuning}{12}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Clustering y Agrupación Semántica}{12}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Reducción de Dimensionalidad con UMAP}{12}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Clustering Basado en Densidad con HDBSCAN}{12}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Representación de Tópicos con c-TF-IDF}{13}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}Técnicas de Deduplicación Cross-Site}{13}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Hashing Exacto (MD5)}{13}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Similitud de Conjuntos (Índice de Jaccard)}{13}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Hashing Localmente Sensible (SimHash)}{13}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Similitud del Coseno sobre Matrices TF-IDF}{14}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Web Scraping Dinámico y Evasión}{14}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Protocolo de Exclusión de Robots y Ética de Extracción}{14}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Técnicas Avanzadas de Evasión}{14}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Persistencia y Búsqueda Textual}{15}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Bases de Datos Relacionales (PostgreSQL)}{15}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Full-Text Search (FTS) e Índices Especializados}{15}{subsection.3.5.2}%
+\contentsline {chapter}{\numberline {4}Estado del Arte}{17}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Sistemas de Monitoreo de Medios Tradicionales}{17}{section.4.1}%
+\contentsline {section}{\numberline {4.2}NLP Aplicado a la Detección de Violencia de Género}{17}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Herramientas y Esfuerzos Existentes en México}{18}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Red por los Derechos de la Infancia en México (REDIM)}{18}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}El Mapa de los Feminicidios en México}{18}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Fundación Futuro con Derechos}{18}{subsection.4.3.3}%
+\contentsline {section}{\numberline {4.4}Análisis Comparativo y Brecha Identificada (El Factor Diferenciador)}{18}{section.4.4}%
+\contentsline {chapter}{\numberline {5}Metodología de Desarrollo}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Metodología de Desarrollo Evolutivo Incremental}{21}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Evolución de los Prototipos (P0 al P4)}{22}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Fase 1: Trabajo Terminal I (Prototipos 0, 1 y 2)}{22}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Fase 2: Trabajo Terminal II (Prototipos 3 y 4)}{22}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Stack Tecnológico Comparativo}{22}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}Arquitectura del Sistema (Visión General)}{23}{section.5.3}%
+\contentsline {chapter}{\numberline {6}Desarrollo del TT1: Antecedentes y Prototipos Iniciales}{25}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Prototipo 0: Web Scraping Directo (El Fracaso Documentado)}{25}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Prototipo 1: RSS + K-Means (La Línea Base)}{26}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Prototipo 2: Triple Fuente y Detección Heurística}{26}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Métricas de Desempeño y Limitaciones Identificadas}{26}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Conclusiones del TT1 (Motivación Absoluta para el TT2)}{27}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Desarrollo del TT2: Prototipos 3 y 4}{29}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Prototipo 3: Migración a la Arquitectura Semántica}{29}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Evolución del Almacenamiento: De Archivos Planos a Entidades Relacionales}{29}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}El Motor de Detección BETO: Arquitectura de Inferencias}{30}{subsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.1.3}Estrategias de Scraping Dinámico y Ofuscación}{31}{subsection.7.1.3}%
+\contentsline {section}{\numberline {7.2}Prototipo 4: Sistema Neuro-Simbólico y Agrupamiento Global}{31}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}El Gran Filtro: BERTopic como Contexto Macro}{31}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Lógica Híbrida de Clasificación (El Árbol Inquebrantable)}{31}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}El Dashboard de Visualización y Explotación de Datos}{32}{subsection.7.2.3}%
+\contentsline {chapter}{\numberline {8}Resultados y Evaluación}{35}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Evaluación de la Recolección (Volumen de Ingesta)}{35}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{35}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Evaluación del Agrupamiento (BERTopic)}{36}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{36}{section.8.4}%
+\contentsline {chapter}{\numberline {9}Conclusiones}{37}{chapter.9}%
+\contentsline {chapter}{\numberline {10}Trabajo Futuro}{39}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Extracción de Entidades Nombradas (NER) bajo Principios Éticos}{39}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Generación Automática de Reportes (Exportación)}{39}{section.10.2}%
+\contentsline {section}{\numberline {10.3}API Pública e Interoperabilidad para Organizaciones Civiles}{40}{section.10.3}%
+\contentsline {section}{\numberline {10.4}Despliegue en la Nube (Cloud Architecture) y Escalabilidad}{40}{section.10.4}%
+\contentsline {section}{\numberline {10.5}Validación Piloto en Campo y Refinamiento UX/UI}{40}{section.10.5}%

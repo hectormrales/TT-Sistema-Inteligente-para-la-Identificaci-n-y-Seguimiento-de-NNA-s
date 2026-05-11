@@ -1,0 +1,83 @@
+% !TeX root = proyecto.tex
+
+%========================================================================================
+% CAPÍTULO 5: METODOLOGÍA DE DESARROLLO
+%========================================================================================
+
+\chapter{Metodología de Desarrollo}
+\label{cap:metodologia}
+
+El presente capítulo detalla el marco metodológico utilizado para la concepción, ingeniería y despliegue del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA}. Debido a la alta complejidad algorítmica y la inherente incertidumbre tecnológica del proyecto, se adoptó un enfoque estructurado pero flexible que garantizara la convergencia hacia una solución óptima y escalable.
+
+\section{Metodología de Desarrollo Evolutivo Incremental}
+\label{sec:met_evolutivo_incremental}
+
+Para la construcción de la arquitectura de \textit{software}, se seleccionó el \textbf{Modelo de Desarrollo Evolutivo Incremental basado en Prototipos}. Esta decisión técnica se fundamenta en dos desafíos críticos identificados desde la fase de concepción del proyecto:
+
+\begin{enumerate}
+    \item \textbf{Incertidumbre en la Ingesta de Datos:} El ecosistema web actual cuenta con infraestructuras de seguridad (\textit{Firewalls} de Aplicaciones Web, bloqueos anti-scraping, variabilidad de esquemas DOM) que cambian impredeciblemente. Era imposible predecir qué mecanismos de recolección tendrían éxito sin antes desplegarlos en entornos reales.
+    \item \textbf{Experimentación Algorítmica (IA):} La transición de clasificadores sintácticos rígidos (Expresiones Regulares) hacia modelos fundacionales de Procesamiento de Lenguaje Natural (BETO) requería calibración estocástica, medición de inferencias y ajuste de hiperparámetros. 
+\end{enumerate}
+
+El modelo evolutivo incremental mitiga estos riesgos al dividir el desarrollo en iteraciones cíclicas y rápidas, donde cada ciclo produce un prototipo funcional que refina o expande las capacidades del anterior gracias a una retroalimentación constante empírica. Cada iteración consta de cuatro fases estrictas:
+\begin{itemize}
+    \item \textbf{Análisis:} Definición de requerimientos del ciclo (e.g., mitigar falsos positivos).
+    \item \textbf{Diseño:} Arquitectura de los algoritmos (e.g., introducir \textit{Zero-Shot Classification}).
+    \item \textbf{Implementación:} Codificación del módulo e integración en el ecosistema.
+    \item \textbf{Evaluación:} Pruebas de integración, validación de falsos positivos y medición de rendimiento (\textit{benchmarking}) que dictan las mejoras del siguiente ciclo.
+\end{itemize}
+
+\section{Evolución de los Prototipos (P0 al P4)}
+\label{sec:met_evolucion_prototipos}
+
+El ciclo de vida del proyecto se desplegó orgánicamente a lo largo de dos semestres académicos (Fases TT1 y TT2), materializándose a través de la construcción progresiva de cinco prototipos funcionales.
+
+\subsection{Fase 1: Trabajo Terminal I (Prototipos 0, 1 y 2)}
+La primera fase se centró en probar la viabilidad fáctica de la extracción de información y la mitigación rudimentaria de ruido sintáctico.
+
+\begin{itemize}
+    \item \textbf{Prototipo 0 (P0): Pruebas de Concepto y Fracaso Rápido.} Iteración focalizada en web scraping profundo utilizando selectores de HTML. Se determinó su inviabilidad inmediata debido a bloqueos generalizados por \textit{Cloudflare} (HTTP 403) y \textit{Timeouts}.
+    \item \textbf{Prototipo 1 (P1): Recolección Pasiva.} Transición hacia la ingesta de \textit{feeds} RSS de diez medios periodísticos clave y exportación de hallazgos a formato plano (CSV). Proveyó el primer conjunto de datos real para análisis.
+    \item \textbf{Prototipo 2 (P2): Agrupamiento Estadístico.} Introdujo algoritmos de NLP tradicional, empleando un clasificador de Expresiones Regulares (RegEx) altamente condicionado para la detección de NNA, vectorización TF-IDF y algoritmos de \textit{clustering} básicos. Reveló el ``techo semántico'': RegEx no comprende el contexto, elevando dramáticamente los falsos positivos en narrativas complejas.
+\end{itemize}
+
+\subsection{Fase 2: Trabajo Terminal II (Prototipos 3 y 4)}
+Ante las limitaciones heurísticas y operativas expuestas en TT1, la segunda fase reestructuró la arquitectura hacia un paradigma neuro-simbólico de nivel producción.
+
+\begin{itemize}
+    \item \textbf{Prototipo 3 (P3): Inferencia Semántica y Persistencia Relacional.} Se abandonaron las heurísticas rígidas (RegEx) para migrar a una arquitectura semántica profunda basada en \textbf{BETO} (Arquitectura Transformer) procesado mediante PyTorch. Adicionalmente, el almacenamiento en CSV mutó hacia \textbf{PostgreSQL}, solventando la falta de integridad referencial y permitiendo la deduplicación transaccional masiva (\textit{cross-site deduplication}).
+    \item \textbf{Prototipo 4 (P4): Agrupación Topológica y Despliegue Visual (Versión Final).} Se consolidó el \textit{pipeline} implementando \textbf{BERTopic} (UMAP + HDBSCAN) para la extracción de tópicos subyacentes. Se culminó la interfaz de interacción, exponiendo una API REST robusta que alimenta un \textit{Dashboard Web} interactivo e institucional, proporcionando la herramienta visual definitiva para los usuarios finales.
+\end{itemize}
+
+\subsection{Stack Tecnológico Comparativo}
+\label{subsec:met_stack}
+
+La maduración iterativa forzó una refactorización severa de las dependencias de \textit{software}. La Tabla \ref{tab:stack_evolucion} esquematiza la divergencia tecnológica y el incremento de complejidad arquitectónica entre el final de la Fase TT1 y la consolidación de la Fase TT2.
+
+\begin{table}[H]
+\centering
+\caption{Evolución del Stack Tecnológico (TT1 vs TT2)}
+\label{tab:stack_evolucion}
+\begin{tabular}{|l|p{6.5cm}|p{6.5cm}|}
+\hline
+\textbf{Capa Arquitectónica} & \textbf{Trabajo Terminal 1 (P2)} & \textbf{Trabajo Terminal 2 (P4)} \\ \hline
+\textbf{Lenguaje Base} & Python 3.10 & Python 3.11 \\ \hline
+\textbf{Persistencia de Datos} & Archivos planos granulares (.csv) y manipulación local con \textit{Pandas} & Motor RDBMS PostgreSQL con índices invertidos para FTS (\textit{Full-Text Search}) \\ \hline
+\textbf{Clasificación NLP} & Patrones de exclusión sintáctica explícita (\textit{RegEx}) y tokenización \textit{NLTK} & Modelo pre-entrenado BETO, \textit{Zero-Shot Classification} y Tensores vía \textit{PyTorch} \\ \hline
+\textbf{Agrupamiento Semántico}& Vectorización \textit{TF-IDF} y \textit{Clustering} de densidad elemental (DBSCAN) & \textit{BERTopic}: Reducción de Dimensionalidad Topológica (UMAP) y \textit{HDBSCAN} \\ \hline
+\textbf{Gestión de Duplicados} & Deduplicación estricta por URLs idénticas (\textit{Set de Enlaces}) & Algoritmos tolerantes a fallos (SimHash, Distancia Coseno TF-IDF) \\ \hline
+\textbf{Despliegue e Interfaz} & Scripts por consola (CLI) dependientes del desarrollador & Microservicios contenerizados (Docker), Servidor \textit{Flask} REST y \textit{Dashboard} HTML5 \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Arquitectura del Sistema (Visión General)}
+\label{sec:met_arquitectura_vision}
+
+La culminación de este modelo metodológico (Prototipo 4) es un ecosistema distribuido regido por el principio de separación de responsabilidades (\textit{Separation of Concerns}). A nivel conceptual, el \textit{pipeline} neuro-simbólico fluye a través de cuatro módulos orquestados que interactúan secuencialmente:
+
+\begin{enumerate}
+    \item \textbf{Módulo Colector (Ingesta de Datos):} Rutinas asíncronas encargadas de escanear canales RSS y motores indexados para extraer el corpus crudo en lenguaje natural, burlando bloqueos mediante sesiones ofuscadas (\textit{Stealth Sessions}).
+    \item \textbf{Módulo de Deduplicación Cross-Site:} Filtro algorítmico geométrico (SimHash, Jaccard) que confronta el texto crudo entrante contra la base de datos viva, purgando las copias exactas y las reescrituras de paráfrasis periodísticas antes de que consuman ciclos costosos de cómputo GPU/CPU.
+    \item \textbf{Motor de Inferencia Semántica y Agrupación (Analizador):} El núcleo computacional. Mapea cada artículo depurado mediante la inferencia de \textbf{BETO} para discriminar positivamente los escenarios de orfandad por feminicidio. Posteriormente, somete los artículos aprobados al agrupador topológico \textbf{BERTopic} para encontrar la correlación entre eventos distintos sin supervisión humana.
+    \item \textbf{Capa de Persistencia y Tablero Visual (Dashboard):} Todos los registros validados, junto con sus tópicos y nivel de prioridad algorítmica, son depositados transaccionalmente en la base de datos relacional. Esta información es servida inmediatamente vía \textit{endpoints} HTTP a un tablero analítico, donde los tomadores de decisiones pueden auditar las noticias, visualizar clústeres interactivos y gestionar respuestas fácticas.
+\end{enumerate}

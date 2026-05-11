@@ -1,0 +1,117 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  cdtBook.sty                                                   %
+%  2017/05/30, v1.0 CDT-BOOK Biblioteca para documentos formales %
+%  Autor: Ulises Vélez Saldaña.                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cdt/cdtBook}[2010/05/30, v1.0 CDT-ESCOM-IPN Plantilla para reportes de la Coordinación]
+
+\RequirePackage[utf8]{inputenc}                      % Codificación de caracteres en UTF-8.
+\RequirePackage[spanish]{babel}                      % Cambia las variables del documento a español.
+\RequirePackage{cmbright}                            % Fuente de letras, tras opciones: arev, cmbright, pxfonts.
+\RequirePackage{graphicx}	                         % Manejo de imágenes.
+\RequirePackage[usenames,dvipsnames]{color}          % Para usar y definir colores.
+\RequirePackage{wallpaper}                           % Colocar imágenes en el fondo del documento.
+\RequirePackage{fancyhdr}                            % Manejo de encabezados.
+\RequirePackage[hmargin=2cm,vmargin=3.5cm, head=2cm]{geometry} % Manejo de márgenes del documento.
+\RequirePackage[Sonny]{fncychap}                     % Manejo de capítulos: Sonny, Lenny, Glenn, Conny, Rejne and Bjarne.
+\RequirePackage{marvosym}                            % Algunos símbolos.
+
+%=====================================================
+% Definición de colores
+\definecolor{titleColor}{rgb}{0.3, 0.3, 0.3}
+\definecolor{subTitleColor}{rgb}{0.45, 0.45, 0.45}
+\definecolor{authorColor}{rgb}{0.1, 0.3, 0.7}
+\definecolor{sectionColor}{rgb}{0.1, 0.3, 0.7}
+\definecolor{subsectionColor}{rgb}{0.1, 0.3, 0.7}
+\definecolor{instruccionesColor}{rgb}{0.5, 0.5, 0.5}
+\definecolor{colorPrincipal}{rgb}{0.3, 0.3, 0.3}
+\definecolor{colorSecundario}{rgb}{0.45, 0.45, 0.45}
+\definecolor{colorAgua}{rgb}{0.91, 0.96, 0.99}
+
+
+%=====================================================
+% Definición de encabezados
+\pagestyle{fancy}
+
+%=====================================================
+% Variables del documento
+\newcommand{\varSubTitle}{}
+
+%-----------------------------------------------------
+% use \subtitle{su subtitulo}
+\newcommand{\subtitle}[1]{\renewcommand{\varSubTitle}{#1}}
+
+\newcommand{\varTitle}[1]{}
+\let\varTitle=\title
+
+%-----------------------------------------------------
+% use \title{titulo del documento}
+\renewcommand{\title}[1]{%	
+	\varTitle{{\Huge\color{titleColor}#1}%
+	\\{\LARGE \color{subTitleColor}\varSubTitle}~{}\bigskip\\\color{authorColor}\rule{\textwidth}{1mm}}%
+}
+
+\newcommand{\varOrganization}{Escuela Superior de Cómputo, IPN}
+
+%-----------------------------------------------------
+% use \organizción{nombre de su organización}
+\newcommand{\organization}[1]{\renewcommand{\varOrganization}{#1}}
+
+
+\newcommand{\varAuthor}[1]{}
+\let\varAuthor=\author
+
+%-----------------------------------------------------
+% use \author{nombre del autor}
+\renewcommand{\author}[1]{%
+	\varAuthor{\color{authorColor}#1\\\color{subTitleColor}\varOrganization}%
+}
+
+\renewcommand{\labelitemi}{\color{sectionColor}\textbullet}
+
+
+%=====================================================
+% Estilo para los Capítulos y secciones
+\ChTitleVar{\Large\sf\color{sectionColor}}
+\ChNameVar{\Large\sf\color{subsectionColor}}
+
+\let\LaTeX@startsection\@startsection
+\renewcommand{\@startsection}[6]{\LaTeX@startsection%
+{#1}{#2}{#3}{#4}{#5}{\color{sectionColor}\raggedright #6}} 
+
+%%=====================================================
+%% Estilo para Parte
+\newcommand{\varPart}[1]{}
+\let\varPart=\part
+\renewcommand{\part}[1]{%
+	{\color{sectionColor}\varPart{#1}%
+}}
+
+
+
+%=====================================================
+\newcommand{\cdtInstrucciones}[1]{}
+\newcommand{\varCdtInstrucciones}[1]{{\em\color{instruccionesColor}#1}}
+
+%-----------------------------------------------------
+% use \showInstrucciones
+\newcommand{\showInstrucciones}{%
+	\let\cdtInstrucciones=\varCdtInstrucciones%
+}
+
+%-----------------------------------------------------
+% use dentro de una celda de una tabla:
+% \begin{Titemize}
+%	\Titem Bla bla bla
+% \end{Titemize}
+\newenvironment{Titemize}{\vspace{-.8em}}{\vspace{0em}}
+
+\newcommand{\Titem}[1][\textbullet]{%
+	\par{ \color{colorPrincipal}{#1} }%
+}
+
+%-----------------------------------------------------
+% use \cdtEmpty
+\newcommand{\cdtEmpty}{\hspace{10pt}}

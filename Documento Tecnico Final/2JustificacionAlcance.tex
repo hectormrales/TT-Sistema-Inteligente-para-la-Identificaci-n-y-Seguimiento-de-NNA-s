@@ -1,0 +1,212 @@
+% !TeX root = proyecto.tex
+
+%=========================================================
+\chapter{Justificación y Alcance del Proyecto}
+\label{cap:justificacionAlcance}
+
+Este capítulo presenta la justificación social, tecnológica y ética que sustenta el desarrollo del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA}, así como el alcance del sistema, sus limitaciones y la alineación con el protocolo de Trabajo Terminal 2026-A135.
+
+%---------------------------------------------------------
+\section{Justificación Social}
+\label{sec:justificacionSocial}
+
+Entre 2010 y 2023, más de 8{,}000 mujeres fueron víctimas de feminicidio en México, según datos de la Secretaría de Gobernación \cite{segob2023}. Detrás de estas cifras se encuentran miles de niñas, niños y adolescentes (NNA) que quedaron en condición de orfandad. La Red por los Derechos de la Infancia en México (REDIM) estima que al menos 3{,}500 NNA perdieron a su madre por feminicidio entre 2012 y 2022 \cite{redim2023}; sin embargo, no existe un censo oficial ni un sistema de seguimiento que permita dimensionar con precisión el alcance de esta crisis.
+
+La información sobre los hijos e hijas de las víctimas se encuentra fragmentada y dispersa: puede aparecer en una nota periodística local, en el comunicado de una fiscalía estatal o en los archivos internos de alguna organización civil. Sin un mecanismo que conecte estos fragmentos de información, resulta prácticamente imposible rastrear qué ha sucedido con esos menores: si recibieron atención psicológica, si mantienen acceso a educación, si se les garantizó reparación del daño o si fueron canalizados a instituciones como el Sistema DIF.
+
+Las consecuencias de esta dispersión son directas y cuantificables:
+
+\begin{itemize}
+    \item \textbf{Para las organizaciones civiles:} Fundaciones como \textit{Futuro con Derechos} dedican varias horas semanales a revisar manualmente decenas de sitios de noticias buscando casos donde se mencione a hijos de víctimas de feminicidio. Reconocen que muchos casos pasan desapercibidos porque es imposible revisar todas las fuentes disponibles con recursos humanos limitados.
+    
+    \item \textbf{Para las autoridades:} Sin datos estructurados ni trazables, las instituciones gubernamentales carecen de información para evaluar la efectividad de sus programas de atención a víctimas indirectas y para diseñar políticas públicas basadas en evidencia.
+    
+    \item \textbf{Para las familias:} Los familiares de las víctimas frecuentemente desconocen sus derechos, las instituciones de apoyo disponibles y los mecanismos de reparación del daño. La falta de un sistema de seguimiento dificulta la coordinación interinstitucional.
+\end{itemize}
+
+Un sistema automatizado que actúe como filtro inicial ---procesando cientos de noticias diarias, identificando las potencialmente relevantes y presentándolas estructuradas--- permite que las organizaciones dediquen su tiempo al seguimiento de casos concretos en lugar de a la búsqueda manual de información.
+
+%---------------------------------------------------------
+\section{Justificación Tecnológica}
+\label{sec:justificacionTecnologica}
+
+La revisión manual de medios de comunicación es inviable a escala nacional. México cuenta con cientos de medios digitales ---nacionales, estatales y locales--- que publican diariamente noticias relacionadas con feminicidios. La cobertura periodística de cada caso varía significativamente: algunos eventos son cubiertos por múltiples medios con redacciones diferentes, mientras que otros aparecen exclusivamente en medios regionales de bajo alcance.
+
+Durante el desarrollo del Trabajo Terminal 1 (TT1), se probaron tres enfoques de recolección que evidenciaron la complejidad técnica del problema:
+
+\begin{enumerate}
+    \item \textbf{Scraping directo (Prototipo 0):} Fracasó completamente. Los medios modernos emplean protecciones como Cloudflare, contenido renderizado con JavaScript y bloqueos HTTP 403, haciendo inviable la extracción directa de HTML.
+    
+    \item \textbf{RSS básico (Prototipo 1):} Funcionó parcialmente con 8 fuentes RSS, recolectando aproximadamente 96 noticias en dos semanas. Sin embargo, la cobertura se limitaba a medios nacionales con feeds públicos.
+    
+    \item \textbf{Triple fuente (Prototipo 2):} Combinó 10 RSS, Google News API y scraping histórico, alcanzando 281 noticias únicas. Este enfoque demostró la viabilidad de la recolección multi-fuente, pero mantenía limitaciones en la detección semántica (10\% de falsos positivos con regex).
+\end{enumerate}
+
+El TT2 evoluciona estas estrategias mediante la integración de tecnologías de Procesamiento de Lenguaje Natural (PLN) de última generación:
+
+\begin{description}
+    \item[BETO (BERT en español):] Modelo de lenguaje preentrenado con 110 millones de parámetros que permite comprender el contexto semántico de las noticias, distinguiendo entre casos concretos de feminicidio con NNA afectados y noticias de legislación, campañas o estadísticas que mencionan las mismas palabras clave.
+    
+    \item[BERTopic:] Sistema de clustering semántico que combina embeddings contextuales (BETO), reducción de dimensionalidad (UMAP) y clustering basado en densidad (HDBSCAN) para agrupar noticias por similitud de significado, no solo de vocabulario.
+    
+    \item[Deduplicación cross-site:] Cascada de cuatro algoritmos (Hash MD5, Jaccard, SimHash, TF-IDF coseno) que elimina automáticamente noticias duplicadas o cuasi-duplicadas provenientes de diferentes medios.
+    
+    \item[PostgreSQL:] Base de datos relacional que reemplaza el almacenamiento en archivos CSV, habilitando consultas complejas, integridad referencial y acceso concurrente.
+\end{description}
+
+Estas tecnologías transforman texto no estructurado en datos consultables, permitiendo análisis cuantitativos (tendencias temporales, distribución geográfica) y cualitativos (agrupación temática, seguimiento de casos) que serían imposibles mediante revisión manual.
+
+%---------------------------------------------------------
+\section{Justificación Ética y Moral: Protección de la Privacidad de los NNA}
+\label{sec:justificacionEtica}
+
+\subsection{Principio rector: El interés superior del niño}
+
+El desarrollo de este sistema se enmarca en un principio ético fundamental: \textbf{el interés superior del niño}, consagrado en el artículo 3 de la Convención sobre los Derechos del Niño de las Naciones Unidas \cite{onu1989} y en el artículo 2 de la Ley General de los Derechos de Niñas, Niños y Adolescentes de México \cite{lgdnna2014}. Este principio establece que cualquier acción que involucre a menores de edad debe priorizar su bienestar, protección y dignidad por encima de cualquier otro interés.
+
+En concordancia con este principio, el sistema ha sido diseñado desde su concepción con una restricción deliberada y no negociable: \textbf{no identifica ni almacena datos personales de los NNA reales}.
+
+\subsection{Naturaleza de la información procesada}
+
+Es fundamental aclarar la naturaleza de los datos que el sistema procesa y la distinción entre lo que el sistema \textit{identifica} y lo que \textit{no identifica}:
+
+\begin{table}[h]
+\centering
+\caption{Distinción entre información procesada y excluida}
+\label{tab:distincionDatos}
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{El sistema SÍ identifica} & \textbf{El sistema NO identifica} \\ \hline
+Noticias que mencionan feminicidios & Nombres reales de los NNA afectados \\ \hline
+Menciones genéricas a NNA como víctimas indirectas (ej.: ``dejó 3 hijos menores'') & Datos personales de los menores (edad exacta, CURP, domicilio) \\ \hline
+Contexto del caso: ubicación geográfica, fecha, instituciones involucradas & Identidad verificada de ningún menor \\ \hline
+Nombres de víctimas adultas (cuando aparecen en la nota periodística) & Fotografías ni datos biométricos de NNA \\ \hline
+Patrones y tendencias estadísticas & Información no publicada en medios \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{¿Por qué el sistema no proporciona nombres de NNA?}
+
+La ausencia de nombres e identidades de los NNA en los resultados del sistema \textbf{no es una limitación técnica, sino una decisión ética respaldada por un marco normativo y periodístico sólido}:
+
+\begin{enumerate}
+    \item \textbf{Los medios de comunicación protegen la identidad de los menores.} El Código de Ética Periodística de la UNESCO y los códigos editoriales de los principales medios mexicanos establecen que la identidad de los NNA víctimas ---directas o indirectas--- debe ser resguardada. Por esta razón, las notas periodísticas que constituyen la fuente primaria del sistema rara vez incluyen los nombres completos de los menores. En su lugar, utilizan referencias genéricas: ``sus tres hijos menores de edad'', ``una niña de 5 años'', ``los menores quedaron bajo custodia de la abuela''. Esta práctica periodística responsable se refleja necesariamente en los datos que el sistema puede extraer.
+    
+    \item \textbf{La Ley General de los Derechos de Niñas, Niños y Adolescentes (LGDNNA).} El artículo 76 de la LGDNNA prohíbe la difusión de datos personales de NNA que permitan su identificación cuando estos se encuentran en situación de vulnerabilidad. Los NNA que han perdido a su madre por feminicidio se encuentran, por definición, en una de las situaciones de mayor vulnerabilidad contempladas por la ley. Cualquier sistema que pretendiera identificarlos nominalmente estaría en violación directa de esta disposición legal.
+    
+    \item \textbf{El Protocolo de Palermo y la normativa internacional.} Los instrumentos internacionales de protección a la infancia, incluido el Protocolo Facultativo de la Convención sobre los Derechos del Niño, establecen que los Estados deben garantizar la privacidad de los menores víctimas en todos los procedimientos, incluidos los de documentación e investigación. Nuestro sistema respeta este marco al limitarse a identificar \textit{la existencia} de NNA afectados, sin revelar \textit{quiénes son}.
+    
+    \item \textbf{Principio de minimización de datos (RGPD/LFPDPPP).} Siguiendo las mejores prácticas internacionales de protección de datos ---reflejadas en el Reglamento General de Protección de Datos de la Unión Europea y en la Ley Federal de Protección de Datos Personales en Posesión de Particulares de México--- el sistema recolecta y almacena únicamente los datos estrictamente necesarios para cumplir su propósito: identificar la \textit{existencia de noticias} sobre NNA afectados, no la identidad de los NNA mismos.
+\end{enumerate}
+
+\subsection{Fortaleza ética del enfoque adoptado}
+
+Lejos de ser una debilidad, esta restricción constituye una \textbf{fortaleza ética fundamental} del sistema:
+
+\begin{itemize}
+    \item \textbf{El sistema identifica el fenómeno, no a las personas.} Su valor radica en hacer visible la dimensión de la crisis de orfandad por feminicidio ---cuántos casos, dónde, con qué frecuencia--- sin comprometer la dignidad ni la privacidad de los menores involucrados.
+    
+    \item \textbf{Herramienta de apoyo, no sustituto de intervención.} El sistema está concebido como un instrumento de alerta temprana y documentación que facilita el trabajo de organizaciones especializadas. La intervención social, la verificación de datos y el contacto con las familias corresponden exclusivamente a profesionales capacitados en trabajo social, psicología y derecho, quienes operan bajo protocolos estrictos de confidencialidad.
+    
+    \item \textbf{Alineación con IA ética.} El diseño del sistema se adhiere a los principios de Inteligencia Artificial ética establecidos por la OECD \cite{oecd2019}: transparencia en el procesamiento, responsabilidad en el uso de datos, y priorización del bienestar humano sobre la capacidad técnica.
+\end{itemize}
+
+\subsection{Compromiso de privacidad}
+
+El equipo de desarrollo establece el siguiente compromiso formal:
+
+\begin{quotation}
+    \textit{El Sistema Inteligente para la Identificación y Seguimiento de NNA se compromete a no recolectar, almacenar, procesar ni difundir datos personales de niñas, niños y adolescentes. Toda la información procesada proviene exclusivamente de fuentes periodísticas públicas, y los resultados del sistema se limitan a identificar la existencia de noticias relevantes, patrones estadísticos y tendencias temporales, sin revelar la identidad de ningún menor de edad.}
+\end{quotation}
+
+%---------------------------------------------------------
+\section{Alcance del Sistema}
+\label{sec:alcance}
+
+\subsection{Alcance funcional}
+
+El sistema desarrollado abarca las siguientes capacidades, implementadas progresivamente a lo largo de cinco prototipos (P0--P4):
+
+\begin{Titemize}
+    \Titem \textbf{Recolección automatizada multi-fuente:} Extracción de noticias desde aproximadamente 45 fuentes RSS, 14 queries de Google News, scraping dinámico de HTML/Sitemap y búsquedas en Google Search con StealthSession.
+    
+    \Titem \textbf{Detección semántica de relevancia:} Clasificación de noticias mediante un scoring de 4 ejes (feminicidio, NNA, caso individual, víctima indirecta) utilizando el modelo BETO (BERT en español) con inferencia por lotes (batch inference) en PyTorch.
+    
+    \Titem \textbf{Deduplicación cross-site:} Eliminación automática de noticias duplicadas o cuasi-duplicadas mediante cascada de 4 algoritmos (Hash MD5, Jaccard, SimHash, TF-IDF coseno).
+    
+    \Titem \textbf{Clustering semántico:} Agrupación de noticias por similitud de significado mediante BERTopic (BETO embeddings + UMAP + HDBSCAN + c-TF-IDF).
+    
+    \Titem \textbf{Almacenamiento relacional:} Persistencia en PostgreSQL con esquema normalizado, Full-Text Search e índices optimizados.
+    
+    \Titem \textbf{Dashboard interactivo:} Interfaz web con autenticación (Argon2id), gestión de fuentes, filtros avanzados, visualización de estadísticas con Chart.js y exportación de datos.
+    
+    \Titem \textbf{Gestión de fuentes:} Módulo para agregar, editar, probar, sondear y activar/desactivar fuentes de noticias directamente desde la interfaz web.
+\end{Titemize}
+
+\subsection{Alcance geográfico y temporal}
+
+\begin{description}
+    \item[Geográfico:] Cobertura nacional con énfasis en medios mexicanos. Incluye medios nacionales (La Jornada, Proceso, Animal Político, El Universal, Milenio, entre otros), medios especializados en género y derechos humanos (CIMAC Noticias, Luchadoras) y medios regionales (El Sol de Toluca, Diario de Xalapa, Noroeste, entre otros).
+    
+    \item[Temporal:] El sistema procesa noticias desde enero de 2025 hasta la fecha actual (mayo 2026), con capacidad de extensión retrospectiva mediante el módulo de scraping histórico.
+\end{description}
+
+%---------------------------------------------------------
+\section{Limitaciones y Exclusiones}
+\label{sec:limitaciones}
+
+\subsection{Exclusiones explícitas del alcance}
+
+El sistema \textbf{no} contempla las siguientes funcionalidades:
+
+\begin{Titemize}
+    \Titem No identifica ni almacena nombres ni datos personales de NNA reales (justificación ética detallada en la Sección~\ref{sec:justificacionEtica}).
+    
+    \Titem No realiza intervención social directa. Es una herramienta de documentación y alerta, no un sistema de gestión de casos.
+    
+    \Titem No accede a bases de datos gubernamentales cerradas (fiscalías, DIF, registros civiles). Toda la información proviene de fuentes periodísticas públicas.
+    
+    \Titem No valida la veracidad de las noticias. El sistema asume que las fuentes periodísticas monitoreadas mantienen estándares editoriales mínimos, pero no verifica la exactitud factual de cada nota.
+    
+    \Titem No implementa Named Entity Recognition (NER) completo con fine-tuning. Esta funcionalidad se identifica como trabajo futuro.
+\end{Titemize}
+
+\subsection{Limitaciones técnicas conocidas}
+
+\begin{enumerate}
+    \item \textbf{Dependencia de fuentes periodísticas:} La cobertura del sistema está limitada a lo que los medios publican. Feminicidios no cubiertos por la prensa o que ocurren en zonas con escasa cobertura mediática no serán detectados.
+    
+    \item \textbf{Precisión del modelo semántico:} Aunque BETO mejora sustancialmente la detección respecto a los patrones regex del TT1, el modelo de zero-shot classification tiene limitaciones inherentes al no estar fine-tuned específicamente para el dominio. Se estima una tasa de falsos positivos $\leq$5\%.
+    
+    \item \textbf{Protecciones anti-scraping:} Algunos medios implementan protecciones agresivas (CAPTCHAs, rate limiting estricto, paywalls) que pueden impedir la recolección de sus contenidos.
+    
+    \item \textbf{Latencia en tiempo real:} El sistema opera con ciclos de recolección programados (cada 6--24 horas), no en tiempo real. Existe un desfase entre la publicación de una noticia y su procesamiento.
+    
+    \item \textbf{Idioma:} El sistema está optimizado exclusivamente para noticias en español. Noticias en lenguas indígenas o en inglés no son procesadas.
+\end{enumerate}
+
+%---------------------------------------------------------
+\section{Alineación con el Protocolo 2026-A135}
+\label{sec:alineacionProtocolo}
+
+El desarrollo del TT2 se alinea con las metas y entregables definidos en el protocolo de registro 2026-A135, aprobado por la Comisión de Trabajos Terminales. La siguiente tabla establece la correspondencia entre los objetivos del protocolo y los componentes implementados:
+
+\begin{table}[h]
+\centering
+\caption{Correspondencia entre objetivos del protocolo y componentes implementados}
+\label{tab:alineacionProtocolo}
+\begin{tabular}{|p{5cm}|p{5cm}|c|}
+\hline
+\textbf{Meta del Protocolo} & \textbf{Componente Implementado} & \textbf{Estado} \\ \hline
+Migrar detección de regex a modelos semánticos & SemanticDetector con BETO (zero-shot + 4 ejes) & $\checkmark$ \\ \hline
+Implementar base de datos relacional & PostgreSQL con SQLAlchemy ORM & $\checkmark$ \\ \hline
+Ampliar cobertura de fuentes & 45+ fuentes RSS + Google Search + scraping dinámico & $\checkmark$ \\ \hline
+Implementar clustering semántico & BERTopic (BETO + UMAP + HDBSCAN) & $\checkmark$ \\ \hline
+Desarrollar interfaz web completa & Dashboard con autenticación, gestión de fuentes, filtros & $\checkmark$ \\ \hline
+Deduplicación avanzada & Cascada de 4 fases (Hash, Jaccard, SimHash, TF-IDF) & $\checkmark$ \\ \hline
+Implementar NER completo & Parcial: extracción contextual básica & $\sim$ \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Nota:} La implementación de Named Entity Recognition (NER) con fine-tuning de spaCy, originalmente contemplada en el protocolo, se implementó de forma parcial mediante extracción contextual basada en patrones. La versión completa con modelos fine-tuned se identifica como trabajo futuro, justificado por la priorización de la precisión del detector semántico y la estabilización de la arquitectura de producción.
+

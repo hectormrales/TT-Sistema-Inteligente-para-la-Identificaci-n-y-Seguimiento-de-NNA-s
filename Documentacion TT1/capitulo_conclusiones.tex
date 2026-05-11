@@ -1,0 +1,406 @@
+% CAPÍTULO 7: CONCLUSIONES DEL TT1
+
+%----------------------------------------------------------------------------------------
+% INTRODUCCIÓN AL CAPÍTULO
+%----------------------------------------------------------------------------------------
+Este capítulo sintetiza los resultados del desarrollo evolutivo de tres prototipos. El objetivo del TT1 era validar la viabilidad técnica de un sistema automatizado para identificar noticias sobre feminicidios con NNA huérfanos.
+
+Los resultados demuestran cumplimiento exitoso: arquitectura validada, métricas cuantificables generadas, y limitaciones técnicas identificadas con precisión para TT2.
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 7.1: CUMPLIMIENTO DE OBJETIVOS DEL TT1
+%----------------------------------------------------------------------------------------
+\section{Cumplimiento de los Objetivos del TT1}
+\label{sec:cumplimiento_objetivos}
+
+El TT1 estableció como objetivo general validar la viabilidad técnica de un sistema automatizado para identificar y clasificar noticias sobre feminicidios que involucren NNA huérfanos.
+
+\subsection{Objetivo Específico 1: Diseñar e Implementar un flujo de Recolección}
+\label{subsec:obj1_cumplido}
+
+\textbf{Estado:} ✓ \textbf{Cumplido exitosamente.}
+
+El flujo de recolección multi-fuente fue implementado y validado en el Prototipo 2:
+
+\begin{itemize}
+    \item \textbf{Triple fuente funcional:} 10 feeds RSS + Google News API + Historical Scraper.
+    \item \textbf{Volumen recolectado:} 470 noticias raw en una ejecución (Sección \ref{sec:resultados_recoleccion}).
+    \item \textbf{Deduplicación automática:} 40.2\% de duplicados detectados (189/470), generando 281 noticias únicas.
+    \item \textbf{Trazabilidad garantizada:} Todas las noticias incluyen \texttt{enlace}, \texttt{fuente}, \texttt{fecha} (RNF-08).
+    \item \textbf{Robustez validada:} Manejo de errores HTTP, rate limiting, checkpoints cada 30 noticias.
+\end{itemize}
+
+\textbf{Evidencia cuantitativa:} La cobertura se incrementó 193\% respecto al Prototipo 1 (96 → 281 noticias), validando la efectividad de la estrategia multi-fuente.
+
+\subsection{Objetivo Específico 2: Desarrollar un Módulo de Detección Especializada}
+\label{subsec:obj2_cumplido}
+
+\textbf{Estado:} ✓ \textbf{Cumplido exitosamente.}
+
+La clase \texttt{FeminicideDetector} con 72 patrones regex especializados demostró ser efectiva:
+
+\begin{itemize}
+    \item \textbf{Tasa de detección NNA:} 44.8\% (126/281 noticias), superando la meta de 40\% establecida.
+    \item \textbf{Casos objetivo identificados:} 52 noticias (18.5\%) cumplen ambos criterios (feminicidio + NNA).
+    \item \textbf{Reducción de falsos positivos:} 40\% (P1) → 10\% (P2) mediante 17 patrones de exclusión.
+    \item \textbf{Validación cualitativa:} 90\% de precisión en muestra aleatoria de 20 noticias (Sección \ref{subsec:resultados_detector}).
+\end{itemize}
+
+\textbf{Evidencia cuantitativa:} La mejora de 59\% en detección NNA (28.1\% → 44.8\%) valida la arquitectura de patrones especializados como solución viable para el baseline del TT1.
+
+\subsection{Objetivo Específico 3: Implementar un flujo de PNL con Clustering}
+\label{subsec:obj3_cumplido}
+
+\textbf{Estado:} ✓ \textbf{Cumplido exitosamente.}
+
+El flujo completo de procesamiento de lenguaje natural fue implementado y evaluado:
+
+\begin{itemize}
+    \item \textbf{Vectorización TF-IDF:} Matriz 242×3000 con captura de términos especializados ('custodia', 'DIF', 'tutor legal').
+    \item \textbf{Modelado de tópicos LDA:} 8 tópicos identificados, incluyendo:
+    \begin{itemize}
+        \item Tópico 2 (huérfanos, custodia, DIF): 29 noticias altamente relevantes.
+        \item Tópico 5 (estadísticas REDIM): 22 noticias filtrables automáticamente.
+    \end{itemize}
+    \item \textbf{Clustering DBSCAN:} 3 clusters temáticos + 199 outliers (81.4\%), con Silhouette Score de 0.48 (mejora de 109\% vs P1).
+    \item \textbf{Clusters identificados:}
+    \begin{itemize}
+        \item Cluster 1 (Caso Ángela Birkenbach): 5 noticias del mismo evento, validando utilidad para seguimiento de casos.
+        \item Cluster 2 (Huérfanos por feminicidio): 3 noticias sobre problemática estructural.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Evidencia cuantitativa:} La mejora del 109\% en calidad de clustering (Silhouette 0.23 → 0.48) valida el cambio de K-Means a DBSCAN como decisión técnica correcta.
+
+\subsection{Objetivo Específico 4: Desarrollar una API y Dashboard Funcionales}
+\label{subsec:obj4_cumplido}
+
+\textbf{Estado:} ✓ \textbf{Cumplido exitosamente.}
+
+La interfaz de acceso al sistema fue implementada y validada:
+
+\begin{itemize}
+    \item \textbf{API REST funcional:} 6 endpoints operativos (\texttt{/health}, \texttt{/noticias}, \texttt{/buscar}, \texttt{/clusters}, \texttt{/estadisticas}).
+    \item \textbf{Búsqueda semántica básica:} Diccionario de sinónimos con mejora de +1,475\% en recall (126 vs 8 noticias).
+    \item \textbf{Dashboard web operativo:} 4 secciones (Estadísticas, Buscador, Clusters, Noticias Objetivo).
+    \item \textbf{Despliegue con Docker:} Validación multi-plataforma (Windows 11, Linux Ubuntu).
+    \item \textbf{Tiempo de respuesta:} < 2 segundos en búsquedas (cumple RNF-02).
+\end{itemize}
+
+\textbf{Evidencia cuantitativa:} El sistema procesa y visualiza 242 noticias analizadas, 52 casos objetivo, 3 clusters, y 91 feminicidios detectados de manera funcional.
+
+\subsection{Conclusión sobre Cumplimiento de Objetivos}
+\label{subsec:conclusion_objetivos}
+
+Los cuatro objetivos específicos del TT1 fueron cumplidos exitosamente. El sistema desarrollado:
+
+\begin{enumerate}
+    \item Recolecta noticias de manera robusta (470 raw → 281 únicas).
+    \item Detecta casos objetivo con precisión aceptable (52 casos, 10\% falsos positivos).
+    \item Agrupa noticias por similitud semántica (3 clusters, Silhouette 0.48).
+    \item Provee acceso humano mediante API y dashboard funcional.
+\end{enumerate}
+
+Estos resultados validan la \textbf{prueba de concepto} y establecen la línea base técnica para el TT2.
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 7.2: APRENDIZAJES CLAVE DE LA METODOLOGÍA EVOLUTIVA
+%----------------------------------------------------------------------------------------
+\section{Aprendizajes Clave de la Metodología Evolutiva}
+\label{sec:aprendizajes}
+
+El desarrollo incremental permitió identificar y resolver problemas técnicos tempranamente, evitando retrabajo costoso. Se sintetizan las lecciones técnicas más importantes.
+
+\subsection{Web Scraping Directo: Limitaciones}
+\label{subsec:leccion_scraping}
+
+P0 (17-23 septiembre 2025) fracasó completamente (0 noticias) por Cloudflare, contenido JavaScript y bloqueos HTTP 403.
+
+\textbf{Lección:} Web scraping directo no es viable para medios modernos. Priorizar fuentes estructuradas (RSS, APIs).
+
+\subsection{K-Means vs DBSCAN}
+\label{subsec:leccion_kmeans}
+
+P1 usó K-Means con k=4. Problemas: forzamiento artificial de clusters, sin justificación para k=4, baja coherencia (Silhouette 0.23).
+
+\textbf{Lección:} Para distribución heterogénea se requieren algoritmos basados en densidad.
+
+P2: DBSCAN (eps=0.8) logró 3 clusters cohesivos, Silhouette 0.48 (+109%), y 199 outliers correctamente interpretados como noticias únicas.
+
+\subsection{Patrones de Exclusión}
+\label{subsec:leccion_detector}
+
+P1: 15 palabras clave simples generaron 40% falsos positivos (noticias legislativas, campañas, estadísticas).
+
+\textbf{Lección:} Detección regex requiere dual-stage con patrones de exclusión.
+
+P2: 72 patrones (40+15+17) redujeron falsos positivos a 10%.
+
+\subsection{Deduplicación, Rate Limiting y Otras Lecciones}
+\label{subsec:leccion_otras}
+
+\textbf{Deduplicación sobre título + contenido:} Similitud coseno sobre vectores TF-IDF de título+contenido concatenados. Threshold 0.75 deduplicó 40.2\% (189/470) sin eliminar variantes informativas.
+
+\textbf{Google News API - Rate Limiting:} Delays aleatorios 2-5s + checkpoints cada 30 requests evitaron HTTP 429. Recolectó 148 noticias sin bloqueos.
+
+\textbf{TF-IDF Features:} Incremento de 1000 a 3000 features + bigramas capturó términos especializados ('custodia', 'DIF', 'tutor legal'), mejorando clustering +109%.
+
+\textbf{Docker Volumes:} Named volumes para datos críticos garantizaron persistencia entre reinicios de contenedores.
+
+\subsection{Síntesis}
+\label{subsec:sintesis_aprendizajes}
+
+La metodología evolutiva permitió validar o descartar tecnologías tempranamente, iterar sobre parámetros con evidencia empírica, y acumular conocimiento sin retrabajo.
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 7.3: LIMITACIONES CRÍTICAS Y HOJA DE RUTA PARA EL TT2
+%----------------------------------------------------------------------------------------
+\section{Limitaciones Críticas y Hoja de Ruta para el TT2}
+\label{sec:trabajo_futuro}
+
+A pesar de los logros del TT1, el análisis de resultados (Sección \ref{sec:limitaciones_prototipo}) identificó \textbf{5 limitaciones críticas} que impiden considerar el sistema como producto final. Estas limitaciones definen claramente los objetivos técnicos del Trabajo Terminal 2 (Prototipos 3-4, febrero-junio 2026).
+
+\subsection{Limitación 1: Detección Sintáctica vs. Detección Semántica}
+\label{subsec:lim1_semantica}
+
+\textbf{Problema actual:} El \texttt{FeminicideDetector} con 72 patrones regex no entiende \textbf{contexto semántico}, generando 10\% de falsos positivos en noticias sobre legislación, campañas y estadísticas.
+
+\textbf{Meta TT2:} Migrar a modelos semánticos basados en embeddings contextuales.
+
+\textbf{Solución propuesta (Prototipo 3):}
+\begin{enumerate}
+    \item \textbf{Implementar BETO/BERT para clasificación binaria:}
+    \begin{itemize}
+        \item Fine-tuning de modelo BETO (BERT en español) con las 52 noticias objetivo validadas manualmente del TT1.
+        \item Arquitectura: BETO base + capa densa de clasificación binaria (objetivo/no-objetivo).
+        \item Dataset de entrenamiento: 52 positivos + 190 negativos (balanceo con oversampling SMOTE).
+    \end{itemize}
+    
+    \item \textbf{Métricas de éxito TT2:}
+    \begin{itemize}
+        \item Reducir falsos positivos de 10\% (P2) a $\leq$3\% (P3).
+        \item Mantener recall $\geq$90\% (no perder casos verdaderos).
+        \item Validar con conjunto de prueba de 100 noticias nuevas (recolectadas en enero-febrero 2026).
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Justificación técnica:} BETO entiende contexto mediante mecanismos de atención, capturando la diferencia semántica entre "feminicidio deja huérfanos" (caso concreto) y "ley contra feminicidios" (legislación), algo imposible con regex.
+
+\subsection{Limitación 2: Cobertura Temporal Insuficiente (6 meses)}
+\label{subsec:lim2_temporal}
+
+\textbf{Problema actual:} El Historical Scraper solo cubre mayo-noviembre 2025 (6 meses), impidiendo análisis de tendencias temporales y validación cruzada con datos oficiales.
+
+\textbf{Meta TT2:} Ampliar histórico a \textbf{3 años} (2023-2025).
+
+\textbf{Solución propuesta (Prototipo 3):}
+\begin{enumerate}
+    \item \textbf{Extender Historical Scraper:}
+    \begin{itemize}
+        \item Modificar rango de fechas en \texttt{historical\_scraper.py}: enero 2023 - diciembre 2025.
+        \item Implementar scraping incremental (cachear resultados por mes para evitar re-scraping).
+        \item Volumen estimado: ~1,500 noticias (500/año × 3 años).
+    \end{itemize}
+    
+    \item \textbf{Análisis temporal habilitado:}
+    \begin{itemize}
+        \item Series temporales: casos por mes/trimestre/año.
+        \item Detección de anomalías: incrementos repentinos de casos (ej: alertas COVID-19).
+        \item Correlación con datos oficiales: INEGI, Secretariado Ejecutivo del SNSP.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Justificación técnica:} 3 años de datos permiten análisis estadísticos robustos (tendencias, estacionalidad) y validación externa con fuentes oficiales.
+
+\subsection{Limitación 3: Almacenamiento en CSV (No Escalable)}
+\label{subsec:lim3_database}
+
+\textbf{Problema actual:} Archivos CSV no soportan:
+\begin{itemize}
+    \item Consultas complejas (ej: "prioridad ALTA en Estado de México entre junio-agosto 2025").
+    \item Acceso concurrente (bloqueos de archivo con múltiples usuarios).
+    \item Integridad referencial (relaciones entre noticias, clusters, entidades).
+\end{itemize}
+
+\textbf{Meta TT2:} Migrar a \textbf{PostgreSQL} con esquema normalizado.
+
+\textbf{Solución propuesta (Prototipo 3):}
+\begin{enumerate}
+    \item \textbf{Diseñar esquema relacional:}
+    \begin{itemize}
+        \item Tabla \texttt{noticias}: id, titulo, contenido, enlace, fuente, fecha.
+        \item Tabla \texttt{detecciones}: noticia\_id, score\_feminicidio, score\_nna, prioridad.
+        \item Tabla \texttt{clusters}: cluster\_id, tema, keywords.
+        \item Tabla \texttt{noticias\_clusters}: noticia\_id, cluster\_id (relación N:M).
+        \item Tabla \texttt{entidades}: noticia\_id, tipo (PER/LOC/ORG), valor, confianza.
+    \end{itemize}
+    
+    \item \textbf{Migrar servicios a PostgreSQL:}
+    \begin{itemize}
+        \item Modificar \texttt{data\_collector.py} para escribir en PostgreSQL (SQLAlchemy ORM).
+        \item Modificar API Flask para consultas SQL (ej: \texttt{SELECT * FROM noticias WHERE prioridad='ALTA'}).
+        \item Implementar índices (B-tree en fecha, GIN en contenido con Full-Text Search).
+    \end{itemize}
+    
+    \item \textbf{Ventajas habilitadas:}
+    \begin{itemize}
+        \item Consultas complejas en <100ms (vs. procesamiento completo de CSV).
+        \item Soporte multi-usuario sin bloqueos.
+        \item Backup/restore automatizado.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Justificación técnica:} PostgreSQL es estándar de facto para aplicaciones web con datos estructurados/semi-estructurados, con soporte nativo para JSON (columna JSONB para metadatos).
+
+\subsection{Limitación 4: Clustering con TF-IDF (No Captura Sinonimia)}
+\label{subsec:lim4_clustering}
+
+\textbf{Problema actual:} DBSCAN con vectores TF-IDF no agrupa noticias con vocabulario diferente pero significado similar (ej: "mamá asesinada" vs "feminicidio de madre").
+
+\textbf{Meta TT2:} Migrar a \textbf{BERTopic} (clustering semántico).
+
+\textbf{Solución propuesta (Prototipo 4):}
+\begin{enumerate}
+    \item \textbf{Implementar flujo BERTopic:}
+    \begin{itemize}
+        \item Generar embeddings con BETO (768 dimensiones).
+        \item Reducir dimensionalidad con UMAP (5 dimensiones).
+        \item Clustering con HDBSCAN (density-based, sin especificar k).
+        \item Generar etiquetas semánticas con c-TF-IDF (ej: "Casos de custodia abuela-nietos").
+    \end{itemize}
+    
+    \item \textbf{Mejoras esperadas:}
+    \begin{itemize}
+        \item Reducir outliers de 81.4\% (P2) a 50-60\% (más clusters semánticos identificados).
+        \item Generar etiquetas automáticas comprensibles (vs. keywords TF-IDF genéricos).
+        \item Agrupar variantes léxicas del mismo concepto.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Justificación técnica:} BERTopic combina embeddings contextuales (BETO) con clustering basado en densidad (HDBSCAN), capturando similitud semántica en lugar de léxica.
+
+\subsection{Limitación 5: Ausencia de Extracción de Entidades (NER)}
+\label{subsec:lim5_ner}
+
+\textbf{Problema actual:} El sistema no extrae información estructurada:
+\begin{itemize}
+    \item Nombres de víctimas (ej: "Ángela Birkenbach", "Debanhi Escobar").
+    \item Ubicaciones (ej: "Monterrey", "Ecatepec").
+    \item Número de NNA huérfanos (ej: "3 hijos menores").
+    \item Organizaciones (ej: "DIF", "Fiscalía General").
+\end{itemize}
+
+\textbf{Meta TT2:} Implementar flujo de \textbf{Named Entity Recognition (NER)}.
+
+\textbf{Solución propuesta (Prototipo 4):}
+\begin{enumerate}
+    \item \textbf{Implementar NER con spaCy + BETO:}
+    \begin{itemize}
+        \item Utilizar modelo spaCy pre-entrenado \texttt{es\_core\_news\_lg}.
+        \item Fine-tuning opcional con dataset anotado manualmente (50 noticias).
+        \item Extracción de entidades: PER (personas), LOC (ubicaciones), ORG (organizaciones).
+    \end{itemize}
+    
+    \item \textbf{Almacenamiento de entidades:}
+    \begin{itemize}
+        \item Guardar en tabla \texttt{entidades} de PostgreSQL.
+        \item Indexar para búsqueda por entidad (ej: "todas las noticias sobre Debanhi Escobar").
+    \end{itemize}
+    
+    \item \textbf{Funcionalidades habilitadas:}
+    \begin{itemize}
+        \item Generar fichas automáticas de casos (nombre, ubicación, fecha, NNA).
+        \item Relacionar noticias por entidades compartidas.
+        \item Exportar datos estructurados para análisis estadístico (CSV, Excel).
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Justificación técnica:} NER permite convertir texto no estructurado en datos estructurados consultables, habilitando análisis cuantitativos (ej: top 10 estados con más casos).
+
+\subsection{Cronograma de Implementación TT2}
+\label{subsec:cronograma_tt2}
+
+\begin{table}[h]
+\centering
+\caption{Distribución de limitaciones por prototipo (TT2)}
+\label{tab:cronograma_tt2}
+\begin{tabular}{|l|p{6cm}|l|}
+\hline
+\textbf{Prototipo} & \textbf{Limitaciones abordadas} & \textbf{Periodo} \\ \hline
+Prototipo 3 & \textbf{Lim 1:} BETO clasificación binaria & Feb-Mar 2026 \\
+(Semántica básica) & \textbf{Lim 2:} Histórico 3 años & (8 semanas) \\
+& \textbf{Lim 3:} Migración PostgreSQL & \\ \hline
+Prototipo 4 & \textbf{Lim 4:} BERTopic clustering semántico & Abr-Jun 2026 \\
+(Semántica avanzada) & \textbf{Lim 5:} NER con spaCy & (10 semanas) \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Nota:} Las limitaciones 1-3 (Prototipo 3) son \textbf{prerrequisitos} para las limitaciones 4-5 (Prototipo 4), ya que BETO, PostgreSQL y 3 años de datos son necesarios para entrenar BERTopic y NER con calidad.
+
+\subsection{Métricas de Éxito para el TT2}
+\label{subsec:metricas_exito_tt2}
+
+El TT2 será considerado exitoso si alcanza las siguientes métricas cuantificables:
+
+\begin{table}[h]
+\centering
+\caption{Métricas de comparación TT1 vs TT2}
+\label{tab:metricas_tt1_tt2}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Métrica} & \textbf{TT1 (P2)} & \textbf{Meta TT2 (P4)} & \textbf{Mejora} \\ \hline
+Falsos positivos & 10\% & $\leq$3\% & -70\% \\ \hline
+Recall NNA & 44.8\% & $\geq$90\% & +101\% \\ \hline
+Silhouette Score & 0.48 & $\geq$0.60 & +25\% \\ \hline
+Outliers & 81.4\% & 50-60\% & -30\% \\ \hline
+Cobertura temporal & 6 meses & 3 años & +500\% \\ \hline
+Tiempo consulta DB & N/A (CSV) & <100ms & N/A \\ \hline
+Entidades extraídas & 0 & $\geq$80\% precision & N/A \\ \hline
+\end{tabular}
+\end{table}
+
+Estas métricas serán evaluadas con el mismo rigor que en el TT1 (validación cualitativa + cuantitativa).
+
+%----------------------------------------------------------------------------------------
+% SECCIÓN 7.4: REFLEXIÓN FINAL
+%----------------------------------------------------------------------------------------
+\section{Reflexión Final del TT1}
+\label{sec:reflexion_final}
+
+El TT1 cumplió su objetivo de validar la viabilidad técnica de un sistema automatizado para identificar noticias sobre feminicidios con NNA huérfanos. Los resultados trascienden código: representan investigación aplicada combinando metodología científica, experimentación técnica y análisis crítico.
+
+\subsection{Contribuciones}
+\label{subsec:contribuciones}
+
+\textbf{Técnicas:} Flujo de 7 etapas validado, 72 patrones regex especializados, metodología de evaluación K-Means vs DBSCAN, estrategia multi-fuente con rate limiting.
+
+\textbf{Metodológicas:} Validación de desarrollo evolutivo (P0→P1→P2), protocolo de calibración de hiperparámetros, framework de evaluación dual cuantitativa+cualitativa.
+
+\textbf{Sociales:} Herramienta funcional para organizaciones civiles, dataset de 52 noticias validadas manualmente, evidencia de factibilidad para monitoreo de violencia de género.
+
+\subsection{Impacto Esperado (TT1+TT2)}
+\label{subsec:impacto_esperado}
+
+Al completarse TT2, el sistema podrá reducir tiempo de identificación de semanas a horas, ampliar cobertura a medios regionales, generar datos estructurados y apoyar toma de decisiones.
+
+\textbf{Limitación:} Es herramienta de apoyo, no sustituto de análisis humano. Automatiza identificación preliminar para liberar tiempo de analistas.
+
+\subsection{Principios de IA Aplicada}
+\label{subsec:lecciones_ia}
+
+\textbf{No existe algoritmo mágico:} K-Means falló en nuestro dominio. La solución (DBSCAN) solo funcionó después de experimentación iterativa.
+
+\textbf{Los datos definen el techo:} Con 6 meses de datos, el análisis temporal es imposible. Con 10\% falsos positivos, se requiere validación humana.
+
+\textbf{Validación empírica > intuición:} Threshold 0.75 fue experimental, no intuitivo. Los 81.4\% outliers parecían error pero eran correctos.
+
+\subsection{Continuidad}
+\label{subsec:declaracion_continuidad}
+
+El TT1 concluye XX de diciembre de 2025. El TT2 (febrero-junio 2026) abordará las 5 limitaciones identificadas, transformando este prototipo en sistema de producción.
+
+\textbf{Compromiso:} Resultados del TT2 se liberarán como software open-source (licencia MIT).
+
+\vspace{0.5cm}
+
+El TT1 demuestra que es viable automatizar la identificación de noticias sobre feminicidios con NNA huérfanos. La metodología evolutiva construyó base sólida, documentó lecciones aprendidas y estableció hoja de ruta clara para TT2. Este proyecto ejemplifica cómo la IA puede aplicarse éticamente a problemas sociales complejos, amplificando (no reemplazando) trabajo humano.
