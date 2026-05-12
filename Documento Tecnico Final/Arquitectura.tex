@@ -1,0 +1,104 @@
+% !TeX root = proyecto.tex
+
+\section{Arquitectura del Sistema}
+\label{sec:arquitectura}
+
+El diseño arquitectónico del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA} sigue un paradigma orientado a microservicios altamente desacoplados. Esta decisión metodológica permite que el procesamiento intensivo (\textit{Machine Learning}) opere en hilos o contenedores aislados sin degradar el tiempo de respuesta de la interfaz de usuario. A continuación, se detallan los diagramas estructurales y de comportamiento que definen el flujo de la información.
+
+\subsection{Diagrama de Componentes (Arquitectura en Capas)}
+\label{subsec:diagrama_componentes}
+
+El sistema está dividido lógicamente en tres estratos principales: la \textbf{Capa de Presentación}, la \textbf{Capa de Procesamiento Neuro-Simbólico} (donde reside el núcleo de la investigación) y la \textbf{Capa de Datos}.
+
+\begin{figure}[htbp]
+    \centering
+\begin{verbatim}
+graph TD
+    %% Capa de Presentación
+    subgraph CapaPresentacion [Capa de Presentación Web]
+        Dashboard[Flask Dashboard]
+        API[API RESTful]
+        Forms[Gestión de Fuentes]
+    end
+
+    %% Capa de Procesamiento NLP
+    subgraph CapaProcesamiento [Capa de Procesamiento Neuro-Simbólico]
+        Scraper[Scraper / Collector\n(StealthSessions)]
+        Dedup[Deduplicator\n(MD5, SimHash, Jaccard)]
+        Analyzer[Heuristic Analyzer\n(RegEx Bypass)]
+        Semantic[Semantic Detector\n(BETO Zero-Shot)]
+        Cluster[BERTopic Clustering\n(UMAP + HDBSCAN)]
+        Investigator[Case Investigator\n(Fichas Consolidadas)]
+        
+        Scraper --> Dedup
+        Dedup --> Analyzer
+        Analyzer --> Semantic
+        Semantic --> Cluster
+        Cluster --> Investigator
+    end
+
+    %% Capa de Datos
+    subgraph CapaDatos [Capa de Persistencia]
+        DB[(PostgreSQL 16\nRelacional + FTS)]
+    end
+
+    %% Interacciones inter-capa
+    API <--> |Query ORM| DB
+    Dashboard --> Forms
+    Forms --> DB
+    Investigator --> DB
+    Semantic --> DB
+    Scraper -.-> |Peticiones HTTP| Internet
+\end{verbatim}
+    \caption{Diagrama de Componentes de la Arquitectura del Sistema.}
+    \label{fig:diagrama_componentes}
+\end{figure}
+
+Como se observa en la Figura \ref{fig:diagrama_componentes}, el flujo comienza en la capa de procesamiento. El \texttt{Scraper} obtiene el HTML en bruto desde los portales web y lo transfiere al \texttt{Deduplicator}. Éste actúa como una barrera de contención computacional, evitando que textos redundantes consuman ciclos de CPU en la inferencia neuronal. Posteriormente, el \texttt{Heuristic Analyzer} y el \texttt{Semantic Detector} operan en tándem (fusión neuro-simbólica) para clasificar la relevancia de la noticia. Finalmente, las agrupaciones son delegadas a \texttt{BERTopic} antes de descender a la \textbf{Capa de Datos} (PostgreSQL). La \textbf{Capa de Presentación} jamás interactúa con el NLP de forma síncrona; se limita a consumir los resultados ya computados a través de la API.
+
+\subsection{Diagrama de Secuencia (Ciclo de Vida de la Noticia)}
+\label{subsec:diagrama_secuencia}
+
+Para comprender la orquestación temporal y los mensajes intercambiados de manera asíncrona entre los contenedores, se presenta el Diagrama de Secuencia del proceso de análisis diario (Cronjob).
+
+\begin{figure}[htbp]
+    \centering
+\begin{verbatim}
+sequenceDiagram
+    autonumber
+    actor Admin as Cronjob / Sistema
+    participant S as Scraper (Collector)
+    participant D as Deduplicador (dedup.py)
+    participant BETO as SemanticDetector (BETO)
+    participant BT as BERTopic (Clustering)
+    participant DB as PostgreSQL
+    participant W as Dashboard Web
+
+    Admin->>S: trigger_recoleccion()
+    S->>S: Extrae HTML/RSS (StealthSessions)
+    S->>D: Envía lote bruto de textos
+    D->>DB: Consulta hashes existentes (MD5/SimHash)
+    DB-->>D: Retorna firmas registradas
+    D->>D: Filtra duplicados cruzados
+    D-->>S: Retorna lote de textos únicos
+    
+    S->>BETO: process_semantics(clean_articles)
+    BETO->>BETO: Tokenización (WordPiece 512 max)
+    BETO->>BETO: Inferencia Zero-Shot + Temperature Scaling
+    BETO->>BETO: Fusión Neuro-Simbólica (Cálculo factor Alpha)
+    BETO->>DB: INSERT (noticias, detecciones)
+    
+    Admin->>BT: trigger_clustering()
+    BT->>DB: SELECT noticias recientes
+    BT->>BT: Reducción UMAP y densidad HDBSCAN
+    BT->>DB: UPDATE (cluster_id, topicos)
+    
+    W->>DB: GET /api/clusters
+    DB-->>W: Retorna JSON estructurado
+    W->>Admin: Renderiza tarjetas en Interfaz Gráfica
+\end{verbatim}
+    \caption{Diagrama de Secuencia ilustrando el ciclo de vida de una noticia.}
+    \label{fig:diagrama_secuencia}
+\end{figure}
+
+La Figura \ref{fig:diagrama_secuencia} demuestra el carácter \textit{Pipeline-Driven} (guiado por tuberías) de la arquitectura. En el Paso 4, el deduplicador hace una consulta de verificación rápida contra PostgreSQL para descartar copias exactas. El trabajo más pesado (Pasos 9 al 11) se aísla dentro del \texttt{SemanticDetector}, donde BETO evalúa el texto y calcula el factor de ponderación $\alpha$ para aplicar el Bozal de Penalización si es necesario. Es de vital importancia notar que la actualización de \texttt{BERTopic} (Paso 13) se dispara \textit{a posteriori}, ya que los algoritmos de reducción de dimensionalidad (UMAP) requieren el volumen de datos de todo el lote completo para mapear correctamente el espacio topológico. Por último, la aplicación Web lee los resultados en la base de datos de manera ininterrumpida.

@@ -1,0 +1,102 @@
+% !TeX root = proyecto.tex
+
+\section{Especificación de Requerimientos}
+\label{sec:requerimientos}
+
+En esta sección se detallan los Requerimientos Funcionales (RF) y los Requerimientos No Funcionales (RNF) que rigen el comportamiento, las capacidades operativas y las restricciones de calidad del sistema neuro-simbólico. Esta especificación formaliza las necesidades técnicas derivadas de la problemática de la invisibilidad estadística de los NNA en situación de orfandad por feminicidio.
+
+\subsection{Requerimientos Funcionales}
+\label{subsec:rf}
+
+Los Requerimientos Funcionales definen las interacciones, transformaciones de datos y comportamientos algorítmicos específicos que el sistema debe ejecutar de manera obligatoria. Se ha expandido la descripción técnica para alinear el requerimiento con la implementación real del código fuente.
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|p{0.1\textwidth}|p{0.3\textwidth}|p{0.5\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{ID}} & \textcolor{white}{\textbf{Nombre}} & \textcolor{white}{\textbf{Descripción Técnica}} \\
+        \hline
+        \textbf{RF-01} & Extracción Multi-fuente (Web Scraping) & El sistema debe extraer dinámicamente noticias desde canales RSS y motores de búsqueda HTML. Para evadir protecciones WAF (ej. Cloudflare), el colector debe utilizar la clase \texttt{StealthSession}, implementando rotación dinámica de \textit{User-Agents}, inyección de cabeceras legítimas y tiempos de espera pseudo-aleatorios. \\
+        \hline
+        \textbf{RF-02} & Deduplicación en Cascada & El sistema debe descartar registros periodísticos clonados o redundantes cruzando múltiples métricas. Inicia con firmas criptográficas MD5 para copias exactas, seguido de algoritmos de similitud aproximada (SimHash) y finaliza calculando el Coeficiente de Jaccard y la Similitud del Coseno (TF-IDF) para agrupar notas reescritas con un umbral superior al 0.85. \\
+        \hline
+        \textbf{RF-03} & Filtrado Heurístico (Capa Simbólica) & El sistema debe aplicar reglas de lógica dura denominadas "Palabras de Oro" (conjuntos de expresiones regulares de alta precisión). Si una noticia estadísticamente engañosa activa el "Bozal de penalización", el sistema descartará el texto antes de la inferencia, evitando la polución de la base de datos con falsos positivos. \\
+        \hline
+        \textbf{RF-04} & Clasificación Semántica (Capa Neuronal) & El sistema debe utilizar el modelo fundacional Transformer (BETO) mediante inferencia \textit{Zero-Shot}. El texto será tokenizado (máximo 512 tokens) y procesado para calcular la relevancia. Posteriormente, el resultado se combinará con el factor $\alpha$ derivado del RF-03 (Fusión Neuro-Simbólica). \\
+        \hline
+        \textbf{RF-05} & Agrupamiento Temático (Clustering) & El sistema debe consolidar eventos fácticos dispersos mediante el pipeline \texttt{BERTopic}. Este flujo debe reducir la dimensionalidad espacial de los vectores con UMAP y aplicar el algoritmo de densidad HDBSCAN para formar clústeres. Las etiquetas de cada grupo se generarán extrayendo los términos más relevantes vía c-TF-IDF. \\
+        \hline
+        \textbf{RF-06} & Persistencia Relacional & El sistema debe almacenar el historial de fuentes, noticias purificadas y resultados del clustering en PostgreSQL. Debe implementar indexación GIN sobre vectores \texttt{tsvector} para garantizar búsquedas de texto completo (FTS) sub-milisegundo. \\
+        \hline
+        \textbf{RF-07} & Gestión de Orígenes de Datos & El sistema debe proveer un módulo administrativo web (Dashboard) que permita realizar operaciones CRUD sobre los orígenes RSS/HTML. Al agregar una URL, el sistema ejecutará un \textit{health check} (HTTP GET) para validar su disponibilidad antes de habilitarla. \\
+        \hline
+        \textbf{RF-08} & Visualización Interactiva y Generación de Fichas & El sistema debe exponer una interfaz web (Flask) que permita a los analistas de datos consultar los grupos temáticos. Al inspeccionar un clúster, el sistema debe renderizar de forma dinámica una "Ficha de Caso" consolidando las víctimas y la ubicación de los eventos recopilados. \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de Requerimientos Funcionales Ampliada.}
+    \label{tab:rf}
+\end{table}
+
+\subsection{Requerimientos No Funcionales}
+\label{subsec:rnf}
+
+Los Requerimientos No Funcionales establecen las restricciones tecnológicas, métricas de calidad (QoS), seguridad y ética bajo las cuales debe operar la arquitectura del sistema.
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|p{0.1\textwidth}|p{0.25\textwidth}|p{0.55\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{ID}} & \textcolor{white}{\textbf{Atributo de Calidad}} & \textcolor{white}{\textbf{Descripción Técnica y Métrica}} \\
+        \hline
+        \textbf{RNF-01} & Rendimiento de Inferencia & El motor neuronal (BETO) debe ser capaz de tokenizar y clasificar lotes de hasta 100 noticias purificadas en un tiempo máximo de 3 minutos, operando exclusivamente sobre recursos de CPU de propósito general sin degradación del sistema. \\
+        \hline
+        \textbf{RNF-02} & Concurrencia y Resiliencia de Red & El motor de recolección debe implementar retroceso exponencial (\textit{Exponential Backoff}) en caso de errores HTTP 429 o 500, garantizando la recuperación automática y evitando la sobrecarga (Denegación de Servicio no intencional) a los servidores periodísticos locales. \\
+        \hline
+        \textbf{RNF-03} & Seguridad Criptográfica & Las contraseñas de acceso al sistema deben ser procesadas utilizando algoritmos de derivación de claves resistentes a ataques de fuerza bruta (ej. Bcrypt). El control de sesiones debe gestionarse mediante tokens criptográficos efímeros. \\
+        \hline
+        \textbf{RNF-04} & Privacidad y Restricción Ética & El sistema debe operar bajo estricta anonimización. Se prohíbe explícitamente almacenar, renderizar o exportar los nombres propios de los menores afectados en repositorios públicos o diccionarios, protegiendo el Interés Superior de la Niñez. \\
+        \hline
+        \textbf{RNF-05} & Integridad Transaccional & La base de datos relacional debe respetar el modelo ACID. En caso de fallas durante el análisis masivo de un lote (\textit{batch processing}), el sistema debe ejecutar un \textit{Rollback} automático para prevenir la existencia de registros huérfanos o parcialmente procesados. \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de Requerimientos No Funcionales y Métricas de Calidad.}
+    \label{tab:rnf}
+\end{table}
+
+\subsection{Matriz de Trazabilidad (Requerimiento - Código)}
+\label{subsec:trazabilidad}
+
+Para garantizar la mantenibilidad del sistema y facilitar la auditoría de los componentes de software por parte de futuros desarrolladores, la Tabla \ref{tab:trazabilidad} mapea la correspondencia directa entre los Requerimientos Funcionales documentados y los módulos del código fuente (\textit{scripts} en lenguaje Python) encargados de su resolución técnica.
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|p{0.15\textwidth}|p{0.4\textwidth}|p{0.35\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{ID Req.}} & \textcolor{white}{\textbf{Nombre del Requerimiento}} & \textcolor{white}{\textbf{Módulo de Código Fuente}} \\
+        \hline
+        \textbf{RF-01} & Extracción Multi-fuente & \texttt{src/collection/collector.py} \\
+        \hline
+        \textbf{RF-02} & Deduplicación en Cascada & \texttt{src/analysis/dedup.py} \\
+        \hline
+        \textbf{RF-03} & Filtrado Heurístico (Simbólico) & \texttt{src/analysis/analyzer.py} \\
+        \hline
+        \textbf{RF-04} & Clasificación Semántica (BETO) & \texttt{src/analysis/semantic\_detector.py} \\
+        \hline
+        \textbf{RF-05} & Agrupamiento Temático & \texttt{src/analysis/bertopic\_clustering.py} \\
+        \hline
+        \textbf{RF-06} & Persistencia Relacional & \texttt{src/database/repository.py} \\
+        \hline
+        \textbf{RF-07} & Gestión de Orígenes de Datos & \texttt{src/app/routes.py} \\
+        \hline
+        \textbf{RF-08} & Visualización y Fichas de Caso & \texttt{src/analysis/investigator.py} \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de Trazabilidad entre Requerimientos y Módulos de Código.}
+    \label{tab:trazabilidad}
+\end{table}

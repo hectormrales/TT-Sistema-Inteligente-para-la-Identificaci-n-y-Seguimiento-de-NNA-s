@@ -21,6 +21,15 @@ Durante el ciclo de pruebas final, el módulo colector procesó y deduplicó exi
 
 El desafío principal del proyecto no radicaba únicamente en recolectar información, sino en discriminarla con alta precisión. De la muestra total de 627 noticias, la fase de filtrado preliminar determinó que \textbf{225 artículos} contenían menciones explícitas a "Niñas, Niños y Adolescentes" (NNA) en las proximidades semánticas de crímenes violentos (véase Figura \ref{fig:dashboard_metricas}).
 
+\begin{figure}[htbp]
+    \centering
+    % MIENTRAS AGREGAS TUS IMAGENES A LA CARPETA, USAREMOS UN CUADRO NEGRO DE PLACEHOLDER
+    % \includegraphics[width=0.8\textwidth]{images/dashboard_metricas}
+    \rule{0.8\textwidth}{6cm}
+    \caption{Métricas de filtrado preliminar en el Dashboard Web.}
+    \label{fig:dashboard_metricas}
+\end{figure}
+
 Posteriormente, este subconjunto fue inyectado al motor de inferencia neuronal BETO bajo el esquema del "Árbol Inquebrantable". Los resultados del embudo analítico fueron sobresalientes:
 \begin{itemize}
     \item \textbf{75 noticias de Alta Relevancia:} Casos fácticos innegables de orfandad por feminicidio, validados por la IA y priorizados por el "Bypass Simbólico".
@@ -42,3 +51,12 @@ A diferencia del ruido generado previamente por \textit{K-Means}, estos 15 clús
 La evaluación final del sistema trasciende las métricas computacionales y se sitúa en la usabilidad operativa para los actores de la sociedad civil. La interfaz del \textit{Dashboard Web} fue concebida bajo principios de jerarquía visual.
 
 Como se observa en la Figura \ref{fig:lista_noticias_alta}, la plataforma dota a cada registro de \textit{tags} visuales distintivos (por ejemplo, etiquetas verdes brillantes para "NNA" y "Feminicidio") junto con sus respectivos porcentajes probabilísticos de certidumbre calculados por BETO. Esta arquitectura de la información permite a los analistas de fundaciones, como \textit{Futuro con Derechos}, realizar un barrido visual (\textit{skimming}) inmediato sobre un clúster de noticias. Lo que históricamente representaba una inversión de docenas de horas-hombre navegando entre pestañas de navegadores, buscando manualmente coincidencias textuales, ha sido optimizado por el Prototipo 4 a una revisión jerárquica y determinista que exige apenas un par de segundos por evento fáctico.
+
+\begin{figure}[htbp]
+    \centering
+    % MIENTRAS AGREGAS TUS IMAGENES A LA CARPETA, USAREMOS UN CUADRO NEGRO DE PLACEHOLDER
+    % \includegraphics[width=0.9\textwidth]{images/lista_noticias_alta}
+    \rule{0.9\textwidth}{6cm}
+    \caption{Visualización jerárquica de noticias de Alta Relevancia en el Dashboard.}
+    \label{fig:lista_noticias_alta}
+\end{figure}

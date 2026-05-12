@@ -1,0 +1,61 @@
+% !TeX root = proyecto.tex
+
+\section{Verificación, Validación y Pruebas (QA)}
+\label{sec:qa_pruebas}
+
+Para garantizar la fiabilidad, exactitud algorítmica y tolerancia a fallos del \textit{Sistema Inteligente para la Identificación de NNA}, se diseñó una estrategia de Aseguramiento de Calidad (QA) exhaustiva. Esta estrategia combina pruebas de caja blanca para verificar la lógica interna de los componentes computacionales y pruebas de caja negra para validar el comportamiento del sistema ante datos de entrada adversarios o estadísticamente ruidosos.
+
+\subsection{Pruebas Unitarias y Aislamiento de Componentes}
+\label{subsec:pruebas_unitarias}
+
+Se implementó el marco de trabajo \texttt{pytest} en conjunto con la biblioteca estándar \texttt{unittest.mock} para lograr un aislamiento completo de las unidades lógicas del sistema. La directriz arquitectónica de estas pruebas consistió en eliminar cualquier dependencia estocástica, de red o de hardware especializado, garantizando que el entorno de pruebas sea determinista, veloz y apto para flujos de Integración Continua (CI).
+
+\textbf{Mocking del Modelo BETO (Sin GPU):} \\
+Uno de los mayores desafíos técnicos consistió en auditar la lógica del módulo \texttt{SemanticDetector} sin obligar al servidor de pruebas a instanciar los tensores pre-entrenados de \textit{PyTorch} (que exceden 1 GB de memoria) ni depender de aceleración por tarjeta gráfica (GPU). Para solventarlo, se aplicó la inyección de dependencias mediante el decorador \texttt{@patch}, simulando (\textit{mockeando}) el comportamiento interno de las clases \texttt{AutoTokenizer} y \texttt{AutoModel}. Al interceptar la inicialización, se comprobó matemáticamente el comportamiento de funciones clave como el cálculo del \textit{Temperature Scaling} y la asignación del nivel de confianza sin ejecutar una sola inferencia neuronal real.
+
+\textbf{Simulación de Tráfico de Red:} \\
+En los módulos \texttt{DeepInvestigator} y \texttt{Collector}, se sustituyeron las llamadas HTTP (\texttt{StealthSession}) y las peticiones externas a la API de Inteligencia Artificial (\textit{Gemini}) por objetos \texttt{MagicMock}. Mediante el atributo \texttt{side\_effect}, se indujeron intencionalmente escenarios de falla como \texttt{Timeout}, errores HTTP 404 o cuotas de API excedidas. Esto permitió validar que el sistema ejecuta correctamente los protocolos de recuperación (\textit{Fallback}) sin interrumpir su ejecución.
+
+\subsection{Pruebas de Caja Negra: Validación del Bozal de Penalización}
+\label{subsec:pruebas_caja_negra}
+
+La arquitectura Neuro-Simbólica introdujo un mecanismo de lógica dura (RegEx heurístico) denominado "Bozal de Penalización". Su objetivo fundacional es mitigar las denominadas "Fugas de Confianza", es decir, falsos positivos causados porque la Inteligencia Artificial pura confunde contextos semánticos altamente similares.
+
+Para comprobar su robustez, se diseñó un banco de pruebas de caja negra aislado (\texttt{test\_golden\_keywords.py}) donde se inyectaron "Casos Negativos" adversarios. El reto principal fue suministrar noticias reales sobre menores infractores (ej. \textit{"Menor de edad asesina a su madre en Guadalajara"}). 
+
+Una red neuronal basada en atención (\textit{Transformers}) marcaría esta noticia con una relevancia altísima, ya que la similitud espacial de los vectores (\textit{menor, madre, asesina}) es idéntica a la de un caso de orfandad real. Sin embargo, los \textit{tests} demostraron que el motor heurístico evaluó la direccionalidad sintáctica de las "Palabras de Oro". Al identificar que el "menor" figuraba como el sujeto activo del delito (agresor) y no como el objeto directo (víctima indirecta), el sistema multiplicó el factor $\alpha$ de fusión por un valor casi nulo. El Bozal de Penalización operó con un \textbf{100\% de efectividad}, bloqueando el flujo semántico y clasificando correctamente los casos adversarios como irrelevantes.
+
+\subsection{Matriz de Casos de Prueba}
+
+A continuación, se resume una fracción representativa del reporte de pruebas automatizadas ejecutadas contra el núcleo del sistema, evidenciando los criterios de aceptación esperados y los resultados obtenidos.
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|p{0.08\textwidth}|p{0.3\textwidth}|p{0.3\textwidth}|p{0.25\textwidth}|p{0.07\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{ID}} & \textcolor{white}{\textbf{Descripción de la Prueba}} & \textcolor{white}{\textbf{Entrada Simulada / Esperada}} & \textcolor{white}{\textbf{Resultado Obtenido}} & \textcolor{white}{\textbf{Status}} \\
+        \hline
+        \textbf{CP-01} & Extracción segura de HTML (\textit{Mock}) & Petición a URL devuelve \texttt{HTTP 200 OK} con texto > 200 caracteres. & Retorna un \textit{String} validado sin levantar excepciones. & \textbf{PASS} \\
+        \hline
+        \textbf{CP-02} & Resiliencia ante caída de conexión & Petición HTTP a URL inyecta un \texttt{Exception("Timeout")}. & Retorna \textit{String} vacío, el flujo no colapsa. & \textbf{PASS} \\
+        \hline
+        \textbf{CP-03} & Mocking de Inferencia BETO & Carga de \texttt{SemanticDetector} en modo \texttt{zero\_shot}. & Instancia en memoria RAM sin cargar tensores de GPU. & \textbf{PASS} \\
+        \hline
+        \textbf{CP-04} & Cálculo de Confianza Alta & Entrada simulada de predicción matricial (\texttt{score = 0.85}). & El método clasificador retorna la etiqueta \texttt{"alta"}. & \textbf{PASS} \\
+        \hline
+        \textbf{CP-05} & Fallback de IA Limitada & \textit{Gemini API} inyecta \texttt{Quota Exceeded Error}. & El sistema extrae *keywords* haciendo Fallback al título. & \textbf{PASS} \\
+        \hline
+        \textbf{CP-06} & Bozal: Falso Positivo (Agresor) & Entrada de texto adversario: \textit{"Menor de edad asesina a su madre"}. & El Bozal descarta la activación de Keywords de Oro. & \textbf{PASS} \\
+        \hline
+        \textbf{CP-07} & Bozal: Falso Positivo (Estadística) & Texto genérico: \textit{"Cifras oficiales de feminicidio en México."} & El sistema descarta la noticia (No se detectan NNA). & \textbf{PASS} \\
+        \hline
+        \textbf{CP-08} & Bozal: Verdadero Positivo & Texto real: \textit{"Doble feminicidio deja a dos niños en orfandad."} & La fusión heurística y neuronal clasifica como \texttt{Alta}. & \textbf{PASS} \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Matriz de Casos de Prueba Críticos y Resultados de Ejecución.}
+    \label{tab:casos_prueba}
+\end{table}

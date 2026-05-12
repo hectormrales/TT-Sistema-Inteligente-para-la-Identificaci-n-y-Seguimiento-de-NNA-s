@@ -1,0 +1,208 @@
+% !TeX root = proyecto.tex
+
+\section{Diseño de Datos}
+\label{sec:diseno_datos}
+
+La arquitectura del sistema requiere un mecanismo de persistencia capaz de manejar inserciones masivas concurrentes y resolver búsquedas complejas sobre grandes volúmenes de texto no estructurado. Por este motivo, se seleccionó \textbf{PostgreSQL} como el Sistema Gestor de Bases de Datos Relacional-Objeto (ORDBMS) principal. La estructura relacional garantiza la integridad referencial de la información recolectada cumpliendo estrictamente con el modelo ACID (Atomicidad, Consistencia, Aislamiento y Durabilidad). 
+
+Un pilar fundamental de este diseño es el soporte nativo para \textit{Full-Text Search} (FTS). El campo \texttt{busqueda\_fts} de tipo \texttt{tsvector} almacena el corpus periodístico procesado (aplicando \textit{stemming} y eliminando \textit{stop words} en español). Para consultar este vector de forma instantánea, se configuró un Índice Invertido Generalizado (GIN). Mientras que los índices tradicionales (B-Tree) son ineficientes para buscar palabras dentro de textos largos, el índice GIN mapea cada lexema a los IDs de los registros que lo contienen, reduciendo la latencia de las consultas analíticas del Dashboard a un rango sub-milisegundo, incluso al iterar sobre millones de palabras.
+
+\subsection{Modelo de Dominio}
+
+A continuación, se presenta el Modelo de Dominio que formaliza no solo las relaciones de cardinalidad, sino los tipos de datos nativos proyectados en la base de datos y la capa de inferencia de Inteligencia Artificial (ej. \texttt{tsvector} y \texttt{Float} para tensores).
+
+\begin{figure}[htbp]
+    \centering
+\begin{verbatim}
+classDiagram
+    class NOTICIAS {
+        +Integer id [PK]
+        +Integer cluster_id [FK]
+        +Varchar(500) titulo
+        +Text contenido
+        +Varchar(2000) enlace
+        +Float score_compuesto
+        +Varchar(64) content_hash
+        +tsvector busqueda_fts
+    }
+
+    class DETECCIONES {
+        +Integer id [PK]
+        +Integer noticia_id [FK]
+        +Float score_heuristico
+        +Float score_semantico
+        +Float score_hibrido
+        +Varchar(20) clasificacion_hibrida
+        +Boolean menores_identificados
+    }
+
+    class CLUSTERS_SEMANTICOS {
+        +Integer id [PK]
+        +Varchar(200) etiqueta
+        +JSON terminos_principales
+        +Integer num_documentos
+        +Float cohesion
+    }
+
+    class FUENTES {
+        +Integer id [PK]
+        +Varchar(200) nombre
+        +Varchar(1000) url
+        +Varchar(20) tipo
+        +Boolean activo
+    }
+
+    class USUARIOS {
+        +Integer id [PK]
+        +Varchar(100) username
+        +Varchar(256) password_hash
+        +Varchar(50) rol
+        +Timestamp created_at
+    }
+
+    FUENTES "1" -- "*" NOTICIAS : alimenta
+    NOTICIAS "*" -- "1" CLUSTERS_SEMANTICOS : pertenece
+    NOTICIAS "1" -- "1" DETECCIONES : genera
+\end{verbatim}
+    \caption{Diagrama de Clases / Dominio detallando Tipos de Datos y Relaciones.}
+    \label{fig:domain_diagram}
+\end{figure}
+
+\subsection{Diccionario de Datos Extendido}
+
+Las siguientes tablas formalizan la especificación de los modelos SQLAlchemy de la aplicación, definiendo reglas de integridad (\textit{Null}, \textit{Defaults}) y estrategias de indexación.
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|l|l|p{0.3\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{Campo}} & \textcolor{white}{\textbf{Tipo}} & \textcolor{white}{\textbf{Llave}} & \textcolor{white}{\textbf{Nulo}} & \textcolor{white}{\textbf{Default}} & \textcolor{white}{\textbf{Índices}} & \textcolor{white}{\textbf{Descripción}} \\
+        \hline
+        id & Integer & PK & NO & Auto & B-Tree (PK) & Identificador único de la noticia. \\
+        \hline
+        cluster\_id & Integer & FK & SÍ & NULL & B-Tree & Referencia al clúster (\texttt{clusters\_semanticos.id}). \\
+        \hline
+        titulo & Varchar(500) & - & NO & - & B-Tree & Titular principal extraído de la nota. \\
+        \hline
+        contenido & Text & - & NO & - & - & Cuerpo completo de la noticia. \\
+        \hline
+        enlace & Varchar(2000) & - & SÍ & NULL & UNIQUE & URL original de la noticia. \\
+        \hline
+        score\_compuesto & Float & - & NO & 0.0 & B-Tree & Puntuación ponderada final (BETO + Heurística). \\
+        \hline
+        content\_hash & Varchar(64) & - & SÍ & NULL & B-Tree & Hash MD5 para deduplicación cruzada. \\
+        \hline
+        busqueda\_fts & tsvector & - & SÍ & NULL & GIN & Vector semántico actualizado vía Trigger SQL. \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Diccionario de Datos: Entidad \texttt{noticias}.}
+    \label{tab:dict_noticias}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|l|l|p{0.3\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{Campo}} & \textcolor{white}{\textbf{Tipo}} & \textcolor{white}{\textbf{Llave}} & \textcolor{white}{\textbf{Nulo}} & \textcolor{white}{\textbf{Default}} & \textcolor{white}{\textbf{Índices}} & \textcolor{white}{\textbf{Descripción}} \\
+        \hline
+        id & Integer & PK & NO & Auto & B-Tree (PK) & Identificador de la detección. \\
+        \hline
+        noticia\_id & Integer & FK & NO & - & UNIQUE & Enlace al artículo (\texttt{noticias.id}). \\
+        \hline
+        score\_heuristico & Float & - & SÍ & NULL & - & Puntuación de reglas RegEx (Bypass). \\
+        \hline
+        score\_semantico & Float & - & SÍ & NULL & - & Certeza matemática inferida por BETO. \\
+        \hline
+        score\_hibrido & Float & - & SÍ & NULL & - & Puntuación tras aplicar el Bozal de Penalización. \\
+        \hline
+        clasificacion\_hibrida & Varchar(20) & - & SÍ & NULL & - & Etiqueta de severidad (Alta/Media/Baja). \\
+        \hline
+        menores\_identificados & Boolean & - & NO & False & - & \textit{Flag} de existencia de un NNA en orfandad. \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Diccionario de Datos: Entidad \texttt{detecciones}.}
+    \label{tab:dict_detecciones}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|l|l|p{0.3\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{Campo}} & \textcolor{white}{\textbf{Tipo}} & \textcolor{white}{\textbf{Llave}} & \textcolor{white}{\textbf{Nulo}} & \textcolor{white}{\textbf{Default}} & \textcolor{white}{\textbf{Índices}} & \textcolor{white}{\textbf{Descripción}} \\
+        \hline
+        id & Integer & PK & NO & Auto & B-Tree (PK) & Identificador único del clúster. \\
+        \hline
+        etiqueta & Varchar(200) & - & SÍ & NULL & - & Etiqueta semántica sugerida por BERTopic. \\
+        \hline
+        terminos\_principales & JSON & - & SÍ & NULL & - & Vector de palabras clave (c-TF-IDF). \\
+        \hline
+        num\_documentos & Integer & - & NO & 0 & - & Cantidad de noticias condensadas. \\
+        \hline
+        cohesion & Float & - & SÍ & NULL & - & Nivel de densidad topológica (HDBSCAN). \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Diccionario de Datos: Entidad \texttt{clusters\_semanticos}.}
+    \label{tab:dict_clusters}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|l|l|p{0.3\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{Campo}} & \textcolor{white}{\textbf{Tipo}} & \textcolor{white}{\textbf{Llave}} & \textcolor{white}{\textbf{Nulo}} & \textcolor{white}{\textbf{Default}} & \textcolor{white}{\textbf{Índices}} & \textcolor{white}{\textbf{Descripción}} \\
+        \hline
+        id & Integer & PK & NO & Auto & B-Tree (PK) & Identificador único de la fuente. \\
+        \hline
+        nombre & Varchar(200) & - & NO & - & - & Nombre público del medio de comunicación. \\
+        \hline
+        url & Varchar(1000) & - & NO & - & UNIQUE & Endpoint de origen (RSS/Search). \\
+        \hline
+        tipo & Varchar(20) & - & NO & - & - & Clasificador ("RSS", "HTML Search"). \\
+        \hline
+        activo & Boolean & - & NO & True & - & Bandera para ejecución en el Cronjob. \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Diccionario de Datos: Entidad \texttt{fuentes}.}
+    \label{tab:dict_fuentes}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|l|l|p{0.3\textwidth}|}
+        \hline
+        \rowcolor{black}
+        \textcolor{white}{\textbf{Campo}} & \textcolor{white}{\textbf{Tipo}} & \textcolor{white}{\textbf{Llave}} & \textcolor{white}{\textbf{Nulo}} & \textcolor{white}{\textbf{Default}} & \textcolor{white}{\textbf{Índices}} & \textcolor{white}{\textbf{Descripción}} \\
+        \hline
+        id & Integer & PK & NO & Auto & B-Tree (PK) & Identificador único del analista. \\
+        \hline
+        username & Varchar(100) & - & NO & - & UNIQUE & Nombre de inicio de sesión. \\
+        \hline
+        password\_hash & Varchar(256) & - & NO & - & - & Hash criptográfico (Bcrypt). \\
+        \hline
+        rol & Varchar(50) & - & NO & "Lector" & - & Nivel de privilegios (Admin/Lector). \\
+        \hline
+        created\_at & Timestamp & - & NO & now() & - & Marca de tiempo de creación. \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Diccionario de Datos: Entidad \texttt{usuarios}.}
+    \label{tab:dict_usuarios}
+\end{table}

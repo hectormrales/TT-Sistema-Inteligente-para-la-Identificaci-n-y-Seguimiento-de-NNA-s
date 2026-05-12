@@ -1,0 +1,63 @@
+% !TeX root = ../proyecto.tex
+
+\begin{UseCase}{CU-02}{Gestionar Fuentes de Información}{
+	Permite a los administradores registrar, editar, habilitar o eliminar de forma lógica los orígenes periodísticos (RSS o Búsqueda HTML) que alimentan al motor de recolección.
+}
+	\UCitem{Versión}{\color{Gray}
+		1.0
+	}\UCitem{Autor}{\color{Gray}
+		Tesista de Ingeniería
+	}\UCitem{Supervisa}{\color{Gray}
+		Director de Trabajo Terminal
+	}\UCitem{Actor}{
+		Administrador del Sistema / Organización Civil
+	}\UCitem{Propósito}{\begin{Titemize}
+		\Titem Garantizar la actualización constante y plural de los orígenes informativos a nivel nacional.
+	\end{Titemize}
+	}\UCitem{Entradas}{\begin{Titemize}
+		\Titem Nombre del Medio.
+		\Titem URL de origen.
+		\Titem Tipo de fuente (RSS / Search).
+	\end{Titemize}
+	}\UCitem{Origen}{\begin{Titemize}
+		\Titem Formularios del Dashboard web.
+	\end{Titemize}
+	}\UCitem{Salidas}{\begin{Titemize}
+		\Titem Confirmación visual del registro y tabla actualizada de fuentes.
+	\end{Titemize}
+	}\UCitem{Destino}{\begin{Titemize}
+		\Titem Interfaz web (Pantalla de Fuentes).
+		\Titem Tabla \texttt{fuentes} en BD.
+	\end{Titemize}
+	}\UCitem{Precondiciones}{\begin{Titemize}
+		\Titem El actor debe contar con una sesión activa en el Dashboard web.
+	\end{Titemize}
+	}\UCitem{Postcondiciones}{\begin{Titemize}
+		\Titem La URL ingresada queda lista para ser procesada en la siguiente ejecución del Cronjob (CU-01).
+	\end{Titemize}
+	}\UCitem{Errores}{\begin{Titemize}
+		\Titem {\bf \hypertarget{CU-02.E1}{E1}}: URL inalcanzable (DNS Error o 404), el sistema rechaza el registro \Trayref{CU-02}{A}.
+	\end{Titemize}
+	}\UCitem{Tipo}{
+		Caso de uso primario
+	}\UCitem{Observaciones}{
+		Ninguna
+	}
+\end{UseCase}
+
+%--------------------------------------
+\begin{UCtrayectoria}
+	\UCpaso[\UCActor] Ingresa al módulo de "Gestión de Fuentes" en el Dashboard.
+	\UCpaso[\UCsist] Muestra la tabla con las fuentes actualmente registradas y su estado.
+	\UCpaso[\UCActor] Selecciona la opción "Agregar Nueva Fuente" e ingresa la información requerida (Nombre, URL, Tipo).
+	\UCpaso[\UCActor] Presiona el botón \IUbutton{Guardar}.
+	\UCpaso[\UCsist] Ejecuta un ping de validación (health check) en segundo plano para verificar conectividad \ErrorRef{CU-02}{E1}{URL Inválida}.
+	\UCpaso[\UCsist] Almacena el nuevo registro en la base de datos PostgreSQL.
+	\UCpaso[\UCsist] Actualiza la tabla en pantalla mostrando un mensaje de éxito.
+\end{UCtrayectoria}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-02}{A}{La validación de la URL retorna error (Status code distinto de 2xx)}
+	\UCpaso Muestra un mensaje de alerta visual en la interfaz web indicando que la fuente no parece estar en línea.
+	\UCpaso[] El Caso de Uso termina sin guardar el registro para evitar ensuciar el pipeline.
+\end{UCtrayectoriaA}

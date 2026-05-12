@@ -1,0 +1,81 @@
+% !TeX root = ../proyecto.tex
+
+\begin{UseCase}{CU-01}{Ejecutar Pipeline Semántico}{
+	Este caso de uso describe el flujo automatizado mediante el cual el sistema recolecta, filtra, deduplica y clasifica semánticamente las noticias utilizando el motor heurístico y la inferencia del modelo BETO.
+}
+	\UCitem{Versión}{\color{Gray}
+		1.0
+	}\UCitem{Autor}{\color{Gray}
+		Tesista de Ingeniería
+	}\UCitem{Supervisa}{\color{Gray}
+		Director de Trabajo Terminal
+	}\UCitem{Actor}{
+		Cronjob (Sistema) / Analista de Datos
+	}\UCitem{Propósito}{\begin{Titemize}
+		\Titem Alimentar la base de datos con información clasificada y deduplicada libre de ruido estadístico.
+	\end{Titemize}
+	}\UCitem{Entradas}{\begin{Titemize}
+		\Titem URLs de medios o consultas pre-configuradas.
+	\end{Titemize}
+	}\UCitem{Origen}{\begin{Titemize}
+		\Titem Tabla de \texttt{fuentes} en PostgreSQL.
+	\end{Titemize}
+	}\UCitem{Salidas}{\begin{Titemize}
+		\Titem Textos normalizados y puntajes heurísticos/neuronales.
+	\end{Titemize}
+	}\UCitem{Destino}{\begin{Titemize}
+		\Titem Tablas \texttt{noticias} y \texttt{detecciones}.
+	\end{Titemize}
+	}\UCitem{Precondiciones}{\begin{Titemize}
+		\Titem La BD PostgreSQL debe estar activa.
+		\Titem Debe existir conexión a Internet y proxies/headers configurados.
+	\end{Titemize}
+	}\UCitem{Postcondiciones}{\begin{Titemize}
+		\Titem Se generan nuevos registros clasificados de NNA en orfandad listos para análisis.
+	\end{Titemize}
+	}\UCitem{Errores}{\begin{Titemize}
+		\Titem {\bf \hypertarget{CU-01.E1}{E1}}: Bloqueo por WAF (ej. Cloudflare HTTP 403), el sistema ignora la fuente y continúa \Trayref{CU-01}{A}.
+		\Titem {\bf \hypertarget{CU-01.E2}{E2}}: Falla en BD PostgreSQL (Conexión rechazada o caída en transacción) \Trayref{CU-01}{B}.
+		\Titem {\bf \hypertarget{CU-01.E3}{E3}}: Desbordamiento de Memoria (OOM - Out of Memory) por saturación en la inferencia del modelo BETO \Trayref{CU-01}{C}.
+	\end{Titemize}
+	}\UCitem{Tipo}{
+		Caso de uso primario
+	}\UCitem{Observaciones}{
+		Operación crítica, intensiva en procesamiento (uso de CPU para tensor operations).
+	}
+\end{UseCase}
+
+%--------------------------------------
+\begin{UCtrayectoria}
+	\UCpaso[\UCActor] Dispara la ejecución del colector mediante el Dashboard o el temporizador del servidor.
+	\UCpaso[\UCsist] Obtiene la lista de fuentes habilitadas desde el esquema relacional \ErrorRef{CU-01}{E2}{Falla BD}.
+	\UCpaso[\UCsist] Ejecuta la recolección dinámica (StealthSessions) evadiendo contramedidas \ErrorRef{CU-01}{E1}{Bloqueo WAF}.
+	\UCpaso[\UCsist] Aplica el filtro de la cascada de deduplicación (MD5, Jaccard, SimHash, Coseno).
+	\UCpaso[\UCsist] Envía el texto purificado al \texttt{SemanticDetector} para su procesamiento.
+	\UCpaso[\UCsist] Calcula el factor de ponderación $\alpha$ (fusión neuro-simbólica) procesando inferencias por lotes \ErrorRef{CU-01}{E3}{Memoria Saturada}.
+	\UCpaso[\UCsist] Almacena los resultados consolidados en la Base de Datos \ErrorRef{CU-01}{E2}{Falla BD}.
+\end{UCtrayectoria}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-01}{A}{Ocurre un bloqueo HTTP 403 o 429 durante el scraping}
+	\UCpaso Registra el evento en los logs del sistema como \texttt{WARNING}.
+	\UCpaso Marca la fuente actual con una bandera temporal de penalización en la memoria (backoff exponencial).
+	\UCpaso[] El Caso de Uso continúa con la siguiente fuente iterando nuevamente.
+\end{UCtrayectoriaA}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-01}{B}{Falla la conexión o transacción con la base de datos PostgreSQL}
+	\UCpaso Intercepta la excepción de SQLAlchemy (ej. \texttt{OperationalError}).
+	\UCpaso Emite una alerta crítica en los registros del sistema (\texttt{CRITICAL}) indicando la caída del servicio.
+	\UCpaso Ejecuta un \textit{Rollback} automático de cualquier transacción que haya quedado pendiente o parcialmente ejecutada.
+	\UCpaso Notifica al administrador mediante el canal de monitoreo configurado.
+	\UCpaso[] El Caso de Uso termina de manera anormal.
+\end{UCtrayectoriaA}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-01}{C}{El modelo BETO satura la memoria disponible (OOM) durante la inferencia por lotes}
+	\UCpaso Detecta la excepción de asignación de tensores (\texttt{MemoryError} o \texttt{RuntimeError} de PyTorch).
+	\UCpaso Libera explícitamente el caché de memoria (invocando el recolector de basura o limpieza del caché local).
+	\UCpaso Divide dinámicamente el lote de noticias problemático en fragmentos más pequeños (\textit{chunks}).
+	\UCpaso[] El Caso de Uso continúa en el paso 6 procesando los fragmentos reducidos.
+\end{UCtrayectoriaA}

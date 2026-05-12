@@ -1,0 +1,40 @@
+% !TeX root = proyecto.tex
+
+\section{Términos del Negocio}
+\label{sec:terminosDeNegocio}
+
+En esta sección se definen los conceptos técnicos, legales y operativos fundamentales para la comprensión del sistema.
+
+\begin{description}
+    \item[\hypertarget{tBETO}{BETO:}] Modelo de lenguaje basado en la arquitectura \textit{BERT} (Bidirectional Encoder Representations from Transformers) preentrenado específicamente con un corpus masivo en español. Es el núcleo del análisis semántico del sistema[cite: 17, 240].
+
+    \item[\hypertarget{tBERTopic}{BERTopic:}] Técnica de modelado de tópicos que utiliza \textit{embeddings} de Transformers y un flujo de trabajo basado en reducción de dimensionalidad y clustering para encontrar agrupaciones temáticas en documentos[cite: 41, 116, 241].
+
+    \item[\hypertarget{tBozal}{Bozal de Penalización:}] Mecanismo de lógica simbólica diseñado para este proyecto que reduce artificialmente el puntaje de confianza de la IA ante casos detectados como "falsos positivos" (ej. menores agresores), evitando su clasificación como alta relevancia.
+
+    \item[\hypertarget{tBypass}{Bypass de Oro:}] Regla de negocio estricta que prioriza la detección heurística sobre la IA; si una noticia contiene palabras clave críticas de orfandad con alta densidad, se marca como relevante sin esperar la inferencia neuronal.
+
+    \item[\hypertarget{tDeduplicacion}{Deduplicación Cross-site:}] Proceso de identificar y eliminar noticias que narran el mismo evento pero provienen de diferentes medios de comunicación, utilizando algoritmos de similitud como SimHash o Jaccard[cite: 113, 242, 266].
+
+    \item[\hypertarget{tFeminicidio}{Feminicidio:}] Muerte violenta de las mujeres por razones de género, tipificada en el sistema penal mexicano. Es el evento origen que el sistema busca monitorear[cite: 218, 245].
+
+    \item[\hypertarget{tGIN}{GIN Index (Generalized Inverted Index):}] Tipo de índice en PostgreSQL diseñado para manejar elementos de datos compuestos (como documentos de texto), fundamental para la rapidez de las búsquedas Full-Text Search.
+
+    \item[\hypertarget{tNNA}{NNA:}] Acrónimo de Niñas, Niños y Adolescentes. En este proyecto, se refiere específicamente a los menores en situación de orfandad o vulnerabilidad tras un feminicidio[cite: 220, 245, 247].
+
+    \item[\hypertarget{tNeuroSimbolico}{Pipeline Neuro-Simbólico:}] Arquitectura híbrida que combina el aprendizaje estadístico de las redes neuronales (BETO) con la rigurosidad de las reglas de decisión programadas (Simbólico).
+
+    \item[\hypertarget{tStealthSession}{StealthSession:}] Técnica de recolección de datos que simula el comportamiento y las firmas criptográficas de un navegador humano para evadir bloqueos automáticos de servidores web (WAF).
+
+    \item[\hypertarget{tVictimaIndirecta}{Víctima Indirecta:}] Familiares o personas dependientes de la víctima directa de un feminicidio; en el contexto de este sistema, se enfoca en los hijos e hijas menores de edad[cite: 247, 259].
+
+    \item[\hypertarget{tUMAP}{UMAP (Uniform Manifold Approximation and Projection):}] Algoritmo de aprendizaje múltiple utilizado en el módulo BERTopic para reducir la alta dimensionalidad de los vectores generados por BETO (768 dimensiones) a un espacio de menor dimensionalidad (e.g., 3 dimensiones). Esto permite optimizar computacionalmente el proceso de agrupamiento preservando la estructura topológica global de las noticias periodísticas.
+
+    \item[\hypertarget{tHDBSCAN}{HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise):}] Algoritmo de agrupamiento espacial basado en densidad integrado en la tubería de BERTopic. El sistema lo emplea para identificar densidades de noticias afines y aislar proactivamente anomalías (\textit{outliers}) o ruido estadístico sin necesidad de predefinir empíricamente la cantidad de clústeres esperados.
+
+    \item[\hypertarget{tcTFIDF}{c-TF-IDF (Class-based Term Frequency-Inverse Document Frequency):}] Modificación del algoritmo clásico de ponderación textual empleado internamente por BERTopic. En el proyecto, se utiliza de forma extensiva para calcular y extraer las palabras clave más significativas que describen semánticamente a cada clúster de noticias generado, facilitando la legibilidad en el Dashboard.
+
+    \item[\hypertarget{tTemperatureScaling}{Temperature Scaling (Escalamiento de Temperatura):}] Técnica matemática de calibración termodinámica aplicada a la función \textit{Softmax}. En la arquitectura de inferencia neuronal, se utiliza un factor de escala térmico (multiplicador de 5) para amplificar o polarizar las diferencias probabilísticas, destruyendo la incertidumbre matemática al clasificar un texto como relevante.
+
+    \item[\hypertarget{tZeroShot}{Zero-Shot Classification (Clasificación de Cero Disparos):}] Paradigma de inferencia de Inteligencia Artificial que habilita la clasificación de textos en categorías para las cuales la red no fue explícitamente entrenada. El motor lo implementa proyectando una noticia y una categoría descriptiva de orfandad hacia el mismo espacio latente para medir la similitud del coseno entre ambos tensores.
+\end{description}
