@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_sistema.png') }}" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
@@ -51,12 +52,15 @@
             text-decoration: none; color: white;
         }
         .brand-icon {
-            width: 40px; height: 40px;
-            background: var(--crimson);
-            border-radius: 10px;
+            width: 42px; height: 42px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 19px;
-            box-shadow: 0 2px 8px rgba(176,48,48,0.5);
+            overflow: hidden;
+            padding: 2px;
+        }
+        .brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         .brand-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.2); }
         .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
@@ -540,7 +544,9 @@
     <!-- Barra de navegación -->
     <nav class="topbar">
         <a class="topbar-brand" href="#">
-            <div class="brand-icon"><i class="fas fa-child"></i></div>
+            <div class="brand-icon">
+                <img src="{{ url_for('static', filename='img/logo_sistema.png') }}" alt="Logo">
+            </div>
             <div class="brand-divider"></div>
             <div class="brand-text">
                 <span class="brand-title">Plataforma NNA</span>
@@ -623,6 +629,9 @@
             </button>
             <button class="tab-btn" data-tab="identificar" onclick="switchTab('identificar', this)">
                 <i class="fas fa-search-plus"></i> Identificar caso
+            </button>
+            <button class="tab-btn" data-tab="seguimiento" onclick="switchTab('seguimiento', this)">
+                <i class="fas fa-folder-open"></i> Seguimiento de casos
             </button>
         </div>
 
@@ -821,6 +830,29 @@
             </div>
         </div>
 
+        <!-- ╔═══ TAB: Seguimiento de Casos ═══╗ -->
+        <div id="tab-seguimiento" class="tab-content">
+            <div class="identify-hero" style="background: linear-gradient(135deg, var(--teal) 0%, var(--teal-lt) 100%);">
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="fas fa-folder-open"></i></div>
+                            <h2 class="mb-0">Seguimiento de Casos Investigados</h2>
+                        </div>
+                        <a href="/api/seguimiento/export/csv" class="btn" style="background:white;color:var(--teal-dk);font-weight:700;border:none;border-radius:8px;padding:8px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.1);"><i class="fas fa-file-csv me-1"></i>Exportar CSV</a>
+                    </div>
+                    <p>Historial detallado de los casos que han sido procesados a profundidad por el motor de IA. Incluye geolocalización interactiva, análisis de involucrados y fuentes contrastadas para facilitar la toma de decisiones del analista.</p>
+                </div>
+            </div>
+            
+            <div id="seguimientoContainer">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando casos investigados…</p>
+                </div>
+            </div>
+        </div>
+
     </div><!-- /main-content -->
 
     <footer class="site-footer">
@@ -854,6 +886,7 @@
         if (el) el.classList.add('active');
         if (tab === 'graficos') loadCharts();
         if (tab === 'guardadas') renderSaved();
+        if (tab === 'seguimiento') loadSeguimientoCasos();
     }
 
     // ══════════════════════════════════════════════════════════
@@ -1186,6 +1219,167 @@
                 console.warn('Error en polling de status:', e);
             }
         }, 5000);
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  Seguimiento de Casos
+    // ══════════════════════════════════════════════════════════
+    async function loadSeguimientoCasos() {
+        const container = document.getElementById('seguimientoContainer');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando casos investigados…</p></div>';
+        try {
+            const r = await fetch('/api/seguimiento/casos');
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const data = await r.json();
+            const casos = data.casos || [];
+            
+            if (casos.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Aún no hay casos investigados a profundidad.</p><small>Usa el botón "Investigar más en la web" en las noticias para generar informes detallados.</small></div>';
+                return;
+            }
+            
+            container.innerHTML = casos.map(renderCasoSeguimiento).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar el historial de casos.</p></div>';
+        }
+    }
+
+    function renderCasoSeguimiento(caso) {
+        const inv = caso.investigacion_json || {};
+        const location = inv.ubicacion || 'Ubicación no especificada';
+        const abstract = inv.resumen_abstracto || inv.resumen || 'Sin resumen disponible';
+        
+        let mapUrl = '';
+        if (location && location.toLowerCase() !== 'no especificada' && location.toLowerCase() !== 'desconocida') {
+            mapUrl = 'https://maps.google.com/maps?q=' + encodeURIComponent(location) + '&t=&z=10&ie=UTF8&iwloc=&output=embed';
+        }
+        
+        const mapHtml = mapUrl 
+            ? '<div style="margin-top:20px; border-radius:12px; overflow:hidden; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.05); height:300px;"><iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' + mapUrl + '"></iframe></div>' 
+            : '';
+            
+        // Render sources
+        const sources = inv.fuentes_adicionales || inv.fuentes || [];
+        let sourcesHtml = '';
+        if (sources.length > 0) {
+            sourcesHtml = '<div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); font-size:12px;"><strong style="color:var(--text-muted); text-transform:uppercase; font-size:10px; letter-spacing:0.05em; display:block; margin-bottom:10px;"><i class="fas fa-link me-1"></i>Fuentes Consultadas para Validación</strong><div style="display:flex; flex-wrap:wrap; gap:8px;">';
+            sources.forEach(src => {
+                const link = typeof src === 'string' ? src : src.url;
+                if (!link) return;
+                const domain = link.replace('http://','').replace('https://','').split(/[/?#]/)[0];
+                sourcesHtml += '<a href="' + esc(link) + '" target="_blank" style="background:rgba(42,82,152,0.05); color:var(--navy-lt); padding:6px 12px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:500; border:1px solid rgba(42,82,152,0.15); transition:all 0.2s;"><i class="fas fa-external-link-alt" style="font-size:10px;"></i>' + esc(domain) + '</a>';
+            });
+            sourcesHtml += '</div></div>';
+        }
+
+        // Render nna ages
+        let nnaHtml = '';
+        let edadesData = inv.edades || inv.edades_nna;
+        if (Array.isArray(edadesData) && edadesData.length > 0) {
+            nnaHtml = edadesData.map(e => '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(e) + '</span>').join(' ');
+        } else if (typeof edadesData === 'string' || typeof edadesData === 'number') {
+            nnaHtml = '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(edadesData) + '</span>';
+        } else if (edadesData && typeof edadesData === 'object') {
+             const values = Object.values(edadesData);
+             nnaHtml = values.length > 0 ? values.map(v => '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(v) + '</span>').join(' ') : 'No especificada';
+        } else {
+            nnaHtml = '<span style="color:var(--text-muted); font-size:11.5px;">No especificada</span>';
+        }
+
+        let victimasStr = 'No especificadas';
+        if (inv.victimas) {
+            if (Array.isArray(inv.victimas)) {
+                victimasStr = inv.victimas.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
+            } else if (typeof inv.victimas === 'object') {
+                const vals = Object.values(inv.victimas);
+                victimasStr = vals.length > 0 ? vals.join(', ') : 'No especificadas';
+            } else {
+                victimasStr = inv.victimas;
+            }
+        }
+        const scoreCompuesto = ((caso.score_compuesto || 0) * 100).toFixed(0);
+        const cardId = 'seg-card-' + caso.id;
+
+        return `
+        <div class="news-item" style="background:var(--card-bg); padding:20px; border-radius:16px; margin-bottom:20px; box-shadow:0 4px 16px rgba(0,0,0,0.05); border:1px solid rgba(42,82,152,0.15); border-left:5px solid var(--teal); cursor:pointer; transition:transform 0.2s;" onclick="toggleSeguimiento('${cardId}')">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+                <div>
+                    <h3 style="font-size:16px; font-weight:700; color:var(--navy-dk); margin:0 0 8px 0; line-height:1.4;">
+                        <i class="fas fa-file-invoice" style="color:var(--navy-lt); margin-right:8px;"></i>
+                        ${esc(caso.titulo)}
+                    </h3>
+                    <p style="font-size:13px; color:var(--text-main); margin:0; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(abstract)}</p>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;"><i class="far fa-calendar-alt me-1"></i>${fmtDate(caso.fecha)}</div>
+                    <span style="background:#e3f5f1; color:var(--teal-dk); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700;"><i class="fas fa-chevron-down"></i> Detalles</span>
+                </div>
+            </div>
+            
+            <div id="${cardId}" style="display:none; margin-top:20px; padding-top:20px; border-top:1px solid var(--border); cursor:default;" onclick="event.stopPropagation()">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
+                    <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:center;">
+                        <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-map-marker-alt" style="color:var(--crimson); margin-right:5px;"></i>Ubicación</div>
+                        <div style="font-size:14.5px; font-weight:600; color:var(--text-main);">${esc(location)}</div>
+                    </div>
+                    
+                    <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:center;">
+                        <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-user-injured" style="color:var(--amber); margin-right:5px;"></i>Víctimas Directas</div>
+                        <div style="font-size:13.5px; font-weight:500; color:var(--text-main);">${esc(victimasStr)}</div>
+                    </div>
+
+                    <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border);">
+                        <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-child" style="color:var(--teal); margin-right:5px;"></i>Impacto NNA</div>
+                        <div style="display:flex; align-items:center; gap:16px;">
+                            <div>
+                                <span style="font-size:24px; font-weight:800; color:var(--teal-lt); line-height:1;">${esc(inv.ninos_afectados || inv.nna_afectados || 0)}</span>
+                                <span style="font-size:11.5px; color:var(--text-muted); margin-left:4px;">afectados</span>
+                            </div>
+                            <div style="border-left:1px solid var(--border); padding-left:16px;">
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Edades NNA</div>
+                                <div style="display:flex; flex-wrap:wrap; gap:6px;">${nnaHtml}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#fef9e7; padding:18px; border-radius:12px; border:1px solid #f9e79f; display:flex; flex-direction:column; justify-content:center; grid-column:1/-1;">
+                        <div style="font-size:10.5px; font-weight:800; color:#b7950b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-home" style="margin-right:5px;"></i>Situación actual NNA</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--text-main);">${esc(inv.situacion_actual || 'No especificada')}</div>
+                    </div>
+
+                    <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; grid-column:1/-1;">
+                        <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-phone-alt" style="color:var(--navy-lt); margin-right:5px;"></i>Medios de contacto sugeridos para atención</div>
+                        <div style="font-size:13.5px; font-weight:600; color:var(--text-main);">${esc(inv.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía General o DIF local.')}</div>
+                    </div>
+                </div>
+                
+                <div style="background:#ffffff; padding:24px; border-radius:12px; border:1px solid var(--border); border-left:4px solid var(--navy-lt); position:relative; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+                    <div style="font-size:11px; font-weight:800; color:var(--navy-dk); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-file-alt text-primary"></i> Resumen Ejecutivo del Caso
+                    </div>
+                    <p style="font-size:14px; line-height:1.7; color:var(--text-main); margin:0;">${esc(abstract)}</p>
+                </div>
+                
+                ${mapHtml}
+                ${sourcesHtml}
+                
+                <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+                    <a href="${esc(caso.enlace)}" target="_blank" style="background:var(--gray-bg); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; color:var(--text-main); text-decoration:none; border:1px solid var(--border); display:inline-block; transition:all 0.2s;"><i class="fas fa-external-link-alt me-1"></i>Ver noticia original</a>
+                    <span style="font-size:11px; color:var(--text-muted); background:var(--gray-bg); padding:4px 10px; border-radius:8px;">Relevancia original: <strong>${scoreCompuesto}%</strong></span>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    function toggleSeguimiento(id) {
+        var el = document.getElementById(id);
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+        } else {
+            el.style.display = 'none';
+        }
     }
 
     // ══════════════════════════════════════════════════════════
@@ -1563,7 +1757,7 @@
         if (!panel) return;
         if (btn) btn.style.display = 'none';
         panel.classList.add('active');
-        renderInvestigationResultInto('inv-panel-' + id, result);
+        renderInvestigationResultInto('inv-panel-' + id, result, id);
     }
 
     async function identifyLink() {
@@ -1608,7 +1802,7 @@
         }
     }
 
-    function renderInvestigationResultInto(panelId, result) {
+    function renderInvestigationResultInto(panelId, result, noticiaId) {
         const panel = document.getElementById(panelId);
         if (!panel) return;
         
@@ -1619,9 +1813,34 @@
         
         let html = '<div class="inv-grid">';
         html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-map-marker-alt me-1"></i>Ubicación</span><span class="inv-val">' + esc(result.ubicacion || 'No especificado') + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val">' + esc(result.victimas || 'No especificado') + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val">' + esc(String(result.ninos_afectados || 'No especificado')) + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val">' + esc(result.edades || 'No especificado') + '</span></div>';
+        let victimasVal = result.victimas || 'No especificado';
+        if (victimasVal && typeof victimasVal === 'object' && !Array.isArray(victimasVal)) {
+            const vals = Object.values(victimasVal);
+            victimasVal = vals.length > 0 ? vals.join(', ') : 'No especificado';
+        } else if (Array.isArray(victimasVal)) {
+            victimasVal = victimasVal.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
+        }
+        
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val">' + esc(victimasVal) + '</span></div>';
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val">' + esc(String(result.ninos_afectados || result.nna_afectados || 'No especificado')) + '</span></div>';
+        
+        // Corregir problema [object Object] para edades
+        let edadesVal = result.edades || result.edades_nna || 'No especificado';
+        if (edadesVal && typeof edadesVal === 'object' && !Array.isArray(edadesVal)) {
+            const vals = Object.values(edadesVal);
+            edadesVal = vals.length > 0 ? vals.join(', ') : 'No especificado';
+        } else if (Array.isArray(edadesVal)) {
+            edadesVal = edadesVal.join(', ');
+        }
+        
+        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val">' + esc(edadesVal) + '</span></div>';
+        
+        // Nuevo campo: situación actual
+        html += '<div class="inv-field" style="grid-column: 1 / -1; background:#fef9e7; border-color:#f9e79f;"><span class="inv-label" style="color:#b7950b;"><i class="fas fa-home me-1"></i>Situación Actual NNA</span><span class="inv-val" style="color:var(--text-main);">' + esc(result.situacion_actual || 'No especificada') + '</span></div>';
+        
+        // Nuevo campo: medios de contacto
+        html += '<div class="inv-field" style="grid-column: 1 / -1;"><span class="inv-label" style="color:var(--navy-lt);"><i class="fas fa-phone-alt me-1"></i>Medios de contacto sugeridos</span><span class="inv-val" style="color:var(--text-main); font-weight:600;">' + esc(result.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía o DIF local.') + '</span></div>';
+        
         html += '</div>';
         
         html += '<div class="inv-summary"><strong style="display:block;margin-bottom:8px;color:var(--navy);font-size:12px;text-transform:uppercase;letter-spacing:0.05em;"><i class="fas fa-align-left me-1"></i>Resumen ejecutivo del caso</strong>' + esc(result.resumen || '') + '</div>';
@@ -1642,7 +1861,55 @@
             html += '<div class="mt-3" style="font-size:11px;color:var(--text-muted);"><i class="fas fa-search me-1"></i>Query generada: <em>' + esc(result.query_usada) + '</em></div>';
         }
         
+        // Botón de dar seguimiento
+        if (noticiaId) {
+            // Solo si no está ya en seguimiento. Asumimos que podemos mostrar el botón y el backend verificará.
+            html += '<div class="mt-3 text-end">';
+            html += '<button id="btn-add-seg-' + noticiaId + '" class="btn btn-primary" style="background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:600;padding:8px 16px;" onclick="darSeguimiento(' + noticiaId + ')">';
+            html += '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
+            html += '</button></div>';
+        }
+        
         panel.innerHTML = html;
+    }
+
+    async function darSeguimiento(id) {
+        var btn = document.getElementById('btn-add-seg-' + id);
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Guardando...';
+        }
+        try {
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+            
+            const r = await fetch('/api/seguimiento/add/' + id, { 
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken }
+            });
+            const d = await r.json();
+            
+            if (d.status === 'success') {
+                showToast('Caso agregado a seguimiento exitosamente', 'success');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-check me-1"></i>En seguimiento';
+                    btn.style.background = 'var(--gray)';
+                }
+                switchTab('seguimiento', document.querySelector('[data-tab="seguimiento"]'));
+            } else {
+                showToast(d.error || 'Error al dar seguimiento', 'error');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
+                }
+            }
+        } catch(e) {
+            showToast('Error de conexión', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
+            }
+        }
     }
 
     // ══════════════════════════════════════════════════════════

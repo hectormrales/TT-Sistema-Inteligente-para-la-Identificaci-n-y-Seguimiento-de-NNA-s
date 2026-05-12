@@ -8459,3 +8459,1033 @@ ValueError: cannot convert float NaN to integer
 2026-05-06 00:58:26,780 - root - INFO - Datos cargados: 802 noticias desde análisis
 2026-05-06 00:58:26,782 - root - INFO - Análisis background completado exitosamente
 2026-05-06 00:59:10,406 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 18:28:14,986 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 18:28:15,027 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:28:15,028 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:28:15,033 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:28:15,034 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:28:15,152 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:28:15,152 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:29:29,994 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 18:30:31,655 - src.analysis.investigator - INFO - Iniciando investigación para: Feminicidio de Cindy en Cuautitlán: lo que se sabe...
+2026-05-11 18:30:31,655 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:30:32,352 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-05-11 18:30:32,353 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-05-11 18:30:32,354 - src.analysis.investigator - INFO - Query generada: Feminicidio de Cindy en Cuautitlán: lo
+2026-05-11 18:30:32,354 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Feminicidio+de+Cindy+en+Cuautitl%C3%A1n%3A+lo
+2026-05-11 18:30:33,254 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Feminicidio+de+Cindy+en+Cuautitl%C3%A1n%3A+lo
+2026-05-11 18:30:34,535 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Feminicidio+de+Cindy+en+Cuautitl%C3%A1n%3A+lo+que+se+sabe
+2026-05-11 18:31:00,615 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Feminicidio+de+Cindy+en+Cuautitl%C3%A1n%3A+lo+que+se+sabe
+2026-05-11 18:31:09,999 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 18:31:09,999 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Feminicidio de Cindy en Cuautitlán: lo. Intentando con búsqueda nativa de Gemini...
+2026-05-11 18:31:10,001 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:31:10,363 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 403 Forbidden"
+2026-05-11 18:31:10,364 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Your API key was reported as leaked. Please use another API key.', 'status': 'PERMISSION_DENIED'}}
+2026-05-11 18:31:10,365 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 18:38:43,515 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 18:38:43,537 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:38:43,538 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:38:43,543 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:38:43,544 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:38:43,628 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:38:43,632 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:39:02,725 - src.analysis.investigator - INFO - Iniciando investigación para: Mujer mata a su pareja con un cuchillo frente a su...
+2026-05-11 18:39:02,725 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:39:03,022 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:39:03,023 - src.analysis.investigator - ERROR - Error generando query: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:39:03,024 - src.analysis.investigator - INFO - Query generada: Mujer mata a su pareja con
+2026-05-11 18:39:03,024 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Mujer+mata+a+su+pareja+con
+2026-05-11 18:39:03,901 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Mujer+mata+a+su+pareja+con
+2026-05-11 18:39:05,017 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Mujer+mata+a+su+pareja+con+un+cuchillo+frente+a+su
+2026-05-11 18:39:38,452 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Mujer+mata+a+su+pareja+con+un+cuchillo+frente+a+su
+2026-05-11 18:39:39,276 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 18:39:39,276 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Mujer mata a su pareja con. Intentando con búsqueda nativa de Gemini...
+2026-05-11 18:39:39,277 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:39:39,525 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:39:39,526 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:39:39,526 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 18:43:41,215 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 18:43:41,234 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:43:41,235 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:43:41,242 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:43:41,243 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:43:41,331 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:43:41,332 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:43:58,616 - app - INFO - Logout: hector
+2026-05-11 18:44:02,407 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 18:44:08,865 - src.analysis.investigator - INFO - Iniciando investigación para: "Sus hijos están solos", familiar de Lina Alejandr...
+2026-05-11 18:44:08,866 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:44:09,132 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:44:09,133 - src.analysis.investigator - ERROR - Error generando query: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:44:09,133 - src.analysis.investigator - INFO - Query generada: "Sus hijos están solos", familiar de
+2026-05-11 18:44:09,134 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de
+2026-05-11 18:44:09,833 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de
+2026-05-11 18:44:10,544 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de+Lina+Alejandr
+2026-05-11 18:44:44,299 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de+Lina+Alejandr
+2026-05-11 18:44:45,030 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 18:44:45,031 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: "Sus hijos están solos", familiar de. Intentando con búsqueda nativa de Gemini...
+2026-05-11 18:44:45,032 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:44:45,164 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:44:45,165 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:44:45,165 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 18:46:47,824 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:46:47,825 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:46:47,848 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:46:47,849 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:46:47,909 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:46:47,929 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:46:56,499 - app - INFO - Logout: hector
+2026-05-11 18:47:03,028 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 18:47:12,568 - src.analysis.investigator - INFO - Iniciando investigación para: Asesinan a Mujer Vendedora de Frituras en Irapuato...
+2026-05-11 18:47:12,569 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:47:12,909 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:47:12,910 - src.analysis.investigator - ERROR - Error generando query: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:47:12,910 - src.analysis.investigator - INFO - Query generada: Asesinan a Mujer Vendedora de Frituras
+2026-05-11 18:47:12,911 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+a+Mujer+Vendedora+de+Frituras
+2026-05-11 18:47:13,769 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+a+Mujer+Vendedora+de+Frituras
+2026-05-11 18:47:14,686 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato
+2026-05-11 18:47:24,900 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato
+2026-05-11 18:47:25,641 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 18:47:25,642 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Asesinan a Mujer Vendedora de Frituras. Intentando con búsqueda nativa de Gemini...
+2026-05-11 18:47:25,643 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:47:25,896 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:47:25,897 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:47:25,898 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 18:49:25,900 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 18:49:25,922 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:49:25,923 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:49:25,931 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:49:25,931 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:49:26,016 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:49:26,020 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:49:30,731 - app - INFO - Logout: hector
+2026-05-11 18:49:38,395 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 18:49:49,437 - src.analysis.investigator - INFO - Iniciando investigación para: Feminicidio y suicidio en Sonora; tragedia familia...
+2026-05-11 18:49:49,437 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:49:49,716 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:49:49,716 - src.analysis.investigator - ERROR - Error generando query: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:49:49,717 - src.analysis.investigator - INFO - Query generada: Feminicidio y suicidio en Sonora; tragedia
+2026-05-11 18:49:49,717 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Feminicidio+y+suicidio+en+Sonora%3B+tragedia
+2026-05-11 18:49:53,274 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Feminicidio+y+suicidio+en+Sonora%3B+tragedia
+2026-05-11 18:49:54,157 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Feminicidio+y+suicidio+en+Sonora%3B+tragedia+familia
+2026-05-11 18:50:03,273 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Feminicidio+y+suicidio+en+Sonora%3B+tragedia+familia
+2026-05-11 18:50:07,769 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 18:50:07,769 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Feminicidio y suicidio en Sonora; tragedia. Intentando con búsqueda nativa de Gemini...
+2026-05-11 18:50:07,770 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:50:08,028 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 400 Bad Request"
+2026-05-11 18:50:08,029 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'API key expired. Please renew the API key.', 'status': 'INVALID_ARGUMENT', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'API_KEY_INVALID', 'domain': 'googleapis.com', 'metadata': {'service': 'generativelanguage.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'API key expired. Please renew the API key.'}]}}
+2026-05-11 18:50:08,029 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 18:57:24,090 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 18:57:24,125 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:57:24,126 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:57:24,132 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 18:57:24,132 - app - INFO - Esquema FTS inicializado
+2026-05-11 18:57:24,221 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:57:24,221 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 18:57:36,960 - app - INFO - Logout: hector
+2026-05-11 18:57:47,707 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 18:57:55,798 - src.analysis.investigator - INFO - Iniciando investigación para: MILENIO. . ▶️ Fiscalía de Michoacán ofrece recompe...
+2026-05-11 18:57:55,798 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:57:57,809 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 18:57:57,810 - src.analysis.investigator - INFO - Query generada: Ana Gabriela feminicidio René García Michoacán hijo
+2026-05-11 18:57:57,810 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Ana+Gabriela+feminicidio+Ren%C3%A9+Garc%C3%ADa+Michoac%C3%A1n+hijo
+2026-05-11 18:57:58,868 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Ana+Gabriela+feminicidio+Ren%C3%A9+Garc%C3%ADa+Michoac%C3%A1n+hijo
+2026-05-11 18:57:59,895 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=MILENIO.+.+%E2%96%B6%EF%B8%8F+Fiscal%C3%ADa+de+Michoac%C3%A1n+ofrece+recompe
+2026-05-11 18:58:14,817 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=MILENIO.+.+%E2%96%B6%EF%B8%8F+Fiscal%C3%ADa+de+Michoac%C3%A1n+ofrece+recompe
+2026-05-11 18:58:33,039 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 18:58:33,039 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Ana Gabriela feminicidio René García Michoacán hijo. Intentando con búsqueda nativa de Gemini...
+2026-05-11 18:58:33,039 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 18:58:47,533 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 18:58:47,534 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 19:36:39,762 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 19:36:39,798 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 19:36:39,799 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 19:36:39,799 - app - INFO - Esquema FTS inicializado
+2026-05-11 19:36:39,799 - app - INFO - Esquema FTS inicializado
+2026-05-11 19:36:39,885 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 19:36:39,885 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 19:36:57,252 - app - INFO - Logout: hector
+2026-05-11 19:37:00,113 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 19:37:08,784 - app - INFO - Logout: hector
+2026-05-11 19:37:57,350 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 19:37:57,351 - app - INFO - Esquema FTS inicializado
+2026-05-11 19:37:57,358 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 19:37:57,358 - app - INFO - Esquema FTS inicializado
+2026-05-11 19:37:57,435 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 19:37:57,438 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 19:38:04,196 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 19:59:04,777 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 19:59:04,815 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 19:59:04,815 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 19:59:04,816 - app - INFO - Esquema FTS inicializado
+2026-05-11 19:59:04,816 - app - INFO - Esquema FTS inicializado
+2026-05-11 19:59:04,915 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 19:59:04,915 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 19:59:10,169 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 19:59:14,340 - app - INFO - Logout: hector
+2026-05-11 19:59:24,969 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 19:59:25,823 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 19:59:27,840 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 19:59:41,304 - src.analysis.investigator - INFO - Iniciando investigación para: Cronología del doble feminicidio en Cuautitlán, Er...
+2026-05-11 19:59:41,304 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 19:59:48,190 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 19:59:48,192 - src.analysis.investigator - INFO - Query generada: doble feminicidio Cindy Eric Antonio
+2026-05-11 19:59:48,192 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=doble+feminicidio+Cindy+Eric+Antonio
+2026-05-11 19:59:50,021 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=doble+feminicidio+Cindy+Eric+Antonio
+2026-05-11 19:59:50,876 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Cronolog%C3%ADa+del+doble+feminicidio+en+Cuautitl%C3%A1n%2C+Er
+2026-05-11 20:00:02,079 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Cronolog%C3%ADa+del+doble+feminicidio+en+Cuautitl%C3%A1n%2C+Er
+2026-05-11 20:00:21,764 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 20:00:21,765 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: doble feminicidio Cindy Eric Antonio. Intentando con búsqueda nativa de Gemini...
+2026-05-11 20:00:21,765 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 20:00:39,481 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 20:00:39,482 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 20:01:02,957 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 20:01:05,828 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 20:01:07,329 - root - ERROR - Error exportando seguimiento a CSV: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 20:01:14,799 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 20:09:12,508 - root - ERROR - Error fetching seguimiento casos: Neither 'BinaryExpression' object nor 'Comparator' object has an attribute 'astext'
+2026-05-11 20:11:47,161 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 20:11:47,242 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:11:47,242 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:11:47,252 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:11:47,253 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:11:47,371 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:11:47,372 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:11:52,079 - app - INFO - Logout: hector
+2026-05-11 20:11:55,087 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 20:46:29,648 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 20:46:29,683 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:46:29,683 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:46:29,688 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:46:29,689 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:46:29,787 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:46:29,787 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:46:34,022 - app - INFO - Logout: hector
+2026-05-11 20:46:44,590 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 20:50:58,449 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 20:50:58,485 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:50:58,486 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:50:58,491 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:50:58,491 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:50:58,682 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:50:58,683 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:51:06,817 - app - INFO - Logout: hector
+2026-05-11 20:51:13,062 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 20:58:44,430 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 20:58:44,462 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:58:44,463 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:58:44,469 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 20:58:44,469 - app - INFO - Esquema FTS inicializado
+2026-05-11 20:58:44,728 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:58:44,738 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 20:58:54,369 - app - INFO - Logout: hector
+2026-05-11 20:59:00,647 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 21:00:25,515 - src.analysis.investigator - INFO - Iniciando investigación para: ¡Frente a su hijo de 5 años! Mariana es asesinada ...
+2026-05-11 21:00:25,515 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 21:00:27,597 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 21:00:27,600 - src.analysis.investigator - INFO - Query generada: Mariana asesinada balazos Naucalpan hijo
+2026-05-11 21:00:27,601 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Mariana+asesinada+balazos+Naucalpan+hijo
+2026-05-11 21:00:28,512 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Mariana+asesinada+balazos+Naucalpan+hijo
+2026-05-11 21:00:29,484 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=%C2%A1Frente+a+su+hijo+de+5+a%C3%B1os%21+Mariana+es+asesinada+
+2026-05-11 21:00:37,270 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=%C2%A1Frente+a+su+hijo+de+5+a%C3%B1os%21+Mariana+es+asesinada+
+2026-05-11 21:00:45,529 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 21:00:45,529 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Mariana asesinada balazos Naucalpan hijo. Intentando con búsqueda nativa de Gemini...
+2026-05-11 21:00:45,530 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 21:01:01,103 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 21:01:01,105 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 21:16:20,494 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 21:16:20,536 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 21:16:20,537 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 21:16:20,537 - app - INFO - Esquema FTS inicializado
+2026-05-11 21:16:20,537 - app - INFO - Esquema FTS inicializado
+2026-05-11 21:16:20,649 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 21:16:20,649 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 21:16:58,037 - app - INFO - Logout: hector
+2026-05-11 21:22:24,629 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 21:22:24,645 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 21:22:24,646 - app - INFO - Esquema FTS inicializado
+2026-05-11 21:22:24,653 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 21:22:24,654 - app - INFO - Esquema FTS inicializado
+2026-05-11 21:22:24,730 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 21:22:24,732 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 21:22:48,002 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 21:22:53,997 - app - INFO - Logout: hector
+2026-05-11 21:26:44,197 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-11 21:26:44,215 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 21:26:44,216 - app - INFO - Esquema FTS inicializado
+2026-05-11 21:26:44,222 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 21:26:44,222 - app - INFO - Esquema FTS inicializado
+2026-05-11 21:26:44,314 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 21:26:44,316 - root - INFO - Datos cargados: 802 noticias desde análisis
+2026-05-11 21:27:14,063 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 21:35:59,314 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:35:59,335 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:35:59,360 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:35:59,385 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:35:59,409 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:36:05,228 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:37:41,187 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:38:41,785 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:40:15,429 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 21:40:29,853 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:40:29,879 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:41:19,977 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:41:20,048 - src.collection.scraper - INFO - Activando stealth mid-scrape para news.google.com
+2026-05-11 21:42:13,661 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMi1AFBVV95cUxOSTdpT1Ntc2J4eEE4YWRWRnZ2X2tmZk5lVWVvUmN2aVFoRVdKaC1MN3JIdkhyLXBpTnMxWnJRcGpCb0s5SGdZZjVkN3lLX2w3OVctaC0xZFdJaTRPRnptaGJhRUlzTTNUMHNmU1RCejI4MXJjZkJ1eFRGVFNlNmd4akFvMzZhdUhQYzFtNU9zcFRtLXNQdWRJcE9BRWhrQnBVbHNiNmRCVGd1Z2dLTENKamxmS1ZaNldPakREMWtCdEtFcU1yWWZKN0VNbVgwU1ZRQ3JGRw?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-11 21:42:26,109 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:42:26,110 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:42:42,005 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:42:42,006 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:43:21,676 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:43:21,677 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:43:26,594 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-11 21:43:34,631 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/11/cidh-reconoce-ape… → activando stealth + intentando Google Cache
+2026-05-11 21:44:40,283 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 21:44:40,283 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 21:44:40,285 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/11/cidh-reconoce-apertura-de-mexico-al-dialogo-participativo-con-victimas-y-organizaciones-civiles/
+2026-05-11 21:45:00,148 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/11/escuelas-no-son-l… → activando stealth + intentando Google Cache
+2026-05-11 21:46:05,705 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 21:46:05,705 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 21:46:05,706 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/11/escuelas-no-son-lugar-de-resguardo-para-ninos-senala-delgado-previo-a-sesion-para-revisar-calendario-escolar/
+2026-05-11 21:46:28,213 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/11/ludkiwa-… → activando stealth + intentando Google Cache
+2026-05-11 21:46:43,817 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 21:46:43,818 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 21:46:43,818 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/11/ludkiwa-paleta-hace-brujeria-reacciona-a-senalamientos-en-podcast-de-saskia-nino-de-rivera/
+2026-05-11 21:47:07,934 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/11/nick-pas… → activando stealth + intentando Google Cache
+2026-05-11 21:47:30,972 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 21:47:30,972 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 21:47:30,972 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/11/nick-pasqual-de-how-i-met-your-mother-es-declarado-culpable-por-intento-de-asesinato/
+2026-05-11 21:48:36,318 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/09/cndh-pide-reconsi… → activando stealth + intentando Google Cache
+2026-05-11 21:49:16,756 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 21:49:16,756 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 21:49:16,757 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/09/cndh-pide-reconsiderar-cambios-a-ciclo-escolar-ve-riesgos-al-dejar-a-ninos-y-adolescentes-solos-en-casa/
+2026-05-11 21:49:16,760 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-11 21:49:17,248 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:49:17,606 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:49:38,715 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMixgFBVV95cUxNSkdVUWJwdlR3Y0FFOUNPMWRiN1VHdkVpVDBaa1VlWXl1ZkUwekdxSldTTHhDMHJtbGdCN0VQYjFpakI5cWNQcVFoWXNhZFNNa3hQWFFQX3FIM3ZwRDdtTzZ0YVBSYVN2X3NvMVlsZUpzMEVJVlkzcjRGbEJHWm1GOFI2UGhFaENhajZFYXRiU3ZFdVFkOV80eWgzNHVMOWdvVFNWQzJGT3AxYnFhaGdJS01ia1VFQVkzWlZKR3NlMmE2blBVWnc?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-11 21:50:11,480 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:51:16,764 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMixgFBVV95cUxNSkdVUWJwdlR3Y0FFOUNPMWRiN1VHdkVpVDBaa1VlWXl1ZkUwekdxSldTTHhDMHJtbGdCN0VQYjFpakI5cWNQcVFoWXNhZFNNa3hQWFFQX3FIM3ZwRDdtTzZ0YVBSYVN2X3NvMVlsZUpzMEVJVlkzcjRGbEJHWm1GOFI2UGhFaENhajZFYXRiU3ZFdVFkOV80eWgzNHVMOWdvVFNWQzJGT3AxYnFhaGdJS01ia1VFQVkzWlZKR3NlMmE2blBVWnc?hl=es-419&gl=MX&ceid=MX%3Aes-419
+2026-05-11 21:51:38,407 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:51:38,407 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:52:35,959 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:52:35,959 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:52:36,795 - src.collection.scraper - INFO - HTML listing: 11 enlaces (después del filtrado) en https://www.diariodexalapa.com.mx/…
+2026-05-11 21:53:35,786 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodexalapa.com.mx/esto/mundial-2026/panini-p…: 404 Client Error: Not Found for url: https://www.diariodexalapa.com.mx/esto/mundial-2026/panini-presento-oficialmente-album-mundialista-en-el-museo-anahuacalli-con-hugo-sanchez-como-invitado-de-lujo-29869790
+2026-05-11 21:55:55,278 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:55:55,278 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:56:15,173 - src.collection.scraper - INFO - HTML listing: 7 enlaces (después del filtrado) en https://www.elsoldepuebla.com.mx/…
+2026-05-11 21:56:57,442 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldepuebla.com.mx/esto/mundial-2026/panini-pr…: 404 Client Error: Not Found for url: https://www.elsoldepuebla.com.mx/esto/mundial-2026/panini-presento-oficialmente-album-mundialista-en-el-museo-anahuacalli-con-hugo-sanchez-como-invitado-de-lujo-29869790
+2026-05-11 21:57:12,612 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:57:12,613 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:57:12,988 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-11 21:57:12,989 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-11 21:57:33,490 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-11 21:57:33,490 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-11 21:57:33,779 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:57:33,800 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:57:33,823 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:57:33,847 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:57:33,877 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:57:36,992 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:57:36,993 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:57:37,468 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-11 21:57:37,469 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-11 21:57:57,693 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:57:57,694 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:57:57,955 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 21:58:12,265 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:58:12,266 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:58:37,305 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:58:37,306 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:58:51,253 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:58:51,263 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:58:51,396 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-11 21:58:51,397 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-11 21:59:02,247 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:59:02,247 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:59:25,588 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 21:59:25,589 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 21:59:30,745 - src.collection.scraper - INFO - HTML listing: 8 enlaces (después del filtrado) en https://www.elsoldetoluca.com.mx/…
+2026-05-11 22:01:43,744 - src.collection.scraper - WARNING - Error HTTP en https://www.elsoldetoluca.com.mx/esto/mundial-2026/panini-pr…: 404 Client Error: Not Found for url: https://www.elsoldetoluca.com.mx/esto/mundial-2026/panini-presento-oficialmente-album-mundialista-en-el-museo-anahuacalli-con-hugo-sanchez-como-invitado-de-lujo-29869790
+2026-05-11 22:02:36,102 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:02:36,102 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:03:41,558 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:03:41,558 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:03:41,792 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:03:41,816 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:03:59,936 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:03:59,937 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:04:00,190 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-05-11 22:04:11,572 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 4s
+2026-05-11 22:04:17,355 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 14s
+2026-05-11 22:04:17,356 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-11 22:04:31,646 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-11 22:04:31,647 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-11 22:04:31,836 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-11 22:04:51,293 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/politica/embarazo-adolescent… → activando stealth + intentando Google Cache
+2026-05-11 22:05:03,347 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-05-11 22:05:03,347 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:05:03,348 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/politica/embarazo-adolescente-5-100-mujeres-15-19-anos-son-madres-20260511-812959.html
+2026-05-11 22:05:30,703 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/politica/mexico-pais-mayor-v… → activando stealth + intentando Google Cache
+2026-05-11 22:06:36,037 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:06:36,038 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:06:36,038 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/politica/mexico-pais-mayor-violencia-homicida-periodistas-20260508-812599.html
+2026-05-11 22:06:59,411 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/empresas/brecha-ingresos-gen… → activando stealth + intentando Google Cache
+2026-05-11 22:08:04,968 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:08:04,968 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:08:04,969 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/empresas/brecha-ingresos-genero-alcanza-19-2-puestos-altos-20260507-812348.html
+2026-05-11 22:08:39,610 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/finanzaspersonales/error-sil… → activando stealth + intentando Google Cache
+2026-05-11 22:09:13,570 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:09:13,571 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:09:13,572 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/finanzaspersonales/error-silencioso-hablar-dinero-tus-hijos-hacerlo-edad-20260511-805020.html
+2026-05-11 22:10:19,026 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/arteseideas/texas-demanda-ne… → activando stealth + intentando Google Cache
+2026-05-11 22:11:06,019 - src.collection.scraper - WARNING - Timeout en https://webcache.googleusercontent.com/search?q=cache:https:… (intento 1)
+2026-05-11 22:11:16,777 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:11:16,777 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:11:16,778 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/arteseideas/texas-demanda-netflix-presuntamente-espiar-ninos-crear-adiccion-usuarios-20260511-812934.html
+2026-05-11 22:11:16,783 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:11:29,083 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:11:29,083 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:11:43,597 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:11:43,599 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:11:43,603 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-11 22:11:43,923 - src.analysis.dedup - INFO - Deduplicación: 418 noticias de entrada
+2026-05-11 22:11:43,997 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 10 duplicados
+2026-05-11 22:11:44,063 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-11 22:11:44,314 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 16 duplicados
+2026-05-11 22:11:44,506 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-05-11 22:11:44,522 - src.analysis.dedup - INFO -   Resultado: 418 → 392 únicos (26 duplicados eliminados)
+2026-05-11 22:11:47,910 - src.analysis.dedup - INFO - Deduplicación: 392 noticias de entrada
+2026-05-11 22:11:47,954 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-11 22:11:48,008 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-11 22:11:48,238 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-05-11 22:11:48,354 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-05-11 22:11:48,373 - src.analysis.dedup - INFO -   Resultado: 392 → 392 únicos (0 duplicados eliminados)
+2026-05-11 22:11:48,485 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 392 documentos
+2026-05-11 22:12:14,053 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-11 22:12:14,204 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,205 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-11 22:12:14,216 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:14,297 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,309 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:14,310 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-11 22:12:14,384 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,396 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:14,470 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,481 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-11 22:12:14,557 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,569 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:14,656 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,683 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:14,763 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:12:14,840 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:14,852 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:15,291 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:12:15,362 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:12:15,441 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:12:15,514 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:12:15,584 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:15,595 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:15,673 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:15,684 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:15,758 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:15,772 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:15,844 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:15,856 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:15,931 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:15,943 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:16,021 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-11 22:12:16,101 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-11 22:12:21,376 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-11 22:12:21,673 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:12:21,685 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-11 22:12:21,770 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-11 22:12:21,774 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-11 22:12:46,424 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 99/392 (25.3%)
+2026-05-11 22:12:46,515 - src.analysis.bertopic_clustering - INFO - Clustering completado: 19 temas, outliers finales: 99/392 (25.3%)
+2026-05-11 22:13:00,125 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-11 22:13:00,891 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-11 22:13:00,892 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-05-11 22:13:01,039 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:13:01,053 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,143 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:13:01,156 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,237 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-11 22:13:01,315 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,430 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:13:01,446 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,537 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-11 22:13:01,621 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,723 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,818 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-11 22:13:01,934 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-11 22:13:02,019 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:13:02,100 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-11 22:13:04,940 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-05-11 22:15:05,894 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.73, fem=0.54, v_ind=nan → Alta
+2026-05-11 22:15:05,912 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=nan → Alta
+2026-05-11 22:15:05,913 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=nan → Alta
+2026-05-11 22:15:06,249 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 22:15:07,602 - src.database.repository - INFO - Batch insert: 392 noticias insertadas
+2026-05-11 22:15:08,263 - src.analysis.bertopic_clustering - INFO - Guardados 20 clusters en PostgreSQL
+2026-05-11 22:15:08,324 - root - INFO - Datos cargados: 392 noticias desde análisis
+2026-05-11 22:15:08,326 - root - INFO - Análisis background completado exitosamente
+2026-05-11 22:16:46,945 - app - INFO - Logout: hector
+2026-05-11 22:16:50,547 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-11 22:17:25,512 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:25,689 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:27,630 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:27,654 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:27,847 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:28,297 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:28,626 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:28,944 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:29,203 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,246 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,293 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,318 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:33,343 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:33,413 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,435 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,483 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,530 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,555 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,580 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,651 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,722 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:33,793 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:33,841 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:33,960 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:17:34,034 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:48,620 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:48,668 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:17:48,874 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:48,920 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:49,035 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:49,081 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:49,321 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:49,369 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:17:51,287 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:18:28,847 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:18:29,963 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:18:30,011 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:30,180 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:18:41,927 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:18:42,003 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:18:42,101 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:18:46,970 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:47,054 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:47,125 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:48,845 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:18:48,911 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:49,312 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:49,337 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:18:49,648 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-11 22:18:49,678 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:19:06,352 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:19:14,321 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:19:14,346 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:19:14,370 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:19:14,418 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:19:14,442 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:19:14,491 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:19:14,633 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:19:14,799 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:19:15,068 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:19:30,751 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:19:30,849 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:20:58,407 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:20:58,564 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:20:58,931 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:20:59,152 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:20:59,576 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:11,186 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:11,502 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:21:11,853 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:12,351 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:12,527 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:12,773 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:12,879 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:21:13,031 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:13,166 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:19,930 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:20,860 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:21:25,468 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:21:26,465 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:21:47,855 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:22:26,058 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:22:26,158 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:22:56,589 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:22:57,124 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:23:08,277 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:23:08,348 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:23:40,527 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2026-01-01+before%3A2026-05-11&tbm=nws&hl=es-419&gl=MX
+2026-05-11 22:23:40,722 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2026-01-01+before%3A2026-05-11&tbm=nws&hl=es-419&gl=MX
+2026-05-11 22:23:54,037 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2026-01-01+before%3A2026-05-11&tbm=nws&hl=es-419&gl=MX
+2026-05-11 22:24:06,617 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:06,679 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:06,709 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:06,897 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:06,959 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:07,012 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:07,040 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:08,162 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://www.elfinanciero.com.mx/…
+2026-05-11 22:24:15,079 - src.collection.scraper - INFO - Bloqueo detectado en https://www.elfinanciero.com.mx/opinion/mauricio-candiani/20… → activando stealth + intentando Google Cache
+2026-05-11 22:24:37,134 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:24:37,135 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:24:37,136 - trafilatura.core - WARNING - discarding data: https://www.elfinanciero.com.mx/opinion/mauricio-candiani/2026/05/11/formar-hijos-empresarios-mas-oficio-que-esperanza/
+2026-05-11 22:24:37,144 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elfinanciero.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:24:39,629 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+2026-05-11 22:24:39,630 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:24:40,716 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:41,010 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:46,073 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:46,099 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:24:46,215 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:25:01,406 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:25:01,433 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:25:04,233 - src.collection.scraper - INFO - HTML listing: 7 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-11 22:25:19,955 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/11/hijos-de-el-chapo… → activando stealth + intentando Google Cache
+2026-05-11 22:25:46,225 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-05-11 22:25:46,226 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:25:46,226 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/11/hijos-de-el-chapo-habrian-negociado-entregarse-a-eu-desde-hace-un-ano-reporta-los-angeles-times/
+2026-05-11 22:26:11,626 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/11/cidh-reconoce-ape… → activando stealth + intentando Google Cache
+2026-05-11 22:26:27,515 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:26:27,516 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:26:27,516 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/11/cidh-reconoce-apertura-de-mexico-al-dialogo-participativo-con-victimas-y-organizaciones-civiles/
+2026-05-11 22:26:53,542 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/11/escuelas-no-son-l… → activando stealth + intentando Google Cache
+2026-05-11 22:27:29,834 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:27:29,834 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:27:29,834 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/11/escuelas-no-son-lugar-de-resguardo-para-ninos-senala-delgado-previo-a-sesion-para-revisar-calendario-escolar/
+2026-05-11 22:28:26,089 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/11/ludkiwa-… → activando stealth + intentando Google Cache
+2026-05-11 22:28:52,269 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:28:52,270 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:28:52,270 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/11/ludkiwa-paleta-hace-brujeria-reacciona-a-senalamientos-en-podcast-de-saskia-nino-de-rivera/
+2026-05-11 22:29:22,824 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/11/nick-pas… → activando stealth + intentando Google Cache
+2026-05-11 22:29:40,839 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:29:40,840 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:29:40,840 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/11/nick-pasqual-de-how-i-met-your-mother-es-declarado-culpable-por-intento-de-asesinato/
+2026-05-11 22:30:17,043 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/10/quienes-… → activando stealth + intentando Google Cache
+2026-05-11 22:31:09,664 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:31:09,664 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:31:09,664 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/10/quienes-son-los-hijos-y-esposo-de-bianca-gambino-foto/
+2026-05-11 22:31:29,055 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/09/cndh-pide-reconsi… → activando stealth + intentando Google Cache
+2026-05-11 22:32:01,484 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:32:01,484 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:32:01,484 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/09/cndh-pide-reconsiderar-cambios-a-ciclo-escolar-ve-riesgos-al-dejar-a-ninos-y-adolescentes-solos-en-casa/
+2026-05-11 22:32:01,488 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:32:02,023 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:02,047 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:02,074 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:02,097 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:32:02,122 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:02,171 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:02,209 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:02,267 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:32:11,521 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:32:11,568 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:32:11,630 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:24,514 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:32:24,610 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:32:24,756 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-11 22:32:33,174 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:48,708 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:48,980 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:32:49,105 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:33:51,976 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:33:51,976 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:33:53,303 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-11 22:33:53,303 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:34:00,708 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-11 22:34:00,709 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:34:00,960 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:00,984 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,007 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,032 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,055 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,101 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,124 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:34:01,147 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,195 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,218 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,244 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,338 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:34:01,372 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,399 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:01,649 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-11 22:34:01,650 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:34:18,080 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:34:52,879 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:34:52,997 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:35:23,578 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-11 22:35:23,579 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:35:24,186 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+2026-05-11 22:35:24,187 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])
+2026-05-11 22:35:55,603 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:36:14,961 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://news.google.com/…
+2026-05-11 22:36:14,962 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
+2026-05-11 22:36:27,502 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:36:29,093 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.lajornadadeoriente.com.mx/…
+2026-05-11 22:36:29,093 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:36:50,317 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:36:50,367 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:36:50,393 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:36:50,491 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-11 22:36:50,806 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 2s
+2026-05-11 22:37:00,629 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 5s
+2026-05-11 22:37:05,504 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 14s
+2026-05-11 22:37:05,505 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-11 22:37:19,794 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-11 22:37:19,795 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-11 22:37:20,049 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-11 22:37:32,125 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/politica/embarazo-adolescent… → activando stealth + intentando Google Cache
+2026-05-11 22:38:01,495 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:38:01,496 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:38:01,496 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/politica/embarazo-adolescente-5-100-mujeres-15-19-anos-son-madres-20260511-812959.html
+2026-05-11 22:38:24,140 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/politica/mexico-pais-mayor-v… → activando stealth + intentando Google Cache
+2026-05-11 22:39:13,434 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:39:13,434 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:39:13,434 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/politica/mexico-pais-mayor-violencia-homicida-periodistas-20260508-812599.html
+2026-05-11 22:39:41,217 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/empresas/brecha-ingresos-gen… → activando stealth + intentando Google Cache
+2026-05-11 22:39:50,510 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:39:50,510 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:39:50,511 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/empresas/brecha-ingresos-genero-alcanza-19-2-puestos-altos-20260507-812348.html
+2026-05-11 22:40:10,888 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/finanzaspersonales/error-sil… → activando stealth + intentando Google Cache
+2026-05-11 22:40:46,127 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:40:46,128 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:40:46,128 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/finanzaspersonales/error-silencioso-hablar-dinero-tus-hijos-hacerlo-edad-20260511-805020.html
+2026-05-11 22:41:07,217 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/arteseideas/texas-demanda-ne… → activando stealth + intentando Google Cache
+2026-05-11 22:41:39,924 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-11 22:41:39,924 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-11 22:41:39,925 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/arteseideas/texas-demanda-netflix-presuntamente-espiar-ninos-crear-adiccion-usuarios-20260511-812934.html
+2026-05-11 22:41:39,929 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-11 22:42:14,560 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-11 22:42:14,749 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-11 22:42:15,371 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-11 22:42:15,574 - src.analysis.dedup - INFO - Deduplicación: 1076 noticias de entrada
+2026-05-11 22:42:15,640 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 454 duplicados
+2026-05-11 22:42:15,802 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
+2026-05-11 22:42:16,254 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 17 duplicados
+2026-05-11 22:42:16,476 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 5 duplicados
+2026-05-11 22:42:16,504 - src.analysis.dedup - INFO -   Resultado: 1076 → 599 únicos (477 duplicados eliminados)
+2026-05-11 22:42:16,962 - src.analysis.dedup - INFO - Deduplicación: 599 noticias de entrada
+2026-05-11 22:42:16,996 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-11 22:42:17,086 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-11 22:42:17,377 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 1 duplicados
+2026-05-11 22:42:17,482 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-05-11 22:42:17,483 - src.analysis.dedup - INFO -   Resultado: 599 → 598 únicos (1 duplicados eliminados)
+2026-05-11 22:42:17,669 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 598 documentos
+2026-05-11 22:42:49,906 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-11 22:42:53,936 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:53,939 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-11 22:42:53,951 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:54,025 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:54,038 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:54,039 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-11 22:42:54,114 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:54,126 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:54,202 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:54,215 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-11 22:42:54,292 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:54,303 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:54,381 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:54,393 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:54,469 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:42:54,547 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:54,559 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:55,056 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:42:55,131 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:42:55,207 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:42:55,285 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:42:55,358 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:55,370 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:55,446 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:55,458 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:55,547 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:55,570 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:55,665 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:55,677 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:55,753 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:42:55,766 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:42:55,843 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-11 22:42:55,918 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-11 22:43:15,471 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-11 22:43:15,781 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:43:15,794 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-11 22:43:15,892 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-11 22:43:15,898 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-11 22:43:51,207 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 184/598 (30.8%)
+2026-05-11 22:43:51,262 - src.analysis.bertopic_clustering - INFO - Clustering completado: 19 temas, outliers finales: 184/598 (30.8%)
+2026-05-11 22:44:07,905 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-11 22:44:08,759 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-11 22:44:08,760 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-05-11 22:44:09,126 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:44:09,139 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:44:09,219 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:44:09,242 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-11 22:44:09,327 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-11 22:44:09,406 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-11 22:44:09,549 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-11 22:44:09,561 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-11 22:44:09,642 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-11 22:44:09,723 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-11 22:44:09,845 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-11 22:44:09,931 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-11 22:44:10,083 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-11 22:44:10,166 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-11 22:44:10,248 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-11 22:44:13,446 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-05-11 22:45:47,960 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,963 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,969 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=1.00, fem=0.64, v_ind=0.00 → Alta
+2026-05-11 22:45:47,976 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.91, fem=0.44, v_ind=0.00 → Alta
+2026-05-11 22:45:47,977 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.77, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,984 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.81, fem=0.49, v_ind=0.00 → Alta
+2026-05-11 22:45:47,985 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,986 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,987 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,988 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,991 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.71, fem=0.44, v_ind=0.00 → Alta
+2026-05-11 22:45:47,993 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.78, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:47,994 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,001 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,002 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.91, fem=0.44, v_ind=0.00 → Alta
+2026-05-11 22:45:48,003 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=1.00, fem=0.57, v_ind=0.00 → Alta
+2026-05-11 22:45:48,006 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.75, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,008 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.82, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,008 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.79, fem=0.47, v_ind=0.00 → Alta
+2026-05-11 22:45:48,010 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,011 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.79, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,013 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.82, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,013 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=1.00, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,014 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.77, fem=0.64, v_ind=0.00 → Alta
+2026-05-11 22:45:48,015 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.95, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,015 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.98, fem=0.50, v_ind=0.00 → Alta
+2026-05-11 22:45:48,017 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.98, fem=0.66, v_ind=0.00 → Alta
+2026-05-11 22:45:48,018 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.77, fem=0.64, v_ind=0.00 → Alta
+2026-05-11 22:45:48,020 - src.analysis.analyzer - INFO -   ★ Collector Alta confirmado: h_score=0.72, fem=0.64, v_ind=0.00 → Alta
+2026-05-11 22:45:48,450 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-11 22:45:49,963 - src.database.repository - INFO - Batch insert: 598 noticias insertadas
+2026-05-11 22:45:50,633 - src.analysis.bertopic_clustering - INFO - Guardados 20 clusters en PostgreSQL
+2026-05-11 22:45:50,677 - root - INFO - Datos cargados: 598 noticias desde análisis
+2026-05-11 22:45:50,678 - root - INFO - Análisis background completado exitosamente
+2026-05-11 22:46:52,741 - src.analysis.investigator - INFO - Iniciando investigación para: "Sus hijos están solos", familiar de Lina Alejandr...
+2026-05-11 22:46:52,742 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 22:46:56,811 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 22:46:56,814 - src.analysis.investigator - INFO - Query generada: Lina Alejandra asesinada empresaria hijos
+2026-05-11 22:46:56,814 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Lina+Alejandra+asesinada+empresaria+hijos
+2026-05-11 22:46:57,836 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Lina+Alejandra+asesinada+empresaria+hijos
+2026-05-11 22:46:58,634 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de+Lina+Alejandr
+2026-05-11 22:47:01,709 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de+Lina+Alejandr): 202
+2026-05-11 22:47:01,709 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de+Lina+Alejandr
+2026-05-11 22:47:22,949 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://lite.duckduckgo.com/lite/?q=%22Sus+hijos+est%C3%A1n+solos%22%2C+familiar+de+Lina+Alejandr): 202
+2026-05-11 22:47:22,949 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 22:47:22,950 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Lina Alejandra asesinada empresaria hijos. Intentando con búsqueda nativa de Gemini...
+2026-05-11 22:47:22,950 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 22:47:40,472 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 22:47:40,666 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-11 22:50:28,891 - src.analysis.investigator - INFO - Identificando caso desde URL: https://www.opinion.com.bo/articulo/policial/maria-clara-justicia-13-meses-feminicidio-que-dejo-tres-huerfanos/20250806000046977708.html
+2026-05-11 22:50:29,215 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 22:50:38,526 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 22:52:55,627 - src.analysis.investigator - INFO - Identificando caso desde URL: https://www.tvazteca.com/aztecanoticias/justicia-para-ivon-maricela-familiares-exigen-captura-del-profugo-asesino-en-cdmx
+2026-05-11 22:52:55,994 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 22:53:00,733 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 22:53:00,735 - src.analysis.investigator - INFO - Iniciando investigación para: Feminicidio Ivón Maricela: Familia exige justicia;...
+2026-05-11 22:53:00,735 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 22:53:03,688 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 22:53:03,690 - src.analysis.investigator - INFO - Query generada: Ivón Maricela feminicidio Coyoacán prófugo
+2026-05-11 22:53:03,691 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Iv%C3%B3n+Maricela+feminicidio+Coyoac%C3%A1n+pr%C3%B3fugo
+2026-05-11 22:53:03,955 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=Iv%C3%B3n+Maricela+feminicidio+Coyoac%C3%A1n+pr%C3%B3fugo): 202
+2026-05-11 22:53:03,956 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Iv%C3%B3n+Maricela+feminicidio+Coyoac%C3%A1n+pr%C3%B3fugo
+2026-05-11 22:53:04,216 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://lite.duckduckgo.com/lite/?q=Iv%C3%B3n+Maricela+feminicidio+Coyoac%C3%A1n+pr%C3%B3fugo): 202
+2026-05-11 22:53:04,216 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Feminicidio+Iv%C3%B3n+Maricela%3A+Familia+exige+justicia%3B
+2026-05-11 22:53:21,625 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=Feminicidio+Iv%C3%B3n+Maricela%3A+Familia+exige+justicia%3B): 202
+2026-05-11 22:53:21,625 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Feminicidio+Iv%C3%B3n+Maricela%3A+Familia+exige+justicia%3B
+2026-05-11 22:53:21,762 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://lite.duckduckgo.com/lite/?q=Feminicidio+Iv%C3%B3n+Maricela%3A+Familia+exige+justicia%3B): 202
+2026-05-11 22:53:21,762 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-11 22:53:21,763 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Ivón Maricela feminicidio Coyoacán prófugo. Intentando con búsqueda nativa de Gemini...
+2026-05-11 22:53:21,763 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-11 22:53:40,237 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-11 22:53:40,239 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.

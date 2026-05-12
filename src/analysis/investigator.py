@@ -11,7 +11,10 @@ from src.collection.scraper import StealthSession
 logger = logging.getLogger(__name__)
 
 # Configurar Gemini
-GEMINI_API_KEY = "AIzaSyC8Sff-dubqwO2bj-PCohSdVqRvEVFqq4g"
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    logger.error("No se encontró la variable GEMINI_API_KEY en el entorno.")
+
 # Usando la nueva librería google-genai con el modelo recomendado actual
 client = genai.Client(api_key=GEMINI_API_KEY)
 MODEL_NAME = 'gemini-2.5-flash'
@@ -128,9 +131,11 @@ class DeepInvestigator:
         - "victimas": (string) Nombre de la víctima o víctimas directas.
         - "ninos_afectados": (integer o string) Número de niños que quedaron huérfanos o afectados.
         - "edades": (string) Las edades de los niños, si se mencionan.
+        - "situacion_actual": (string) Situación actual de los niños (ej. "se encuentra en el DIF", "con sus abuelos"). Si no se menciona, pon "No especificada".
+        - "medios_contacto": (string) Institución, dependencia gubernamental (ej. DIF municipal, Fiscalía), colectivo, o números de contacto con quien comunicarse para dar seguimiento al caso o ubicar a las víctimas de acuerdo a la ubicación o el texto. Si no se menciona, sugiérelo según la ubicación (ej. "Contactar al DIF de Cuautitlán Izcalli").
         - "resumen": (string) Un párrafo (máx 150 palabras) resumiendo cómo ocurrió el evento y la situación de los niños.
         
-        Si un dato no se menciona en los textos, pon "No especificado".
+        Si un dato (salvo medios_contacto que puede inferirse) no se menciona en los textos, pon "No especificado".
         
         TEXTOS RECOPILADOS:
         {combined_text[:15000]}
@@ -153,6 +158,7 @@ class DeepInvestigator:
                 "victimas": "Error",
                 "ninos_afectados": "Error",
                 "edades": "Error",
+                "situacion_actual": "Error",
                 "resumen": f"No se pudo generar el resumen estructurado. Error: {e}"
             }
 
@@ -243,6 +249,8 @@ class DeepInvestigator:
         - "victimas": Nombres de víctimas directas.
         - "ninos_afectados": Número de niños huérfanos o afectados.
         - "edades": Edades de los niños.
+        - "situacion_actual": Situación actual de los niños (ej. "se encuentra en el DIF", "con sus abuelos").
+        - "medios_contacto": Institución (DIF, Fiscalía), colectivo, o números de contacto sugeridos para dar seguimiento al caso según la ubicación (ej. "Contactar al DIF de Cuautitlán Izcalli").
         - "resumen": Un párrafo detallado sobre el evento y la situación de los menores.
         - "fuentes": Una lista de las URLs que consultaste.
         

@@ -823,6 +823,116 @@ def api_identify_link():
         logging.error(f"Error identificando link: {e}")
         return jsonify({'error': str(e)}), 500
 
+@main_bp.route('/api/seguimiento/casos', methods=['GET'])
+@login_required
+def api_seguimiento_casos():
+    """Obtiene todos los casos que han sido agregados a seguimiento."""
+    if _check_postgres():
+        try:
+            from src.database.models_noticias import Noticia
+            from sqlalchemy import desc, text
+            
+            # Filtrar en Python para evitar problemas de compatibilidad de dialectos SQL con JSON
+            noticias_raw = Noticia.query.filter(
+                Noticia.investigacion_json.isnot(None)
+            ).order_by(desc(Noticia.fecha)).all()
+            
+            resultados = []
+            for n in noticias_raw:
+                inv = n.investigacion_json
+                if inv and inv.get('en_seguimiento') is True:
+                    dict_n = n.to_dict()
+                    dict_n['investigacion_json'] = inv
+                    resultados.append(dict_n)
+                
+            return jsonify({'casos': resultados})
+        except Exception as e:
+            logging.error(f"Error fetching seguimiento casos: {e}")
+            return jsonify({'error': str(e)}), 500
+    else:
+        # Fallback a un mock o vacío si no hay DB
+        return jsonify({'casos': []})
+
+@main_bp.route('/api/seguimiento/add/<int:noticia_id>', methods=['POST'])
+@login_required
+def api_add_to_seguimiento(noticia_id):
+    """Agrega un caso investigado a la lista de seguimiento."""
+    if _check_postgres():
+        from src.database.repository import NoticiasRepository
+        success = NoticiasRepository.add_to_seguimiento(noticia_id)
+        if success:
+            return jsonify({'status': 'success'})
+        return jsonify({'error': 'No se pudo agregar a seguimiento. Verifique que el caso exista y esté investigado.'}), 400
+    return jsonify({'error': 'La base de datos no está activa.'}), 500
+
+@main_bp.route('/api/seguimiento/export/csv', methods=['GET'])
+@login_required
+def api_export_seguimiento_csv():
+    """Exporta los casos en seguimiento a CSV con las columnas limpias e información de investigación."""
+    if not _check_postgres():
+        return jsonify({'error': 'La base de datos no está activa.'}), 500
+        
+    try:
+        from src.database.models_noticias import Noticia
+        from sqlalchemy import desc
+        import csv
+        import io
+        from flask import make_response
+        
+        noticias_raw = Noticia.query.filter(
+            Noticia.investigacion_json.isnot(None)
+        ).order_by(desc(Noticia.fecha)).all()
+        
+        noticias = [n for n in noticias_raw if n.investigacion_json and n.investigacion_json.get('en_seguimiento') is True]
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Headers
+        writer.writerow([
+            'ID Noticia', 'Fecha', 'Título', 'Ubicación (IA)', 'Víctimas Directas (IA)', 
+            'NNA Afectados (IA)', 'Edades NNA (IA)', 'Situación Actual NNA (IA)', 
+            'Score Feminicidio', 'Score NNA', 'Score Compuesto', 'Enlace Original', 'Resumen (IA)'
+        ])
+        
+        for n in noticias:
+            inv = n.investigacion_json or {}
+            
+            # Limpiar eded_nna
+            edades = inv.get('edades_nna', inv.get('edades', 'No especificada'))
+            if isinstance(edades, list):
+                edades = ', '.join(map(str, edades))
+            elif isinstance(edades, dict):
+                edades = ', '.join(map(str, edades.values()))
+                
+            victimas = inv.get('victimas', 'No especificadas')
+            if isinstance(victimas, list):
+                victimas = ', '.join(map(str, victimas))
+                
+            writer.writerow([
+                n.id,
+                n.fecha.strftime('%Y-%m-%d %H:%M') if n.fecha else 'Desconocida',
+                n.titulo,
+                inv.get('ubicacion', 'No especificada'),
+                victimas,
+                inv.get('nna_afectados', inv.get('ninos_afectados', 0)),
+                edades,
+                inv.get('situacion_actual', 'No especificada'),
+                round(n.score_feminicidio * 100, 1) if n.score_feminicidio else 0,
+                round(n.score_nna * 100, 1) if n.score_nna else 0,
+                round(n.score_compuesto * 100, 1) if n.score_compuesto else 0,
+                n.enlace,
+                inv.get('resumen_abstracto', inv.get('resumen', ''))
+            ])
+            
+        response = make_response(output.getvalue())
+        response.headers['Content-Disposition'] = 'attachment; filename=seguimiento_casos_nna.csv'
+        response.headers['Content-type'] = 'text/csv'
+        return response
+    except Exception as e:
+        logging.error(f"Error exportando seguimiento a CSV: {e}")
+        return jsonify({'error': str(e)}), 500
+
 
 # ── Errores ─────────────────────────────────────────────────
 

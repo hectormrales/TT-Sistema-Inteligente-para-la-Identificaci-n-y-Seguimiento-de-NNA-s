@@ -631,6 +631,9 @@ class NoticiasRepository:
         try:
             noticia = Noticia.query.get(noticia_id)
             if noticia:
+                # Mantener el flag de seguimiento si ya existía
+                if noticia.investigacion_json and noticia.investigacion_json.get('en_seguimiento'):
+                    result['en_seguimiento'] = True
                 noticia.investigacion_json = result
                 db.session.commit()
                 return True
@@ -638,4 +641,25 @@ class NoticiasRepository:
         except Exception as e:
             db.session.rollback()
             logger.error(f"Error guardando investigacion: {e}")
+            return False
+
+    @staticmethod
+    def add_to_seguimiento(noticia_id: int) -> bool:
+        from src.database.models_noticias import Noticia
+        from sqlalchemy.orm.attributes import flag_modified
+        try:
+            noticia = Noticia.query.get(noticia_id)
+            if noticia and noticia.investigacion_json:
+                # Modificar el JSON
+                import copy
+                new_json = copy.deepcopy(noticia.investigacion_json)
+                new_json['en_seguimiento'] = True
+                noticia.investigacion_json = new_json
+                flag_modified(noticia, "investigacion_json")
+                db.session.commit()
+                return True
+            return False
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error en add_to_seguimiento: {e}")
             return False
