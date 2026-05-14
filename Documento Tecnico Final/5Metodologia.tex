@@ -7,77 +7,361 @@
 \chapter{Metodología de Desarrollo}
 \label{cap:metodologia}
 
-El presente capítulo detalla el marco metodológico utilizado para la concepción, ingeniería y despliegue del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA}. Debido a la alta complejidad algorítmica y la inherente incertidumbre tecnológica del proyecto, se adoptó un enfoque estructurado pero flexible que garantizara la convergencia hacia una solución óptima y escalable.
+El presente capítulo detalla el marco metodológico utilizado para la concepción,
+ingeniería y despliegue del Sistema Inteligente para la Identificación y Seguimiento
+de NNA. Debido a la alta complejidad algorítmica y la inherente incertidumbre
+tecnológica del proyecto ---particularmente en las fases de validación de modelos
+de lenguaje y calibración de umbrales de clasificación--- se adoptó un enfoque
+de \textbf{Desarrollo Evolutivo Incremental basado en Prototipos} que garantizara
+la convergencia hacia una solución correcta y de calidad de producción mediante
+retroalimentación empírica continua.
 
+%----------------------------------------------------------------------------------------
 \section{Metodología de Desarrollo Evolutivo Incremental}
 \label{sec:met_evolutivo_incremental}
+%----------------------------------------------------------------------------------------
 
-Para la construcción de la arquitectura de \textit{software}, se seleccionó el \textbf{Modelo de Desarrollo Evolutivo Incremental basado en Prototipos}. Esta decisión técnica se fundamenta en dos desafíos críticos identificados desde la fase de concepción del proyecto:
+Se seleccionó el Modelo de Desarrollo Evolutivo Incremental basado en Prototipos
+\cite{sommerville2011software} como marco de proceso fundamental por dos razones
+técnicas no negociables:
 
 \begin{enumerate}
-    \item \textbf{Incertidumbre en la Ingesta de Datos:} El ecosistema web actual cuenta con infraestructuras de seguridad (\textit{Firewalls} de Aplicaciones Web, bloqueos anti-scraping, variabilidad de esquemas DOM) que cambian impredeciblemente. Era imposible predecir qué mecanismos de recolección tendrían éxito sin antes desplegarlos en entornos reales.
-    \item \textbf{Experimentación Algorítmica (IA):} La transición de clasificadores sintácticos rígidos (Expresiones Regulares) hacia modelos fundacionales de Procesamiento de Lenguaje Natural (BETO) requería calibración estocástica, medición de inferencias y ajuste de hiperparámetros. 
+    \item \textbf{Incertidumbre en la ingesta de datos.} El ecosistema web actual
+          emplea infraestructuras de seguridad perimetral (WAF, \textit{bot detection},
+          TLS fingerprinting) que cambian impredeciblemente. Era imposible predecir
+          \textit{a priori} qué mecanismos de recolección tendrían éxito sin
+          desplegarlos en entornos de producción reales y medir su tasa de éxito.
+
+    \item \textbf{Experimentación algorítmica en IA.} La transición de clasificadores
+          sintácticos rígidos (RegEx) hacia modelos fundacionales (BETO) requería
+          calibración empírica de umbrales de temperatura ($\alpha = 5$),
+          configuración de hiperparámetros de HDBSCAN (\texttt{min\_cluster\_size=8}),
+          y verificación experimental de la tasa de falsos positivos.
 \end{enumerate}
 
-El modelo evolutivo incremental mitiga estos riesgos al dividir el desarrollo en iteraciones cíclicas y rápidas, donde cada ciclo produce un prototipo funcional que refina o expande las capacidades del anterior gracias a una retroalimentación constante empírica. Cada iteración consta de cuatro fases estrictas:
-\begin{itemize}
-    \item \textbf{Análisis:} Definición de requerimientos del ciclo (e.g., mitigar falsos positivos).
-    \item \textbf{Diseño:} Arquitectura de los algoritmos (e.g., introducir \textit{Zero-Shot Classification}).
-    \item \textbf{Implementación:} Codificación del módulo e integración en el ecosistema.
-    \item \textbf{Evaluación:} Pruebas de integración, validación de falsos positivos y medición de rendimiento (\textit{benchmarking}) que dictan las mejoras del siguiente ciclo.
-\end{itemize}
+El modelo mitiga ambos riesgos al dividir el desarrollo en iteraciones cíclicas
+donde cada ciclo produce un prototipo funcional que refina las capacidades del
+anterior. Cada iteración comprende cuatro fases estrictas:
 
+\begin{description}
+    \item[\textbf{Análisis.}] Definición cuantitativa del problema a resolver en
+          el ciclo (e.g., ``reducir la tasa de falsos positivos del 10\% al 5\%'').
+    \item[\textbf{Diseño.}] Especificación de la solución algorítmica y arquitectónica
+          (e.g., introducción de Zero-Shot Classification con temperature scaling).
+    \item[\textbf{Implementación.}] Codificación del módulo e integración en el
+          pipeline existente, garantizando retro-compatibilidad.
+    \item[\textbf{Evaluación.}] Pruebas de integración, medición de métricas de
+          precisión y \textit{benchmarking} de rendimiento que dictan las metas del
+          siguiente ciclo.
+\end{description}
+
+\subsection{Cronograma General del Proyecto}
+\label{subsec:met_cronograma}
+
+El ciclo de vida completo del proyecto abarca dos semestres académicos:
+
+\begin{description}
+    \item[\textbf{Fase TT-1 (Sep--Dic 2025).}] Validación de viabilidad técnica
+          mediante prototipos exploratorios (P0--P2). El énfasis fue demostrar que
+          un sistema automatizado puede extraer noticias relevantes de medios
+          mexicanos a escala, y que la clasificación heurística es insuficiente
+          para el dominio. Entregable: corpus anotado de $\sim$1{,}500 noticias
+          y diagnóstico cuantitativo de las limitaciones del clasificador RegEx.
+
+    \item[\textbf{Fase TT-2 (Feb--Jun 2026).}] Maduración neuro-simbólica mediante
+          prototipos de nivel producción (P3--P4). El énfasis fue superar las
+          limitaciones identificadas en TT-1 mediante la migración arquitectónica
+          completa. Entregable: sistema en contenedores Docker con SLA de
+          $>$85\% de tasa de éxito en recolección y $<$5\% de falsos positivos en
+          clasificación.
+\end{description}
+
+%----------------------------------------------------------------------------------------
 \section{Evolución de los Prototipos (P0 al P4)}
 \label{sec:met_evolucion_prototipos}
+%----------------------------------------------------------------------------------------
 
-El ciclo de vida del proyecto se desplegó orgánicamente a lo largo de dos semestres académicos (Fases TT1 y TT2), materializándose a través de la construcción progresiva de cinco prototipos funcionales.
+\subsection{Fase TT-1: Prototipos Exploratorios (P0--P2)}
+\label{subsec:met_tt1_prototipos}
 
-\subsection{Fase 1: Trabajo Terminal I (Prototipos 0, 1 y 2)}
-La primera fase se centró en probar la viabilidad fáctica de la extracción de información y la mitigación rudimentaria de ruido sintáctico.
+\begin{description}
+    \item[\textbf{Prototipo 0 (P0): Prueba de Concepto y Fracaso Rápido}
+          \textit{(Sep 2025)}.] Implementación de scraping directo mediante análisis
+          del DOM HTML con \texttt{BeautifulSoup}. Resultado: bloqueos sistemáticos
+          por Cloudflare (HTTP 403) en el 78\% de los medios objetivo. Conclusión:
+          el fingerprinting TLS de la librería \texttt{requests} es identificable
+          por WAF modernos. Decisión: abandonar el scraping HTML directo como
+          estrategia primaria.
 
-\begin{itemize}
-    \item \textbf{Prototipo 0 (P0): Pruebas de Concepto y Fracaso Rápido.} Iteración focalizada en web scraping profundo utilizando selectores de HTML. Se determinó su inviabilidad inmediata debido a bloqueos generalizados por \textit{Cloudflare} (HTTP 403) y \textit{Timeouts}.
-    \item \textbf{Prototipo 1 (P1): Recolección Pasiva.} Transición hacia la ingesta de \textit{feeds} RSS de diez medios periodísticos clave y exportación de hallazgos a formato plano (CSV). Proveyó el primer conjunto de datos real para análisis.
-    \item \textbf{Prototipo 2 (P2): Agrupamiento Estadístico.} Introdujo algoritmos de NLP tradicional, empleando un clasificador de Expresiones Regulares (RegEx) altamente condicionado para la detección de NNA, vectorización TF-IDF y algoritmos de \textit{clustering} básicos. Reveló el ``techo semántico'': RegEx no comprende el contexto, elevando dramáticamente los falsos positivos en narrativas complejas.
-\end{itemize}
+    \item[\textbf{Prototipo 1 (P1): Recolección Pasiva y Persistencia Plana}
+          \textit{(Oct 2025)}.] Transición hacia feeds RSS de 10 medios
+          periodísticos nacionales; persistencia en CSV mediante \texttt{Pandas}.
+          Resultado: 847 noticias recolectadas en el primer mes con 0\% de bloqueos.
+          Limitación crítica identificada: cobertura insuficiente (solo medios con
+          RSS público) y ausencia de cualquier mecanismo de clasificación semántica.
 
-\subsection{Fase 2: Trabajo Terminal II (Prototipos 3 y 4)}
-Ante las limitaciones heurísticas y operativas expuestas en TT1, la segunda fase reestructuró la arquitectura hacia un paradigma neuro-simbólico de nivel producción.
+    \item[\textbf{Prototipo 2 (P2): Clasificación Heurística y Clustering Estadístico}
+          \textit{(Nov--Dic 2025)}.] Introducción de un clasificador de expresiones
+          regulares con 47 patrones y vectorización TF-IDF con K-Means ($k=8$).
+          Resultado: 10\% de falsos positivos en tres escenarios recurrentes: menor
+          agresor clasificado como víctima, notas estadísticas sin caso concreto
+          identificado, y feminicidios de menores de edad (víctima directa $\neq$
+          víctima indirecta). Diagnóstico: el clasificador es sintáctico, no
+          semántico; no comprende el rol de los actores en la oración.
+\end{description}
 
-\begin{itemize}
-    \item \textbf{Prototipo 3 (P3): Inferencia Semántica y Persistencia Relacional.} Se abandonaron las heurísticas rígidas (RegEx) para migrar a una arquitectura semántica profunda basada en \textbf{BETO} (Arquitectura Transformer) procesado mediante PyTorch. Adicionalmente, el almacenamiento en CSV mutó hacia \textbf{PostgreSQL}, solventando la falta de integridad referencial y permitiendo la deduplicación transaccional masiva (\textit{cross-site deduplication}).
-    \item \textbf{Prototipo 4 (P4): Agrupación Topológica y Despliegue Visual (Versión Final).} Se consolidó el \textit{pipeline} implementando \textbf{BERTopic} (UMAP + HDBSCAN) para la extracción de tópicos subyacentes. Se culminó la interfaz de interacción, exponiendo una API REST robusta que alimenta un \textit{Dashboard Web} interactivo e institucional, proporcionando la herramienta visual definitiva para los usuarios finales.
-\end{itemize}
+\subsection{Fase TT-2: Arquitectura Neuro-Simbólica (P3--P4)}
+\label{subsec:met_tt2_prototipos}
 
-\subsection{Stack Tecnológico Comparativo}
-\label{subsec:met_stack}
+\begin{description}
+    \item[\textbf{Prototipo 3 (P3): Inferencia Semántica y Persistencia Relacional}
+          \textit{(Feb--Mar 2026)}.] Migración del clasificador RegEx a BETO
+          (\textit{zero-shot} por similitud coseno con $\alpha=5$) mediante PyTorch.
+          Migración del almacenamiento CSV a PostgreSQL~16 con índices GIN para FTS.
+          Implementación de la deduplicación en cascada (MD5 $\rightarrow$ SimHash
+          $\rightarrow$ Jaccard $\rightarrow$ coseno TF-IDF). Integración de
+          \texttt{StealthSession} v7.0 con delays log-normales y Circuit Breaker.
+          Resultado: tasa de falsos positivos reducida al 4.2\%; cobertura elevada
+          a 45 fuentes RSS activas.
 
-La maduración iterativa forzó una refactorización severa de las dependencias de \textit{software}. La Tabla \ref{tab:stack_evolucion} esquematiza la divergencia tecnológica y el incremento de complejidad arquitectónica entre el final de la Fase TT1 y la consolidación de la Fase TT2.
+    \item[\textbf{Prototipo 4 (P4): Agrupamiento Semántico Global y Dashboard}
+          \textit{(Abr--Jun 2026)}.] Integración de BERTopic como etapa previa a
+          la clasificación individual, proveyendo contexto global del corpus.
+          Implementación de la lógica neuro-simbólica completa: Bypass de Oro,
+          Bozal de Penalización y Factor Alpha Dinámico. Desarrollo del Dashboard
+          Flask con API REST y contenerización completa mediante Docker Compose
+          (tres servicios: \texttt{nna-postgres}, \texttt{nna-analyzer},
+          \texttt{nna-webapp}). Resultado: sistema de calidad de producción listo
+          para adopción por organizaciones civiles.
+\end{description}
+
+%----------------------------------------------------------------------------------------
+\section{Stack Tecnológico: Evolución TT-1 \texorpdfstring{$\rightarrow$}{->} TT-2}
+\label{sec:met_stack}
+%----------------------------------------------------------------------------------------
+
+La maduración iterativa forzó una refactorización integral de las dependencias
+de software: cada limitación medida en TT-1 motivó directamente una decisión
+arquitectónica en TT-2. La Tabla~\ref{tab:stack_evolucion} sistematiza esta
+evolución por capa arquitectónica, documentando el cuello de botella superado
+en cada caso.
 
 \begin{table}[H]
 \centering
-\caption{Evolución del Stack Tecnológico (TT1 vs TT2)}
+\caption{Evolución del Stack Tecnológico (TT-1 vs TT-2)}
 \label{tab:stack_evolucion}
-\begin{tabular}{|l|p{6.5cm}|p{6.5cm}|}
+\begin{tabular}{|p{2.8cm}|p{5.0cm}|p{5.0cm}|}
 \hline
-\textbf{Capa Arquitectónica} & \textbf{Trabajo Terminal 1 (P2)} & \textbf{Trabajo Terminal 2 (P4)} \\ \hline
-\textbf{Lenguaje Base} & Python 3.10 & Python 3.11 \\ \hline
-\textbf{Persistencia de Datos} & Archivos planos granulares (.csv) y manipulación local con \textit{Pandas} & Motor RDBMS PostgreSQL con índices invertidos para FTS (\textit{Full-Text Search}) \\ \hline
-\textbf{Clasificación NLP} & Patrones de exclusión sintáctica explícita (\textit{RegEx}) y tokenización \textit{NLTK} & Modelo pre-entrenado BETO, \textit{Zero-Shot Classification} y Tensores vía \textit{PyTorch} \\ \hline
-\textbf{Agrupamiento Semántico}& Vectorización \textit{TF-IDF} y \textit{Clustering} de densidad elemental (DBSCAN) & \textit{BERTopic}: Reducción de Dimensionalidad Topológica (UMAP) y \textit{HDBSCAN} \\ \hline
-\textbf{Gestión de Duplicados} & Deduplicación estricta por URLs idénticas (\textit{Set de Enlaces}) & Algoritmos tolerantes a fallos (SimHash, Distancia Coseno TF-IDF) \\ \hline
-\textbf{Despliegue e Interfaz} & Scripts por consola (CLI) dependientes del desarrollador & Microservicios contenerizados (Docker), Servidor \textit{Flask} REST y \textit{Dashboard} HTML5 \\ \hline
+\textbf{Capa} &
+\textbf{TT-1 (Prototipo 2)} &
+\textbf{TT-2 (Prototipo 4)} \\
+\hline
+\textbf{Lenguaje base} &
+Python 3.10, scripts secuenciales en CLI &
+Python 3.11, pipeline modular con Repository Pattern \\
+\hline
+\textbf{Recolección} &
+10 fuentes RSS + \texttt{requests} (bloqueado en HTML) &
+45 fuentes RSS + Google News API + \texttt{StealthSession} v7.0 (cloudscraper, JA3) \\
+\hline
+\textbf{Persistencia} &
+Archivos CSV con Pandas; sin acceso concurrente; sin integridad referencial &
+PostgreSQL 16 + SQLAlchemy ORM; ACID/MVCC; índices GIN para FTS en español \\
+\hline
+\textbf{Clasificación NLP} &
+RegEx (47 patrones); TF-IDF; 10\% falsos positivos &
+BETO + Zero-Shot coseno + Temperature Scaling ($\alpha=5$); $<$5\% FP \\
+\hline
+\textbf{Agrupamiento} &
+K-Means ($k$ fijo) sobre vectores TF-IDF; clústeres no coherentes &
+BERTopic (UMAP 768D$\to$5D + HDBSCAN EoM + c-TF-IDF); $k$ automático \\
+\hline
+\textbf{Deduplicación} &
+Solo URLs exactas (conjunto de enlaces) &
+Cascada de 4 capas: MD5 → SimHash → Jaccard → coseno TF-IDF (umbral 0.85) \\
+\hline
+\textbf{Lógica de decisión} &
+Binaria (RegEx: match/no match) &
+Neuro-simbólica: Bypass de Oro + Bozal de Penalización + Factor $\alpha$ Dinámico \\
+\hline
+\textbf{Despliegue} &
+Scripts CLI; dependencia del entorno local del desarrollador &
+Docker Compose (3 contenedores); Gunicorn; red bridge \texttt{nna-network} \\
+\hline
+\textbf{Interfaz} &
+Ninguna (salida en CSV y consola) &
+Dashboard Flask + API REST; fichas de caso; exportación CSV; gestión CRUD de fuentes \\
+\hline
 \end{tabular}
 \end{table}
 
-\section{Arquitectura del Sistema (Visión General)}
-\label{sec:met_arquitectura_vision}
+%----------------------------------------------------------------------------------------
+\section{Arquitectura de Microservicios y Contenerización}
+\label{sec:met_arquitectura_docker}
+%----------------------------------------------------------------------------------------
 
-La culminación de este modelo metodológico (Prototipo 4) es un ecosistema distribuido regido por el principio de separación de responsabilidades (\textit{Separation of Concerns}). A nivel conceptual, el \textit{pipeline} neuro-simbólico fluye a través de cuatro módulos orquestados que interactúan secuencialmente:
+La culminación del Prototipo 4 es un ecosistema distribuido definido mediante
+\texttt{docker-compose.yml} y regido por el principio de separación de
+responsabilidades (\textit{Separation of Concerns}). El sistema se organiza en
+tres contenedores independientes que se comunican sobre una red bridge privada
+(\texttt{nna-network}), asegurando aislamiento de fallos y escalabilidad
+horizontal independiente por capa.
 
-\begin{enumerate}
-    \item \textbf{Módulo Colector (Ingesta de Datos):} Rutinas asíncronas encargadas de escanear canales RSS y motores indexados para extraer el corpus crudo en lenguaje natural, burlando bloqueos mediante sesiones ofuscadas (\textit{Stealth Sessions}).
-    \item \textbf{Módulo de Deduplicación Cross-Site:} Filtro algorítmico geométrico (SimHash, Jaccard) que confronta el texto crudo entrante contra la base de datos viva, purgando las copias exactas y las reescrituras de paráfrasis periodísticas antes de que consuman ciclos costosos de cómputo GPU/CPU.
-    \item \textbf{Motor de Inferencia Semántica y Agrupación (Analizador):} El núcleo computacional. Mapea cada artículo depurado mediante la inferencia de \textbf{BETO} para discriminar positivamente los escenarios de orfandad por feminicidio. Posteriormente, somete los artículos aprobados al agrupador topológico \textbf{BERTopic} para encontrar la correlación entre eventos distintos sin supervisión humana.
-    \item \textbf{Capa de Persistencia y Tablero Visual (Dashboard):} Todos los registros validados, junto con sus tópicos y nivel de prioridad algorítmica, son depositados transaccionalmente en la base de datos relacional. Esta información es servida inmediatamente vía \textit{endpoints} HTTP a un tablero analítico, donde los tomadores de decisiones pueden auditar las noticias, visualizar clústeres interactivos y gestionar respuestas fácticas.
-\end{enumerate}
+\subsection{Contenedor de Base de Datos: \texttt{nna-postgres}}
+\label{subsec:met_contenedor_postgres}
+
+El contenedor \texttt{nna-postgres} ejecuta \textbf{PostgreSQL 16 Alpine}
+(\texttt{postgres:16-alpine}), una imagen minimizada de 78~MB sin dependencias
+de sistema no esenciales. Su configuración incluye:
+
+\begin{itemize}
+    \item \textbf{Volumen persistente} \texttt{pgdata} montado en
+          \texttt{/var/lib/postgresql/data}: garantiza la supervivencia de los
+          datos ante reinicios del contenedor.
+    \item \textbf{Healthcheck} mediante \texttt{pg\_isready}: los contenedores
+          dependientes (\texttt{nna-analyzer} y \texttt{nna-webapp}) no inician
+          hasta que la base de datos responde correctamente, evitando race conditions
+          de inicialización.
+    \item \textbf{Puerto} 5432 expuesto únicamente a la red interna
+          \texttt{nna-network}; no expuesto al host de producción para reducir
+          la superficie de ataque.
+\end{itemize}
+
+\subsection{Contenedor del Motor de Análisis: \texttt{nna-analyzer}}
+\label{subsec:met_contenedor_analyzer}
+
+El contenedor \texttt{nna-analyzer} ejecuta el pipeline completo de recolección
+y análisis mediante el proceso \texttt{python scheduler.py schedule}, que orquesta
+la ejecución periódica del pipeline en ciclos de 6 horas. Sus características
+arquitectónicas más relevantes son:
+
+\begin{itemize}
+    \item \textbf{Volumen compartido} \texttt{models\_cache} montado en
+          \texttt{/app/models/cache}: los pesos de BETO ($\approx$440~MB) se
+          descargan una sola vez y persisten entre reinicios, eliminando la latencia
+          de descarga en cada arranque.
+    \item \textbf{Variables de entorno Hugging Face}: \texttt{TRANSFORMERS\_CACHE}
+          y \texttt{HF\_HOME} apuntan al volumen compartido, garantizando que la
+          caché de modelos sea determinista y no dependa del directorio home del
+          usuario del sistema.
+    \item \textbf{Dependencia condicional}: \texttt{depends\_on: nna-postgres:
+          condition: service\_healthy} garantiza que el analizador no intenta
+          conectarse a PostgreSQL hasta que el healthcheck confirma disponibilidad.
+    \item \textbf{Zona horaria}: \texttt{TZ=America/Mexico\_City} garantiza que
+          los \textit{timestamps} de las noticias recolectadas se registran en
+          hora local del dominio de operación.
+\end{itemize}
+
+\subsection{Contenedor de la Aplicación Web: \texttt{nna-webapp}}
+\label{subsec:met_contenedor_webapp}
+
+El contenedor \texttt{nna-webapp} sirve la aplicación Flask mediante
+\textbf{Gunicorn} (\texttt{gunicorn --bind 0.0.0.0:5000 --workers 2
+--timeout 300 wsgi:app}), un servidor WSGI de producción que gestiona
+concurrencia mediante múltiples workers pre-forked:
+
+\begin{itemize}
+    \item \textbf{2 workers} Gunicorn: permite atender hasta 2 peticiones HTTP
+          concurrentes sin bloqueo, adecuado para el perfil de uso de una
+          organización civil con $\leq$10 usuarios simultáneos.
+    \item \textbf{Timeout de 300~s}: justificado por las operaciones de inferencia
+          BETO en CPU que pueden tardar hasta 180~s en lotes grandes; sin este
+          timeout, Gunicorn terminaría prematuramente las solicitudes de análisis
+          on-demand desde el dashboard.
+    \item \textbf{Puerto 5000} expuesto al host: único punto de entrada externo
+          al sistema, servido en producción mediante un proxy inverso Nginx.
+    \item \textbf{Dependencia de inicio}: \texttt{depends\_on: nna-analyzer:
+          condition: service\_started} garantiza que el analizador ha completado
+          su inicialización antes de que el dashboard empiece a atender consultas.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+\section{Matriz de Trazabilidad: Requerimientos por Prototipo}
+\label{sec:met_trazabilidad_prototipos}
+%----------------------------------------------------------------------------------------
+
+La Tabla~\ref{tab:trazabilidad_prototipos} establece la cobertura de cada
+requerimiento funcional y no funcional a lo largo de los cinco prototipos del
+ciclo de vida del proyecto, documentando en qué iteración cada requerimiento fue
+satisfecho por primera vez (\checkmark) o parcialmente cubierto ($\sim$).
+Esta matriz de trazabilidad evidencia que el alcance del protocolo 2026-A135
+fue completado íntegramente al cierre del Prototipo~4.
+
+\begin{table}[H]
+\centering
+\caption{Matriz de Trazabilidad: Requerimientos vs. Prototipos de Implementación}
+\label{tab:trazabilidad_prototipos}
+\begin{tabular}{|p{1.2cm}|p{4.8cm}|c|c|c|c|c|}
+\hline
+\textbf{ID} &
+\textbf{Requerimiento} &
+\textbf{P0} &
+\textbf{P1} &
+\textbf{P2} &
+\textbf{P3} &
+\textbf{P4} \\
+\hline
+\textbf{RF-01} &
+Extracción multi-fuente (StealthSession + RSS + Google News) &
+$\sim$ & $\sim$ & $\sim$ & \checkmark & \checkmark \\
+\hline
+\textbf{RF-02} &
+Deduplicación en cascada (MD5, SimHash, Jaccard, coseno) &
+--- & --- & $\sim$ & \checkmark & \checkmark \\
+\hline
+\textbf{RF-03} &
+Filtrado simbólico (Bypass de Oro, Bozal de Penalización) &
+--- & --- & $\sim$ & \checkmark & \checkmark \\
+\hline
+\textbf{RF-04} &
+Clasificación semántica BETO (zero-shot + temperature scaling) &
+--- & --- & --- & \checkmark & \checkmark \\
+\hline
+\textbf{RF-05} &
+Agrupamiento BERTopic (UMAP + HDBSCAN + c-TF-IDF) &
+--- & --- & --- & --- & \checkmark \\
+\hline
+\textbf{RF-06} &
+Persistencia relacional PostgreSQL (FTS, GIN, ACID) &
+--- & $\sim$ & $\sim$ & \checkmark & \checkmark \\
+\hline
+\textbf{RF-07} &
+Gestión CRUD de orígenes de datos (Dashboard) &
+--- & --- & --- & --- & \checkmark \\
+\hline
+\textbf{RF-08} &
+Visualización interactiva y fichas de caso (Flask) &
+--- & --- & --- & --- & \checkmark \\
+\hline\hline
+\textbf{RNF-01} &
+Rendimiento: lote de 100 noticias en $<$3~min en CPU &
+--- & --- & \checkmark & \checkmark & \checkmark \\
+\hline
+\textbf{RNF-02} &
+Resiliencia: Exponential Backoff + Circuit Breaker &
+--- & --- & --- & \checkmark & \checkmark \\
+\hline
+\textbf{RNF-03} &
+Seguridad: sesiones Flask con tokens criptográficos (Bcrypt) &
+--- & --- & --- & --- & \checkmark \\
+\hline
+\textbf{RNF-04} &
+Privacidad ética: anonimización de menores (LGDNNA) &
+--- & --- & $\sim$ & \checkmark & \checkmark \\
+\hline
+\textbf{RNF-05} &
+Integridad transaccional: ACID Rollback ante fallos de lote &
+--- & --- & --- & \checkmark & \checkmark \\
+\hline
+\end{tabular}
+{\small \textit{Leyenda:} \checkmark = satisfecho; $\sim$ = parcialmente satisfecho; --- = no implementado}
+\end{table}
+
+La tabla evidencia que el Prototipo~3 constituyó el punto de inflexión crítico del
+proyecto: en él se satisfacen por primera vez los requerimientos de mayor peso
+técnico (RF-04, RF-06, RNF-02, RNF-05). El Prototipo~4 completa la cobertura
+cerrando los requerimientos de interfaz (RF-05, RF-07, RF-08) y seguridad
+operacional (RNF-03), alcanzando el 100\% de cobertura del protocolo 2026-A135.
+
+
+

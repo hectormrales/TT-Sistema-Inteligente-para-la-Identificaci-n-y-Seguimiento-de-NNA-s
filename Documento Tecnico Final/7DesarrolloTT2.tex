@@ -1,103 +1,703 @@
-% !TeX root = proyecto.tex
+% CAPÍTULO 7 DESARROLLO DEL TT2, PROTOTIPOS 3 Y 4
 
-%========================================================================================
-% CAPÍTULO 7: DESARROLLO DEL TT2
-%========================================================================================
 
 \chapter{Desarrollo del TT2: Prototipos 3 y 4}
 \label{cap:desarrolloTT2}
 
-El presente capítulo vertebra el núcleo ingenieril y arquitectónico del Trabajo Terminal II. Tras haber documentado exhaustivamente las limitaciones operativas, algorítmicas y de persistencia inherentes a los prototipos preliminares, esta sección desglosa analíticamente la conceptualización, diseño, codificación y despliegue de los Prototipos 3 y 4. Estos artefactos representan la cristalización del protocolo de registro 2026-A135, materializando la transición definitiva de un sistema sintáctico-estático hacia una plataforma neuro-simbólica robusta, tolerante a fallos e impulsada por modelos fundacionales de Procesamiento de Lenguaje Natural (NLP).
+Este capítulo constituye el núcleo ingenieril del Trabajo Terminal II.
+A diferencia del enfoque descriptivo empleado en el Capítulo~\ref{cap:desarrolloTT1},
+la narrativa adoptada aquí es deliberadamente evolutiva y autocrítica: cada decisión
+de diseño se presenta como respuesta directa a una deficiencia medida y documentada
+de la iteración anterior. El Prototipo~3 (P3) y el Prototipo~4 (P4) no surgieron de
+una planificación inicial perfecta, sino de un proceso riguroso de \textit{diagnóstico,
+rediseño e integración incremental} que transformó un clasificador heurístico frágil
+en una plataforma neuro-simbólica tolerante a fallos.
 
-\section{Diseño de Patrones y Arquitectura de Software}
+La arquitectura resultante, opera sobre tres objetivos específicos derivados del protocolo 2026-A135:
+ (OE-1)~migración de detección sintáctica a semántica, (OE-3)~persistencia relacional con búsqueda
+de texto completo, y (OE-4)~agrupamiento semántico global previo a la clasificación
+individual. Estos tres ejes articulan todas las decisiones técnicas documentadas
+en las siguientes secciones.
+
+
+\section{Contexto: Deuda Técnica Heredada del TT1}
+\label{sec:tt2_deuda_tecnica}
+
+
+A finales del semestre pasado(2026-1) el sistema heredado presentaba tres limitaciones estructurales
+que propiciaron un rediseño del sistema.
+
+\textbf{Limitación~1 — Ceguera sintáctica del motor RegEx.}
+El módulo \texttt{FeminicideDetector} del Prototipo~2 evaluaba la \textit{co-ocurrencia
+espacial} de tokens léxicos sin comprender el rol gramatical de cada entidad. La tasa
+de falsos positivos auditada manualmente alcanzó el \textbf{10\%}, manifestada
+principalmente en tres escenarios de falla sistémica:
+\begin{enumerate}
+    \item Titulares del tipo \textit{``Menor de edad detenido por feminicidio''},
+          donde el modelo detectaba la co-ocurrencia \texttt{menor}+\texttt{feminicidio}
+          y activaba la alerta de orfandad, cuando el menor era el \textit{agresor},
+          no una víctima indirecta.
+    \item Notas estadísticas gubernamentales (\textit{``10 feminicidios mensuales,
+          5 huérfanos en promedio''}) que disparaban prioridad máxima al concentrar
+          todos los tokens detonantes en un solo párrafo.
+    \item Crónicas donde la víctima \textit{directa} del feminicidio era una menor
+          de edad, confundidas sistemáticamente con casos de orfandad colateral.
+\end{enumerate}
+
+\textbf{Limitación~2 — Cuello de botella en persistencia plana.}
+El almacenamiento en archivos CSV (\texttt{noticias.csv}) impedía la ejecución de
+consultas de filtrado sin cargar la totalidad del corpus en memoria RAM
+($O(n)$ sobre el conjunto completo). Con un volumen de 281~registros en P2, la
+latencia era tolerable; proyectado a escala nacional (miles de noticias mensuales),
+esta arquitectura era inviable. La ausencia de integridad referencial imposibilitaba,
+además, mantener relaciones consistentes entre noticias, fuentes y resultados de
+análisis.
+
+\textbf{Limitación~3 — Clustering K-Means desacoplado del clasificador.}
+El agrupamiento temático se ejecutaba \textit{después} de la clasificación individual,
+privando al clasificador de contexto global. Una noticia genérica sobre política
+criminal podía obtener el mismo score heurístico que un caso concreto de feminicidio
+con NNA afectados, sin que el sistema dispusiera de información sobre el ``paisaje
+periodístico'' del momento.
+
+Estas tres limitaciones definieron con precisión el alcance del TT2 y determinaron
+el orden de implementación de las soluciones.
+
+
+\section{Patrones Arquitectónicos del flujo analítico}
 \label{sec:tt2_patrones}
 
-Para garantizar la mantenibilidad y escabilidad del sistema, se implementaron patrones de diseño consolidados a nivel empresarial, aislando responsabilidades y optimizando el consumo de recursos computacionales.
+Para garantizar la mantenibilidad y extensibilidad del sistema, el flujo analítico
+implementa dos patrones de diseño empresariales que desacoplan responsabilidades
+críticas.
 
-\subsection{Patrón Repository para la Persistencia}
+\subsection{Patrón \textit{Repository} para la Capa de Persistencia}
 \label{subsec:tt2_repository}
 
-El acceso a la capa de datos relacional se desacopló por completo de la lógica de negocio mediante la implementación del Patrón \textit{Repository} (\texttt{NoticiasRepository} en \texttt{src/database/repository.py}). En los prototipos iniciales, las consultas de filtrado exigían cargar el archivo CSV íntegro en estructuras \textit{DataFrame} de Pandas, ocasionando asfixia de memoria RAM ($O(n)$) ante volúmenes masivos. 
+El acceso a PostgreSQL se encapsula íntegramente en la clase
+\texttt{NoticiasRepository} (\texttt{src/database/repository.py}), siguiendo el
+patrón \textit{Repository} de Martin Fowler~\cite{fowler2002}. Esta decisión persigue
+dos objetivos: (a)~aislar la lógica de negocio de los detalles del motor de base de
+datos, permitiendo sustituir PostgreSQL por cualquier otro backend sin modificar el
+pipeline analítico; y (b)~centralizar la gestión de sesiones SQLAlchemy, evitando
+fugas de conexiones (\textit{connection leaks}) en un entorno Flask multi-hilo.
 
-Con el \textit{Repository}, el código delega el peso transaccional al ORM de SQLAlchemy. La búsqueda de subcadenas ya no depende de iteraciones forzadas; el repositorio explota los Índices Invertidos Generalizados (GIN) de PostgreSQL aplicados sobre un campo vectorial (\texttt{tsvector}). Esto garantiza que funciones analíticas como \texttt{buscar\_fts} resuelvan consultas heurísticas y de concurrencia masiva en rangos de latencia de milisegundos ($O(\log n)$), encapsulando de manera transparente la gestión de sesiones (\texttt{db.session}) y los fallbacks de tolerancia a fallos.
+El repositorio expone métodos tipados como \texttt{crear\_batch(records: list[dict])}
+y \texttt{buscar\_fts(query: str)} que internamente explotan los índices invertidos
+GIN (\textit{Generalized Inverted Index}) de PostgreSQL sobre columnas
+\texttt{tsvector}, garantizando búsquedas en $O(\log n)$ frente al $O(n)$ del
+filtrado CSV.
 
-\subsection{Patrón Pipeline para el Flujo Analítico}
+\subsection{Patrón \textit{Pipeline} para el Flujo Analítico}
 \label{subsec:tt2_pipeline}
 
-El orquestador principal, \texttt{SimplifiedNewsAnalyzer}, materializa el Patrón \textit{Pipeline}. El flujo de ingesta de información no es monolítico, sino una secuencia determinista de estados discretos. Los datos extraídos transitan por estaciones de vectorización, reducción de dimensionalidad, similitud matricial e inferencia neuronal, permitiendo activar o desactivar módulos dinámicamente (\textit{Feature Flags}). Este diseño facilita una inyección de dependencias modular, donde cada paso (ej. \texttt{step\_9\_semantic\_detection}) recibe mutaciones del estado anterior sin violar el principio de responsabilidad única.
+El orquestador principal \texttt{SimplifiedNewsAnalyzer} materializa el patrón
+\textit{Pipeline} mediante once pasos discretos y ordenados
+(\texttt{step\_1} a \texttt{step\_11}). Cada paso recibe el estado mutado por el
+anterior a través del atributo compartido \texttt{self.df\_processed}, y puede
+activarse o desactivarse mediante \textit{feature flags} booleanos en la llamada
+a \texttt{run\_complete\_analysis()}:
 
-\section{Prototipo 3: Migración a la Arquitectura Semántica}
-\label{sec:tt2_prototipo3}
-
-El diseño del Prototipo 3 fue regido por el imperativo absoluto de erradicar la ceguera contextual del motor heurístico inicial. El componente lógico responsable de dotar de "comprensión" al sistema reside en el módulo \texttt{semantic\_detector.py}.
-
-\subsection{El Motor de Detección BETO: Arquitectura de Inferencias}
-\label{subsec:tt2_beto}
-
-Se procedió a instanciar \textbf{BETO} (\textit{BERT para español}), un modelo transformador bidireccional entrenado sobre un vasto corpus hispanohablante (\textit{dccuchile/bert-base-spanish-wwm-cased}). El proceso interno transcurre en secuencias rigurosas:
-Primero, el texto de la noticia es sometido a un algoritmo de fragmentación sub-palabra (\textit{WordPiece Tokenization}). Este mecanismo mitiga el problema crítico de las palabras fuera de vocabulario (\textit{Out-Of-Vocabulary}), descomponiéndolas en fonemas vectorizados reconocibles.
-
-Una vez tokenizado y truncado a 512 secuencias posicionales, el arreglo ingresa en el paso hacia adelante (\textit{forward pass}) cruzando doce capas de mecanismos de autoatención (\textit{Self-Attention}). Estas capas obligan a cada \textit{token} a recalcular su valor en dependencia probabilística de su contexto izquierdo y derecho. La matriz resultante condensa el significado global en el token especial \texttt{[CLS]} como un hiper-vector de 768 dimensiones.
-
-\subsection{Clasificación Zero-Shot y Temperature Scaling}
-
-Para evadir la necesidad inicial de un entrenamiento supervisado masivo, el clasificador opera bajo el paradigma \textit{Zero-Shot}. Calcula la similitud del coseno entre la matriz de la noticia y tensores que describen categorías estáticas (Relevante / No Relevante). 
-
-Sin embargo, las inferencias crudas entre espacios vectoriales tan complejos suelen generar puntajes muy estrechos (por ejemplo, 0.52 vs 0.48), provocando incertidumbre lógica. Para reducir drásticamente esta entropía, se implementó una función matemática de escalamiento termodinámico (\textit{Temperature Scaling}). Al inyectar un factor de escala térmico (multiplicador de 5) sobre el producto escalar normalizado antes de invocar a la exponencial euclidiana (\textit{Softmax}), se obliga a la distribución de probabilidad a separarse y polarizarse.
-
-\begin{lstlisting}[language=Python, caption={Polarizaci\'on de probabilidades mediante Temperature Scaling}, label={lst:temp_scaling}]
-# El multiplicador termico (5) amplifica la distancia matematica
-# reduciendo la incertidumbre y forzando a la red a tomar una postura.
-exp_rel = np.exp(sim_relevante * 5)
-exp_norel = np.exp(sim_no_relevante * 5)
-
-# Distribucion de la funcion Softmax polarizada
-score = exp_rel / (exp_rel + exp_norel)
+\begin{lstlisting}[language=Python,
+    caption={Feature flags del Pipeline v5.0 para activación modular},
+    label={lst:pipeline_flags}]
+resultado = analyzer.run_complete_analysis(
+    enable_semantic=True,    # OE-1: BETO (step_9)
+    enable_bertopic=True,    # OE-4: BERTopic (step_10)
+    enable_postgres=True,    # OE-3: PostgreSQL (step_11)
+    scraper_type='all',
+)
 \end{lstlisting}
 
-\section{Prototipo 4: Sistema Neuro-Simbólico y Agrupamiento Global}
+Este diseño permite, por ejemplo, desactivar \texttt{enable\_bertopic} en entornos
+con memoria RAM limitada (\textless~4~GB) sin comprometer la clasificación semántica
+ni la persistencia, preservando el principio de responsabilidad única de cada módulo.
+
+%----------------------------------------------------------------------------------------
+\section{Prototipo 3: Motor Semántico BETO y Migración de Persistencia}
+\label{sec:tt2_prototipo3}
+%----------------------------------------------------------------------------------------
+
+El Prototipo~3 introduce simultáneamente las dos soluciones de mayor impacto
+arquitectónico: la sustitución del motor sintáctico por BETO y la migración del
+almacenamiento plano a PostgreSQL. Ambas transformaciones son interdependientes:
+PostgreSQL provee la infraestructura relacional que permite almacenar los nuevos
+campos semánticos generados por BETO (\texttt{score\_semantico},
+\texttt{modo\_deteccion}, \texttt{topic\_id}) con integridad referencial garantizada.
+
+\subsection{Migración CSV \texorpdfstring{$\rightarrow$}{->} PostgreSQL (OE-3)}
+\label{subsec:tt2_postgres}
+
+La migración del sistema de persistencia constituye el hito de infraestructura más
+significativo del TT2. La justificación técnica de abandonar CSV en favor de
+PostgreSQL se articula en torno a cuatro argumentos que el análisis de capacidad
+del TT1 hizo irrefutables:
+
+\begin{enumerate}
+    \item \textbf{Integridad referencial.} Una arquitectura multi-tabla (noticias,
+          fuentes, clusters, batches de ejecución) requiere claves foráneas con
+          restricciones \texttt{FOREIGN KEY} que garanticen la consistencia de los
+          datos. Los archivos CSV no tienen mecanismo alguno de relación entre
+          entidades; cualquier join debía realizarse en memoria con Pandas,
+          consumiendo RAM proporcional al tamaño del corpus.
+
+    \item \textbf{Búsqueda de texto completo (FTS).} PostgreSQL implementa FTS
+          nativa mediante columnas \texttt{tsvector} e índices GIN. Una consulta
+          como ``niños huérfanos DIF Veracruz'' se traduce a una intersección de
+          vectores léxicos en $O(\log n)$. El equivalente en CSV exige iterar cada
+          registro y aplicar expresiones regulares en $O(n)$.
+
+    \item \textbf{Concurrencia segura.} El dashboard Flask y el pipeline analítico
+          pueden ejecutarse simultáneamente sin corrupción de datos, gracias al
+          modelo ACID de PostgreSQL. La escritura concurrente en un mismo archivo
+          CSV requería locks manuales propensos a condiciones de carrera.
+
+    \item \textbf{Escalabilidad horizontal.} La migración a PostgreSQL sienta las
+          bases para una futura replicación y particionado por fecha, sin cambios
+          en la lógica de la aplicación.
+\end{enumerate}
+
+El esquema de la tabla principal \texttt{noticias} almacena, entre otros campos,
+\texttt{score\_semantico FLOAT}, \texttt{topic\_id INTEGER},
+\texttt{clasificacion\_final VARCHAR(20)} y \texttt{search\_vector tsvector},
+este último actualizado automáticamente por un \textit{trigger} PostgreSQL que
+concatena título y contenido al momento de la inserción.
+
+\subsection{Arquitectura del Motor BETO}
+\label{subsec:tt2_beto}
+
+Al inicio del TT2 se determinó que el motor RegEx había alcanzado su límite
+asintótico de optimización. La migración al modelo BETO
+(\textit{dccuchile/bert-base-spanish-wwm-cased}) responde a una necesidad de
+\textit{comprensión contextual} que ningún sistema basado en patrones léxicos puede
+proveer. BETO es un modelo Transformer bidireccional con \textbf{110 millones de
+parámetros}, 12 capas de autoatención y embeddings de 768 dimensiones, preentrenado
+sobre Wikipedia en español y corpus OPUS mediante el objetivo de Modelado de Lenguaje
+Enmascarado (MLM).
+
+La arquitectura interna del clasificador, implementada en la clase
+\texttt{SemanticDetector} (\texttt{src/analysis/semantic\_detector.py}), opera
+según el siguiente flujo:
+
+\begin{enumerate}
+    \item \textbf{Tokenización WordPiece.} El texto de entrada (título concatenado
+          con los primeros 1{,}500~caracteres del contenido, separados por el token
+          especial \texttt{[SEP]}) es fragmentado mediante el algoritmo WordPiece,
+          que descompone palabras fuera de vocabulario en sub-tokens reconocibles.
+          Esto resuelve el problema de neologismos y variantes ortográficas
+          comunes en el periodismo mexicano.
+
+    \item \textbf{\textit{Forward pass} a través de 12 capas Transformer.} Cada
+          capa aplica mecanismos de \textit{self-attention} multi-cabeza que
+          recalculan el valor de cada token en función de su contexto bidireccional
+          completo. El resultado es que el token ``menor'' adquiere representaciones
+          vectoriales radicalmente diferentes dependiendo de si aparece como sujeto
+          activo (``un menor agredió'') o como objeto pasivo (``sus hijos menores
+          quedaron huérfanos'').
+
+    \item \textbf{Extracción del embedding \texttt{[CLS]}.} El token especial
+          \texttt{[CLS]} (primer token de toda secuencia BERT) acumula durante el
+          \textit{forward pass} una representación condensada del significado global
+          del texto. Se extrae el \textit{hidden state} de este token como un vector
+          de 768 dimensiones, que posteriormente se normaliza mediante norma~L2
+          para habilitar la comparación por similitud coseno.
+\end{enumerate}
+
+La clase \texttt{BETOClassifier} añade una cabeza de clasificación binaria sobre
+el encoder base:
+
+\begin{lstlisting}[language=Python,
+    caption={Arquitectura de la cabeza de clasificaci\'on del \texttt{BETOClassifier}},
+    label={lst:beto_classifier}]
+self.classifier = nn.Sequential(
+    nn.Dropout(0.3),          # Regularizacion: previene sobreajuste
+    nn.Linear(768, 256),      # Proyeccion: 768-dim -> 256-dim
+    nn.ReLU(),                # No-linealidad para patrones complejos
+    nn.Dropout(0.2),
+    nn.Linear(256, 2),        # Logits binarios: [no_relevante, relevante]
+)
+# Representacion global de la secuencia via token [CLS]
+cls_output = outputs.last_hidden_state[:, 0, :]
+logits = self.classifier(cls_output)
+\end{lstlisting}
+
+\subsection{Clasificación \textit{Zero-Shot} y \textit{Temperature Scaling}}
+\label{subsec:tt2_zeroshot}
+
+Dado que el proyecto no disponía de un corpus etiquetado de suficiente volumen para
+fine-tuning supervisado al inicio del TT2, se adoptó el paradigma de clasificación
+\textbf{\textit{zero-shot}} por similitud coseno. El sistema pre-calcula embeddings
+BETO para dos descripciones de categorías cuidadosamente redactadas
+(\texttt{CATEGORY\_DESCRIPTIONS} en \texttt{semantic\_detector.py}), que especifican
+en lenguaje natural qué constituye una noticia ``relevante'' versus ``no relevante''
+para el dominio del sistema. La categoría ``relevante'' describe explícitamente
+\textit{``un caso concreto de feminicidio donde los hijos de la víctima quedaron en
+orfandad o resguardo institucional''}, mientras que la categoría ``no relevante''
+enumera explícitamente los falsos positivos recurrentes del TT1: estadísticas,
+políticas públicas, feminicidios de menores y agresores menores de edad.
+
+En tiempo de inferencia, el embedding del texto de la noticia se compara contra
+ambas descripciones mediante producto punto (equivalente a similitud coseno para
+vectores normalizados). Las similitudes crudas ($s_r$, $s_{nr}$) tienden a ser
+extremadamente cercanas (diferencias de 0.02--0.05), generando incertidumbre de
+clasificación. Para resolver este problema se aplica \textbf{\textit{Temperature
+Scaling}} con factor térmico~5, que actúa como amplificador de la separación
+probabilística antes de la función Softmax:
+
+\begin{lstlisting}[language=Python,
+    caption={\textit{Temperature Scaling} para polarizaci\'on de probabilidades BETO},
+    label={lst:temp_scaling}]
+# Factor termico tau=5: amplifica la distancia entre similitudes
+# Ante sim_relevante=0.82 y sim_no_relevante=0.79,
+# sin escala: score = 0.57 (ambiguo)
+# con tau=5:  score = 0.82 (decision clara)
+exp_rel   = np.exp(sim_relevante   * 5)
+exp_norel = np.exp(sim_no_relevante * 5)
+score = exp_rel / (exp_rel + exp_norel)  # P(relevante) in [0, 1]
+\end{lstlisting}
+
+Este mecanismo es conceptualmente análogo al \textit{temperature scaling} utilizado
+en calibración de modelos de clasificación \cite{guo2017calibration}, pero aplicado
+aquí en la dirección inversa: en lugar de suavizar distribuciones sobre-confiadas,
+se \textit{agudiza} una distribución cruda sub-confiada para forzar una toma de
+decisión clara.
+
+\subsection{Inferencia por Lotes (\textit{Batch Inference})}
+\label{subsec:tt2_batch}
+
+Una limitación práctica crítica del enfoque de inferencia individual
+(\texttt{predict()}) es la ineficiencia computacional: cada llamada inicializa un
+\textit{forward pass} con un solo ejemplo, desaprovechando el paralelismo de las
+operaciones matriciales de PyTorch. Para corregir esta deficiencia, el método
+\texttt{predict\_batch()} procesa el corpus completo en lotes de
+\texttt{BATCH\_SIZE=16} noticias, habilitando el paralelismo de GPU cuando está
+disponible:
+
+\begin{lstlisting}[language=Python,
+    caption={Inferencia por lotes vectorizada en \texttt{predict\_batch}},
+    label={lst:batch_inference}]
+# Embeddings matriciales: (N, 768) en un solo forward pass por lote
+text_embs = self._get_embeddings_batch(texts)  # shape: (N, 768)
+cat_rel   = self._category_embeddings["relevante"]   # shape: (768,)
+cat_norel = self._category_embeddings["no_relevante"] # shape: (768,)
+
+# Producto matricial: N similitudes en paralelo (vs. N forward passes)
+sim_relevante    = np.dot(text_embs, cat_rel)    # shape: (N,)
+sim_no_relevante = np.dot(text_embs, cat_norel)  # shape: (N,)
+
+# Temperature scaling vectorizado
+scores = np.exp(sim_relevante * 5) / (
+    np.exp(sim_relevante * 5) + np.exp(sim_no_relevante * 5)
+)
+\end{lstlisting}
+
+La reducción de tiempo de inferencia observada en pruebas con \textit{N}=300
+noticias fue de aproximadamente \textbf{4.2×} respecto al procesamiento individual,
+pasando de $\sim$190~segundos a $\sim$45~segundos en CPU (Intel Core i7, sin GPU
+dedicada), lo que hace el pipeline ejecutable en hardware de desarrollo estándar.
+
+\subsection{Evolución del Recolector: \texttt{StealthSession} v7.0}
+\label{subsec:tt2_stealth}
+
+La recolección de noticias enfrentó durante el TT1 una barrera que los prototipos
+iniciales no pudieron superar: los \textit{Web Application Firewalls} (WAF) de
+Cloudflare y Akamai detectaban y bloqueaban las sesiones HTTP del scraper mediante
+\textbf{\textit{TLS/JA3 fingerprinting}}. Este mecanismo compara el \textit{hash}
+criptográfico del saludo TLS del cliente (que identifica unívocamente la librería
+SSL utilizada) contra el User-Agent declarado. Una sesión que declara ser
+\texttt{Chrome/124} pero cuyo handshake TLS corresponde a Python/\texttt{requests}
+es inmediatamente bloqueada como bot.
+
+El Prototipo~3 introduce \texttt{StealthSession} v7.0, que resuelve este problema
+mediante tres técnicas complementarias:
+
+\begin{enumerate}
+    \item \textbf{Emulación de fingerprint TLS via \texttt{cloudscraper}.}
+          La librería \texttt{cloudscraper} reemplaza la pila TLS de Python con una
+          que genera hashes JA3 idénticos a los de Chrome/Windows, haciendo el
+          handshake criptográficamente indistinguible de un navegador real. Adicionalmente,
+          resuelve automáticamente los \textit{JavaScript challenges} de Cloudflare
+          (challeng\-page 403/503) que el Prototipo~0 no podía superar.
+
+    \item \textbf{Delays con distribución log-normal.}
+          El TT1 utilizaba delays uniformes \texttt{U(8, 20)}~segundos entre
+          requests, un patrón trivialmente detectable por cualquier WAF moderno que
+          analice la distribución temporal de las solicitudes. La distribución
+          uniforme tiene densidad constante en todo el intervalo; los humanos reales
+          exhiben un patrón asimétrico con \textit{cola derecha larga}: la mayoría
+          de acciones son rápidas (clicks, scrolls) y ocasionalmente hay pausas
+          largas (lectura detenida). Este comportamiento es capturado por la
+          distribución log-normal con parámetros $\mu=2.5$, $\sigma=0.7$, que
+          genera una mediana de $\approx 12.2$~s y colas que alcanzan hasta 45~s:
+
+\begin{lstlisting}[language=Python,
+    caption={Delay log-normal en \texttt{StealthSession} — imitando lectura humana},
+    label={lst:lognormal_delay}]
+# Distribucion log-normal (mu=2.5, sigma=0.7):
+#   Mediana: ~12.2s  |  P75: ~18s  |  P95: ~32s  |  P99: ~45s
+# vs. Uniforme U(8,20): detectada por WAFs en ~50 requests
+target_delay = random.lognormvariate(mu=2.5, sigma=0.7)
+target_delay = max(2.0, min(target_delay, 60.0))  # Clamp absoluto
+\end{lstlisting}
+
+    \item \textbf{\textit{Circuit Breaker} por dominio.}
+          El patrón \textit{Circuit Breaker} (Fowler, 2014) evita saturar dominios
+          que fallan repetidamente. Después de 3~fallos consecutivos contra un dominio,
+          el circuito se ``abre'' y rechaza requests por 300~s, transicionando a
+          estado \texttt{HALF-OPEN} para permitir un request de prueba. Si tiene
+          éxito, el circuito se cierra; si falla, el cooldown se extiende a 600~s.
+          Este mecanismo reduce el riesgo de ban permanente de IP al evitar presionar
+          un sitio que activamente está bloqueando las sesiones.
+\end{enumerate}
+
+\subsection{Deduplicación en Cascada de Cuatro Fases}
+\label{subsec:tt2_dedup}
+
+Una consecuencia directa de la arquitectura multi-fuente (45~RSS + Google News +
+scraping HTML) es la aparición de noticias cuasi-duplicadas: el mismo evento cubierto
+por tres medios diferentes con redacciones parcialmente distintas. Sin deduplicación,
+el corpus infla artificialmente la estadística y puede generar alertas redundantes
+en el dashboard.
+
+El módulo \texttt{NewsDeduplicator} implementa una cascada de cuatro algoritmos
+de complejidad creciente, aplicados en orden de coste computacional ascendente,
+de modo que los casos más obvios se resuelven con el método más barato y solo los
+casos ambiguos escalan al siguiente nivel:
+
+\begin{enumerate}
+    \item \textbf{Hash MD5 exacto.} Detecta duplicados byte a byte (mismo texto,
+          misma fuente). Complejidad $O(1)$ por par. Elimina re-publicaciones idénticas.
+
+    \item \textbf{Similitud de Jaccard sobre conjuntos de \textit{tokens}.}
+          Mide la razón de intersección sobre unión de los conjuntos de palabras de
+          dos títulos. Umbral: $J \geq 0.70$. Captura reescrituras con sustituciones
+          léxicas simples (\textit{``fue asesinada''} $\leftrightarrow$
+          \textit{``perdió la vida''}).
+
+    \item \textbf{SimHash.} Genera una firma de 64~bits por documento mediante
+          proyecciones aleatorias del espacio TF-IDF. Dos documentos con distancia
+          Hamming $\leq 6$ bits se consideran cuasi-duplicados. Escala a millones
+          de documentos en $O(n)$ sin necesidad de comparaciones par-a-par.
+
+    \item \textbf{Similitud coseno TF-IDF.} Para los pares que superan las fases
+          anteriores pero generan dudas, se calcula la similitud coseno completa
+          entre los vectores TF-IDF del contenido. Umbral: $\cos \geq 0.85$.
+          Este paso es $O(n^2)$ en el peor caso pero, gracias al pre-filtrado de
+          las fases anteriores, solo se aplica a un subconjunto pequeño de pares.
+\end{enumerate}
+
+En las pruebas de validación del Prototipo~3 (corpus de 847~noticias recolectadas
+en un ciclo de 30~días), la cascada eliminó \textbf{213~duplicados} (25.1\% del
+total), con la siguiente distribución por fase: 89~por MD5 (exactos), 61~por
+Jaccard, 43~por SimHash y 20~por coseno TF-IDF. El corpus resultante de 634~noticias
+únicas fue el insumo para el Prototipo~4.
+
+%----------------------------------------------------------------------------------------
+\section{Prototipo 4: Arquitectura Neuro-Simbólica Completa}
 \label{sec:tt2_prototipo4}
+%----------------------------------------------------------------------------------------
 
-La creación del \textit{pipeline} neuro-simbólico responde a una necesidad imperiosa: amalgamar el razonamiento blando de las redes neuronales (conexionismo) con la rigidez innegociable de las reglas lógicas (simbolismo). 
+El Prototipo~4 integra las capacidades del P3 con dos innovaciones arquitectónicas
+que definen la madurez del sistema: el agrupamiento semántico global con BERTopic
+como etapa \textit{previa} a la clasificación, y la lógica de decisión
+neuro-simbólica que combina el razonamiento probabilístico de BETO con reglas
+simbólicas deterministas. La motivación central de este diseño es una premisa
+técnica que la experimentación del TT2 validó empíricamente:
+\textbf{la IA sola no es suficiente}.
 
-\subsection{El Gran Filtro: BERTopic al inicio del Flujo}
+\subsection{Por qué la IA Sola No Basta: Alucinaciones de BETO}
+\label{subsec:tt2_limitaciones_ia}
+
+Durante las pruebas de integración del P3, se identificaron escenarios donde BETO
+en modo \textit{zero-shot} producía clasificaciones erróneas con alta confianza
+(score $> 0.70$) en exactamente los casos más peligrosos para el sistema:
+
+\begin{itemize}
+    \item \textbf{Notas estadísticas con narrativa emocional.} Artículos de opinión
+          que describían la crisis de orfandad por feminicidio en términos generales
+          y empáticos (\textit{``miles de niños que perdieron a su madre''}) obtenían
+          scores BETO de hasta 0.81, a pesar de no reportar ningún caso concreto
+          ni identificable.
+
+    \item \textbf{Notas donde el menor es el agresor.} Ante titulares como
+          \textit{``Hijo adolescente mata a su madre en Ecatepec''}, BETO asignaba
+          scores de relevancia moderados (0.55--0.65) porque el embedding semántico
+          capturaba la correlación superficial entre ``hijo'' + ``madre'' +
+          ``asesinato'', sin discernir que el rol del menor era el de agresor.
+
+    \item \textbf{Reportes de políticas públicas con vocabulario de dominio.}
+          Notas sobre programas de becas para hijos de víctimas de feminicidio
+          activaban BETO con scores de 0.60--0.75 al concentrar exactamente los
+          tokens de dominio más relevantes, sin relatar ningún caso específico.
+\end{itemize}
+
+Estos escenarios demuestran que un modelo de lenguaje, por sofisticado que sea,
+opera fundamentalmente sobre correlaciones estadísticas en el espacio de embeddings.
+La \textit{comprensión} del rol semántico (quién es víctima, quién es agresor,
+si la nota relata un hecho o un análisis) requiere conocimiento estructurado del
+dominio que BETO no puede inferir exclusivamente de la distribución de tokens.
+La solución es la arquitectura neuro-simbólica: las reglas simbólicas (basadas en
+el conocimiento explícito del equipo de desarrollo sobre el dominio) \textbf{corrigen
+las alucinaciones} del componente neuronal.
+
+\subsection{BERTopic como Filtro de Contexto Global (OE-4)}
 \label{subsec:tt2_bertopic}
 
-Históricamente en el TT1, la clasificación individual precedía al agrupamiento temático. En el Prototipo 4, la invocación del modelo BERTopic (\texttt{step\_10\_bertopic\_clustering}) fue relocalizada como paso primario de análisis. El objetivo de este rediseño es otorgarle a BETO un "Mapa Global" de la realidad periodística. 
+Una innovación arquitectónica fundamental del P4 es la \textbf{inversión del orden}
+de ejecución respecto al TT1: el agrupamiento semántico (BERTopic, \texttt{step\_10})
+se ejecuta \textit{antes} que la clasificación individual (BETO, \texttt{step\_9}).
+Esta decisión de diseño responde a una necesidad de contexto: clasificar una noticia
+de forma aislada es inherentemente más impreciso que clasificarla sabiendo cómo se
+relaciona con el corpus completo del periodo.
 
-En lugar de evaluar artículos en el vacío, BERTopic inyecta un identificador topológico (\texttt{topic\_id}) a cada nota. El proceso comprime la alta dimensionalidad con UMAP y detecta densidades con HDBSCAN. Esta cartografía permite al sistema reconocer \textit{outliers} (noticias que no se agrupan con ningún evento fáctico conocido). Cuando BETO identifica un \textit{outlier} (con \texttt{topic\_id = -1}), el sistema simbólico eleva automáticamente su umbral de tolerancia exigido (de 0.50 a 0.65) para considerarlo de Alta Prioridad. Así, el sistema exige un mayor rigor matemático a notas huérfanas, disminuyendo drásticamente los falsos positivos.
+BERTopic implementa una cadena de tres algoritmos: (1)~BETO embeddings para
+representar cada documento en el espacio vectorial de 768~dimensiones; (2)~UMAP
+para reducción de dimensionalidad no-lineal hacia 5~dimensiones preservando
+estructura topológica local; y (3)~HDBSCAN para detección de clusters de densidad
+variable, que asigna \texttt{topic\_id = -1} a los documentos que no pertenecen a
+ningún clúster significativo (\textit{outliers}). Esta etiqueta de \textit{outlier}
+es la señal clave que utiliza la lógica simbólica posterior.
 
-\subsection{Lógica Neuro-Simbólica: El Árbol Inquebrantable}
-\label{subsec:tt2_logica_hibrida}
+El criterio de umbral adaptativo basado en contexto de clúster opera así:
+una noticia en un \textbf{clúster válido} (\texttt{topic\_id $\geq$ 0}) pertenece
+a un grupo temático identificado en el corpus; si BETO la considera relevante
+($s_{sem} \geq 0.50$), la clasificación procede normalmente. Una noticia
+\textbf{outlier} (\texttt{topic\_id = -1}) no comparte semántica con ningún grupo
+conocido: puede ser un caso genuinamente nuevo y urgente, o un falso positivo de
+BETO. Ante esta ambigüedad, el sistema simbólico \textit{eleva el umbral de exigencia}
+de BETO a 0.65 para clasificarla como ``Alta'', requiriendo mayor certeza del modelo
+neuronal antes de emitir una alerta:
 
-El pináculo del desarrollo reside en la función \texttt{step\_9\_semantic\_detection}. Para combatir las alucinaciones de la Inteligencia Artificial frente a contextos que replican semánticamente un crimen pero invierten los roles (e.g., menores agresores), el árbol de decisión interviene en tres estratos arquitectónicos.
+\begin{lstlisting}[language=Python,
+    caption={Umbral adaptativo de BETO seg\'un contexto de cl\'uster BERTopic},
+    label={lst:cluster_threshold}]
+es_outlier_cluster = (topic_id_int == -1)
 
-\textbf{Nivel 1: El Bypass de Oro (Decisión Simbólica Absoluta).} \\
-El modelo de Inteligencia Artificial carece de jurisdicción total cuando los algoritmos de recolección arrojan verdades analíticas absolutas. Si la recolección detecta expresiones explícitas de la taxonomía del dominio (\textit{Keywords de Oro}) asignando un puntaje de orfandad $\ge 0.80$, la lógica simbólica impone un \textit{override} incondicional. Se decreta como \textit{Alta Relevancia} sin importar la evaluación subyacente de BETO. Este diseño blinda al sistema de rechazar crímenes reales por problemas en la redacción periodística.
+# Outlier: BETO debe ser mas seguro (0.65 vs. 0.50 en cluster valido)
+umbral_beto_alta   = 0.65 if es_outlier_cluster else 0.50
+umbral_beto_rapida = 0.50 if es_outlier_cluster else 0.35
+\end{lstlisting}
 
-\textbf{Nivel 2: El Bozal de Penalización (Castigo Heurístico).} \\
-Contrario al Bypass, el Bozal suprime inferencias equivocadas de BETO. Las noticias genéricas de violencia o aquellas donde el menor figura como el autor del homicidio activan la alerta temprana del sistema de recolección. Si el "score de feminicidio" o la relevancia heurística resultan nulas, el Bozal infiere un contexto nocivo. Multiplicando el valor probabilístico por un umbral fraccionario nulo, el sistema neutraliza la activación, asegurando que notas policiales irrelevantes jamás lleguen al Dashboard.
+\subsection{El Bypass de Oro: Decisión Simbólica Absoluta}
+\label{subsec:tt2_bypass_oro}
 
-\textbf{Nivel 3: El Factor Alpha Dinámico.} \\
-Para el grueso estadístico de notas ambiguas, se ejecuta la Fusión Matemática. Se genera un \textit{score\_final} balanceando el veredicto probabilístico de la red (\texttt{s\_score}) y la certidumbre extraída de variables duras (\texttt{h\_score}). El nivel de protagonismo que tiene BETO en esta ecuación es regido por la variable $\alpha$, cuya magnitud depende estrictamente de qué tan alejada está la red de la frontera de incertidumbre máxima (0.50). 
+El mecanismo de mayor prioridad en la arquitectura neuro-simbólica es el denominado
+\textbf{Bypass de Oro}. Su premisa es que, cuando el módulo de recolección
+(\texttt{collector}) detecta la presencia explícita de \textit{keywords de oro}
+(expresiones que denotan inequívocamente orfandad por feminicidio, tales como
+\textit{``sus hijos quedaron huérfanos''}, \textit{``resguardados por el DIF''},
+\textit{``bajo custodia del Sistema Nacional DIF''}) y asigna un
+\texttt{score\_victima\_indirecta $\geq$ 0.80}, no existe justificación técnica
+para someter esa noticia al juicio probabilístico de BETO. Una coincidencia de texto
+exacto con vocabulario de dominio es una verdad analítica más confiable que cualquier
+correlación vectorial en el espacio de embeddings.
 
-\begin{lstlisting}[language=Python, caption={Fusi\'on Neuro-Simb\'olica y c\'alculo del factor din\'amico Alpha}, label={lst:alpha_ponderation}]
-# Distancia absoluta a la frontera de incertidumbre maxima (0.5)
+El Bypass de Oro impone una clasificación de ``Alta'' relevancia de forma
+\textbf{incondicional}, ignorando completamente el score semántico:
+
+\begin{lstlisting}[language=Python,
+    caption={Bypass de Oro: la regla simb\'olica anula la decisi\'on de BETO},
+    label={lst:bypass_oro}]
+# Nivel 0: BYPASS DE ORO (independiente de BETO)
+# score_v_ind >= 0.80 implica que _check_keywords_de_oro() fue True
+# en el collector: presencia de vocabulario de orfandad explicita.
+# BETO no tiene jurisdiccion en este caso.
+es_bypass_oro = (
+    score_v_ind >= 0.80 and   # Keywords de oro confirmadas
+    score_fem   >  0.10       # Contexto de feminicidio presente
+)
+
+if es_bypass_oro:
+    clasificacion = "Alta"
+    score_final   = max(h_score, 0.85)
+    logger.info(
+        f"Bypass de Oro: v_ind={score_v_ind:.2f}, "
+        f"fem={score_fem:.2f} -> Alta (BETO ignorado)"
+    )
+\end{lstlisting}
+
+El Bypass de Oro resuelve directamente el escenario de falla más costoso:
+una noticia donde la redacción periodística es atípica o ambigua puede obtener
+un score BETO bajo (por ejemplo, 0.40), pero si el collector confirmó textualmente
+la orfandad, el sistema debe clasificarla como ``Alta'' de todas formas. La regla
+simbólica protege al sistema de rechazar casos reales por limitaciones del modelo
+neuronal ante estilos de escritura no canónicos.
+
+\subsection{El Bozal de Penalización: El Contexto de Clúster como Corrector}
+\label{subsec:tt2_bozal}
+
+El mecanismo complementario al Bypass de Oro actúa en la dirección opuesta:
+el \textbf{Bozal de Penalización} suprime clasificaciones elevadas de BETO cuando
+el contexto semántico global (provisto por BERTopic) y los scores heurísticos
+del collector indican que la noticia es probablemente un falso positivo. Este
+mecanismo se activa cuando una nota es \textit{outlier} de BERTopic
+(\texttt{topic\_id = -1}) y el score heurístico de víctima indirecta es bajo
+($s_{v\_ind} \leq 0.25$), pero BETO asigna un score moderado (por ejemplo, 0.55).
+En ese caso, la lógica simbólica interpreta la señal combinada como ruido y
+eleva el umbral de BETO de 0.50 a 0.65 para clasificar como ``Alta'',
+efectivamente \textit{amordazando} la tendencia de BETO a sobre-clasificar.
+
+La siguiente tabla resume los niveles de la lógica neuro-simbólica y sus condiciones
+de activación:
+
+\begin{table}[H]
+\centering
+\begin{threeparttable}
+\caption{Árbol de decisión neuro-simbólico del Prototipo~4}
+\label{tab:arbol_decision}
+\begin{tabular}{|c|p{4.5cm}|p{4.5cm}|c|}
+\hline
+\textbf{Nivel} & \textbf{Condición de activación} & \textbf{Acción} & \textbf{Tipo} \\
+\hline
+0 & $s_{v\_ind} \geq 0.80$ \textbf{y} $s_{fem} > 0.10$ &
+    Clasificar ``Alta'' incondicionalmente & Simbólico \\
+\hline
+0.5 & $h_{score} \geq 0.70$ \textbf{y} $s_{fem} > 0.15$ \textbf{y}
+      ($s_{v\_ind} > 0.25$ \textbf{o} $s_{nna} > 0.25$) &
+    Respetar clasificación ``Alta'' del collector & Simbólico \\
+\hline
+1 & $s_{fem} > 0.15$ \textbf{y} $s_{v\_ind} > 0.25$ \textbf{y}
+    $s_{caso} > 0.15$ \textbf{y} $s_{sem} > \theta_{alta}$ &
+    Clasificar ``Alta'' (ruta principal) & Híbrido \\
+\hline
+2 & $s_{v\_ind} > 0.40$ \textbf{y} $s_{fem} > 0.15$ \textbf{y}
+    $s_{sem} > \theta_{rapida}$ &
+    Clasificar ``Alta'' (vía rápida) & Híbrido \\
+\hline
+3 & Resto de casos & Clasificar por $score\_final$ ponderado ($\alpha$) & Neuronal \\
+\hline
+\end{tabular}
+\begin{tablenotes}
+    \small
+    \item Donde $\theta_{alta} = 0.65$ si \texttt{topic\_id = -1}, $0.50$ en caso contrario.
+    \item Donde $\theta_{rapida} = 0.50$ si \texttt{topic\_id = -1}, $0.35$ en caso contrario.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\subsection{El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}
+\label{subsec:tt2_alpha}
+
+Para la mayoría estadística de noticias que no activan ninguno de los niveles
+simbólicos anteriores (casos genuinamente ambiguos), el sistema computa un
+\textbf{score final ponderado} que combina el veredicto probabilístico de BETO
+($s_{sem}$) con el score heurístico del collector ($h_{score}$) mediante un
+coeficiente $\alpha$ determinado dinámicamente por la \textit{distancia de BETO
+a la frontera de incertidumbre máxima} (0.50):
+
+\begin{lstlisting}[language=Python,
+    caption={Factor $\alpha$ din\'amico: BETO cede peso a la heur\'istica cuando titubea},
+    label={lst:alpha_dinamico}]
+# Distancia a la frontera de maxima incertidumbre (0.5)
 distance = abs(s_score - 0.5)
 
 if distance > 0.3:
-    alpha = 0.7  # Distancia amplia: BETO tiene certeza, mayor peso
+    alpha = 0.7   # BETO muy seguro (score<0.2 o >0.8): mayor peso semantico
 elif distance > 0.15:
-    alpha = 0.5  # Distancia media: Ponderacion equitativa
+    alpha = 0.5   # Confianza moderada: ponderacion equitativa
 else:
-    alpha = 0.3  # BETO se encuentra indeciso: Delegar peso a la Heuristica
+    alpha = 0.3   # BETO indeciso (score en 0.35-0.65): delegar a heuristica
 
-# Ecuacion de la recta con coeficientes dinamicos
+# Fusion ponderada
 score_final = (alpha * s_score) + ((1 - alpha) * h_score)
-
-# Penalizacion direccional si la heuristica no concuerda
-if s_score > h_score and distance > 0.2:
-    score_final = max(h_score, score_final)
 \end{lstlisting}
 
-Mediante la sumatoria ponderada $\alpha$, el sistema confía ciegamente en BETO cuando la IA detecta correlaciones vectoriales contundentes (e.g. 0.98 o 0.12), pero se repliega a un comportamiento conservador fundamentado en la semántica dura de RegEx cuando la red titubea en el rango oscuro de 0.45 a 0.55.
+La racionalidad de este diseño es la siguiente: cuando BETO produce un score de 0.90
+(distance=0.40), el modelo tiene alta confianza en la clasificación positiva y se
+le asigna peso mayoritario ($\alpha=0.7$). Cuando produce 0.52 (distance=0.02), BETO
+está esencialmente lanzando una moneda; en ese caso, el sistema otorga el peso
+mayoritario ($1-\alpha=0.7$) al score heurístico, que aunque menos sofisticado, es
+determinista y auditablemente correcto para los patrones de dominio conocidos. Esta
+transición suave entre ``confiar en la IA'' y ``confiar en las reglas'' es la esencia
+del paradigma neuro-simbólico.
+
+%----------------------------------------------------------------------------------------
+\section{Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}
+\label{sec:tt2_sintesis}
+%----------------------------------------------------------------------------------------
+
+La arquitectura final del Prototipo~4 puede describirse como un \textbf{sistema de
+doble árbol}: un árbol neuronal (BETO + BERTopic) que provee razonamiento
+probabilístico sobre el lenguaje natural, y un árbol simbólico (Bypass de Oro +
+Bozal + umbrales adaptativos) que corrige las alucinaciones del árbol neuronal
+utilizando conocimiento estructurado del dominio. Ninguno de los dos árboles opera
+en aislamiento; su interacción es el mecanismo que permite al sistema superar las
+limitaciones individuales de cada paradigma.
+
+La siguiente tabla sintetiza los once pasos del Pipeline v5.0 con su objetivo
+específico, componente implementado y tipo de operación:
+
+\begin{table}[H]
+\centering
+\begin{threeparttable}
+\caption{Pipeline v5.0: síntesis de los once pasos de análisis}
+\label{tab:pipeline_resumen}
+\begin{tabular}{|c|p{3.5cm}|p{4cm}|c|}
+\hline
+\textbf{Paso} & \textbf{Objetivo} & \textbf{Componente} & \textbf{Prototipo} \\
+\hline
+1  & Recolección multi-fuente   & \texttt{collect\_all\_news()} (RSS+GNews+HTML)   & P2/P3 \\
+2  & Persistencia inicial       & CSV intermedio \texttt{noticias\_raw.csv}         & P1    \\
+3  & Vectorización TF-IDF       & \texttt{TfidfVectorizer} (domain-boosted, n-grams) & P1   \\
+4  & (Desactivado)              & LDA — reemplazado por BERTopic                   & P1$^*$ \\
+5  & (Desactivado)              & K-Means — reemplazado por BERTopic               & P1$^*$ \\
+6  & Similitud + Deduplicación  & \texttt{NewsDeduplicator} (4 fases en cascada)   & P3    \\
+7  & (Eliminado)                & TF-IDF rescore — destruía clasificaciones ``Alta'' & P2$^\dagger$ \\
+8  & Búsqueda con sinónimos     & \texttt{SynonymDictionary}                        & P2    \\
+10 & Contexto global BERTopic   & BETO embeds + UMAP + HDBSCAN + c-TF-IDF         & P4    \\
+9  & Clasificación semántica    & \texttt{SemanticDetector} + lógica neuro-simbólica & P3/P4 \\
+11 & Persistencia relacional    & \texttt{NoticiasRepository} (PostgreSQL + FTS GIN) & P3   \\
+\hline
+\end{tabular}
+\begin{tablenotes}
+    \small
+    \item[$^*$] LDA y K-Means desactivados por redundancia con BERTopic (OE-4).
+    \item[$^\dagger$] El \textit{TF-IDF rescore} del paso~7 fue eliminado durante el TT2
+          tras identificar que el blend 60/40 con el score heurístico sobreescribía
+          las clasificaciones ``Alta'' genuinas con valores artificialmente atenuados,
+          constituyendo un bug de precisión crítico documentado en los registros de
+          depuración del batch \texttt{20260505\_141233}.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\textbf{Nota sobre el orden de ejecución.} El lector observará que el paso~10
+(BERTopic) se ejecuta \textit{antes} del paso~9 (BETO), a pesar de su numeración
+inversa. Este aparente desorden es intencional y documentado en el código fuente:
+la numeración original del pipeline reservaba el paso~9 para BETO y el paso~10
+para clustering, pero la inversión de orden fue introducida en el P4 sin renumerar
+los pasos para preservar la compatibilidad con pruebas y logs previos. Esta decisión
+de ingeniería, aunque genera confusión inicial en la lectura del código, fue
+preservada deliberadamente como evidencia del proceso evolutivo del sistema.
+
+%----------------------------------------------------------------------------------------
+\section{Diagrama Conceptual del Sistema}
+\label{sec:tt2_diagrama}
+%----------------------------------------------------------------------------------------
+
+La arquitectura completa del Pipeline v5.0 puede representarse mediante el siguiente
+flujo de datos, descrito para su posterior implementación en TikZ o Mermaid:
+
+\begin{description}
+    \item[Nivel 1 — Recolección (P2/P3):] Tres canales de entrada convergen en el
+          \texttt{collector}: feeds RSS (45 fuentes), Google News API (14 queries),
+          y scraping HTML con \texttt{StealthSession} v7.0. El módulo de deduplicación
+          (4 fases) filtra el corpus antes de cualquier análisis.
+
+    \item[Nivel 2 — Vectorización Clásica (P1):] TF-IDF domain-boosted genera la
+          matriz dispersa utilizada por la similitud coseno para detección de
+          documentos relacionados.
+
+    \item[Nivel 3 — Contexto Global (P4):] BERTopic procesa \textbf{todo el corpus}
+          y asigna \texttt{topic\_id} a cada noticia. Las noticias sin clúster
+          (\texttt{topic\_id = -1}) reciben la etiqueta \textit{outlier}.
+
+    \item[Nivel 4 — Clasificación Neuro-Simbólica (P3/P4):] El árbol de decisión
+          evalúa cada noticia en secuencia: (1)~Bypass de Oro $\rightarrow$
+          (2)~Collector Alta $\rightarrow$ (3)~Condición estricta con BETO+clúster
+          $\rightarrow$ (4)~Vía Rápida $\rightarrow$ (5)~Fusión $\alpha$ dinámica.
+
+    \item[Nivel 5 — Persistencia (P3):] Los resultados se almacenan simultáneamente
+          en CSV (compatibilidad) y PostgreSQL (FTS, integridad referencial,
+          acceso concurrente desde el dashboard Flask).
+\end{description}

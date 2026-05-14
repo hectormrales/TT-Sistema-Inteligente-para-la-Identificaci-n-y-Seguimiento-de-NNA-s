@@ -1,57 +1,96 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {chapter}{\numberline {7}Desarrollo del TT2: Prototipos 3 y 4}{41}{chapter.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {8}Desarrollo del TT2: Prototipos 3 y 4}{61}{chapter.8}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{cap:desarrolloTT2}{{7}{41}{Desarrollo del TT2: Prototipos 3 y 4}{chapter.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.1}Diseño de Patrones y Arquitectura de Software}{41}{section.7.1}\protected@file@percent }
-\newlabel{sec:tt2_patrones}{{7.1}{41}{Diseño de Patrones y Arquitectura de Software}{section.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.1}Patrón Repository para la Persistencia}{41}{subsection.7.1.1}\protected@file@percent }
-\newlabel{subsec:tt2_repository}{{7.1.1}{41}{Patrón Repository para la Persistencia}{subsection.7.1.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.2}Patrón Pipeline para el Flujo Analítico}{41}{subsection.7.1.2}\protected@file@percent }
-\newlabel{subsec:tt2_pipeline}{{7.1.2}{41}{Patrón Pipeline para el Flujo Analítico}{subsection.7.1.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}Prototipo 3: Migración a la Arquitectura Semántica}{42}{section.7.2}\protected@file@percent }
-\newlabel{sec:tt2_prototipo3}{{7.2}{42}{Prototipo 3: Migración a la Arquitectura Semántica}{section.7.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.1}El Motor de Detección BETO: Arquitectura de Inferencias}{42}{subsection.7.2.1}\protected@file@percent }
-\newlabel{subsec:tt2_beto}{{7.2.1}{42}{El Motor de Detección BETO: Arquitectura de Inferencias}{subsection.7.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.2}Clasificación Zero-Shot y Temperature Scaling}{42}{subsection.7.2.2}\protected@file@percent }
-\newlabel{lst:temp_scaling}{{7.1}{42}{Polarizaci\'on de probabilidades mediante Temperature Scaling}{lstlisting.7.1}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {7.1}Polarizaci\'on de probabilidades mediante Temperature Scaling}{42}{lstlisting.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7.3}Prototipo 4: Sistema Neuro-Simbólico y Agrupamiento Global}{42}{section.7.3}\protected@file@percent }
-\newlabel{sec:tt2_prototipo4}{{7.3}{42}{Prototipo 4: Sistema Neuro-Simbólico y Agrupamiento Global}{section.7.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3.1}El Gran Filtro: BERTopic al inicio del Flujo}{43}{subsection.7.3.1}\protected@file@percent }
-\newlabel{subsec:tt2_bertopic}{{7.3.1}{43}{El Gran Filtro: BERTopic al inicio del Flujo}{subsection.7.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3.2}Lógica Neuro-Simbólica: El Árbol Inquebrantable}{43}{subsection.7.3.2}\protected@file@percent }
-\newlabel{subsec:tt2_logica_hibrida}{{7.3.2}{43}{Lógica Neuro-Simbólica: El Árbol Inquebrantable}{subsection.7.3.2}{}}
-\newlabel{lst:alpha_ponderation}{{7.2}{43}{Fusi\'on Neuro-Simb\'olica y c\'alculo del factor din\'amico Alpha}{lstlisting.7.2}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {7.2}Fusi\'on Neuro-Simb\'olica y c\'alculo del factor din\'amico Alpha}{43}{lstlisting.7.2}\protected@file@percent }
+\newlabel{cap:desarrolloTT2}{{8}{61}{Desarrollo del TT2: Prototipos 3 y 4}{chapter.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.1}Contexto: Deuda Técnica Heredada del TT1}{61}{section.8.1}\protected@file@percent }
+\newlabel{sec:tt2_deuda_tecnica}{{8.1}{61}{Contexto: Deuda Técnica Heredada del TT1}{section.8.1}{}}
+\citation{fowler2002}
+\@writefile{toc}{\contentsline {section}{\numberline {8.2}Patrones Arquitectónicos del flujo analítico}{62}{section.8.2}\protected@file@percent }
+\newlabel{sec:tt2_patrones}{{8.2}{62}{Patrones Arquitectónicos del flujo analítico}{section.8.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2.1}Patrón \textit  {Repository} para la Capa de Persistencia}{62}{subsection.8.2.1}\protected@file@percent }
+\newlabel{subsec:tt2_repository}{{8.2.1}{62}{Patrón \textit {Repository} para la Capa de Persistencia}{subsection.8.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2.2}Patrón \textit  {Pipeline} para el Flujo Analítico}{62}{subsection.8.2.2}\protected@file@percent }
+\newlabel{subsec:tt2_pipeline}{{8.2.2}{62}{Patrón \textit {Pipeline} para el Flujo Analítico}{subsection.8.2.2}{}}
+\newlabel{lst:pipeline_flags}{{8.1}{62}{Feature flags del Pipeline v5.0 para activación modular}{lstlisting.8.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.1}Feature flags del Pipeline v5.0 para activación modular}{62}{lstlisting.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.3}Prototipo 3: Motor Semántico BETO y Migración de Persistencia}{63}{section.8.3}\protected@file@percent }
+\newlabel{sec:tt2_prototipo3}{{8.3}{63}{Prototipo 3: Motor Semántico BETO y Migración de Persistencia}{section.8.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3.1}Migración CSV $\rightarrow $ PostgreSQL (OE-3)}{63}{subsection.8.3.1}\protected@file@percent }
+\newlabel{subsec:tt2_postgres}{{8.3.1}{63}{Migración CSV \texorpdfstring {$\rightarrow $}{->} PostgreSQL (OE-3)}{subsection.8.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3.2}Arquitectura del Motor BETO}{63}{subsection.8.3.2}\protected@file@percent }
+\newlabel{subsec:tt2_beto}{{8.3.2}{63}{Arquitectura del Motor BETO}{subsection.8.3.2}{}}
+\citation{guo2017calibration}
+\newlabel{lst:beto_classifier}{{8.2}{64}{Arquitectura de la cabeza de clasificaci\'on del \texttt {BETOClassifier}}{lstlisting.8.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.2}Arquitectura de la cabeza de clasificaci\'on del \texttt  {BETOClassifier}}{64}{lstlisting.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3.3}Clasificación \textit  {Zero-Shot} y \textit  {Temperature Scaling}}{64}{subsection.8.3.3}\protected@file@percent }
+\newlabel{subsec:tt2_zeroshot}{{8.3.3}{64}{Clasificación \textit {Zero-Shot} y \textit {Temperature Scaling}}{subsection.8.3.3}{}}
+\newlabel{lst:temp_scaling}{{8.3}{64}{\textit {Temperature Scaling} para polarizaci\'on de probabilidades BETO}{lstlisting.8.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.3}\textit  {Temperature Scaling} para polarizaci\'on de probabilidades BETO}{64}{lstlisting.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3.4}Inferencia por Lotes (\textit  {Batch Inference})}{65}{subsection.8.3.4}\protected@file@percent }
+\newlabel{subsec:tt2_batch}{{8.3.4}{65}{Inferencia por Lotes (\textit {Batch Inference})}{subsection.8.3.4}{}}
+\newlabel{lst:batch_inference}{{8.4}{65}{Inferencia por lotes vectorizada en \texttt {predict\_batch}}{lstlisting.8.4}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.4}Inferencia por lotes vectorizada en \texttt  {predict\_batch}}{65}{lstlisting.8.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3.5}Evolución del Recolector: \texttt  {StealthSession} v7.0}{65}{subsection.8.3.5}\protected@file@percent }
+\newlabel{subsec:tt2_stealth}{{8.3.5}{65}{Evolución del Recolector: \texttt {StealthSession} v7.0}{subsection.8.3.5}{}}
+\newlabel{lst:lognormal_delay}{{8.5}{66}{Delay log-normal en \texttt {StealthSession} — imitando lectura humana}{lstlisting.8.5}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.5}Delay log-normal en \texttt  {StealthSession} — imitando lectura humana}{66}{lstlisting.8.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3.6}Deduplicación en Cascada de Cuatro Fases}{66}{subsection.8.3.6}\protected@file@percent }
+\newlabel{subsec:tt2_dedup}{{8.3.6}{66}{Deduplicación en Cascada de Cuatro Fases}{subsection.8.3.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.4}Prototipo 4: Arquitectura Neuro-Simbólica Completa}{66}{section.8.4}\protected@file@percent }
+\newlabel{sec:tt2_prototipo4}{{8.4}{66}{Prototipo 4: Arquitectura Neuro-Simbólica Completa}{section.8.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4.1}Por qué la IA Sola No Basta: Alucinaciones de BETO}{67}{subsection.8.4.1}\protected@file@percent }
+\newlabel{subsec:tt2_limitaciones_ia}{{8.4.1}{67}{Por qué la IA Sola No Basta: Alucinaciones de BETO}{subsection.8.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4.2}BERTopic como Filtro de Contexto Global (OE-4)}{67}{subsection.8.4.2}\protected@file@percent }
+\newlabel{subsec:tt2_bertopic}{{8.4.2}{67}{BERTopic como Filtro de Contexto Global (OE-4)}{subsection.8.4.2}{}}
+\newlabel{lst:cluster_threshold}{{8.6}{67}{Umbral adaptativo de BETO seg\'un contexto de cl\'uster BERTopic}{lstlisting.8.6}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.6}Umbral adaptativo de BETO seg\'un contexto de cl\'uster BERTopic}{67}{lstlisting.8.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4.3}El Bypass de Oro: Decisión Simbólica Absoluta}{68}{subsection.8.4.3}\protected@file@percent }
+\newlabel{subsec:tt2_bypass_oro}{{8.4.3}{68}{El Bypass de Oro: Decisión Simbólica Absoluta}{subsection.8.4.3}{}}
+\newlabel{lst:bypass_oro}{{8.7}{68}{Bypass de Oro: la regla simb\'olica anula la decisi\'on de BETO}{lstlisting.8.7}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.7}Bypass de Oro: la regla simb\'olica anula la decisi\'on de BETO}{68}{lstlisting.8.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4.4}El Bozal de Penalización: El Contexto de Clúster como Corrector}{68}{subsection.8.4.4}\protected@file@percent }
+\newlabel{subsec:tt2_bozal}{{8.4.4}{68}{El Bozal de Penalización: El Contexto de Clúster como Corrector}{subsection.8.4.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8.1}{\ignorespaces Árbol de decisión neuro-simbólico del Prototipo~4}}{69}{table.8.1}\protected@file@percent }
+\newlabel{tab:arbol_decision}{{8.1}{69}{Árbol de decisión neuro-simbólico del Prototipo~4}{table.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4.5}El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}{69}{subsection.8.4.5}\protected@file@percent }
+\newlabel{subsec:tt2_alpha}{{8.4.5}{69}{El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}{subsection.8.4.5}{}}
+\newlabel{lst:alpha_dinamico}{{8.8}{69}{Factor $\alpha $ din\'amico: BETO cede peso a la heur\'istica cuando titubea}{lstlisting.8.8}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8.8}Factor $\alpha $ din\'amico: BETO cede peso a la heur\'istica cuando titubea}{69}{lstlisting.8.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.5}Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}{69}{section.8.5}\protected@file@percent }
+\newlabel{sec:tt2_sintesis}{{8.5}{69}{Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}{section.8.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8.2}{\ignorespaces Pipeline v5.0: síntesis de los once pasos de análisis}}{70}{table.8.2}\protected@file@percent }
+\newlabel{tab:pipeline_resumen}{{8.2}{70}{Pipeline v5.0: síntesis de los once pasos de análisis}{table.8.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.6}Diagrama Conceptual del Sistema}{71}{section.8.6}\protected@file@percent }
+\newlabel{sec:tt2_diagrama}{{8.6}{71}{Diagrama Conceptual del Sistema}{section.8.6}{}}
 \@setckpt{7DesarrolloTT2}{
-\setcounter{page}{45}
+\setcounter{page}{72}
 \setcounter{equation}{0}
-\setcounter{enumi}{3}
+\setcounter{enumi}{4}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
 \setcounter{enumiv}{0}
 \setcounter{footnote}{0}
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
-\setcounter{chapter}{7}
-\setcounter{section}{3}
-\setcounter{subsection}{2}
+\setcounter{chapter}{8}
+\setcounter{section}{6}
+\setcounter{subsection}{0}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
 \setcounter{figure}{0}
-\setcounter{table}{0}
+\setcounter{table}{2}
 \setcounter{LT@tables}{0}
 \setcounter{LT@chunks}{0}
-\setcounter{section@level}{2}
-\setcounter{Item}{25}
+\setcounter{section@level}{1}
+\setcounter{Item}{71}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{87}
+\setcounter{bookmark@seq@number}{141}
 \setcounter{@cf@currentpos}{0}
-\setcounter{lstnumber}{17}
+\setcounter{lstnumber}{13}
 \setcounter{parentequation}{0}
 \setcounter{float@type}{8}
-\setcounter{lstlisting}{2}
+\setcounter{lstlisting}{8}
 }

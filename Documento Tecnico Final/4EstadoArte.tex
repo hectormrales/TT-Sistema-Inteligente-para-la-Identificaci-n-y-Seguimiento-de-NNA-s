@@ -1,15 +1,13 @@
-% !TeX root = proyecto.tex
+% CAPÍTULO 4 ESTADO DEL ARTE
 
-%========================================================================================
-% CAPÍTULO 4: ESTADO DEL ARTE
-%========================================================================================
 
 \chapter{Estado del Arte}
 \label{cap:estadoarte}
 
-El presente capítulo examina críticamente las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección, sistematización y análisis de datos en el contexto de la violencia de género y sus externalidades. El análisis riguroso de estas aproximaciones permite identificar la brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura neuro-simbólica propuesta en este Trabajo Terminal.
+En este capítulo se exponen las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección, sistematización y análisis de datos en el contexto de la violencia de género y sus externalidades.
+El análisis de estas aproximaciones permite identificar la brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura propuesta en este Trabajo Terminal.
 
-\section{Sistemas de Monitoreo de Medios Tradicionales}
+\section{Sistemas de monitoreo de medios tradicionales}
 \label{sec:ea_monitoreo_tradicional}
 
 En el ámbito de la inteligencia de fuentes abiertas (OSINT) y el monitoreo mediático comercial, existen plataformas consolidadas con infraestructuras formidables para la ingestión de datos en tiempo real (e.g., Google Alerts, Meltwater, Mention). Estas herramientas operan primordialmente sobre arquitecturas de agregación RSS y rastreadores web de propósito general \cite{weisser2020media}.
@@ -52,3 +50,816 @@ La aportación fundamental de este Trabajo Terminal yace precisamente en la clau
 \end{enumerate}
 
 En suma, no existe en la literatura actual, ni en el ecosistema civil mexicano, una herramienta de software que ejecute este ciclo completo (recolección, limpieza, deduplicación y clasificación neuro-simbólica) de forma unificada y específicamente calibrada para el problema social de los NNA víctimas indirectas de feminicidio. Este proyecto trasciende la estadística descriptiva para instaurar una plataforma de inteligencia prospectiva y de respuesta rápida.
+
+%----------------------------------------------------------------------------------------
+\section{Técnicas de Extracción de Datos en Entornos Web Adversariales}
+\label{sec:ea_tecnicas_extraccion}
+%----------------------------------------------------------------------------------------
+
+La recolección de datos periodísticos en fuentes abiertas constituye un problema
+técnico no trivial en el ecosistema web contemporáneo. Los medios de comunicación
+digitales han desplegado progresivamente capas de defensa perimetral cuyo objetivo
+primario es la protección contra el scraping masivo. La selección de la técnica
+de extracción adecuada determina directamente la cobertura alcanzable del sistema,
+su tasa de éxito sostenida y su consumo de recursos computacionales. En la
+literatura de recuperación de información y OSINT se identifican tres vertientes
+metodológicas principales, evaluadas a continuación en función de su idoneidad
+para el dominio de este proyecto.
+
+\subsection{Extracción Estática (HTML Parsing con BeautifulSoup)}
+\label{subsec:ea_beautifulsoup}
+
+La aproximación más elemental al \textit{web scraping} consiste en emitir una
+petición HTTP directa al servidor objetivo y analizar sintácticamente el documento
+HTML retornado mediante librerías de \textit{parsing} como \texttt{BeautifulSoup}
+(Python) o \texttt{Cheerio} (Node.js). Esta técnica, fundamentada en el
+isomorfismo entre la estructura del DOM y un árbol XML, permite la extracción
+puntual de elementos textuales mediante selectores CSS o XPath.
+
+Su principal limitación estructural es doble. En primer lugar, los portales
+informativos modernos construidos sobre \textit{frameworks} reactivos (React,
+Vue, Angular) generan el DOM de forma dinámica en el cliente mediante JavaScript;
+el HTML servido por el servidor carece del contenido visible, que solo existe
+tras la ejecución de decenas de \textit{bundles} de JavaScript \cite{wu2022dynamic}.
+En segundo lugar, los \textit{Web Application Firewalls} (WAF) de grado empresarial
+---en particular Cloudflare, Akamai y PerimeterX--- detectan las sesiones de
+scraping estático mediante \textbf{TLS/JA3 fingerprinting}: comparan el hash
+criptográfico del saludo TLS (que identifica unívocamente la librería SSL del
+cliente, por ejemplo \texttt{Python/requests}) contra el User-Agent declarado.
+Una asimetría entre ambos activa el bloqueo con código \texttt{HTTP 403 Forbidden},
+independientemente de los headers declarados por el scraper.
+
+Esta fue la causa primaria del fracaso del Prototipo~0 (P0) durante el TT1, donde
+el 100\% de los intentos de extracción directa sobre portales nacionales de alto
+tráfico (La Jornada, El Universal, Milenio) resultaron en bloqueos sistemáticos,
+sin recuperar ningún artículo útil.
+
+\subsection{Automatización de Navegador (Selenium / Playwright)}
+\label{subsec:ea_selenium}
+
+Para superar la barrera de los sitios con renderizado dinámico, la alternativa más
+empleada en la literatura es la automatización de navegadores reales mediante
+herramientas como \texttt{Selenium WebDriver} o \texttt{Playwright}
+\cite{leotta2018web}. Estos \textit{frameworks} controlan una instancia headless
+de Chrome o Firefox, ejecutando JavaScript en el entorno real del navegador y
+resolviendo los desafíos JavaScript de Cloudflare de forma transparente.
+
+Sin embargo, esta aproximación introduce costos operativos prohibitivos para
+el dominio de este proyecto:
+
+\begin{itemize}
+    \item \textbf{Consumo de recursos:} Cada instancia del navegador requiere
+          aproximadamente 150--300~MB de RAM y entre 5--15 segundos para cargar
+          una página completa. Con un corpus objetivo de 45~fuentes y ciclos de
+          recolección cada 6~horas, el costo computacional acumulado supera los
+          recursos disponibles en infraestructura de desarrollo universitaria.
+
+    \item \textbf{Fragilidad estructural:} Los selectores CSS y XPath codificados
+          en los scripts de extracción son inherentemente frágiles ante
+          actualizaciones del diseño del portal. En entornos de despliegue continuo
+          (CI/CD), los identificadores de elementos HTML pueden cambiar en cualquier
+          ciclo de publicación, requiriendo mantenimiento constante.
+
+    \item \textbf{Detección avanzada por comportamiento:} Los sistemas anti-bot de
+          última generación (DataDome, Kasada) analizan patrones de interacción
+          (movimientos de ratón, secuencias de clicks, tiempos entre eventos) que
+          los navegadores headless sin instrumentación adicional no reproducen
+          fielmente, resultando igualmente en bloqueos.
+\end{itemize}
+
+Por estas razones, Selenium y Playwright se evaluaron pero descartaron como
+técnica primaria de recolección, quedando reservados como último recurso para
+fuentes sin alternativa RSS disponible.
+
+\subsection{Agregación Estructurada (RSS/Atom) y Stealth Sessions}
+\label{subsec:ea_rss_stealth}
+
+El protocolo \textbf{RSS} (\textit{Really Simple Syndication}) y su sucesor
+\textbf{Atom} representan la alternativa técnicamente superior para la
+monitorización continua de medios periodísticos. Ambos estándares definen
+un formato XML normalizado que los medios publican voluntariamente para sindicar
+su contenido, eliminando la necesidad de parsear HTML no estructurado
+\cite{hammersley2005developing}. Las ventajas operativas son determinantes:
+
+\begin{enumerate}
+    \item \textbf{Eficiencia de banda ancha:} Un feed RSS típico contiene los
+          titulares, resúmenes y metadatos (fecha, autor, categoría) de los
+          últimos 20--50 artículos en un documento XML de \textless~50~KB,
+          frente a los 500~KB--2~MB de una página HTML completa con recursos
+          estáticos. La reducción en consumo de ancho de banda es de
+          aproximadamente \textbf{40:1}.
+
+    \item \textbf{Estabilidad del formato:} El esquema XML de RSS~2.0 es un
+          estándar inmutable; los feeds no cambian su estructura ante
+          actualizaciones de diseño del portal, eliminando la fragilidad de
+          los selectores CSS.
+
+    \item \textbf{Ausencia de barreras WAF:} Los endpoints RSS son recursos
+          públicos destinados explícitamente a la ingestión automatizada; los
+          WAF no aplican \textit{fingerprinting} TLS sobre ellos. El sistema
+          los consume con su identificador de bot legítimo
+          (\texttt{NNA-Analyzer-Bot/4.0}), sin técnicas de evasión.
+\end{enumerate}
+
+Para las fuentes que no exponen feeds RSS (aproximadamente el 35\% del corpus
+objetivo), el TT2 implementa \texttt{StealthSession} v7.0, una capa de sesión
+HTTP que resuelve los tres problemas identificados en el scraping estático:
+(a)~emulación de fingerprint TLS mediante \texttt{cloudscraper},
+(b)~delays con distribución log-normal ($\mu=2.5$, $\sigma=0.7$) que imitan
+patrones de lectura humana, y (c)~un \textit{Circuit Breaker} por dominio que
+evita el bloqueo permanente de IP ante fallos consecutivos. Esta arquitectura
+híbrida RSS+StealthSession logra cubrir la totalidad del corpus objetivo con
+una tasa de éxito de recolección superior al 85\% en condiciones de producción.
+
+\subsection{Tabla Comparativa de Técnicas de Extracción}
+\label{subsec:ea_tabla_scraping}
+
+La Tabla~\ref{tab:comparativa_scraping} sintetiza la evaluación cuantitativa y
+cualitativa de las tres vertientes analizadas en función de los criterios
+operativos críticos para el sistema desarrollado.
+
+\begin{table}[H]
+\centering
+\caption{Comparativa de técnicas de extracción de datos para monitoreo de medios}
+\label{tab:comparativa_scraping}
+\begin{tabular}{|p{2.8cm}|p{2.8cm}|p{2.8cm}|p{3.2cm}|}
+\hline
+\textbf{Criterio} &
+\textbf{HTML Estático} \newline (BeautifulSoup) &
+\textbf{Navegador} \newline (Selenium) &
+\textbf{RSS + StealthSession} \newline (Implementado) \\
+\hline
+\textbf{Velocidad de extracción} &
+Alta (0.5--2\,s/req) &
+Baja (5--15\,s/req) &
+Muy alta (0.3--1\,s/req RSS; 8--20\,s/req stealth) \\
+\hline
+\textbf{Resiliencia ante WAF} &
+Muy baja (bloqueado por JA3 fingerprint) &
+Media (bloqueado por análisis de comportamiento) &
+Alta (RSS exento; stealth emula fingerprint TLS real) \\
+\hline
+\textbf{Estructura de datos} &
+No estructurada (HTML variable) &
+No estructurada (DOM dinámico) &
+Estructurada (XML/RSS normalizado) \\
+\hline
+\textbf{Consumo de RAM} &
+Bajo ($\sim$5\,MB/req) &
+Muy alto (150--300\,MB/instancia) &
+Bajo ($\sim$3\,MB/req RSS) \\
+\hline
+\textbf{Mantenimiento} &
+Alto (selectores CSS frágiles) &
+Muy alto (selectores + browser updates) &
+Bajo (esquema RSS inmutable) \\
+\hline
+\textbf{Cobertura de fuentes} &
+Alta (cualquier sitio) &
+Alta (cualquier sitio) &
+Media (solo fuentes con RSS o stealth-compatible) \\
+\hline
+\textbf{Resultado en TT1/TT2} &
+\textit{Descartado} (P0: 0\% éxito) &
+\textit{Descartado} (recursos prohibitivos) &
+\textbf{Seleccionado} (P2--P4: 85\%+ éxito) \\
+\hline
+\end{tabular}
+\end{table}
+
+%----------------------------------------------------------------------------------------
+\section{Evolución del Almacenamiento: de Archivos Planos a PostgreSQL}
+\label{sec:ea_almacenamiento}
+%----------------------------------------------------------------------------------------
+
+La decisión de migrar el sistema de persistencia constituye uno de los hitos
+arquitectónicos de mayor impacto en el TT2. El análisis del estado del arte en
+almacenamiento de datos para sistemas de monitoreo de medios revela una dicotomía
+clara entre dos paradigmas: los archivos planos (CSV/JSON) y los gestores de bases
+de datos relacionales (RDBMS).
+
+\subsection{Archivos Planos (CSV): Ventajas, Limitaciones y el Techo del TT1}
+\label{subsec:ea_csv}
+
+Los archivos en formato \textit{Comma-Separated Values} (CSV) constituyeron el
+mecanismo de persistencia del TT1 por razones pragmáticas: instalación cero,
+compatibilidad universal con Pandas y ausencia de dependencias de infraestructura.
+En el contexto de un prototipo inicial con corpus de $\sim$281~registros, estas
+ventajas superaban sus limitaciones.
+
+No obstante, el análisis de capacidad hacia el final del TT1 evidenció tres
+limitaciones estructurales que establecen el techo operativo del paradigma CSV:
+
+\begin{itemize}
+    \item \textbf{Complejidad de consulta $O(n)$:} Cualquier operación de filtrado
+          (ej.\ ``todas las noticias de Alta relevancia en Veracruz desde enero'')
+          requiere cargar el archivo completo en memoria RAM y aplicar filtros en
+          Python, con complejidad lineal sobre el corpus. Proyectado a escala
+          nacional con miles de noticias mensuales, esta operación agota los
+          recursos de un servidor de desarrollo en segundos.
+
+    \item \textbf{Ausencia de integridad referencial:} El esquema plano impide
+          establecer relaciones entre entidades (noticias, fuentes, clusters,
+          detecciones) con garantías de consistencia. Una noticia eliminada puede
+          dejar registros de detección huérfanos sin mecanismo alguno de detección.
+
+    \item \textbf{Concurrencia insegura:} La escritura simultánea desde el pipeline
+          analítico y la lectura desde el dashboard Flask sobre el mismo archivo CSV
+          generan condiciones de carrera que pueden corromper los datos, requiriendo
+          implementación manual de locks.
+\end{itemize}
+
+\subsection{PostgreSQL 16: Justificación de la Selección}
+\label{subsec:ea_postgresql}
+
+PostgreSQL~16 fue seleccionado como motor de base de datos del TT2 frente a
+alternativas como MySQL~8, SQLite y bases de datos NoSQL (MongoDB, Elasticsearch)
+por un conjunto de características técnicas específicamente necesarias para el
+dominio del sistema, implementadas en \texttt{src/database/models\_noticias.py}.
+
+\textbf{Modelo ACID y concurrencia segura.}
+PostgreSQL implementa el estándar \textit{Atomicity, Consistency, Isolation,
+Durability} (ACID) con el protocolo de control de concurrencia multiversión (MVCC),
+que permite que múltiples lectores y un escritor operen simultáneamente sobre las
+mismas tablas sin bloqueos ni corrupción de datos. Esta propiedad es imprescindible
+en el sistema dado que el pipeline analítico y el dashboard Flask ejecutan
+transacciones concurrentes sobre la tabla \texttt{noticias}.
+
+\textbf{Integridad referencial con \texttt{FOREIGN KEY}.}
+El esquema relacional implementado en \texttt{models\_noticias.py} define cuatro
+tablas con relaciones explícitas:
+
+\begin{lstlisting}[language=Python,
+    caption={Relaciones del esquema relacional en \texttt{models\_noticias.py}},
+    label={lst:schema_fk}]
+class Noticia(db.Model):
+    # Clave foranea hacia clusters_semanticos
+    cluster_id = db.Column(
+        db.Integer, db.ForeignKey("clusters_semanticos.id"), nullable=True
+    )
+
+class Deteccion(db.Model):
+    # Relacion 1:1 con CASCADE DELETE
+    noticia_id = db.Column(
+        db.Integer, db.ForeignKey("noticias.id", ondelete="CASCADE"),
+        nullable=False, unique=True,
+    )
+
+class Entidad(db.Model):
+    # Relacion N:1 con CASCADE DELETE
+    noticia_id = db.Column(
+        db.Integer, db.ForeignKey("noticias.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+\end{lstlisting}
+
+La restricción \texttt{ondelete="CASCADE"} garantiza que la eliminación de una
+noticia propague automáticamente la eliminación de sus detecciones y entidades
+asociadas, manteniendo la consistencia referencial sin lógica adicional en la
+aplicación.
+
+\textbf{Full-Text Search nativo con índices GIN.}
+La característica más determinante para la selección de PostgreSQL frente a
+MySQL o SQLite es su soporte nativo de búsqueda de texto completo (FTS) en
+español. PostgreSQL implementa FTS mediante el tipo de dato \texttt{tsvector},
+que almacena un vector léxico preprocesado (con \textit{stemming}, eliminación de
+\textit{stop words} y normalización de acentos) del texto de cada documento.
+Los índices de tipo \textbf{GIN} (\textit{Generalized Inverted Index}) sobre columnas
+\texttt{tsvector} permiten resolver consultas FTS complejas en $O(\log n)$ mediante
+una búsqueda de intersección de listas de postings invertidas, en lugar del escaneo
+lineal $O(n)$ que impone cualquier búsqueda \texttt{LIKE '\%...\%'} en MySQL o SQLite.
+
+El modelo implementado documenta explícitamente los índices requeridos:
+
+\begin{lstlisting}[language=Python,
+    caption={Índices definidos en \texttt{models\_noticias.py} para rendimiento \textless~100\,ms},
+    label={lst:indices_postgres}]
+# Documentados en el docstring de models_noticias.py:
+# idx_noticias_fts   : GIN sobre tsvector  (FTS en O(log n))
+# idx_noticias_fecha : B-tree sobre fecha  (filtros temporales)
+# idx_noticias_score : B-tree sobre score_compuesto DESC (ranking)
+# idx_noticias_cluster: B-tree sobre cluster_id (joins semanticos)
+# idx_detecciones_nna: B-tree filtrado sobre menores_identificados
+# idx_entidades_tipo : B-tree sobre tipo de entidad (NER queries)
+\end{lstlisting}
+
+La configuración \texttt{'spanish'} del tsvector de PostgreSQL aplica el diccionario
+de \textit{stemming} Snowball para español, reduciendo \textit{``feminicidios''},
+\textit{``feminicida''} y \textit{``feminicidio''} a la misma raíz léxica,
+lo que hace que una búsqueda por \texttt{``feminicidio''} recupere documentos que
+contienen cualquiera de sus variantes morfológicas.
+
+\textbf{Contraste con alternativas NoSQL.}
+Sistemas como MongoDB o Elasticsearch podrían ofrecer capacidades de búsqueda
+de texto completo, pero a costa de las garantías ACID y la integridad referencial.
+En un sistema de monitoreo de derechos humanos donde la consistencia de los datos
+es un requisito ético y operativo no negociable, la ausencia de transacciones
+ACID en bases de datos NoSQL representa un riesgo inaceptable. Elasticsearch,
+aunque ofrece FTS de calidad comparable, requiere un stack de infraestructura
+adicional (JVM, configuración de cluster) incompatible con las restricciones
+de recursos del entorno de despliegue universitario.
+
+%----------------------------------------------------------------------------------------
+\section{Evolución de los Modelos de Representación Lingüística para NLP}
+\label{sec:ea_modelos_nlp}
+%----------------------------------------------------------------------------------------
+
+La selección del motor de clasificación semántica constituye la decisión de mayor
+impacto técnico en la arquitectura del TT2. La evolución histórica del campo del
+Procesamiento de Lenguaje Natural (PLN) describe una trayectoria en la que cada
+generación de modelos supera las limitaciones fundamentales de la anterior, no solo
+en precisión medida sobre benchmarks estándar, sino en la profundidad del fenómeno
+lingüístico que es capaz de capturar. Esta sección examina las tres generaciones
+de representaciones lingüísticas evaluadas durante el diseño del sistema.
+
+\subsection{Representaciones Vectoriales Estáticas: Word2Vec y GloVe}
+\label{subsec:ea_word2vec}
+
+Los modelos de incrustación de palabras (\textit{word embeddings}) de primera
+generación ---Word2Vec \cite{mikolov2013word2vec} y GloVe \cite{pennington2014glove}---
+representaron un salto cualitativo respecto al paradigma de vectores dispersos
+de TF-IDF, al proyectar el vocabulario en un espacio vectorial denso de dimensión
+reducida (100--300~dimensiones) donde la proximidad geométrica captura similitud
+semántica.
+
+Sin embargo, ambos modelos comparten una limitación estructural determinante:
+la \textbf{asignación de un único vector por palabra}, independientemente del
+contexto. El token ``menor'' recibe la misma representación vectorial en
+\textit{``un menor infractor detenido''} que en
+\textit{``sus menores hijos quedaron huérfanos''}. Esta polisemia no resuelta
+es exactamente el mecanismo de falla que generó el 10\% de falsos positivos
+en el motor heurístico del TT1: la co-ocurrencia de tokens de dominio sin
+discriminación de rol semántico era el método de clasificación.
+
+\subsection{Modelos Recurrentes: LSTM y GRU}
+\label{subsec:ea_lstm}
+
+Las redes de memoria a largo y corto plazo (LSTM) \cite{hochreiter1997lstm}
+introdujeron la modelización del contexto \textit{secuencial}: la representación
+de un token se calcula en función de todos los tokens precedentes. No obstante,
+presentan tres limitaciones técnicas inadecuadas para el dominio de este sistema:
+
+\begin{enumerate}
+    \item \textbf{Contexto unidireccional.} El modelo no puede leer ``hacia adelante''
+          para resolver ambigüedades de rol semántico. En \textit{``la mujer asesinada
+          dejó tres hijos menores''}, ``menores'' solo recibe contexto izquierdo,
+          sin considerar que ``resguardo del DIF'' (derecha) confirma el rol
+          de víctima indirecta.
+
+    \item \textbf{Degradación del gradiente a largo alcance.} Las dependencias
+          semánticas que abarcan más de 40--50~tokens presentan degradación en la
+          retropropagación, limitando la correlación sujeto-predicado en oraciones
+          compuestas.
+
+    \item \textbf{Paralelización imposible.} La naturaleza secuencial impide el
+          procesamiento paralelo en GPU: el token $t$ no puede ser procesado
+          hasta que el estado oculto del token $t-1$ esté disponible.
+\end{enumerate}
+
+\subsection{Arquitectura Transformer y Atención Bidireccional: BERT}
+\label{subsec:ea_transformer}
+
+La arquitectura \textit{Transformer} \cite{vaswani2017attention} resuelve
+simultáneamente las tres limitaciones anteriores mediante el mecanismo de
+\textbf{autoatención multi-cabeza}: para cada token de la secuencia se calcula
+un vector de atención ponderada sobre \textit{todos} los demás tokens de forma
+simultánea. BERT \cite{devlin2019bert} extiende este paradigma mediante el
+preentrenamiento bidireccional con Modelado de Lenguaje Enmascarado (MLM),
+forzando representaciones que consideran simultáneamente el contexto izquierdo
+y derecho de cada token.
+
+Para el dominio de este proyecto, la bidireccionalidad es la propiedad
+técnicamente decisiva: la representación de ``menor'' en
+\textit{``sus hijos menores quedaron en resguardo del DIF''} se calcula
+considerando tanto ``hijos'' (izquierda) como ``resguardo del DIF'' (derecha),
+produciendo un embedding que captura inequívocamente el rol de víctima indirecta.
+Esta es la capacidad que el motor RegEx del TT1 era estructuralmente incapaz
+de aproximar.
+
+\subsection{Justificación de BETO frente a Modelos Multilingües (mBERT)}
+\label{subsec:ea_beto_vs_mbert}
+
+En el ecosistema de modelos preentrenados en español, la alternativa más inmediata
+a BETO es \textbf{mBERT} (\textit{multilingual BERT}), el modelo de Google entrenado
+sobre Wikipedia en 104~idiomas. Sin embargo, la cobertura multi-idioma introduce
+un compromiso técnico significativo: al distribuir la capacidad representacional de
+sus 110~millones de parámetros entre 104 lenguas, la calidad de representación del
+español es inherentemente inferior a la de un modelo monolingüe del mismo tamaño.
+Estudios de evaluación comparativa reportan que BETO supera a mBERT en un 3--8\%
+de F1 en tareas de clasificación de texto en español \cite{canete2020beto}.
+
+\textbf{BETO} (\textit{dccuchile/bert-base-spanish-wwm-cased}) \cite{canete2020beto},
+desarrollado por la Universidad de Chile, se entrenó exclusivamente en español
+a partir de: Wikipedia en español ($\sim$3~GB, 42~millones de oraciones), corpus
+OPUS (OpenSubtitles, ParaCrawl, MultiUN) y fuentes de prensa latinoamericana.
+La inclusión de este último componente es particularmente relevante: sesga
+positivamente las representaciones hacia el vocabulario y estilo redaccional
+de los medios de comunicación mexicanos, que es exactamente el tipo de texto
+que el sistema procesa. El entrenamiento con \textit{Whole Word Masking} (WWM)
+garantiza además que los términos especializados de múltiples sub-tokens
+(como \texttt{femi\#\#ni\#\#cid\#\#io}) se aprendan como unidades semánticas
+coherentes.
+
+La Tabla~\ref{tab:comparativa_modelos_nlp} presenta la evaluación comparativa
+de los modelos considerados.
+
+\begin{table}[H]
+\centering
+\caption{Comparativa de modelos de representación lingüística para clasificación semántica}
+\label{tab:comparativa_modelos_nlp}
+\begin{tabular}{|p{2.2cm}|p{3.0cm}|p{2.4cm}|p{2.4cm}|p{1.8cm}|}
+\hline
+\textbf{Modelo} &
+\textbf{Comprensión Contextual} &
+\textbf{Idioma Nativo} &
+\textbf{Hardware Requerido} &
+\textbf{Resultado} \\
+\hline
+TF-IDF (TT1) &
+Ninguna (co-ocurrencia léxica) &
+N/A (estadístico) &
+CPU, \textless1\,GB RAM &
+\textit{Descartado} (10\% FP) \\
+\hline
+Word2Vec / GloVe &
+Estática (sin contexto) &
+Español limitado &
+CPU, \textless2\,GB RAM &
+\textit{Descartado} (polisemia) \\
+\hline
+LSTM / GRU &
+Secuencial unidireccional &
+Requiere reentrenamiento &
+GPU recomendada &
+\textit{Descartado} (gradiente, velocidad) \\
+\hline
+mBERT &
+Bidireccional (104 idiomas) &
+Multilingüe (sesgo reducido en ES) &
+8\,GB RAM (CPU viable) &
+\textit{Evaluado} (superado por BETO en ES) \\
+\hline
+\textbf{BETO} &
+\textbf{Bidireccional plena} &
+\textbf{Español monolingüe nativo} &
+\textbf{8\,GB RAM (CPU viable)} &
+\textbf{Seleccionado} \\
+\hline
+GPT-4 / Claude &
+LLM (máxima capacidad) &
+Multilingüe alta calidad &
+API externa / sin GPU local &
+\textit{Descartado} (soberanía) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Clasificación \textit{Zero-Shot} frente al \textit{Fine-Tuning} Supervisado}
+\label{subsec:ea_zeroshot_vs_finetune}
+
+La estrategia de clasificación adoptada ---\textit{zero-shot} mediante similitud
+coseno entre embeddings BETO del texto y descripciones de categorías en lenguaje
+natural--- requiere justificación frente al paradigma estándar de fine-tuning
+supervisado, que predomina en la literatura de clasificación de texto con BERT.
+
+El fine-tuning supervisado requiere un corpus etiquetado de volumen suficiente
+($\geq$1{,}000~ejemplos por clase) para evitar sobre-ajuste en modelos de 110~M
+parámetros. Este prerequisito es exactamente la restricción que enfrentó el TT2
+en sus fases iniciales: el corpus de noticias etiquetadas manualmente era
+insuficiente. La clasificación zero-shot ofrece tres ventajas operativas decisivas:
+
+\begin{enumerate}
+    \item \textbf{Independencia de datos etiquetados.} Las descripciones de
+          categorías codifican el conocimiento experto del dominio directamente
+          en el espacio de embeddings, sin ningún ejemplo de entrenamiento.
+
+    \item \textbf{Auditabilidad y corrección de sesgos.} Cuando el sistema produce
+          un falso positivo sistemático, la corrección consiste en refinar la
+          descripción de la categoría en lenguaje natural, sin reentrenar el modelo.
+          Esta propiedad es esencial en un sistema de monitoreo de derechos humanos.
+
+    \item \textbf{Trayectoria hacia fine-tuning incremental.} La clase
+          \texttt{SemanticDetector} prevé la coexistencia de ambos modos mediante
+          \texttt{mode=``auto''}: cuando el volumen de datos etiquetados supere el
+          umbral mínimo, el sistema cargará automáticamente el modelo fine-tuned
+          de \texttt{models/finetuned/model.pt}, manteniendo zero-shot como fallback.
+\end{enumerate}
+
+\subsection{Soberanía de Datos y Rechazo de APIs Privativas}
+\label{subsec:ea_soberania_datos}
+
+La decisión de ejecutar BETO localmente mediante PyTorch, en lugar de delegar
+la inferencia a APIs privativas (GPT-4, Claude, Gemini), se fundamenta en cuatro
+argumentos no negociables:
+
+\begin{enumerate}
+    \item \textbf{Privacidad de los datos.} El sistema procesa información sobre
+          feminicidios y víctimas menores de edad. La transmisión de este contenido
+          a servidores corporativos externos implica riesgos de privacidad
+          incompatibles con la LGDNNA y el principio de minimización de datos
+          de la LFPDPPP.
+
+    \item \textbf{Costo operativo sostenible.} La inferencia de GPT-4 para
+          600--1{,}000~documentos por ciclo costaría \$15--\$40~USD por ejecución,
+          proyectando \$450--\$1{,}200~USD mensuales en ciclos de 6~horas. BETO
+          en CPU tiene costo variable cero.
+
+    \item \textbf{Reproducibilidad científica.} Los modelos propietarios modifican
+          silenciosamente sus pesos entre versiones, imposibilitando la reproducción
+          exacta de los resultados reportados. BETO es un modelo de pesos abiertos
+          cuya revisión exacta queda fijada en el registro del proyecto.
+
+    \item \textbf{Viabilidad en hardware universitario.} BETO-base (110~M parámetros,
+          \texttt{float32}) requiere $\approx$440~MB de VRAM o 2.2~GB de RAM en CPU,
+          compatible con laptops de desarrollo estándar de 8~GB RAM.
+\end{enumerate}
+
+% ─── FIN SECCIÓN NLP MODELS ────────────────────────────────────────────────────
+
+%----------------------------------------------------------------------------------------
+\section{Técnicas de Agrupamiento Semántico y Organización Temática}
+\label{sec:ea_clustering}
+%----------------------------------------------------------------------------------------
+
+El agrupamiento automático de documentos periodísticos constituye el mecanismo
+que permite al sistema trascender la clasificación individual de noticias y obtener
+una comprensión del \textit{paisaje informativo} del periodo analizado. En lugar de
+clasificar cada noticia en aislamiento, el agrupamiento semántico revela qué noticias
+relatan el mismo evento criminal desde múltiples medios, qué clústeres temáticos
+dominan el corpus en un periodo dado, y qué documentos son \textit{outliers} sin
+coherencia temática con el resto. Esta perspectiva global es imposible mediante
+clasificación individual; es una propiedad emergente del corpus completo.
+
+\subsection{Métodos Tradicionales: K-Means y su Inadecuación para Datos de Alta Dimensionalidad}
+\label{subsec:ea_kmeans}
+
+El algoritmo K-Means \cite{lloyd1982least} es el método de agrupamiento por
+centroides más extendido en la literatura de recuperación de información. Su
+principio de funcionamiento consiste en minimizar la suma de distancias
+euclidianas al cuadrado entre cada punto y el centroide de su clúster asignado,
+mediante una convergencia iterativa de asignación y actualización de centroides.
+
+Sin embargo, K-Means presenta dos limitaciones estructurales que lo hacen
+inadecuado para el dominio de este sistema:
+
+\begin{enumerate}
+    \item \textbf{La maldición de la dimensionalidad (\textit{curse of dimensionality}).}
+          Los embeddings de texto generados por BETO son vectores de 768~dimensiones.
+          En espacios de alta dimensionalidad, la distancia euclidiana pierde su
+          poder discriminatorio: la diferencia entre la distancia al punto más
+          cercano y al más lejano tiende a cero a medida que la dimensionalidad
+          crece \cite{beyer1999nearest}. Este fenómeno hace que la noción de
+          ``centroide más cercano'' sea geométricamente inestable, generando
+          asignaciones de clúster arbitrarias. Esta fue la causa del bajo rendimiento
+          de K-Means en el TT1, donde los clústeres resultantes no correspondían a
+          grupos temáticamente coherentes sino a particiones geométricamente
+          arbitrarias del espacio vectorial.
+
+    \item \textbf{Requerimiento de \textit{k} fijo.} K-Means exige que el número
+          de clústeres sea especificado \textit{a priori}. En un sistema de
+          monitoreo de medios donde el número de temas activos varía semanalmente
+          en función de los eventos noticiosos, esta rigidez es operativamente
+          insostenible. Fijar $k=10$ en un periodo con solo 3~temas activos
+          fragmenta artificialmente los clústeres reales; fijar $k=10$ en un
+          periodo con 25~temas activos los colapsa en grupos heterogéneos.
+\end{enumerate}
+
+\subsection{DBSCAN: Ventajas y Limitaciones Residuales}
+\label{subsec:ea_dbscan}
+
+El algoritmo DBSCAN \cite{ester1996dbscan} (\textit{Density-Based Spatial Clustering
+of Applications with Noise}) supera la limitación del $k$ fijo al definir los
+clústeres como regiones de alta densidad en el espacio métrico, separadas por
+regiones de baja densidad. Los puntos que no pertenecen a ninguna región densa
+son clasificados como \textit{ruido} (\texttt{topic\_id = -1}), una propiedad
+fundamental para el dominio de este proyecto donde las noticias genéricas no
+relacionadas con el tema central deben ser identificadas y filtradas.
+
+Sin embargo, DBSCAN presenta una limitación crítica ante datos reales: requiere
+que la densidad de los clústeres sea \textit{uniforme}. El parámetro global de
+radio de vecindad $\varepsilon$ define la densidad mínima de toda la solución;
+un único valor de $\varepsilon$ no puede capturar simultáneamente clústeres
+de alta densidad (eventos con cobertura mediática masiva de muchos medios) y
+clústeres de baja densidad (casos locales cubiertos por pocos medios regionales).
+Esta limitación genera segmentaciones inconsistentes en corpus periodísticos donde
+la cobertura mediática de los eventos es inherentemente heterogénea.
+
+\subsection{BERTopic: Arquitectura Modular para Descubrimiento de Tópicos Semánticos}
+\label{subsec:ea_bertopic}
+
+BERTopic \cite{grootendorst2022bertopic} supera las limitaciones de K-Means y
+DBSCAN mediante una arquitectura modular de cinco etapas que separa la
+\textit{representación}, la \textit{reducción de dimensionalidad}, el
+\textit{clustering} y la \textit{representación de tópicos} en componentes
+independientes y sustituibles. La implementación en
+\texttt{src/analysis/bertopic\_clustering.py} instancia esta arquitectura con
+parámetros calibrados específicamente para el corpus periodístico en español:
+
+\begin{lstlisting}[language=Python,
+    caption={Construcción del pipeline BERTopic en \texttt{bertopic\_clustering.py}},
+    label={lst:bertopic_pipeline}]
+# 1. Embeddings: sentence-transformers (multilingue, liviano)
+embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+
+# 2. UMAP: 768D -> 5D, metrica coseno, clusters compactos
+umap_model = UMAP(
+    n_components=5,        # 5D: balance informacion/ruido
+    n_neighbors=15,        # balance local/global
+    min_dist=0.0,          # clusters compactos (optimo para HDBSCAN)
+    metric="cosine",       # apropiado para embeddings de texto
+    random_state=42,
+)
+
+# 3. HDBSCAN: densidad variable, sin k fijo, genera outliers
+hdbscan_model = HDBSCAN(
+    min_cluster_size=8,    # agresivo: menos outliers que 15+
+    min_samples=5,         # densidad requerida por punto core
+    cluster_selection_method="eom",  # Excess of Mass: mas estable
+    prediction_data=True,  # necesario para reduce_outliers()
+)
+
+# 4. c-TF-IDF: n-grams 1-3, stop words en espanol
+vectorizer = CountVectorizer(
+    stop_words=SPANISH_STOP_WORDS,
+    ngram_range=(1, 3),
+    min_df=2,
+)
+\end{lstlisting}
+
+\subsubsection{UMAP: Reducción de Dimensionalidad Preservadora de Topología}
+\label{subsubsec:ea_umap}
+
+UMAP (\textit{Uniform Manifold Approximation and Projection}) \cite{mcinnes2018umap}
+proyecta los vectores de 768~dimensiones generados por BETO hacia un espacio de
+5~dimensiones, resolviendo la maldición de la dimensionalidad de K-Means.
+A diferencia de PCA (que preserva únicamente varianza global lineal) y t-SNE
+(que preserva solo estructura local y no escala a más de $\sim$50{,}000~puntos),
+UMAP preserva simultáneamente la \textbf{estructura topológica local y global}:
+documentos semánticamente similares permanecen adyacentes en el espacio reducido,
+y grupos de documentos semánticamente distintos permanecen separados.
+
+La configuración \texttt{metric='cosine'} es determinante: los embeddings de texto
+tienen magnitudes variables y la similitud semántica se mide por el ángulo entre
+vectores (similitud coseno), no por su distancia euclidiana. Usar UMAP con métrica
+coseno garantiza que la estructura topológica preservada sea semánticamente
+significativa. El parámetro \texttt{min\_dist=0.0} fuerza que los puntos dentro
+de cada clúster se compriman máximamente, aumentando la densidad local y facilitando
+la detección de fronteras por HDBSCAN.
+
+\subsubsection{HDBSCAN: Clustering de Densidad Variable con Detección de Ruido}
+\label{subsubsec:ea_hdbscan}
+
+HDBSCAN \cite{campello2013hdbscan} (\textit{Hierarchical DBSCAN}) extiende DBSCAN
+construyendo una jerarquía de clústeres en función de la densidad local de cada
+punto, sin requerir un $\varepsilon$ global. La selección de clústeres mediante el
+método \textit{Excess of Mass} (EoM) identifica automáticamente las particiones
+óptimas en la jerarquía, generando clústeres de densidades heterogéneas. Los puntos
+que no pertenecen a ningún clúster de densidad suficiente reciben la etiqueta de
+ruido (\texttt{topic\_id = -1}).
+
+Esta propiedad de detección de ruido es semánticamente valiosa en el dominio del
+sistema: las noticias \textit{outlier} (sin coherencia temática con el corpus)
+son exactamente las que el sistema debe tratar con mayor escepticismo en la
+clasificación semántica, elevando su umbral de exigencia de BETO de 0.50 a 0.65.
+El código de \texttt{bertopic\_clustering.py} documenta que los datos reales de
+producción presentaron inicialmente \textbf{81.4\% de outliers}, resueltos mediante
+una reducción multi-etapa de tres estrategias progresivas:
+
+\begin{enumerate}
+    \item \textbf{Probabilidades soft} (\texttt{strategy='probabilities'}):
+          reasigna outliers al clúster con mayor probabilidad blanda de HDBSCAN.
+    \item \textbf{Distribuciones c-TF-IDF} (\texttt{strategy='distributions'}):
+          reasigna outliers al clúster cuya distribución léxica es más similar
+          al documento.
+    \item \textbf{Cercanía de embeddings} (\texttt{strategy='embeddings'},
+          \texttt{threshold=0.3}): reasigna outliers al clúster cuyo centroide
+          embedding es más cercano, con umbral de similitud mínima para evitar
+          asignaciones erróneas.
+\end{enumerate}
+
+El objetivo declarado en el código es reducir los outliers de 81.4\% a un máximo
+de \textbf{55\%} (\texttt{OUTLIER\_TARGET\_PERCENT = 0.55}), manteniendo suficiente
+cantidad de noticias sin clasificar para que la señal de ``outlier'' conserve su
+poder discriminatorio en la lógica neuro-simbólica.
+
+\subsubsection{c-TF-IDF: Representación Léxica de Tópicos}
+\label{subsubsec:ea_ctfidf}
+
+La representación de cada tópico se obtiene mediante \textit{Class-based TF-IDF}
+(c-TF-IDF) \cite{grootendorst2022bertopic}: el algoritmo concatena todos los
+documentos de un mismo clúster en un ``mega-documento de clase'' y aplica TF-IDF
+comparando cada clase contra el corpus completo. Esto identifica los términos
+que son frecuentes dentro del clúster pero infrecuentes en el resto del corpus,
+generando representaciones léxicas interpretables que caracterizan semánticamente
+cada tópico.
+
+El vectorizador configurado con \texttt{ngram\_range=(1, 3)} permite que las
+representaciones incluyan frases de hasta tres palabras, capturando expresiones
+compuestas de alta especificidad para el dominio (e.g.,
+\textit{``víctima de feminicidio''}, \textit{``hijos resguardados DIF''}).
+La representación final por tópico mediante \texttt{KeyBERTInspired} refina
+adicionalmente los términos seleccionados usando similitud coseno entre el embedding
+del n-grama y el embedding promedio de los documentos del clúster, garantizando
+que las palabras clave seleccionadas sean semánticamente representativas y no solo
+estadísticamente frecuentes.
+
+\subsection{Evolución Comparativa TT1 \texorpdfstring{$\rightarrow$}{->} TT2: de Léxico a Semántica}
+\label{subsec:ea_evolucion_clustering}
+
+La Tabla~\ref{tab:comparativa_clustering} sintetiza la evaluación de los tres
+algoritmos de agrupamiento en función de los criterios operativos del sistema.
+
+\begin{table}[H]
+\centering
+\caption{Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}
+\label{tab:comparativa_clustering}
+\begin{tabular}{|p{2.8cm}|p{2.8cm}|p{2.8cm}|p{3.0cm}|}
+\hline
+\textbf{Criterio} &
+\textbf{K-Means} \newline (TT1) &
+\textbf{DBSCAN} &
+\textbf{BERTopic} \newline (UMAP+HDBSCAN, TT2) \\
+\hline
+\textbf{Manejo de ruido} &
+Ninguno (todos los puntos asignados a un clúster) &
+Sí (puntos en baja densidad = ruido) &
+Sí (HDBSCAN con reducción multi-etapa 81.4\%→55\%) \\
+\hline
+\textbf{Escalabilidad} &
+Alta ($O(n \cdot k \cdot i)$) &
+Media ($O(n^2)$ sin índice espacial) &
+Alta (UMAP+HDBSCAN: $O(n \log n)$ aproximado) \\
+\hline
+\textbf{Interpretación de tópicos} &
+Baja (centroides en espacio de alta dimensión sin interpretabilidad) &
+Ninguna (solo densidad geométrica) &
+Alta (c-TF-IDF genera top n-grams interpretables por tópico) \\
+\hline
+\textbf{Dependencia de parámetros} &
+Crítica ($k$ fijo requerido) &
+Alta ($\varepsilon$ global uniforme) &
+Baja (\texttt{min\_cluster\_size=8} adaptativo; $k$ automático) \\
+\hline
+\textbf{Alta dimensionalidad} &
+Muy baja (maldición de la dimensionalidad) &
+Baja (distancias euclidianas en alta dimensión) &
+Alta (UMAP reduce a 5D preservando topología) \\
+\hline
+\textbf{Resultado en TT1/TT2} &
+\textit{Descartado en TT2} (clústeres no coherentes) &
+\textit{Evaluado} (inadecuado por $\varepsilon$ global) &
+\textbf{Seleccionado} (OE-4, P4) \\
+\hline
+\end{tabular}
+\end{table}
+
+La diferencia conceptual más significativa entre el TT1 y el TT2 en materia de
+agrupamiento no es algorítmica sino epistemológica: en el TT1, el agrupamiento
+K-Means operaba sobre \textbf{vectores TF-IDF léxicos}, donde dos documentos son
+similares si comparten los mismos tokens literales. En el TT2, BERTopic opera sobre
+\textbf{embeddings semánticos de BETO}, donde dos documentos son similares si
+expresan el mismo \textit{significado}, independientemente del vocabulario utilizado.
+
+Esta distinción tiene una consecuencia operativa directa: en el TT2, noticias
+publicadas por La Jornada, El Universal y Milenio sobre el \textit{mismo caso
+criminal} de feminicidio ---aunque redactadas con vocabularios completamente
+distintos, diferentes tiempos verbales y enfoques editoriales--- ``gravitarán''
+hacia el mismo clúster BERTopic, pues sus embeddings BETO convergen en la misma
+región del espacio semántico. En el TT1, estas tres noticias podían dispersarse
+en tres clústeres K-Means distintos por la mínima varianza léxica entre medios.
+
+%----------------------------------------------------------------------------------------
+\section{Conclusión del Capítulo: La Convergencia Tecnológica al Servicio de los Derechos de la Infancia}
+\label{sec:ea_conclusion}
+%----------------------------------------------------------------------------------------
+
+El análisis del estado del arte desarrollado en este capítulo revela que ninguna
+de las tecnologías examinadas de forma aislada es suficiente para resolver el
+problema social planteado. La recolección mediante RSS provee eficiencia pero no
+comprensión; TF-IDF provee velocidad pero no contexto; K-Means provee estructura
+pero no semántica; BETO provee comprensión pero puede alucinar sin reglas simbólicas.
+
+La innovación fundamental de este Trabajo Terminal no radica en la invención de
+ningún algoritmo nuevo, sino en la \textbf{orquestación arquitectónica} de seis
+tecnologías maduras ---RSS+StealthSession, PostgreSQL FTS, BETO, BERTopic
+(UMAP+HDBSCAN+c-TF-IDF), clasificación zero-shot y lógica neuro-simbólica--- en
+un pipeline coherente, auditablemente correcto y específicamente calibrado para un
+dominio donde el error de clasificación tiene consecuencias humanas reales.
+
+Cada decisión tecnológica documentada en este capítulo puede trazarse directamente
+a una necesidad social concreta. La elección de RSS sobre scraping estático
+garantiza cobertura sostenida sin saturar los servidores de medios independientes
+con recursos limitados. La migración a PostgreSQL con FTS garantiza que los
+trabajadores sociales del DIF puedan consultar el sistema en tiempo real sin esperar
+escaneos lineales de CSV. La elección de BETO sobre mBERT garantiza que el sistema
+comprende el español coloquial y periodístico mexicano con la misma precisión que
+el español académico. La lógica neuro-simbólica garantiza que el sistema nunca
+clasificará a un menor agresor como víctima indirecta, ni descartará un caso real
+de orfandad por la ambigüedad redaccional de un periodista local.
+
+En suma, el ecosistema tecnológico seleccionado en el TT2 está diseñado para
+una sola misión: \textbf{garantizar que ningún caso de niña, niño o adolescente
+que quedó en orfandad por feminicidio sea invisible para las instituciones
+del Estado que tienen la obligación legal de protegerlo}.
+
+

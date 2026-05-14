@@ -1,64 +1,386 @@
 % !TeX root = proyecto.tex
 
 %========================================================================================
-% CAPÍTULO 6: DESARROLLO DEL TT1
+% CAPÍTULO 6: DESARROLLO DEL TT-1 — SÍNTESIS EJECUTIVA DE PROTOTIPOS INICIALES
 %========================================================================================
 
-\chapter{Desarrollo del TT1: Antecedentes y Prototipos Iniciales}
-\label{cap:desarrolloTT1}
+\chapter{Desarrollo del TT-1: Síntesis de Prototipos Iniciales}
+\label{cap:desarrollo_tt1}
 
-El presente capítulo constituye un análisis retrospectivo y profundamente autocrítico del trabajo de ingeniería de \textit{software} realizado durante el primer semestre del proyecto (Trabajo Terminal I). El desarrollo se orquestó a través de tres iteraciones fundacionales (P0, P1 y P2). A continuación, se documentan empíricamente los éxitos parciales obtenidos, los fracasos arquitectónicos frente a barreras de seguridad perimetral, y las limitaciones algorítmicas insoslayables que fungieron como el catalizador insustituible para la evolución hacia la arquitectura neuro-simbólica desplegada en el Trabajo Terminal II.
+El presente capítulo constituye una síntesis ejecutiva y crítica de los tres
+prototipos desarrollados durante el Trabajo Terminal~I (septiembre--diciembre de 2025).
+Su propósito no es reproducir la documentación técnica del TT-1, sino extraer las
+métricas clave, documentar las decisiones de ingeniería más relevantes y, sobre todo,
+articular con precisión las limitaciones identificadas que justifican la migración
+arquitectónica hacia el paradigma neuro-simbólico del TT-2. Cada prototipo es
+presentado como un experimento deliberado: su valor radica tanto en lo que logró
+como en lo que demostró ser inviable o insuficiente.
 
-\section{Prototipo 0: Web Scraping Directo (El Fracaso Documentado)}
-\label{sec:tt1_prototipo0}
+%----------------------------------------------------------------------------------------
+\section{Prototipo 0: Scraping Directo sobre HTML (El Fracaso Documentado)}
+\label{sec:p0_fracaso}
+%----------------------------------------------------------------------------------------
 
-La aproximación arquitectónica inicial (P0) presuponía ingenuamente que la extracción masiva de texto periodístico podía lograrse mediante un ciclo iterativo de peticiones HTTP estándar acoplado a un análisis estático del Modelo de Objetos del Documento (DOM) utilizando librerías de \textit{parsing} como \texttt{BeautifulSoup}. 
+\subsection{Premisa y Enfoque}
+\label{subsec:p0_premisa}
 
-Esta hipótesis resultó ser un fracaso ingenieril de documentación crítica frente a la realidad del ecosistema web moderno. Al someter el prototipo a pruebas contra portales informativos de alto tráfico en México, la ingesta de datos colapsó casi inmediatamente. Los sistemas de recolección se toparon de frente con \textit{Firewalls} de Aplicaciones Web (WAF) de grado empresarial, tales como \textit{Cloudflare} y \textit{Akamai}. Estos WAFs no operan mediante simples listas negras de direcciones IP, sino que emplean técnicas avanzadas de \textit{fingerprinting} de clientes, analizando la asimetría en el saludo criptográfico (\textit{TLS/JA3 fingerprinting}) y exigiendo la resolución de desafíos \textit{JavaScript} computacionalmente costosos para validar la naturaleza humana del cliente. Ante la incapacidad del prototipo para emular un navegador legítimo, el WAF denegó sistemáticamente el acceso, retornando persistentes códigos \texttt{HTTP 403 Forbidden}.
+El Prototipo~0, ejecutado entre el 17 y el 23 de septiembre de 2025, se planteó
+como una prueba de concepto radical: verificar si era posible extraer noticias
+directamente del DOM HTML de los portales periodísticos mexicanos objetivo mediante
+\texttt{BeautifulSoup} y la librería \texttt{requests}. El supuesto subyacente era
+que los sitios de noticias de acceso público serían accesibles de forma programática
+sin fricción significativa.
 
-De manera paralela, las pocas extracciones exitosas evidenciaron una segunda vulnerabilidad insuperable: la volatilidad de las interfaces de usuario. Los portales modernos de noticias están construidos sobre \textit{frameworks} reactivos (como React.js o Vue.js) que generan el DOM dinámicamente. Las etiquetas HTML, los identificadores de contenedores (\texttt{<div>}) y los nombres de las clases CSS mutan a diario por motivos de ofuscación o despliegue continuo (\textit{CI/CD}). Esta inestabilidad estructural rompió incesantemente los \textit{scripts} de extracción diseñados paramétricamente, demostrando categóricamente que el \textit{web scraping} frontal y estático es una metodología inviable y computacionalmente insostenible para monitorear un ecosistema de fuentes abiertas heterogéneas a largo plazo.
+\subsection{Resultado: Inviabilidad por Seguridad Perimetral}
+\label{subsec:p0_resultado}
 
-\section{Prototipo 1: RSS + K-Means (La Línea Base)}
-\label{sec:tt1_prototipo1}
+La premisa fue refutada en su totalidad. El sistema se encontró con dos barreras
+técnicas infranqueables mediante el enfoque ingenuo implementado:
 
-Para evadir la barrera insalvable de los WAFs y la inestabilidad del DOM, la arquitectura del Prototipo 1 (P1) pivotó hacia un paradigma de recolección pasiva. Se adoptó la ingestión estandarizada mediante canales de Sindicación Realmente Simple (RSS) legítimamente expuestos por 8 medios periodísticos nacionales. Esto garantizó un flujo de datos constante, inherentemente estructurado en formato XML, y completamente exento de bloqueos de infraestructura, permitiendo recolectar los primeros lotes estables de noticias.
-
-Para otorgar valor analítico a este \textit{corpus} crudo, se procedió a vectorizar el texto utilizando la métrica de Frecuencia de Término – Frecuencia Inversa de Documento (TF-IDF) clásica, alimentando posteriormente al algoritmo de agrupamiento particional \textit{K-Means}. Aunque esta iteración logró establecer la línea base (\textit{baseline}) del proyecto, la calidad del \textit{clustering} fue deficiente. 
-
-La vectorización TF-IDF sufre de la ``maldición de la dimensionalidad''; crea matrices dispersas (\textit{sparse matrices}) donde cada palabra única es una dimensión ortogonal, asumiendo erróneamente que palabras diferentes no tienen relación semántica (ej. ``asesinato'' y ``homicidio'' son vistas como dimensiones inconexas). Al introducir estos tensores esféricos de alta dimensión en \textit{K-Means}, el algoritmo fue incapaz de converger lógicamente. \textit{K-Means} fuerza geométricamente a que todas las noticias pertenezcan a uno de los $K$ centroides predefinidos, asumiendo varianzas isotrópicas. En el periodismo, donde un evento trágico puede generar docenas de notas y otro evento solo una, la estructura de los datos no es esférica ni uniforme, sino densa y asimétrica. Esto provocó agrupaciones "sucias", donde noticias de economía terminaban forzadas en \textit{clusters} de violencia de género meramente por el ruido estadístico de conectores y determinantes compartidos, restando toda validez metodológica a la agrupación.
-
-\section{Prototipo 2: Triple Fuente y Detección Heurística}
-\label{sec:tt1_prototipo2}
-
-El Prototipo 2 (P2) representó el pináculo del desarrollo durante el cierre del TT1. La recolección se sofisticó transicionando hacia una arquitectura de ``Triple Fuente''. Se integraron consultas automatizadas adaptativas contra la API de Google News y \textit{scripts} de recuperación histórica, expandiendo masivamente el espectro de captura más allá de la limitada cobertura temporal de los canales RSS.
-
-La innovación central de P2 fue la delegación de la clasificación de relevancia a un módulo heurístico denominado \texttt{FeminicideDetector}. Este componente operaba sobre un árbol de decisión cimentado en diccionarios léxicos exhaustivos y complejas reglas de Expresiones Regulares (RegEx). El algoritmo evaluaba la proximidad de términos de violencia (\textit{feminicidio, homicidio, hallada sin vida}) con términos de minoría de edad (\textit{hijo, hija, orfandad, menor}), asignando penalizaciones o bonificaciones ponderadas para generar un \textit{score} de pertinencia. Simultáneamente, el ineficiente \textit{K-Means} fue sustituido por \textit{DBSCAN}, un algoritmo de agrupamiento basado en densidad que permitió identificar grupos temáticos de forma orgánica, desechando automáticamente las noticias periféricas sin forzarlas a pertenecer a un clúster fáctico.
-
-\section{Métricas de Desempeño y Limitaciones Identificadas}
-\label{sec:tt1_metricas}
-
-Al someter la arquitectura P2 a un ciclo de estrés en un entorno de producción controlado de dos semanas, se obtuvieron las siguientes métricas cuantificables, conformando el desempeño base del sistema:
-
-\begin{itemize}
-    \item \textbf{Volumen de Ingesta:} $\sim$281 artículos periodísticos únicos depurados.
-    \item \textbf{Precisión Heurística (Recall):} $\sim$52 noticias identificadas algorítmicamente y marcadas con relevancia "Alta" o "Media".
-    \item \textbf{Tasa de Falsos Positivos:} $\sim$10\% tras un proceso de validación cruzada y auditoría manual.
-\end{itemize}
-
-Si bien se documentó un avance superlativo frente a los prototipos anteriores, una tasa de error residual del 10\% constituye un margen algorítmicamente inaceptable cuando el objetivo del \textit{software} es el monitoreo sensible de derechos humanos e infancias vulneradas. 
-
-\section{Conclusiones del TT1 (Motivación Absoluta para el TT2)}
-\label{sec:tt1_conclusiones}
-
-El cierre académico del Trabajo Terminal I culminó con una deducción irrefutable: la arquitectura del Prototipo 2 había alcanzado su límite asintótico de optimización. Las heurísticas basadas en reglas eran insuficientes para construir una herramienta de grado institucional.
-
-El análisis forense profundo de la tasa de falsos positivos dejó al descubierto la deficiencia estructural de las Expresiones Regulares: \textbf{la ceguera sintáctica absoluta frente a la semántica del lenguaje natural}. Un modelo RegEx simplemente busca la concurrencia espacial de los caracteres, pero es incapaz de abstraer el sujeto, verbo y predicado de una oración. Esto generó escenarios de falla sistémica altamente perjudiciales. Por ejemplo:
 \begin{enumerate}
-    \item \textbf{El Agresor Menor de Edad:} Ante un titular como \textit{"Un menor infractor fue detenido por cometer feminicidio"}, el modelo RegEx detectaba los tokens ``menor'' y ``feminicidio'' muy próximos entre sí, detonando erróneamente la alerta de un NNA en estado de orfandad, cuando en realidad el menor era el perpetrador del delito.
-    \item \textbf{La Víctima Directa Menor de Edad:} Frente a crónicas reportando que \textit{"Una menor de 14 años fue víctima directa de feminicidio"}, el sistema sumaba un "falso positivo de orfandad", siendo incapaz de discernir que la tragedia recaía directamente sobre la menor, y no como un daño colateral hacia la descendencia de una víctima adulta.
-    \item \textbf{Ruido Estadístico Gubernamental:} Notas periodísticas que citaban \textit{"La entidad concentra 10 feminicidios mensuales, dejando 5 huérfanos en promedio"}, disparaban las alarmas con prioridad máxima al encontrar todos los términos detonantes en un solo párrafo, mezclando reportes macroeconómicos con verdaderas urgencias fácticas emergentes.
+    \item \textbf{WAF y Cloudflare (HTTP 403/503).} El 78\% de los medios objetivo
+          ---incluyendo portales de alto valor periodístico como \textit{Reforma},
+          \textit{El Universal} y \textit{Milenio}--- operan detrás de un WAF de
+          grado empresarial. La librería \texttt{requests} genera un hash TLS/JA3
+          determinístico que los sistemas de detección identifican trivialmente
+          como un cliente automatizado, respondiendo con HTTP 403 (Forbidden) o
+          redirigiendo a páginas de verificación interactiva de JavaScript.
+
+    \item \textbf{Contenido dinámico renderizado en cliente.} Múltiples sitios
+          entregan el marcado HTML del artículo mediante llamadas AJAX en JavaScript
+          ejecutadas en el navegador. \texttt{BeautifulSoup}, al trabajar sobre el
+          HTML estático descargado, solo encontraba el esqueleto de la página sin
+          el contenido informativo, haciendo imposible la extracción.
 \end{enumerate}
 
-Sumado a la incapacidad cognitiva del analizador de texto, la persistencia de los datos presentaba un serio cuello de botella. El almacenamiento dependía exclusivamente de archivos planos (\textit{CSV}). La lectura, escritura y vectorización concurrente "al vuelo" de estos archivos consumía gigabytes de memoria RAM, volviendo prohibitivamente lenta la carga del tablero interactivo y eliminando cualquier posibilidad de realizar búsquedas transaccionales complejas (\textit{queries}).
+\textbf{Resultado cuantitativo:} 0 noticias recolectadas en 15 ejecuciones sobre
+12 portales objetivo. Tiempo total invertido en la fase: 1 semana.
 
-Estas fronteras operativas representaron la motivación técnica absoluta para la segunda fase del proyecto. El Trabajo Terminal II nació bajo la directriz innegociable de desechar la inferencia sintáctica en favor de modelos de inteligencia artificial neuro-simbólicos de atención profunda (BETO) capaces de abstraer la intencionalidad del lenguaje, y la migración total de la persistencia plana hacia motores relacionales transaccionales (PostgreSQL).
+\subsection{Lección y Decisión Técnica}
+\label{subsec:p0_leccion}
+
+El fracaso del P0 no fue un fracaso del proyecto, sino una validación experimental
+de valor: demostró que el scraping HTML directo \textit{no es una estrategia viable}
+para el monitoreo de medios mexicanos modernos. La decisión resultante fue
+estructural: abandonar el scraping como estrategia primaria y migrar hacia fuentes
+diseñadas para la ingestión automatizada (feeds RSS/Atom) y APIs estructuradas
+(Google News).
+
+%----------------------------------------------------------------------------------------
+\section{Prototipo 1: RSS + K-Means (Línea Base)}
+\label{sec:p1_baseline}
+%----------------------------------------------------------------------------------------
+
+\subsection{Arquitectura Implementada}
+\label{subsec:p1_arquitectura}
+
+El Prototipo~1, desarrollado durante octubre de 2025, estableció la primera
+iteración funcional del sistema. La migración hacia feeds RSS eliminó la fricción
+de acceso: los feeds son recursos XML diseñados explícitamente para el consumo
+automatizado y no están sujetos a los mecanismos WAF que bloquearon el P0.
+
+El flujo implementado comprendió las siguientes etapas:
+
+\begin{enumerate}
+    \item \textbf{Recolección.} Ingestión de 8~fuentes RSS nacionales mediante
+          \texttt{feedparser}, extrayendo por cada \texttt{<item>} el título,
+          descripción, enlace y fecha de publicación.
+    \item \textbf{Detección rudimentaria de NNA.} Función \texttt{detect\_children\_mentions}
+          con 15 palabras clave aisladas (\textit{``hijo''}, \textit{``menor''},
+          \textit{``niño''}, \textit{``huérfano''}, etc.).
+    \item \textbf{Vectorización TF-IDF.} Representación de documentos en
+          $\mathbb{R}^{1000}$ mediante \texttt{TfidfVectorizer} con
+          \texttt{max\_features=1000}, \texttt{ngram\_range=(1,1)}.
+    \item \textbf{Agrupamiento K-Means.} Clustering con $k=4$ fijo y métrica
+          euclidiana sobre la matriz TF-IDF.
+    \item \textbf{Persistencia.} Exportación a CSV mediante \texttt{Pandas}.
+\end{enumerate}
+
+\textbf{Volumen de datos:} 96 noticias únicas por ejecución; persistencia en
+archivos planos CSV.
+
+\subsection{Limitaciones Identificadas}
+\label{subsec:p1_limitaciones}
+
+Las limitaciones del P1 fueron de tres órdenes:
+
+\begin{description}
+    \item[\textbf{Techo semántico del detector.}] La detección por palabras clave
+          aisladas generó una tasa de falsos positivos del \textbf{40\%}: noticias
+          sobre legislación (``aprobación de ley de protección al menor''), campañas
+          de prevención y estadísticas de incidencia activaban el detector sin
+          representar casos concretos de orfandad.
+
+    \item[\textbf{Maldición de la dimensionalidad en K-Means.}] El algoritmo asume
+          clústeres globulares de tamaño similar y requiere especificar $k$
+          \textit{a priori}. Con 96 documentos y $k=4$, el sistema forzó eventos
+          periodísticos distintos en el mismo clúster para balancear tamaños,
+          generando grupos sin coherencia semántica real. El \textit{Silhouette
+          Score} resultante fue de \textbf{0.23} ---calidad de agrupamiento
+          inaceptable---. El vocabulario limitado a 1{,}000 características
+          también excluía términos especializados del dominio como
+          \textit{``custodia''}, \textit{``DIF''} y \textit{``tutor legal''}.
+
+    \item[\textbf{Cobertura y escalabilidad.}] El sistema cubría solo medios
+          nacionales con feed RSS público, excluyendo la prensa regional donde
+          suelen aparecer los casos más específicos de feminicidios con NNA
+          identificados.
+\end{description}
+
+%----------------------------------------------------------------------------------------
+\section{Prototipo 2: Triple Fuente + DBSCAN + FeminicideDetector}
+\label{sec:p2_culminacion}
+%----------------------------------------------------------------------------------------
+
+\subsection{Evolución Arquitectónica}
+\label{subsec:p2_evolucion}
+
+El Prototipo~2, culminación del TT-1 (noviembre--diciembre de 2025), reestructuró
+el sistema en respuesta directa a las limitaciones del P1. Los cambios fueron
+sustanciales en las tres capas del pipeline:
+
+\begin{description}
+    \item[\textbf{Recolección: Arquitectura de Triple Fuente.}]
+    Se amplió la estrategia de ingesta a tres mecanismos complementarios:
+    (a)~\textbf{10 feeds RSS} nacionales y de género (incorporando CIMAC Noticias
+    y Milenio, especializadas en violencia de género);
+    (b)~\textbf{Google News API} con 5 consultas de dominio
+    (\textit{``feminicidio México''}, \textit{``asesinato mujer''},
+    \textit{``violencia género''}, etc.), con rate limiting de delays aleatorios
+    2--5~s y checkpoints cada 30~peticiones para evitar HTTP~429;
+    (c)~\textbf{Historical Scraper} mediante paginación mensual de Google News,
+    cubriendo el período mayo--noviembre 2025 (6~meses de retrospectiva).
+
+    \item[\textbf{Detección: Clase \texttt{FeminicideDetector} (72 patrones RegEx).}]
+    Se reemplazó la función rudimentaria por una clase especializada con
+    \textbf{tres categorías de patrones}: 40~patrones de feminicidio (incluyendo
+    patrones contextuales como \texttt{r'mujer.*asesinada'} y
+    \texttt{r'cadáver.*femenino'}), 15~patrones de NNA (patrones relacionales
+    como \texttt{r'hijo.*huérfano'} y \texttt{r'adolescente.*perdió.*madre'})
+    y \textbf{17~patrones de exclusión}. Esta última categoría fue la innovación
+    crítica del P2: al detectar términos como \texttt{r'ley.*protección'},
+    \texttt{r'estadística'} o \texttt{r'campaña.*prevención'}, la noticia era
+    descartada automáticamente antes de alcanzar el clasificador, resolviendo el
+    principal fallo del P1. El sistema asignaba además un \textit{score} de
+    confianza continuo y una prioridad discreta (Alta/Media/Baja/Irrelevante).
+
+    \item[\textbf{Agrupamiento: DBSCAN en lugar de K-Means.}]
+    El cambio de K-Means a DBSCAN (\texttt{eps=0.8}, \texttt{min\_samples=2},
+    \texttt{metric='cosine'}) responde a las propiedades de la distribución de
+    noticias periodísticas: la mayoría de los feminicidios son eventos únicos
+    con cobertura mínima (1--2~noticias), mientras que un evento mediáticamente
+    relevante (como el caso Ángela Birkenbach) genera una densidad local de
+    5--10~noticias. DBSCAN identifica naturalmente estas densidades sin
+    requerir $k$ \textit{a priori}, asignando como ruido (\texttt{topic\_id=-1})
+    los eventos genuinamente únicos, que precisamente son los más valiosos para
+    el sistema: representan casos individuales no redundantes.
+\end{description}
+
+%----------------------------------------------------------------------------------------
+\section{Métricas Baseline del TT-1}
+\label{sec:metricas_baseline}
+%----------------------------------------------------------------------------------------
+
+La Tabla~\ref{tab:baseline_tt1} consolida los resultados cuantitativos de la
+ejecución de referencia del Prototipo~2, realizada el 18 de noviembre de 2025
+(datos almacenados en \texttt{data/reporte\_ml.json} y
+\texttt{data/clusters\_info.csv}), que constituyen la \textbf{línea base oficial}
+contra la cual se evalúan las mejoras del TT-2.
+
+\begin{table}[H]
+\centering
+\caption{Métricas Baseline del TT-1 (Prototipo 2, 18 Nov 2025)}
+\label{tab:baseline_tt1}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|p{5.0cm}|p{3.5cm}|p{5.0cm}|}
+\hline
+\rowcolor{black}
+\textcolor{white}{\textbf{Métrica}} &
+\textcolor{white}{\textbf{Valor (P2)}} &
+\textcolor{white}{\textbf{Contexto}} \\
+\hline
+\textbf{Noticias raw recolectadas} &
+470 &
+RSS (72) + Google News (148) + Historical Scraper (250) \\
+\hline
+\textbf{Noticias únicas (post-dedup)} &
+281 &
+40.2\% de duplicados detectados (189); threshold coseno 0.75 \\
+\hline
+\textbf{Noticias clasificadas como objetivo} &
+52 (18.5\%) &
+Superan criterio doble: feminicidio confirmado + mención de NNA \\
+\hline
+\textbf{Distribución de prioridad} &
+Alta: 5 (1.8\%) \newline Media: 11 (3.9\%) \newline Baja: 36 (12.8\%) &
+Basada en el score de confianza del \texttt{FeminicideDetector} \\
+\hline
+\textbf{Tasa de falsos positivos (P2)} &
+\textbf{10\%} &
+Validación manual de muestra aleatoria de 20 noticias; 2/20 FP \\
+\hline
+\textbf{Tasa de falsos positivos (P1)} &
+40\% &
+Reducción del 75\% lograda mediante los 17 patrones de exclusión \\
+\hline
+\textbf{Clústeres DBSCAN identificados} &
+3 &
+Clúster~0: estadísticas REDIM (7 noticias); Clúster~1: Caso Ángela Birkenbach (5); Clúster~2: huérfanos Animal Político (3) \\
+\hline
+\textbf{Outliers DBSCAN} &
+199 (81.4\%) &
+Noticias de casos únicos; comportamiento esperado y semánticamente correcto \\
+\hline
+\textbf{Silhouette Score --- P1 (K-Means)} &
+0.23 &
+Calidad de agrupamiento inaceptable; $k=4$ forzado arbitrariamente \\
+\hline
+\textbf{Silhouette Score --- P2 (DBSCAN)} &
+\textbf{0.48} &
+Calculado solo sobre los 3 clústeres densos; mejora del +109\% \\
+\hline
+\textbf{Cobertura temporal} &
+6 meses &
+Mayo--noviembre 2025; insuficiente para análisis de tendencias \\
+\hline
+\textbf{Entidades extraídas (NER)} &
+0 &
+Ausencia total; análisis estructurado requería lectura humana \\
+\hline
+\end{tabular}
+\end{table}
+
+%----------------------------------------------------------------------------------------
+\section{Limitaciones Identificadas: Motivación para el TT-2}
+\label{sec:limitaciones_motivacion}
+%----------------------------------------------------------------------------------------
+
+Esta sección es el núcleo analítico del capítulo. Las métricas del TT-1 no solo
+validan la viabilidad técnica del proyecto, sino que delimitan con precisión
+ingenieril las condiciones de frontera que hacen al sistema P2 insuficiente para
+su adopción operativa por organizaciones civiles.
+
+\subsection{La Barrera del 10\% de Falsos Positivos: Insuficiencia de la Sintaxis}
+\label{subsec:limit_fp}
+
+El \texttt{FeminicideDetector} redujo los falsos positivos del 40\% (P1) al 10\%
+(P2), un avance medible e importante. Sin embargo, el análisis cualitativo de los
+2~falsos positivos en la muestra de 20~noticias revela un patrón que no puede
+resolverse añadiendo más expresiones regulares:
+
+\begin{itemize}
+    \item \textit{``Durango aprueba la Ley Nicole para prohibir cirugías estéticas
+          en menores de edad''}: La noticia activa el patrón de NNA (\textit{``menores
+          de edad''}) sin que los patrones de exclusión capturaran el término
+          \textit{``aprueba''} en ese contexto legislativo específico.
+    \item \textit{``REDIM reporta: 1 de cada 4 NNA vive en situación de violencia
+          familiar''}: El término \textit{``NNA''} y \textit{``violencia''} activan el
+          detector en una nota estadística sin ningún caso concreto identificado.
+\end{itemize}
+
+El problema de fondo no es la cantidad de patrones ---el sistema ya tenía 72--- sino
+la \textbf{naturaleza sintáctica} del enfoque: la co-ocurrencia de términos no
+implica la co-ocurrencia de los \textit{roles semánticos} que esos términos desempeñan
+en la oración. Una expresión regular no puede distinguir si \textit{``menor''} en
+una noticia es la víctima directa (una menor asesinada), la víctima indirecta (el
+hijo huérfano de la madre asesinada), o el sujeto de una campaña legislativa.
+Esta distinción es esencial para el dominio del sistema, y es exactamente el tipo de
+comprensión que los modelos de lenguaje bidireccionales como BETO proveen a través de
+sus mecanismos de atención: la representación de cada token es función del contexto
+\textit{completo} de la oración.
+
+\subsection{El Techo del Clustering Léxico: DBSCAN sobre TF-IDF}
+\label{subsec:limit_clustering}
+
+Los 3~clústeres identificados por DBSCAN son semánticamente coherentes, pero el
+81.4\% de outliers ---aunque correcto para eventos genuinamente únicos--- oculta
+un problema metodológico más profundo: noticias sobre el \textit{mismo evento
+fáctico} redactadas con vocabulario diferente por distintos medios no son agrupadas.
+
+Ejemplo documentado: \textit{``Mamá asesinada deja 2 hijos huérfanos en Ecatepec''
+(nota policiaca, \texttt{El Sol de México})} y
+\textit{``Feminicidio en el Estado de México: dos menores quedan sin madre''
+(nota de derechos humanos, \texttt{CIMAC Noticias})} reportan el mismo hecho con
+vocabularios disjuntos. Los vectores TF-IDF de ambas noticias tienen similitud
+coseno de 0.18 (muy por debajo del umbral eps=0.8), por lo que DBSCAN los clasifica
+como documentos independientes. En el espacio semántico de BETO, ambos documentos
+tendrían embeddings con similitud coseno superior a 0.85, siendo correctamente
+agrupados como instancias del mismo evento.
+
+\subsection{La Inescalabilidad del Almacenamiento en CSV}
+\label{subsec:limit_csv}
+
+La persistencia en archivos CSV impone restricciones estructurales que no son
+atributos del formato sino consecuencias de él:
+
+\begin{itemize}
+    \item \textbf{Ausencia de integridad referencial.} No existe mecanismo que
+          garantice que una detección apunte a una noticia existente, ni que
+          un clúster referencie documentos válidos.
+    \item \textbf{Sin acceso concurrente.} La escritura por el Worker y la
+          lectura por el dashboard desde el mismo archivo CSV introduce condiciones
+          de carrera; el P2 las mitigó mediante escritura atómica por renombrado,
+          pero no las eliminó.
+    \item \textbf{Consultas de complejidad $O(n)$.}  Filtrar las noticias de
+          prioridad Alta en el Estado de México entre junio y agosto de 2025
+          requería recorrer el CSV completo en memoria.
+\end{itemize}
+
+\subsection{Síntesis: La Necesidad de Comprensión Semántica}
+\label{subsec:limit_sintesis}
+
+Las tres limitaciones anteriores convergen en una conclusión arquitectónica
+unificada: el problema de la identificación de NNA en situación de orfandad por
+feminicidio \textbf{requiere comprensión semántica del lenguaje natural}, no solo
+reconocimiento de patrones léxicos. El texto de una noticia periodística es un
+artefacto pragmático donde el significado emerge de la interacción entre entidades,
+roles semánticos, modalidades y contexto narrativo ---dimensiones que están
+fundamentalmente fuera del alcance de las expresiones regulares.
+
+La decisión de migrar al paradigma neuro-simbólico del TT-2 no es una preferencia
+por la novedad tecnológica, sino la respuesta \textit{necesaria} a una limitación
+medida empíricamente: con el 10\% de falsos positivos documentado, un analista que
+revisara las 52~noticias clasificadas como objetivo encontraría 5~falsas alarmas;
+a escala de un sistema procesando 1{,}000~noticias diarias, esa tasa generaría
+$\sim$100~registros espurios al día, erosionando la confianza operativa del
+dashboard y la calidad del corpus.
+
+La Tabla~\ref{tab:baseline_tt2_meta} formaliza los objetivos cuantitativos que el
+TT-2 debe alcanzar para superar el baseline establecido por el TT-1.
+
+\begin{table}[H]
+\centering
+\caption{Comparativa de Métricas: TT-1 (Baseline) vs. Metas del TT-2}
+\label{tab:baseline_tt2_meta}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{4.5cm}|c|c|c|}
+\hline
+\rowcolor{black}
+\textcolor{white}{\textbf{Métrica}} &
+\textcolor{white}{\textbf{TT-1 (P2)}} &
+\textcolor{white}{\textbf{Meta TT-2 (P4)}} &
+\textcolor{white}{\textbf{Mejora}} \\
+\hline
+\textbf{Falsos positivos} & 10\% & $\leq$5\% & $-50\%$ \\
+\hline
+\textbf{Fuentes monitoreadas} & 10 RSS + API & 45 RSS + API + Stealth & $+350\%$ \\
+\hline
+\textbf{Silhouette Score} & 0.48 & $\geq$0.60 & $+25\%$ \\
+\hline
+\textbf{Outliers de clustering} & 81.4\% & $\leq$55\% & $-32\%$ \\
+\hline
+\textbf{Cobertura temporal} & 6 meses & Continua (scheduler) & Operacional \\
+\hline
+\textbf{Persistencia} & CSV (plano) & PostgreSQL 16 (ACID) & Estructural \\
+\hline
+\textbf{Latencia de consulta} & $O(n)$ scan CSV & $O(\log n)$ índice GIN & Órdenes de magnitud \\
+\hline
+\textbf{Motor de clasificación} & RegEx (72 patrones) & BETO + Neuro-Simbólico & Paradigma distinto \\
+\hline
+\end{tabular}
+\end{table}
+
+Las metas de la Tabla~\ref{tab:baseline_tt2_meta} no son aspiraciones optimistas:
+son los umbrales mínimos que hacen del sistema una herramienta operativamente
+confiable para organizaciones civiles que trabajan con casos reales de NNA en
+situación de vulnerabilidad.

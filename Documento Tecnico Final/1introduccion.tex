@@ -1,67 +1,84 @@
-%========================================================================================
-% CAPÍTULO 1: INTRODUCCIÓN Y CONTEXTO
-%========================================================================================
+% CAPÍTULO 1 INTRODUCCIÓN
+% Protocolo: 2026-A135 — TT-2 Sistema Inteligente para la Identificación y Seguimiento de NNA en Situación de Orfandad por Feminicidio
+
 
 \chapter{Introducción}
 \label{ch:introduccion}
 
-El presente Trabajo Terminal aborda una problemática crítica en la intersección de los derechos humanos, la violencia de género y la ingeniería de datos: la invisibilidad estadística y la ausencia de seguimiento sistemático de las Niñas, Niños y Adolescentes (NNA) en situación de orfandad por feminicidio en México. A través de la conceptualización, diseño y desarrollo de un sistema inteligente de información, esta investigación propone una solución tecnológica para mitigar la dispersión de datos que obstaculiza la labor de las organizaciones de la sociedad civil y las instituciones gubernamentales en la procuración de justicia y la reparación integral del daño.
+El presente Trabajo Terminal registrado bajo el número de protocolo 2026-A135, constituye la segunda fase de un proyecto de investigación aplicada que aborda una problemática
+crítica en la intersección de los derechos humanos, la violencia de género y la ingeniería de sistemas inteligentes: la invisibilidad estadística y la ausencia de seguimiento
+sistemático de las Niñas, Niños y Adolescentes (NNA) en situación de orfandad por feminicidio en México. Mediante la conceptualización, diseño, desarrollo y despliegue de un
+sistema inteligente de monitoreo de medios, el proyecto propone una solución tecnológica para mitigar la dispersión de datos que obstaculiza la labor de las organizaciones
+civiles y de las instituciones gubernamentales en la procuración de justicia y la reparación integral del daño.
 
-\section{Planteamiento del Problema}
+
+\section{Presentación del proyecto}
+\label{sec:presentacion}
+
+
+México atraviesa una crisis sistémica de violencia feminicida de proporciones documentadas. De acuerdo con los registros del Secretariado Ejecutivo del Sistema Nacional de Seguridad
+Pública (SESNSP) y la Secretaría de Gobernación, entre los años 2010 y 2023 se han contabilizado \textbf{más de 8{,}000 víctimas} de feminicidio en el territorio nacional. Esta cifra
+ya de por sí alarmante, oculta una dimensión adicional del daño: el impacto colateral sobre los hijos e hijas de las víctimas, quienes quedan en situación de orfandad repentina y traumática.
+
+La Red por los Derechos de la Infancia en México (REDIM) estima que existen \textbf{al menos 3{,}500 Niñas, Niños y Adolescentes} que han perdido a su madre como consecuencia directa de un
+feminicidio. Pese a la gravedad de esta cifra no existe a nivel nacional un padrón oficial, un censo unificado ni un mecanismo de seguimiento estandarizado que documente el estado de estas
+víctimas indirectas. La Convención sobre los Derechos del Niño y la Ley General de los Derechos de Niñas, Niños y Adolescentes (LGDNNA) establecen el principio del \textit{interés superior
+de la niñez} como eje que orienta, garantizando el derecho a la protección, la salud, la educación y la reparación integral. No obstante la ausencia de datos estructurados imposibilita la
+materialización efectiva de estos derechos.
+
+El TT no. 2026-A135 surge como respuesta tecnológica a esta brecha. El sistema automatiza el ciclo completo de descubrimiento informativo desde la recolección de noticias en fuentes periodísticas
+de acceso público hasta la clasificación semántica y la persistencia relacional de los casos identificados, esto con el objetivo de que ningún NNA en situación de orfandad por feminicidio permanezca
+invisible para las instituciones que tienen la obligación legal de protegerlo.
+
+
+\section{Planteamiento del problema}
 \label{sec:planteamiento_problema}
 
-El feminicidio, tipificado como el asesinato de mujeres por razones de género, constituye una crisis sistémica de seguridad y derechos humanos en el territorio mexicano. De acuerdo con los registros del Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública (SESNSP) y la Secretaría de Gobernación, entre los años 2010 y 2023 se han contabilizado más de 8,000 víctimas de este delito. Sin embargo, el impacto de esta violencia trasciende la pérdida de la víctima directa, generando un daño colateral profundo y frecuentemente indocumentado: la situación de orfandad repentina en la que quedan miles de NNA.
+La información sobre los NNA en situación de orfandad por feminicidio se encuentra fragmentada en el ecosistema informativo mexicano. Los datos relevantes sobre la existencia, el estado legal y las condiciones
+de resguardo de los hijos de una víctima suelen estar dispersos en notas periodísticas de medios locales, comunicados aislados de fiscalías estatales y registros internos de organizaciones no gubernamentales
+que no se interconectan entre sí. La información existe pero no es accesible de forma sistemática ni procesable a escala computacional.
 
-La Red de los Derechos de la Infancia en México (REDIM) estima que existen al menos 3,500 NNA que han perdido a su madre como consecuencia de un feminicidio. Pese a la gravedad de esta cifra, a nivel nacional no existe un padrón oficial, un censo unificado, ni un mecanismo de seguimiento estandarizado que documente el estado y la evolución de estas víctimas indirectas. La Convención sobre los Derechos del Niño y la Ley General de los Derechos de Niñas, Niños y Adolescentes (LGDNNA) establecen el ``interés superior de la niñez'' como principio rector, garantizando el derecho a la protección, la salud, la educación y la reparación integral. No obstante, la ausencia de datos estructurados imposibilita la materialización de estos derechos.
+\subsection{La inviabilidad del monitoreo manual}
+\label{subsec:monitoreo_manual}
 
-Actualmente, la información sobre los NNA en situación de orfandad por feminicidio se encuentra críticamente fragmentada. Los datos relevantes sobre la existencia, el estado legal y las condiciones de resguardo de los hijos de una víctima suelen estar dispersos en notas periodísticas de medios locales, comunicados aislados de fiscalías estatales o en los registros internos y fragmentados de diversas organizaciones no gubernamentales. Al carecer de una plataforma que interconecte estos fragmentos informativos, resulta materialmente imposible para las instituciones rastrear qué sucede con los menores tras el evento traumático, impidiendo evaluar si han recibido atención psicológica especializada, si su continuidad educativa está garantizada o si se han activado los mecanismos legales para la reparación del daño.
+La mitigación de esta invisibilidad estadística recae actualmente sobre organizaciones de la sociedad civil como la Fundación "Futuro con Derechos" el proyecto cartográfico de la investigadora
+María Salguero y la REDIM. La metodología subyacente a este trabajo de documentación presenta un cuello de botella operativo: la \textbf{revisión manual y artesanal de fuentes hemerográficas}.
+El proceso exige que analistas y voluntarios dediquen muchas horas semanales a la revisión individual de portales de noticias, buscando menciones colaterales de hijos en narrativas de notas policiacas.
+Este enfoque es inviable frente al volumen de información que se genera diariamente en el país ya que México cuenta con más de 1{,}200 medios periodísticos digitales activos, produciendo decenas de
+miles de artículos diarios.
 
-Las consecuencias de esta opacidad informativa son multidimensionales. En primer lugar, las organizaciones de la sociedad civil se ven imposibilitadas para dimensionar patrones geográficos o temporales de orfandad que permitan dirigir esfuerzos de intervención. En segundo lugar, las autoridades carecen de la evidencia empírica necesaria para evaluar la eficacia de los programas de apoyo a víctimas indirectas. Finalmente, los familiares extendidos que asumen el cuidado de los menores frecuentemente desconocen las instituciones de apoyo y los derechos legales que amparan a los NNA, dejándolos en un estado de vulnerabilidad institucional prolongada.
+La latencia introducida por el factor humano limita drásticamente la capacidad de procesamiento, provocando que una enorme cantidad de casos pasen desapercibidos porque es imposible auditar
+concurrentemente todas las fuentes periodísticas nacionales y regionales. Además este proceso consume los recursos de talento especializado (psicólogos, abogados, trabajadores sociales),
+desviando su capacidad hacia labores de recolección de datos en lugar de la intervención directa con las víctimas.
 
-\section{Justificación}
-\label{sec:justificacion}
 
-\subsection{Justificación Social y Operativa}
-\label{subsec:justificacion_social}
-
-La mitigación de la invisibilidad estadística de los NNA huérfanos recae, en gran medida, sobre los hombros de las organizaciones de la sociedad civil. Entidades como la Fundación ``Futuro con Derechos'' y el proyecto del ``Mapa de Feminicidios en México'' han asumido la labor de documentar estos casos para brindar acompañamiento legal y psicológico. Sin embargo, la metodología actual subyacente a esta documentación presenta un cuello de botella logístico y operativo severo: la revisión manual, hemerográfica y periodística de fuentes de información.
-
-El proceso de monitoreo manual exige que los analistas y voluntarios de estas organizaciones dediquen decenas de horas semanales a la revisión individual de portales de noticias, buscando menciones colaterales de hijos en las narrativas de notas policiacas o coberturas de feminicidios. Este enfoque analógico es fundamentalmente inviable frente al volumen de información que se genera diariamente en el país. La latencia introducida por el factor humano limita drásticamente la capacidad de procesamiento, provocando que una cantidad incuantificable de casos pasen completamente desapercibidos simplemente porque es imposible auditar todas las fuentes periodísticas nacionales y regionales disponibles de forma concurrente.
-
-Este cuello de botella operativo agota los recursos humanos, técnicos y financieros de las organizaciones, desviando talento especializado (psicólogos, abogados, trabajadores sociales) hacia labores de recolección de datos en lugar de la intervención directa con las víctimas. Por consiguiente, se requiere imperativamente un sistema automatizado que actúe como un embudo de procesamiento inicial: una arquitectura capaz de ingerir cientos de noticias diarias de manera programática, identificar con precisión aquellas que contienen menciones potencialmente relevantes sobre NNA afectados por violencia feminicida, y presentar esta información de manera estructurada. Esto permitirá a las organizaciones reasignar sus recursos hacia el seguimiento de casos concretos y la atención a las víctimas, maximizando su impacto social.
-
-\subsection{Justificación Tecnológica}
-\label{subsec:justificacion_tecnologica}
-
-Desde una perspectiva de ingeniería en sistemas computacionales, la recolección y estructuración de esta información representa un desafío de alta complejidad debido a la naturaleza no estructurada y volátil de los datos en la web. Durante la primera fase de esta investigación (Trabajo Terminal I), se demostró empíricamente la insuficiencia de métodos de recolección triviales. Las arquitecturas de \textit{web scraping} directo enfrentaron bloqueos persistentes por infraestructuras de mitigación como Cloudflare (errores HTTP 403), mientras que la dependencia exclusiva de canales RSS demostró ser insuficiente para alcanzar una cobertura estadísticamente significativa, recolectando apenas un centenar de noticias en periodos quincenales.
-
-La evolución hacia un modelo híbrido de recolección (combinando sindicación web, interfaces de programación de aplicaciones como Google News API y recolección histórica basada en heurísticas) evidenció la viabilidad de capturar el volumen de datos necesario. No obstante, el desafío tecnológico trasciende la mera adquisición de los documentos; reside en la comprensión semántica de los mismos. La implementación de técnicas de Procesamiento de Lenguaje Natural (PLN) es fundamental para distinguir una mención relevante de una víctima indirecta frente al ruido estadístico, reportes gubernamentales generales o menciones no relacionadas.
-
-El desarrollo de este sistema justifica la aplicación de arquitecturas de software modernas, procesamiento concurrente, bases de datos relacionales y modelos de aprendizaje automático (vectorización de texto, modelado de tópicos y algoritmos de \textit{clustering} para la deduplicación de eventos periodísticos). Al transformar texto no estructurado en una base de conocimientos consultable, el proyecto no solo provee una herramienta de impacto social inmediato, sino que aporta un caso de estudio robusto sobre la aplicación de la inteligencia artificial para la inteligencia de fuentes abiertas (OSINT) enfocada en derechos humanos.
-
-\section{Objetivos}
+\section{Objetivos del Proyecto}
 \label{sec:objetivos}
+
 
 \subsection{Objetivo General}
 \label{subsec:objetivo_general}
 
-Desarrollar y desplegar una plataforma tecnológica integral y automatizada que recolecte, analice, estructure y persista información sobre Niñas, Niños y Adolescentes (NNA) en situación de orfandad por feminicidios en México, aplicando metodologías avanzadas de \textit{web scraping} y algoritmos de Procesamiento de Lenguaje Natural (PLN) sobre fuentes periodísticas de acceso público.
+Desarrollar un sistema inteligente que sea capaz de automatizar la recolección, clasificación y análisis de 
+información relacionadas con casos de feminicidio, para facilitar la identificación de niños, niñas y adolescentes 
+que se encuentren en una situación de orfandad en consecuencia de los crímenes de violencias. Mediante el uso 
+de Web Scraping y Procesamiento de Lenguaje Natural
 
 \subsection{Objetivos Específicos}
 \label{subsec:objetivos_especificos}
 
-\begin{itemize}
-    \item Implementar una arquitectura de recolección de datos distribuida e híbrida que integre canales RSS, APIs de búsqueda indexada y rutinas de \textit{scraping} histórico para garantizar una cobertura exhaustiva de medios periodísticos a nivel nacional y regional.
-    \item Desarrollar y calibrar un motor de análisis semántico y detección de eventos que discrimine con alta precisión las noticias de violencia de género e identifique algorítmicamente las menciones de NNA afectados, minimizando la tasa de falsos positivos frente a reportes puramente estadísticos.
-    \item Diseñar un flujo de procesamiento de lenguaje natural que incorpore normalización lexicológica, vectorización, modelado probabilístico de tópicos y técnicas de \textit{clustering} espacial basado en densidad (DBSCAN) para la consolidación de múltiples reportes mediáticos referentes a un mismo evento fáctico.
-    \item Construir una arquitectura de microservicios que integre una API RESTful y un panel de control interactivo (\textit{dashboard}) que permita a los usuarios finales la consulta eficiente de registros históricos, la visualización de métricas analíticas y la exportación de datos estructurados.
-\end{itemize}
+\begin{description}
+    \item[\textbf{OE-1}]
+          Identificar y seleccionar fuentes públicas confiables que contengan información relacionada con feminicidios y posibles víctimas indirectas.
 
-\section{Evolución y Alcances del Proyecto}
-\label{sec:evolucion_alcances}
+    \item[\textbf{OE-2}]
+          Diseñar y desarrollar una herramienta automatizada de Web Scraping para la recolección sistemática de datos provenientes de dichas fuentes.
 
-El ciclo de desarrollo del sistema está estructurado en dos fases semestrales. La primera fase (Trabajo Terminal I) se centró en la validación de la viabilidad técnica mediante el desarrollo de prototipos iterativos. Esta etapa demostró que la combinación de expresiones regulares complejas, modelos de espacio vectorial (TF-IDF) y técnicas de agrupamiento permite identificar patrones relevantes en el corpus periodístico, reduciendo significativamente la carga de revisión manual.
+    \item[\textbf{OE-3} ]
+          Implementar técnicas de Procesamiento de Lenguaje Natural (PLN) para extraer y estructurar información clave a partir de textos no estructurados.
 
-Sin embargo, los prototipos iniciales delimitaron las restricciones tecnológicas a superar en el presente ciclo (Trabajo Terminal II). Específicamente, el sistema transitó de depender de bases de datos planas (archivos CSV), las cuales impiden el acceso concurrente y limitan la complejidad transaccional, hacia un modelo de persistencia relacional robusto. Asimismo, se identificó la necesidad de superar las limitaciones de la agrupación puramente sintáctica para incorporar motores de inferencia semántica (como modelos basados en arquitecturas Transformer) que comprendan el contexto del lenguaje periodístico y extraigan de forma automatizada las entidades nombradas, como ubicaciones geográficas y nombres de víctimas. 
+    \item[\textbf{OE-4}]
+          Diseñar una base de datos estructurada que permita almacenar la información recolectada de manera eficiente y segura.
 
-Estos requerimientos fundamentan el alcance del Trabajo Terminal II, cuyo propósito final es la entrega de un sistema de calidad de producción, altamente escalable y listo para su adopción por parte de organizaciones civiles que exigen herramientas tecnológicas precisas para la defensa de los derechos humanos.
+\end{description}
+
