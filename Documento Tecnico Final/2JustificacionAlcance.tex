@@ -4,67 +4,106 @@
 \chapter{Justificación y Alcance del Proyecto}
 \label{cap:justificacionAlcance}
 
-Este capítulo presenta la justificación social, tecnológica y ética que sustenta el desarrollo del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA}, así como el alcance del sistema, sus limitaciones y la alineación con el protocolo de Trabajo Terminal 2026-A135.
+En este capítulo se presenta la justificación social, tecnológica y ética que sustenta el desarrollo del
+\textit{Sistema Inteligente para la Identificación y Seguimiento de NNA} y se delimita el alcance del sistema,
+sus limitaciones y la alineación con el protocolo de Trabajo Terminal 2026-A135.
 
 %---------------------------------------------------------
 \section{Justificación Social}
 \label{sec:justificacionSocial}
 
-Entre 2010 y 2023, más de 8{,}000 mujeres fueron víctimas de feminicidio en México, según datos de la Secretaría de Gobernación \cite{segob2023}. Detrás de estas cifras se encuentran miles de niñas, niños y adolescentes (NNA) que quedaron en condición de orfandad. La Red por los Derechos de la Infancia en México (REDIM) estima que al menos 3{,}500 NNA perdieron a su madre por feminicidio entre 2012 y 2022 \cite{redim2023}; sin embargo, no existe un censo oficial ni un sistema de seguimiento que permita dimensionar con precisión el alcance de esta crisis.
+Entre 2010 y 2023 más de 8{,}000 mujeres fueron víctimas de feminicidio en México, según datos de la Secretaría de Gobernación
+\cite{segob2023}. Detrás de estas cifras se encuentran miles de niñas, niños y adolescentes (NNA) que quedaron en condición
+de orfandad. La Red por los Derechos de la Infancia en México (REDIM) estima que al menos 3{,}500 NNA perdieron a su madre
+por feminicidio entre 2012 y 2022 \cite{redim2023}, sin embargo no existe un censo oficial ni un sistema de seguimiento que
+permita dimensionar con precisión el alcance de esta crisis.
 
-La información sobre los hijos e hijas de las víctimas se encuentra fragmentada y dispersa: puede aparecer en una nota periodística local, en el comunicado de una fiscalía estatal o en los archivos internos de alguna organización civil. Sin un mecanismo que conecte estos fragmentos de información, resulta prácticamente imposible rastrear qué ha sucedido con esos menores: si recibieron atención psicológica, si mantienen acceso a educación, si se les garantizó reparación del daño o si fueron canalizados a instituciones como el Sistema DIF.
+La información sobre los hijos e hijas de las víctimas se encuentra fragmentada y dispersa pues puede aparecer en una nota
+periodística local, en el comunicado de una fiscalía estatal o en los archivos internos de alguna organización civil. Sin
+un mecanismo que conecte estos fragmentos de información resulta prácticamente imposible rastrear qué ha sucedido con esos
+menores y de si recibieron atención psicológica, si mantienen acceso a educación, si se les garantizó reparación del daño
+o si fueron canalizados a instituciones como en el DIF.
 
-Las consecuencias de esta dispersión son directas y cuantificables:
+Algunas de las consecuencias de esta dispersión son:
 
 \begin{itemize}
-    \item \textbf{Para las organizaciones civiles:} Fundaciones como \textit{Futuro con Derechos} dedican varias horas semanales a revisar manualmente decenas de sitios de noticias buscando casos donde se mencione a hijos de víctimas de feminicidio. Reconocen que muchos casos pasan desapercibidos porque es imposible revisar todas las fuentes disponibles con recursos humanos limitados.
+    \item \textbf{Para las organizaciones civiles:} Organizaciones como \textit{Futuro con Derechos} dedican varias horas
+    semanales a revisar manualmente decenas de sitios de noticias buscando casos donde se mencione a hijos de víctimas de
+    feminicidio. Reconocen que muchos casos pasan desapercibidos porque es imposible revisar todas las fuentes disponibles
+    con recursos humanos limitados.
     
-    \item \textbf{Para las autoridades:} Sin datos estructurados ni trazables, las instituciones gubernamentales carecen de información para evaluar la efectividad de sus programas de atención a víctimas indirectas y para diseñar políticas públicas basadas en evidencia.
+    \item \textbf{Para las autoridades:} Sin datos estructurados ni trazables las instituciones gubernamentales carecen de
+    información para evaluar la efectividad de sus programas de atención a víctimas indirectas y para diseñar políticas
+    públicas basadas en evidencia.
     
-    \item \textbf{Para las familias:} Los familiares de las víctimas frecuentemente desconocen sus derechos, las instituciones de apoyo disponibles y los mecanismos de reparación del daño. La falta de un sistema de seguimiento dificulta la coordinación interinstitucional.
+    \item \textbf{Para las familias:} Los familiares de las víctimas frecuentemente desconocen sus derechos, las instituciones
+    de apoyo disponibles y los mecanismos de reparación del daño. La falta de un sistema de seguimiento dificulta la coordinación
+    interinstitucional.
 \end{itemize}
 
-Un sistema automatizado que actúe como filtro inicial ---procesando cientos de noticias diarias, identificando las potencialmente relevantes y presentándolas estructuradas--- permite que las organizaciones dediquen su tiempo al seguimiento de casos concretos en lugar de a la búsqueda manual de información.
+Un sistema automatizado que actúe como filtro inicial que procese cientos de noticias, identificando asi las potencialmente relevantes
+y presentándolas estructuradas, permite que las organizaciones dediquen su tiempo al seguimiento de casos concretos en lugar de a
+la búsqueda manual de información.
 
 %---------------------------------------------------------
 \section{Justificación Tecnológica}
 \label{sec:justificacionTecnologica}
 
-La revisión manual de medios de comunicación es inviable a escala nacional. México cuenta con cientos de medios digitales ---nacionales, estatales y locales--- que publican diariamente noticias relacionadas con feminicidios. La cobertura periodística de cada caso varía significativamente: algunos eventos son cubiertos por múltiples medios con redacciones diferentes, mientras que otros aparecen exclusivamente en medios regionales de bajo alcance.
+La revisión manual de medios de comunicación no es viable a escala nacional pues México cuenta con cientos de medios
+digitales (nacionales, estatales y locales) que publican diariamente noticias relacionadas con feminicidios. La cobertura
+periodística de cada caso varía significativamente pues algunos eventos son cubiertos por múltiples medios con redacciones
+diferentes, mientras que otros aparecen exclusivamente en medios regionales de bajo alcance.
 
-Durante el desarrollo del Trabajo Terminal 1 (TT1), se probaron tres enfoques de recolección que evidenciaron la complejidad técnica del problema:
+Durante el desarrollo del Trabajo Terminal I, se probaron tres enfoques de recolección que evidenciaron la complejidad técnica del problema:
 
 \begin{enumerate}
-    \item \textbf{Scraping directo (Prototipo 0):} Fracasó completamente. Los medios modernos emplean protecciones como Cloudflare, contenido renderizado con JavaScript y bloqueos HTTP 403, haciendo inviable la extracción directa de HTML.
+    \item \textbf{Scraping directo (Prototipo 0):} Fracasó completamente. Los medios modernos emplean protecciones como
+    cloudflare, contenido renderizado con JavaScript y bloqueos HTTP 403, haciendo complicada la extracción directa del HTML.
     
-    \item \textbf{RSS básico (Prototipo 1):} Funcionó parcialmente con 8 fuentes RSS, recolectando aproximadamente 96 noticias en dos semanas. Sin embargo, la cobertura se limitaba a medios nacionales con feeds públicos.
+    \item \textbf{RSS básico (Prototipo 1):} Funcionó parcialmente con 8 fuentes RSS, recolectando aproximadamente 56 noticias
+    en dos semanas. La cuestion era que la cobertura se limitaba a medios nacionales con feeds públicos.
     
-    \item \textbf{Triple fuente (Prototipo 2):} Combinó 10 RSS, Google News API y scraping histórico, alcanzando 281 noticias únicas. Este enfoque demostró la viabilidad de la recolección multi-fuente, pero mantenía limitaciones en la detección semántica (10\% de falsos positivos con regex).
-\end{enumerate}
+    \item \textbf{Triple fuente (Prototipo 2):} Combinó 10 RSS, Google News y scraping histórico, alcanzando 250 noticias únicas.
+    Este enfoque nos hizo ver que la viabilidad de la recolección multi-fuente existía, pero aún mantenía limitaciones en la detección
+    semántica (Mas del 80\% de falsos positivos con expresiones regulares).
+\end{enumerate} 
 
-El TT2 evoluciona estas estrategias mediante la integración de tecnologías de Procesamiento de Lenguaje Natural (PLN) de última generación:
+Trabajo Terminal II representa una evolución significativa de estas estrategias mediante la integración de tecnologías de
+procesamiento de lenguaje natural (PLN):
 
 \begin{description}
-    \item[BETO (BERT en español):] Modelo de lenguaje preentrenado con 110 millones de parámetros que permite comprender el contexto semántico de las noticias, distinguiendo entre casos concretos de feminicidio con NNA afectados y noticias de legislación, campañas o estadísticas que mencionan las mismas palabras clave.
+    \item[BETO (BERT en español):] Modelo de lenguaje preentrenado con 110 millones de parámetros que permite comprender el contexto
+    semántico de las noticias, distinguiendo entre casos concretos de feminicidio con NNA afectados y noticias de legislación,
+    campañas o estadísticas que mencionan las mismas palabras clave.
     
-    \item[BERTopic:] Sistema de clustering semántico que combina embeddings contextuales (BETO), reducción de dimensionalidad (UMAP) y clustering basado en densidad (HDBSCAN) para agrupar noticias por similitud de significado, no solo de vocabulario.
+    \item[BERTopic:] Sistema de clustering semántico que combina embeddings contextuales (BETO), reducción de dimensionalidad
+    (UMAP) y clustering basado en densidad (HDBSCAN) para agrupar noticias por similitud de significado, no solo de vocabulario.
     
-    \item[Deduplicación cross-site:] Cascada de cuatro algoritmos (Hash MD5, Jaccard, SimHash, TF-IDF coseno) que elimina automáticamente noticias duplicadas o cuasi-duplicadas provenientes de diferentes medios.
+    \item[Deduplicación:] Sistema de cuatro algoritmos (Hash MD5, Jaccard, SimHash, TF-IDF coseno) que elimina automáticamente
+    noticias duplicadas o cuasi-duplicadas provenientes de diferentes medios.
     
-    \item[PostgreSQL:] Base de datos relacional que reemplaza el almacenamiento en archivos CSV, habilitando consultas complejas, integridad referencial y acceso concurrente.
+    \item[PostgreSQL:] Base de datos relacional que reemplaza el almacenamiento en archivos CSV, habilitando consultas complejas,
+    integridad referencial y acceso concurrente.
 \end{description}
 
-Estas tecnologías transforman texto no estructurado en datos consultables, permitiendo análisis cuantitativos (tendencias temporales, distribución geográfica) y cualitativos (agrupación temática, seguimiento de casos) que serían imposibles mediante revisión manual.
+Gracias a estas tecnologías se transforma texto no estructurado en datos consultables, permitiendo análisis cuantitativos
+(tendencias temporales, distribución geográfica) y cualitativos (agrupación temática, seguimiento de casos) que serían
+imposibles mediante revisión manual.
 
-%---------------------------------------------------------
-\section{Justificación Ética y Moral: Protección de la Privacidad de los NNA}
-\label{sec:justificacionEtica}
 
-\subsection{Principio rector: El interés superior del niño}
+\section{Justificación ética y moral: Protección de la privacidad de los NNA}
+\label{sec:justificacionEtica} 
 
-El desarrollo de este sistema se enmarca en un principio ético fundamental: \textbf{el interés superior del niño}, consagrado en el artículo 3 de la Convención sobre los Derechos del Niño de las Naciones Unidas \cite{onu1989} y en el artículo 2 de la Ley General de los Derechos de Niñas, Niños y Adolescentes de México \cite{lgdnna2014}. Este principio establece que cualquier acción que involucre a menores de edad debe priorizar su bienestar, protección y dignidad por encima de cualquier otro interés.
+\subsection{El interés superior del niño}
 
-En concordancia con este principio, el sistema ha sido diseñado desde su concepción con una restricción deliberada y no negociable: \textbf{no identifica ni almacena datos personales de los NNA reales}.
+El desarrollo de este sistema se enmarca en un principio ético fundamental: \textbf{el interés superior del niño},
+establecido en el artículo 3 de la Convención sobre los Derechos del Niño de las Naciones Unidas \cite{onu1989}
+y en el artículo 2 de la Ley General de los Derechos de Niñas, Niños y Adolescentes de México \cite{lgdnna2014}.
+Este principio establece que cualquier acción que involucre a menores de edad debe priorizar su bienestar, protección
+y dignidad por encima de cualquier otro interés.
+
+En concordancia con este principio, el sistema ha sido diseñado desde su concepción con una restricción deliberada
+y no negociable: \textbf{no identifica ni almacena datos personales de los NNA reales}.
 
 \subsection{Naturaleza de la información procesada}
 
