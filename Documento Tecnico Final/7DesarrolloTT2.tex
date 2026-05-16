@@ -1,199 +1,176 @@
 % CAPÍTULO 7 DESARROLLO DEL TT2, PROTOTIPOS 3 Y 4
 
 
-\chapter{Desarrollo del TT2: Prototipos 3 y 4}
+\chapter{Desarrollo de Trabajo Terminal II}
 \label{cap:desarrolloTT2}
 
-Este capítulo constituye el núcleo ingenieril del Trabajo Terminal II.
-A diferencia del enfoque descriptivo empleado en el Capítulo~\ref{cap:desarrolloTT1},
-la narrativa adoptada aquí es deliberadamente evolutiva y autocrítica: cada decisión
-de diseño se presenta como respuesta directa a una deficiencia medida y documentada
-de la iteración anterior. El Prototipo~3 (P3) y el Prototipo~4 (P4) no surgieron de
-una planificación inicial perfecta, sino de un proceso riguroso de \textit{diagnóstico,
-rediseño e integración incremental} que transformó un clasificador heurístico frágil
-en una plataforma neuro-simbólica tolerante a fallos.
+Este capítulo constituye el desarrollo ingenieril del Trabajo Terminal II.
+A diferencia del enfoque descriptivo empleado en el capitulo anterior, la narrativa aquí
+es evolutiva y autocrítica pues cada decisión de diseño se presenta como respuesta directa
+a una deficiencia medida y documentada de la iteración anterior. El Prototipo~3 y el
+Prototipo~4 no surgieron de una planificación inicial perfecta, sino de un proceso riguroso
+de \textit{diagnóstico, rediseño e integración incremental} que hizo posible transformar
+un clasificador heurístico frágil en una plataforma robusta y escalable.
 
-La arquitectura resultante, opera sobre tres objetivos específicos derivados del protocolo 2026-A135:
- (OE-1)~migración de detección sintáctica a semántica, (OE-3)~persistencia relacional con búsqueda
-de texto completo, y (OE-4)~agrupamiento semántico global previo a la clasificación
-individual. Estos tres ejes articulan todas las decisiones técnicas documentadas
+La arquitectura resultante opera sobre tres objetivos específicos derivados del protocolo
+2026-A135: (OE-1) Identificar y seleccionar fuentes públicas confiables que contengan información relacionada con feminicidios y
+posibles víctimas indirectas, (OE-3) Implementar técnicas de Procesamiento de Lenguaje Natural para extraer y estructurar información
+clave a partir de textos no estructurados, y (OE-4) Diseñar una base de datos estructurada que permita almacenar la información
+recolectada de manera eficiente y segura. Estos tres ejes gestionan todas las decisiones técnicas documentadas
 en las siguientes secciones.
 
-
-\section{Contexto: Deuda Técnica Heredada del TT1}
+\section{Contexto: Deuda técnica heredada de TT1}
 \label{sec:tt2_deuda_tecnica}
 
 
-A finales del semestre pasado(2026-1) el sistema heredado presentaba tres limitaciones estructurales
+A finales del semestre pasado(2026-1) el sistema hasta el momento presentaba tres limitaciones estructurales
 que propiciaron un rediseño del sistema.
 
-\textbf{Limitación~1 — Ceguera sintáctica del motor RegEx.}
-El módulo \texttt{FeminicideDetector} del Prototipo~2 evaluaba la \textit{co-ocurrencia
+\textbf{Limitación~1 Ceguera sintáctica del motor RegEx.}
+El módulo \texttt{FeminicideDetector} del prototipo~2 evaluaba la \textit{co-ocurrencia
 espacial} de tokens léxicos sin comprender el rol gramatical de cada entidad. La tasa
-de falsos positivos auditada manualmente alcanzó el \textbf{10\%}, manifestada
-principalmente en tres escenarios de falla sistémica:
+de falsos positivos vistos manualmente alcanzó el \textbf{80\%}, notamos que se manifestaba
+principalmente en tres escenarios de falla sistémica: 
 \begin{enumerate}
-    \item Titulares del tipo \textit{``Menor de edad detenido por feminicidio''},
-          donde el modelo detectaba la co-ocurrencia \texttt{menor}+\texttt{feminicidio}
-          y activaba la alerta de orfandad, cuando el menor era el \textit{agresor},
-          no una víctima indirecta.
-    \item Notas estadísticas gubernamentales (\textit{``10 feminicidios mensuales,
-          5 huérfanos en promedio''}) que disparaban prioridad máxima al concentrar
+    \item Titulares como \textit{"Menor de edad detenido por feminicidio"},
+          donde el modelo detectaba la co-ocurrencia "menor"+"feminicidio"
+          y activaba la alerta de orfandad, cuando en realidad el menor era
+          el agresor y no una víctima indirecta.
+    \item Notas estadísticas gubernamentales (\textit{"10 feminicidios mensuales,
+          5 huérfanos en promedio"}) que disparaban prioridad máxima al concentrar
           todos los tokens detonantes en un solo párrafo.
-    \item Crónicas donde la víctima \textit{directa} del feminicidio era una menor
-          de edad, confundidas sistemáticamente con casos de orfandad colateral.
+    \item Noticias donde la víctima directa del feminicidio era una menor
+          de edad y eran confundidas sistemáticamente con casos de orfandad colateral.
 \end{enumerate}
 
-\textbf{Limitación~2 — Cuello de botella en persistencia plana.}
+\textbf{Limitación~2 Cuello de botella en persistencia plana.}
 El almacenamiento en archivos CSV (\texttt{noticias.csv}) impedía la ejecución de
 consultas de filtrado sin cargar la totalidad del corpus en memoria RAM
-($O(n)$ sobre el conjunto completo). Con un volumen de 281~registros en P2, la
-latencia era tolerable; proyectado a escala nacional (miles de noticias mensuales),
-esta arquitectura era inviable. La ausencia de integridad referencial imposibilitaba,
-además, mantener relaciones consistentes entre noticias, fuentes y resultados de
+($O(n)$ sobre el conjunto completo). Con un volumen de 250~registros en el prototipo 2,
+la latencia era tolerable pero proyectado a escala nacional (miles de noticias),
+esta arquitectura resultaba ser ineficiente mientras que la ausencia de integridad referencial
+hace dificil mantener relaciones consistentes entre noticias, fuentes y resultados de
 análisis.
 
-\textbf{Limitación~3 — Clustering K-Means desacoplado del clasificador.}
-El agrupamiento temático se ejecutaba \textit{después} de la clasificación individual,
-privando al clasificador de contexto global. Una noticia genérica sobre política
+\textbf{Limitación~3 Clustering K-Means desacoplado del clasificador.}
+El agrupamiento temático se ejecutaba \textit{después} de la clasificación individual lo
+que privaba al clasificador del contexto global. Una noticia genérica sobre política
 criminal podía obtener el mismo score heurístico que un caso concreto de feminicidio
-con NNA afectados, sin que el sistema dispusiera de información sobre el ``paisaje
-periodístico'' del momento.
+con NNA afectados, sin que el sistema supiera en que contexto se encontraba.
 
-Estas tres limitaciones definieron con precisión el alcance del TT2 y determinaron
-el orden de implementación de las soluciones.
+Estas tres limitaciones definieron con precisión el alcance del sistema y el orden de
+implementación de las soluciones.
 
 
-\section{Patrones Arquitectónicos del flujo analítico}
+\section{Patrones arquitectónicos del flujo analítico}
 \label{sec:tt2_patrones}
 
 Para garantizar la mantenibilidad y extensibilidad del sistema, el flujo analítico
-implementa dos patrones de diseño empresariales que desacoplan responsabilidades
-críticas.
+implementa dos patrones de diseño que desacoplan responsabilidades.
 
-\subsection{Patrón \textit{Repository} para la Capa de Persistencia}
+\subsection{Patrón \textit{Repository} para la capa de persistencia}
 \label{subsec:tt2_repository}
 
-El acceso a PostgreSQL se encapsula íntegramente en la clase
-\texttt{NoticiasRepository} (\texttt{src/database/repository.py}), siguiendo el
-patrón \textit{Repository} de Martin Fowler~\cite{fowler2002}. Esta decisión persigue
-dos objetivos: (a)~aislar la lógica de negocio de los detalles del motor de base de
-datos, permitiendo sustituir PostgreSQL por cualquier otro backend sin modificar el
-pipeline analítico; y (b)~centralizar la gestión de sesiones SQLAlchemy, evitando
-fugas de conexiones (\textit{connection leaks}) en un entorno Flask multi-hilo.
+El acceso a PostgreSQL se encapsula en la clase \texttt{NoticiasRepository}
+(\texttt{src/database/repository.py}), siguiendo el patrón \textit{Repository}
+de Martin Fowler~\cite{fowler2002}. Esta decisión tiene dos objetivos:
+(a)~aislar la lógica de negocio del motor de base de datos, permitiendo
+sustituir PostgreSQL por cualquier otro backend sin modificar el Flujo analítico;
+(b)~centralizar la gestión de sesiones SQLAlchemy, evitando asi fugas de conexiones
+(\textit{connection leaks}) en un entorno Flask multi-hilo.
+El repositorio expone métodos tipados que internamente utilizan los índices invertidos
+de PostgreSQL sobre columnas \texttt{tsvector} lo que garantiza búsquedas en
+$O(\log n)$ frente al $O(n)$ del filtrado CSV.
 
-El repositorio expone métodos tipados como \texttt{crear\_batch(records: list[dict])}
-y \texttt{buscar\_fts(query: str)} que internamente explotan los índices invertidos
-GIN (\textit{Generalized Inverted Index}) de PostgreSQL sobre columnas
-\texttt{tsvector}, garantizando búsquedas en $O(\log n)$ frente al $O(n)$ del
-filtrado CSV.
-
-\subsection{Patrón \textit{Pipeline} para el Flujo Analítico}
+\subsection{Patrón \textit{Pipeline} para el flujo analítico}
 \label{subsec:tt2_pipeline}
 
 El orquestador principal \texttt{SimplifiedNewsAnalyzer} materializa el patrón
-\textit{Pipeline} mediante once pasos discretos y ordenados
-(\texttt{step\_1} a \texttt{step\_11}). Cada paso recibe el estado mutado por el
-anterior a través del atributo compartido \texttt{self.df\_processed}, y puede
+\textit{pipeline} mediante diez pasos discretos y ordenados. Cada paso recibe el
+estado modificado por el anterior a través del atributo compartido \texttt{self.df\_processed}, y puede
 activarse o desactivarse mediante \textit{feature flags} booleanos en la llamada
-a \texttt{run\_complete\_analysis()}:
+a \texttt{run\_complete\_analysis()}.
 
-\begin{lstlisting}[language=Python,
-    caption={Feature flags del Pipeline v5.0 para activación modular},
-    label={lst:pipeline_flags}]
-resultado = analyzer.run_complete_analysis(
-    enable_semantic=True,    # OE-1: BETO (step_9)
-    enable_bertopic=True,    # OE-4: BERTopic (step_10)
-    enable_postgres=True,    # OE-3: PostgreSQL (step_11)
-    scraper_type='all',
-)
-\end{lstlisting}
+Este diseño permite por ejemplo desactivar la funcinalidad de \texttt{enable\_bertopic} en entornos
+con memoria RAM limitada (debajo de 4 GB) sin comprometer la clasificación semántica
+ni la persistencia, preservando asi el principio de responsabilidad única de cada módulo.
 
-Este diseño permite, por ejemplo, desactivar \texttt{enable\_bertopic} en entornos
-con memoria RAM limitada (\textless~4~GB) sin comprometer la clasificación semántica
-ni la persistencia, preservando el principio de responsabilidad única de cada módulo.
 
-%----------------------------------------------------------------------------------------
-\section{Prototipo 3: Motor Semántico BETO y Migración de Persistencia}
+\section{Prototipo 3 Motor semántico BETO y migración de persistencia}
 \label{sec:tt2_prototipo3}
-%----------------------------------------------------------------------------------------
+
 
 El Prototipo~3 introduce simultáneamente las dos soluciones de mayor impacto
-arquitectónico: la sustitución del motor sintáctico por BETO y la migración del
-almacenamiento plano a PostgreSQL. Ambas transformaciones son interdependientes:
-PostgreSQL provee la infraestructura relacional que permite almacenar los nuevos
-campos semánticos generados por BETO (\texttt{score\_semantico},
-\texttt{modo\_deteccion}, \texttt{topic\_id}) con integridad referencial garantizada.
+arquitectónico que por un lado es la sustitución del motor sintáctico por BETO y
+por el otro es la migración del almacenamiento plano a PostgreSQL. Ambas
+transformaciones son interdependientes pues PostgreSQL provee la infraestructura
+relacional que permite almacenar los nuevos campos semánticos generados por
+BETO (\texttt{score\_semantico}, \texttt{modo\_deteccion}, \texttt{topic\_id}) con
+integridad referencial.
 
-\subsection{Migración CSV \texorpdfstring{$\rightarrow$}{->} PostgreSQL (OE-3)}
-\label{subsec:tt2_postgres}
+\subsection{Migración de CSV a PostgreSQL}
+\label{subsec:tt2_postgres} 
 
-La migración del sistema de persistencia constituye el hito de infraestructura más
-significativo del TT2. La justificación técnica de abandonar CSV en favor de
-PostgreSQL se articula en torno a cuatro argumentos que el análisis de capacidad
-del TT1 hizo irrefutables:
+La migración del sistema de persistencia es uno de los puntos de mayor impacto
+para el TT2. La justificación técnica de abandonar CSV en favor de
+PostgreSQL se basa en tres argumentos que se hicieron evidentes durante el TT1.
 
 \begin{enumerate}
     \item \textbf{Integridad referencial.} Una arquitectura multi-tabla (noticias,
           fuentes, clusters, batches de ejecución) requiere claves foráneas con
           restricciones \texttt{FOREIGN KEY} que garanticen la consistencia de los
           datos. Los archivos CSV no tienen mecanismo alguno de relación entre
-          entidades; cualquier join debía realizarse en memoria con Pandas,
-          consumiendo RAM proporcional al tamaño del corpus.
+          entidades; cualquier join debía realizarse en memoria con Pandas cosa que
+          es costosa en terminos de RAM.
 
     \item \textbf{Búsqueda de texto completo (FTS).} PostgreSQL implementa FTS
           nativa mediante columnas \texttt{tsvector} e índices GIN. Una consulta
-          como ``niños huérfanos DIF Veracruz'' se traduce a una intersección de
+          como "niños huérfanos DIF Veracruz" se traduce a una intersección de
           vectores léxicos en $O(\log n)$. El equivalente en CSV exige iterar cada
           registro y aplicar expresiones regulares en $O(n)$.
 
-    \item \textbf{Concurrencia segura.} El dashboard Flask y el pipeline analítico
-          pueden ejecutarse simultáneamente sin corrupción de datos, gracias al
-          modelo ACID de PostgreSQL. La escritura concurrente en un mismo archivo
-          CSV requería locks manuales propensos a condiciones de carrera.
-
-    \item \textbf{Escalabilidad horizontal.} La migración a PostgreSQL sienta las
-          bases para una futura replicación y particionado por fecha, sin cambios
-          en la lógica de la aplicación.
+    \item \textbf{Concurrencia segura.} El dashboard en Flask y el flujo de
+          extracción analítica pueden ejecutarse simultáneamente sin corrupción de
+          datos, gracias al modelo ACID de PostgreSQL. La escritura concurrente
+          en un mismo archivo CSV requería locks manuales propensos a condiciones
+          de carrera.
 \end{enumerate}
 
-El esquema de la tabla principal \texttt{noticias} almacena, entre otros campos,
-\texttt{score\_semantico FLOAT}, \texttt{topic\_id INTEGER},
-\texttt{clasificacion\_final VARCHAR(20)} y \texttt{search\_vector tsvector},
-este último actualizado automáticamente por un \textit{trigger} PostgreSQL que
-concatena título y contenido al momento de la inserción.
+El esquema de la tabla principal \texttt{noticias} almacena campos como
+\texttt{score\_semantico FLOAT}, \texttt{topic\_id INTEGER}, \texttt{clasificacion\_final VARCHAR(20)}
+\texttt{y} \texttt{search\_vector tsvector}. Este último campo se actualiza automáticamente por
+un \textit{trigger} PostgreSQL que concatena título y contenido al momento de la inserción.
 
-\subsection{Arquitectura del Motor BETO}
+\subsection{Arquitectura del motor BETO}
 \label{subsec:tt2_beto}
 
-Al inicio del TT2 se determinó que el motor RegEx había alcanzado su límite
-asintótico de optimización. La migración al modelo BETO
-(\textit{dccuchile/bert-base-spanish-wwm-cased}) responde a una necesidad de
+Al inicio del TT2 se definió que el motor RegEx con expresiones regulares ya había
+alcanzado su límite de optimización por lo que se decidió migrar al modelo BETO
+(\textit{bert-base-spanish-wwm-cased}) que responde a una necesidad de
 \textit{comprensión contextual} que ningún sistema basado en patrones léxicos puede
 proveer. BETO es un modelo Transformer bidireccional con \textbf{110 millones de
 parámetros}, 12 capas de autoatención y embeddings de 768 dimensiones, preentrenado
 sobre Wikipedia en español y corpus OPUS mediante el objetivo de Modelado de Lenguaje
 Enmascarado (MLM).
 
-La arquitectura interna del clasificador, implementada en la clase
-\texttt{SemanticDetector} (\texttt{src/analysis/semantic\_detector.py}), opera
-según el siguiente flujo:
+La arquitectura interna del clasificador implementada en la clase
+\texttt{SemanticDetector} opera según el siguiente flujo:
 
 \begin{enumerate}
     \item \textbf{Tokenización WordPiece.} El texto de entrada (título concatenado
           con los primeros 1{,}500~caracteres del contenido, separados por el token
-          especial \texttt{[SEP]}) es fragmentado mediante el algoritmo WordPiece,
+          especial \texttt{[SEP]}) es fragmentado mediante el algoritmo WordPiece
           que descompone palabras fuera de vocabulario en sub-tokens reconocibles.
-          Esto resuelve el problema de neologismos y variantes ortográficas
-          comunes en el periodismo mexicano.
+          Esto resuelve el problema de variantes ortográficas comunes en el periodismo
+          mexicano.
 
     \item \textbf{\textit{Forward pass} a través de 12 capas Transformer.} Cada
           capa aplica mecanismos de \textit{self-attention} multi-cabeza que
           recalculan el valor de cada token en función de su contexto bidireccional
-          completo. El resultado es que el token ``menor'' adquiere representaciones
+          completo. El resultado es que el token "menor" adquiere representaciones
           vectoriales radicalmente diferentes dependiendo de si aparece como sujeto
-          activo (``un menor agredió'') o como objeto pasivo (``sus hijos menores
-          quedaron huérfanos'').
+          activo ("un menor agredió") o como objeto pasivo ("sus hijos menores
+          quedaron huérfanos").
 
     \item \textbf{Extracción del embedding \texttt{[CLS]}.} El token especial
           \texttt{[CLS]} (primer token de toda secuencia BERT) acumula durante el
@@ -203,23 +180,6 @@ según el siguiente flujo:
           para habilitar la comparación por similitud coseno.
 \end{enumerate}
 
-La clase \texttt{BETOClassifier} añade una cabeza de clasificación binaria sobre
-el encoder base:
-
-\begin{lstlisting}[language=Python,
-    caption={Arquitectura de la cabeza de clasificaci\'on del \texttt{BETOClassifier}},
-    label={lst:beto_classifier}]
-self.classifier = nn.Sequential(
-    nn.Dropout(0.3),          # Regularizacion: previene sobreajuste
-    nn.Linear(768, 256),      # Proyeccion: 768-dim -> 256-dim
-    nn.ReLU(),                # No-linealidad para patrones complejos
-    nn.Dropout(0.2),
-    nn.Linear(256, 2),        # Logits binarios: [no_relevante, relevante]
-)
-# Representacion global de la secuencia via token [CLS]
-cls_output = outputs.last_hidden_state[:, 0, :]
-logits = self.classifier(cls_output)
-\end{lstlisting}
 
 \subsection{Clasificación \textit{Zero-Shot} y \textit{Temperature Scaling}}
 \label{subsec:tt2_zeroshot}

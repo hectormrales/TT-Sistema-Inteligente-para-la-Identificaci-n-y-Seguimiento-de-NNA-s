@@ -1,6 +1,5 @@
 % !TeX root = proyecto.tex
 
-%=========================================================
 \chapter{Justificación y Alcance del Proyecto}
 \label{cap:justificacionAlcance}
 
@@ -82,7 +81,7 @@ procesamiento de lenguaje natural (PLN):
     \item[Deduplicación:] Sistema de cuatro algoritmos (Hash MD5, Jaccard, SimHash, TF-IDF coseno) que elimina automáticamente
     noticias duplicadas o cuasi-duplicadas provenientes de diferentes medios.
     
-    \item[PostgreSQL:] Base de datos relacional que reemplaza el almacenamiento en archivos CSV, habilitando consultas complejas,
+    \item[PostgreSQL:] Base de datos relacional que reemplaza el almacenamiento en archivos CSV lo que habilita consultas complejas,
     integridad referencial y acceso concurrente.
 \end{description}
 
@@ -102,12 +101,12 @@ y en el artículo 2 de la Ley General de los Derechos de Niñas, Niños y Adoles
 Este principio establece que cualquier acción que involucre a menores de edad debe priorizar su bienestar, protección
 y dignidad por encima de cualquier otro interés.
 
-En concordancia con este principio, el sistema ha sido diseñado desde su concepción con una restricción deliberada
-y no negociable: \textbf{no identifica ni almacena datos personales de los NNA reales}.
+En base a este principio, el sistema ha sido diseñado desde su inicio con una restricción no negociable:
+\textbf{priorizar el manejo cuidadoso y confidencial de la información obtenida de los NNA.}
 
 \subsection{Naturaleza de la información procesada}
 
-Es fundamental aclarar la naturaleza de los datos que el sistema procesa y la distinción entre lo que el sistema \textit{identifica} y lo que \textit{no identifica}:
+Es importante aclarar la naturaleza de los datos que el sistema procesa y la distinción entre lo que el sistema \textit{identifica} y lo que \textit{no identifica}:
 
 \begin{table}[h]
 \centering
@@ -116,8 +115,8 @@ Es fundamental aclarar la naturaleza de los datos que el sistema procesa y la di
 \begin{tabular}{|p{6cm}|p{6cm}|}
 \hline
 \textbf{El sistema SÍ identifica} & \textbf{El sistema NO identifica} \\ \hline
-Noticias que mencionan feminicidios & Nombres reales de los NNA afectados \\ \hline
-Menciones genéricas a NNA como víctimas indirectas (ej.: ``dejó 3 hijos menores'') & Datos personales de los menores (edad exacta, CURP, domicilio) \\ \hline
+Noticias que mencionan feminicidios & Nombres completos de los NNA afectados \\ \hline
+Menciones genéricas a NNA como víctimas indirectas (ej. "dejó 3 hijos menores") & Datos personales de los menores (edad exacta, CURP, domicilio) \\ \hline
 Contexto del caso: ubicación geográfica, fecha, instituciones involucradas & Identidad verificada de ningún menor \\ \hline
 Nombres de víctimas adultas (cuando aparecen en la nota periodística) & Fotografías ni datos biométricos de NNA \\ \hline
 Patrones y tendencias estadísticas & Información no publicada en medios \\ \hline
@@ -190,8 +189,7 @@ El sistema desarrollado abarca las siguientes capacidades, implementadas progres
     \item[Temporal:] El sistema procesa noticias desde enero de 2025 hasta la fecha actual (mayo 2026), con capacidad de extensión retrospectiva mediante el módulo de scraping histórico.
 \end{description}
 
-%---------------------------------------------------------
-\section{Limitaciones y Exclusiones}
+\section{Limitaciones y exclusiones}
 \label{sec:limitaciones}
 
 \subsection{Exclusiones explícitas del alcance}
@@ -205,12 +203,12 @@ El sistema \textbf{no} contempla las siguientes funcionalidades:
     
     \Titem No accede a bases de datos gubernamentales cerradas (fiscalías, DIF, registros civiles). Toda la información proviene de fuentes periodísticas públicas.
     
-    \Titem No valida la veracidad de las noticias. El sistema asume que las fuentes periodísticas monitoreadas mantienen estándares editoriales mínimos, pero no verifica la exactitud factual de cada nota.
+    \Titem No valida la veracidad de las noticias. El sistema asume que las fuentes periodísticas monitoreadas mantienen estándares editoriales mínimos pero no verifica la veracidad de cada nota.
     
     \Titem No implementa Named Entity Recognition (NER) completo con fine-tuning. Esta funcionalidad se identifica como trabajo futuro.
 \end{Titemize}
 
-\subsection{Limitaciones técnicas conocidas}
+\subsection{Limitaciones técnicas}
 
 \begin{enumerate}
     \item \textbf{Dependencia de fuentes periodísticas:} La cobertura del sistema está limitada a lo que los medios publican. Feminicidios no cubiertos por la prensa o que ocurren en zonas con escasa cobertura mediática no serán detectados.
@@ -224,11 +222,12 @@ El sistema \textbf{no} contempla las siguientes funcionalidades:
     \item \textbf{Idioma:} El sistema está optimizado exclusivamente para noticias en español. Noticias en lenguas indígenas o en inglés no son procesadas.
 \end{enumerate}
 
-%---------------------------------------------------------
-\section{Alineación con el Protocolo 2026-A135}
+\section{Alineación con el protocolo}
 \label{sec:alineacionProtocolo}
 
-El desarrollo del TT2 se alinea con las metas y entregables definidos en el protocolo de registro 2026-A135, aprobado por la Comisión de Trabajos Terminales. La siguiente tabla establece la correspondencia entre los objetivos del protocolo y los componentes implementados:
+El desarrollo del trabajo terminal se alinea con las metas y entregables definidos en el protocolo no. 2026-A135,
+aprobado por la comisión de trabajos terminales. La siguiente tabla muestra la correspondencia entre los objetivos
+del protocolo y los componentes implementados:
 
 \begin{table}[h]
 \centering

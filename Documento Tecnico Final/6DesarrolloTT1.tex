@@ -1,88 +1,74 @@
 % !TeX root = proyecto.tex
 
-%========================================================================================
-% CAPÍTULO 6: DESARROLLO DEL TT-1 — SÍNTESIS EJECUTIVA DE PROTOTIPOS INICIALES
-%========================================================================================
+% CAPÍTULO 6: DESARROLLO DE TRABAJO TERMINAL I
 
-\chapter{Desarrollo del TT-1: Síntesis de Prototipos Iniciales}
+\chapter{Desarrollo del Trabajo Terminal I}
 \label{cap:desarrollo_tt1}
 
-El presente capítulo constituye una síntesis ejecutiva y crítica de los tres
-prototipos desarrollados durante el Trabajo Terminal~I (septiembre--diciembre de 2025).
-Su propósito no es reproducir la documentación técnica del TT-1, sino extraer las
-métricas clave, documentar las decisiones de ingeniería más relevantes y, sobre todo,
-articular con precisión las limitaciones identificadas que justifican la migración
-arquitectónica hacia el paradigma neuro-simbólico del TT-2. Cada prototipo es
-presentado como un experimento deliberado: su valor radica tanto en lo que logró
-como en lo que demostró ser inviable o insuficiente.
+En este capitulo se presenta una síntesis de los tres prototipos desarrollados durante
+el Trabajo Terminal I (agosto - diciembre 2025). El propósito no es poner la misma
+documentación técnica sino extraer las métricas clave, documentar las
+decisiones más relevantes y sobretodo argumentar las limitaciones identificadas
+que justifican la migración del enfoque utilizado. Cada prototipo es presentado como un
+experimento pues su valor radica tanto en lo que logró como en lo que
+demostró no ser viable. 
 
-%----------------------------------------------------------------------------------------
-\section{Prototipo 0: Scraping Directo sobre HTML (El Fracaso Documentado)}
+
+\section{Prototipo 0: Scraping directo sobre HTML}
 \label{sec:p0_fracaso}
-%----------------------------------------------------------------------------------------
+
 
 \subsection{Premisa y Enfoque}
 \label{subsec:p0_premisa}
 
-El Prototipo~0, ejecutado entre el 17 y el 23 de septiembre de 2025, se planteó
-como una prueba de concepto radical: verificar si era posible extraer noticias
-directamente del DOM HTML de los portales periodísticos mexicanos objetivo mediante
-\texttt{BeautifulSoup} y la librería \texttt{requests}. El supuesto subyacente era
+El Prototipo~0 se planteó como una prueba de concepto que fue verificar si era posible
+extraer noticias directamente del HTML de los sitios de noticias mexicanas, utilizando
+\texttt{BeautifulSoup} y la librería \texttt{requests}. El supuesto inicial era
 que los sitios de noticias de acceso público serían accesibles de forma programática
-sin fricción significativa.
+sin fricción alguna.
 
-\subsection{Resultado: Inviabilidad por Seguridad Perimetral}
+\subsection{Resultado: Inviabilidad por seguridad perimetral}
 \label{subsec:p0_resultado}
 
-La premisa fue refutada en su totalidad. El sistema se encontró con dos barreras
-técnicas infranqueables mediante el enfoque ingenuo implementado:
+La premisa fue invalidada en su totalidad pues el sistema se encontró con dos barreras
+técnicas alarmantes:
 
 \begin{enumerate}
-    \item \textbf{WAF y Cloudflare (HTTP 403/503).} El 78\% de los medios objetivo
-          ---incluyendo portales de alto valor periodístico como \textit{Reforma},
-          \textit{El Universal} y \textit{Milenio}--- operan detrás de un WAF de
-          grado empresarial. La librería \texttt{requests} genera un hash TLS/JA3
-          determinístico que los sistemas de detección identifican trivialmente
-          como un cliente automatizado, respondiendo con HTTP 403 (Forbidden) o
-          redirigiendo a páginas de verificación interactiva de JavaScript.
+    \item \textbf{WAF y Cloudflare (HTTP 403/503).} Cerca del 78\% de los medios objetivo
+          (incluyendo portales como \textit{Reforma}, \textit{El Universal} y \textit{Milenio})
+          operaban detrás de un WAF de grado empresarial. Lo que hacia la librería \texttt{requests}
+          era generar un hash TLS/JA3 determinístico que los sistemas de detección identificaban
+          como un cliente automatizado, recibiendo como respuesta HTTP 403 (Forbidden).
 
     \item \textbf{Contenido dinámico renderizado en cliente.} Múltiples sitios
           entregan el marcado HTML del artículo mediante llamadas AJAX en JavaScript
-          ejecutadas en el navegador. \texttt{BeautifulSoup}, al trabajar sobre el
-          HTML estático descargado, solo encontraba el esqueleto de la página sin
-          el contenido informativo, haciendo imposible la extracción.
+          ejecutadas en el navegador. \texttt{BeautifulSoup} al trabajar sobre el
+          HTML estático descargado solo encontraba el esqueleto de la página sin
+          el contenido informativo lo que hacia imposible la extracción.
 \end{enumerate}
 
-\textbf{Resultado cuantitativo:} 0 noticias recolectadas en 15 ejecuciones sobre
-12 portales objetivo. Tiempo total invertido en la fase: 1 semana.
-
-\subsection{Lección y Decisión Técnica}
+\subsection{Decisión Técnica}
 \label{subsec:p0_leccion}
 
-El fracaso del P0 no fue un fracaso del proyecto, sino una validación experimental
-de valor: demostró que el scraping HTML directo \textit{no es una estrategia viable}
-para el monitoreo de medios mexicanos modernos. La decisión resultante fue
-estructural: abandonar el scraping como estrategia primaria y migrar hacia fuentes
-diseñadas para la ingestión automatizada (feeds RSS/Atom) y APIs estructuradas
-(Google News).
+El fracaso del prototipo 0 hizo evidente que el scraping al HTML directo no era una estrategia viable
+para el monitoreo de medios de noticias modernos. Por lo que se decidió abandonar el scraping directo
+y migrar hacia fuentes diseñadas para la ingestión automatizada, como lo son los feeds RSS y las APIs.
 
-%----------------------------------------------------------------------------------------
-\section{Prototipo 1: RSS + K-Means (Línea Base)}
+\section{Prototipo 1: RSS + K-Means}
 \label{sec:p1_baseline}
-%----------------------------------------------------------------------------------------
 
-\subsection{Arquitectura Implementada}
+\subsection{Arquitectura implementada}
 \label{subsec:p1_arquitectura}
 
-El Prototipo~1, desarrollado durante octubre de 2025, estableció la primera
-iteración funcional del sistema. La migración hacia feeds RSS eliminó la fricción
-de acceso: los feeds son recursos XML diseñados explícitamente para el consumo
-automatizado y no están sujetos a los mecanismos WAF que bloquearon el P0.
+El Prototipo~1 estableció la primera iteración funcional del sistema. La migración hacia
+feeds RSS eliminó la fricción de acceso, pues los feeds son recursos XML diseñados
+explícitamente para el consumo automatizado y no están sujetos a los mecanismos WAF
+que bloquearon el P0.
 
-El flujo implementado comprendió las siguientes etapas:
+El flujo implementado consistió en las siguientes etapas:
 
 \begin{enumerate}
-    \item \textbf{Recolección.} Ingestión de 8~fuentes RSS nacionales mediante
+    \item \textbf{Recolección.} Ingestión de 8 fuentes RSS nacionales mediante
           \texttt{feedparser}, extrayendo por cada \texttt{<item>} el título,
           descripción, enlace y fecha de publicación.
     \item \textbf{Detección rudimentaria de NNA.} Función \texttt{detect\_children\_mentions}
@@ -127,17 +113,17 @@ Las limitaciones del P1 fueron de tres órdenes:
           identificados.
 \end{description}
 
-%----------------------------------------------------------------------------------------
+
 \section{Prototipo 2: Triple Fuente + DBSCAN + FeminicideDetector}
 \label{sec:p2_culminacion}
-%----------------------------------------------------------------------------------------
 
-\subsection{Evolución Arquitectónica}
+
+\subsection{Evolución del sistema}
 \label{subsec:p2_evolucion}
 
-El Prototipo~2, culminación del TT-1 (noviembre--diciembre de 2025), reestructuró
+El Prototipo~2 que fue la culminación del TT-1 reestructuró
 el sistema en respuesta directa a las limitaciones del P1. Los cambios fueron
-sustanciales en las tres capas del pipeline:
+sustanciales en las tres capas del flujo de procesamiento:
 
 \begin{description}
     \item[\textbf{Recolección: Arquitectura de Triple Fuente.}]
@@ -250,17 +236,16 @@ Ausencia total; análisis estructurado requería lectura humana \\
 \end{tabular}
 \end{table}
 
-%----------------------------------------------------------------------------------------
-\section{Limitaciones Identificadas: Motivación para el TT-2}
-\label{sec:limitaciones_motivacion}
-%----------------------------------------------------------------------------------------
 
-Esta sección es el núcleo analítico del capítulo. Las métricas del TT-1 no solo
-validan la viabilidad técnica del proyecto, sino que delimitan con precisión
-ingenieril las condiciones de frontera que hacen al sistema P2 insuficiente para
+\section{Limitaciones identificadas}
+\label{sec:limitaciones_motivacion}
+
+
+Las métricas no solo validan la viabilidad técnica del proyecto sino que también delimitan
+las condiciones de frontera que hacen que el sistema del P2 sea insuficiente para
 su adopción operativa por organizaciones civiles.
 
-\subsection{La Barrera del 10\% de Falsos Positivos: Insuficiencia de la Sintaxis}
+\subsection{La barrera del 80\% de falsos positivos: Insuficiencia de la Sintaxis}
 \label{subsec:limit_fp}
 
 El \texttt{FeminicideDetector} redujo los falsos positivos del 40\% (P1) al 10\%

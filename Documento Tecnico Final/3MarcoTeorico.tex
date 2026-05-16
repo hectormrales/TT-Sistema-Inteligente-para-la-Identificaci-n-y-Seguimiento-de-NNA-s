@@ -242,64 +242,25 @@ el modelo neuronal aporta la capacidad de la generalización semántica aprendid
 durante el preentrenamiento.
 
 
-\subsection{\textit{Temperature Scaling}: Polarización de Distribuciones de Probabilidad}
-\label{subsec:mt_temperature}
-
-
-Las similitudes coseno crudas entre embeddings de texto y embeddings de categorías
-tienden a concentrarse en un rango estrecho de valores (e.g., $s \in [0.78, 0.85]$),
-generando distribuciones de probabilidad post-softmax altamente uniformes e
-incertidumbre en la decisión de clasificación. Para resolver esta limitación, el
-sistema aplica \textbf{temperature scaling} \cite{guo2017calibration} antes de la
-función softmax:
-
-Dado un vector de logits (similitudes) $\mathbf{z} = [s_{rel}, s_{norel}]$, la
-distribución de probabilidad con temperatura $\tau$ se define como:
-
-\begin{equation}
-    P(c = k \mid \mathbf{z}, \tau) = \frac{\exp(z_k / \tau)}{\sum_{j} \exp(z_j / \tau)}
-\end{equation}
-
-Para $\tau < 1$, la distribución se \textit{agudiza}: las diferencias entre logits
-se amplifican, produciendo distribuciones más concentradas (mayor confianza). Para
-$\tau > 1$, la distribución se \textit{suaviza}. El sistema implementa el caso
-equivalente de multiplicar los logits por el factor inverso $\alpha = 1/\tau > 1$
-en lugar de dividir, lo que produce el mismo efecto de polarización:
-
-\begin{equation}
-    P(rel \mid \mathbf{z}) = \frac{e^{s_{rel} \cdot \alpha}}{e^{s_{rel} \cdot \alpha} + e^{s_{norel} \cdot \alpha}}, \quad \alpha = 5
-\end{equation}
-
-La elección de $\alpha = 5$ fue calibrada empíricamente: ante similitudes típicas
-$s_{rel} = 0.82$ y $s_{norel} = 0.79$ (diferencia de 0.03), la probabilidad sin
-escala es 0.57 (prácticamente aleatoria), mientras que con $\alpha=5$ es 0.81
-(decisión clara a favor de ``relevante''). Este mecanismo es conceptualmente análogo
-al temperature scaling de calibración post-hoc de clasificadores, aplicado en
-dirección inversa: no para suavizar distribuciones sobre-confiadas, sino para
-polarizar distribuciones sub-confiadas propias de la comparación de embeddings.
-
-%========================================================================================
-\section{Agrupamiento Semántico y Reducción de Dimensionalidad}
+\section{Agrupamiento semántico y reducción de dimensionalidad}
 \label{sec:mt_clustering}
-%========================================================================================
+
 
 El agrupamiento semántico de documentos periodísticos tiene como objetivo identificar
-grupos de noticias que relatan el mismo evento fáctico o pertenecen al mismo tema,
-independientemente del vocabulario empleado por cada medio. El sistema adopta
-\textbf{BERTopic} \cite{grootendorst2022bertopic} como motor de agrupamiento, cuya
-arquitectura modular encadena tres algoritmos independientes: UMAP para reducción
-de dimensionalidad, HDBSCAN para detección de clústeres de densidad variable, y
-c-TF-IDF para la representación léxica de cada tópico descubierto.
+grupos de noticias que pertenecen al mismo tema independientemente del vocabulario
+empleado por cada medio. El sistema adopta \textbf{BERTopic} \cite{grootendorst2022bertopic}
+como motor de agrupamiento, el cual su arquitectura modular encadena tres algoritmos
+independientes: UMAP para reducción de dimensionalidad, HDBSCAN para detección de
+clústeres de densidad variable y c-TF-IDF para la representación léxica de cada
+tópico descubierto.
 
-%----------------------------------------------------------------------------------------
 \subsection{UMAP: Proyección Topológica Preservadora de Estructura}
 \label{subsec:mt_umap}
-%----------------------------------------------------------------------------------------
 
-Los \textit{embeddings} generados por BETO residen en $\mathbb{R}^{768}$. Aplicar
-directamente algoritmos de agrupamiento sobre espacios de esta dimensionalidad es
-computacionalmente ineficiente y produce resultados de baja calidad debido a la
-\textbf{maldición de la dimensionalidad} \cite{beyer1999nearest}: en espacios de
+Los \textit{embeddings} generados por BETO estan en $\mathbb{R}^{768}$. Si se aplica
+directamente algoritmos de agrupamiento sobre espacios de esta dimensionalidad, se
+produce resultados de baja calidad debido a la \textbf{maldición de la dimensionalidad} \cite{beyer1999nearest}: 
+en espacios de
 alta dimensión, la razón entre la distancia al vecino más lejano y al vecino más
 cercano tiende a 1 asintóticamente, haciendo que las distancias euclidianas pierdan
 poder discriminatorio. En el límite, todos los puntos son aproximadamente equidistantes
@@ -307,7 +268,7 @@ entre sí, privando a los algoritmos de agrupamiento de la señal de proximidad.
 
 UMAP (\textit{Uniform Manifold Approximation and Projection}) \cite{mcinnes2018umap}
 proyecta los datos de alta dimensión a un espacio de dimensión reducida ($\mathbb{R}^5$
-en el sistema) preservando la estructura topológica local y global. El algoritmo se
+en el sistema) conservando la estructura topológica local y global. El algoritmo se
 fundamenta en tres principios de geometría Riemanniana y topología algebraica:
 
 \begin{enumerate}
@@ -558,10 +519,9 @@ indistinguible de un navegador real. Complementariamente, el sistema implementa:
           extracción dentro del marco ético del OSINT.
 \end{itemize}
 
-%----------------------------------------------------------------------------------------
-\subsection{Propiedades ACID de PostgreSQL}
+
+\subsection{Propiedades ACID de postgresql}
 \label{subsec:mt_acid}
-%----------------------------------------------------------------------------------------
 
 PostgreSQL \cite{stonebraker1986design} implementa el modelo transaccional ACID
 (\textit{Atomicity, Consistency, Isolation, Durability}) mediante el protocolo de
