@@ -1,0 +1,40 @@
+---
+config:
+  layout: elk
+---
+flowchart 
+ subgraph subGraph0["Cambio importante"]
+    direction LR
+        S9["BETO<br>Clasifica la noticia individual adaptando su umbral"]
+        S10["BERTopic<br>Analiza TODO el corpus para dar un contexto global"]
+  end
+    IN["Corpus Completo<br>(600+ noticias)"] --> B("BETO Embeddings<br>768D")
+    B -.-> B_Desc["Representación semántica<br>de alta dimensionalidad"]
+    B --> U("UMAP<br>Reducción a 5D")
+    U -.-> U_Desc["Preserva estructura local<br>y relaciones semánticas"]
+    U --> H("HDBSCAN<br>Clustering de Densidad")
+    H -.-> H_Desc["Encuentra grupos densos<br>y aísla ruido u outliers"]
+    H --> TID{"Asignación de<br>topic_id"}
+    TID -- topic_id ≥ 0<br>(Clúster temático coherente) --> U1["Contexto Normal<br>Umbral BETO: 0.50"]
+    TID -- "topic_id = -1<br>(Outlier / Posible ruido)" --> U2["Contexto de Incertidumbre<br>Umbral BETO: 0.65"]
+    S10 -.-> S9
+
+     S9:::context
+     S10:::context
+     IN:::input
+     B:::process
+     B_Desc:::desc
+     U:::process
+     U_Desc:::desc
+     H:::process
+     H_Desc:::desc
+     TID:::decision
+     U1:::output1
+     U2:::output2
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef process fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+    classDef decision fill:#ede7f6,stroke:#512da8,stroke-width:2px,color:#311b92
+    classDef output1 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+    classDef output2 fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#b71c1c
+    classDef context fill:#f3e5f5,stroke:#8e24aa,stroke-dasharray: 5 5
+    classDef desc fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5,color:#555

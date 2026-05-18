@@ -5,47 +5,92 @@
 \label{cap:estadoarte}
 
 En este capítulo se exponen las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección, sistematización y análisis de datos en el contexto de la violencia de género y sus externalidades.
-El análisis de estas aproximaciones permite identificar la brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura propuesta en este Trabajo Terminal.
-
+Su analisispermite identificar la brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura propuesta en este Trabajo Terminal.
+ 
 \section{Sistemas de monitoreo de medios tradicionales}
 \label{sec:ea_monitoreo_tradicional}
 
-En el ámbito de la inteligencia de fuentes abiertas (OSINT) y el monitoreo mediático comercial, existen plataformas consolidadas con infraestructuras formidables para la ingestión de datos en tiempo real (e.g., Google Alerts, Meltwater, Mention). Estas herramientas operan primordialmente sobre arquitecturas de agregación RSS y rastreadores web de propósito general \cite{weisser2020media}.
+En el ámbito de la inteligencia de fuentes abiertas (OSINT) y el monitoreo mediático comercial,
+existen plataformas con infraestructuras para la ingestión de datos en tiempo real (por ejemplo
+Google Alerts, Meltwater, Mention). Estas herramientas funcionan principalmente sobre arquitecturas
+de agregación RSS y rastreadores web de propósito general \cite{weisser2020media}.
 
-No obstante, la debilidad fundamental de estos sistemas radica en su dependencia exclusiva de la coincidencia exacta de cadenas de texto y expresiones regulares (RegEx). Al carecer de capacidades de inferencia semántica, la búsqueda de heurísticas combinadas como ``feminicidio'' y ``NNA'' o ``menores'' produce un volumen estadísticamente inmanejable de ruido informativo y falsos positivos. Por ejemplo, estos sistemas son incapaces de discernir sintácticamente entre un reporte donde el agresor resultó ser menor de edad, una noticia puramente estadística, y un caso fáctico donde un menor quedó en orfandad como víctima indirecta. Esta incapacidad de desambiguación contextual hace que las herramientas tradicionales resulten operativamente ineficaces para el dominio específico de este proyecto.
+No obstante, la debilidad fundamental de estos sistemas radica en su dependencia de cadenas de texto
+y expresiones regulares (RegEx). Al carecer de capacidades de inferencia semántica la búsqueda de
+heurísticas combinadas como "feminicidio" y "NNA" o "menores" produce un volumen estadísticamente
+inmanejable de ruido informativo y falsos positivos. Por ejemplo, estos sistemas son incapaces de
+discernir sintácticamente entre un reporte donde el agresor resultó ser menor de edad, una noticia
+puramente estadística o un caso donde un menor quedó en orfandad como víctima indirecta. Esta
+incapacidad de inferencia contextual hace que las herramientas tradicionales resulten operativamente
+ineficaces para el dominio específico de este proyecto.
 
 \section{NLP Aplicado a la Detección de Violencia de Género}
 \label{sec:ea_nlp_violencia}
 
-Desde la perspectiva académica, la intersección entre el Procesamiento de Lenguaje Natural (PLN) y la sociología forense ha ganado tracción empírica en la última década. La literatura documenta la transición de modelos de aprendizaje automático superficial (como \textit{Support Vector Machines} o \textit{Random Forests}) hacia arquitecturas de aprendizaje profundo (Deep Learning) para la clasificación de discursos de odio, misoginia en redes sociales y categorización automática de reportes policiales por violencia doméstica \cite{bada2021nlp, garcia2022hate}.
+Desde la perspectiva académica, la intersección entre el Procesamiento de Lenguaje Natural (PLN) y
+la sociología forense ha ganado tracción empírica en los ultimos años. La literatura documenta la
+transición de modelos de aprendizaje automático superficial (como \textit{Support Vector Machines}
+o \textit{Random Forests}) hacia arquitecturas de aprendizaje profundo (Deep Learning) para la
+clasificación de discursos de odio, misoginia en redes sociales y categorización automática de reportes
+policiales por violencia doméstica \cite{bada2021nlp, garcia2022hate}.
 
-Recientemente, se han implementado modelos basados en Transformers (como RoBERTa y BERT) para extraer relaciones de causalidad en narrativas de violencia armada y feminicidios documentados en la prensa \cite{mendoza2023transformers}. Sin embargo, al realizar una revisión bibliográfica exhaustiva, se evidencia una carencia alarmante de investigación computacional enfocada en las víctimas indirectas. La inmensa mayoría de los clasificadores binarios se detienen en la categorización del evento fáctico (feminicidio vs. homicidio culposo), omitiendo por completo la extracción de entidades relacionadas con los NNA afectados.
+Recientemente se han implementado modelos basados en Transformers (como RoBERTa y BERT) para extraer
+relaciones de causalidad en narrativas de violencia armada y feminicidios documentados en la prensa
+\cite{mendoza2023transformers}. Sin embargo al realizar una revisión bibliográfica exhaustiva se
+nota una carencia de investigación computacional enfocada en las víctimas indirectas. La inmensa
+mayoría de los clasificadores binarios se detienen en la categorización del evento fáctico (feminicidio
+vs. homicidio culposo) lo que omite por completo la extracción de entidades relacionadas con los NNA
+afectados.
 
 \section{Herramientas y Esfuerzos Existentes en México}
 \label{sec:ea_esfuerzos_mexico}
 
-En la República Mexicana, ante la insuficiencia de datos gubernamentales en tiempo real, la sociedad civil ha asumido el liderazgo en la documentación de la violencia feminicida, desarrollando iniciativas fundamentales que, si bien son invaluables, presentan severas limitaciones de escalabilidad computacional.
+En México ante la insuficiencia de datos gubernamentales en tiempo real, la sociedad civil ha
+asumido tareas de investigación en la documentación de la violencia feminicida, desarrollando
+iniciativas fundamentales que si bien son invaluables, presentan limitaciones de escalabilidad
+computacional.
 
 \subsection{Red por los Derechos de la Infancia en México (REDIM)}
-La REDIM es la entidad sociopolítica más prominente en la articulación de datos macroeconómicos y demográficos sobre la niñez mexicana. Sus informes sobre las infancias vulneradas son fundamentales para el diseño de políticas públicas \cite{redim2023informe}. No obstante, a nivel metodológico, la organización depende fuertemente de la agregación estadística derivada de solicitudes formales de transparencia, bases de datos gubernamentales frecuentemente desfasadas o censos esporádicos. En consecuencia, REDIM carece de una plataforma tecnológica de trazabilidad \textit{per-caso} que opere en tiempo real mediante ingestión automatizada de medios de comunicación masiva.
+La REDIM es la entidad sociopolítica más prominente en la articulación de datos macroeconómicos y
+demográficos sobre la niñez mexicana. Sus informes sobre las infancias vulneradas son
+fundamentales para el diseño de políticas públicas \cite{redim2023informe}. No obstante, a nivel
+metodológico la organización depende fuertemente de la agregación estadística derivada de
+solicitudes formales de transparencia, bases de datos gubernamentales que frecuentemente estan
+desfasadas o censos esporádicos. En consecuencia la REDIM carece de una plataforma tecnológica de
+trazabilidad \textit{per-caso} que opere en tiempo real mediante ingestión automatizada de medios de
+comunicación masiva.
 
 \subsection{El Mapa de los Feminicidios en México}
-El proyecto cartográfico desarrollado por la investigadora María Salguero constituye un esfuerzo pionero e históricamente vital para la visibilización geográfica de la crisis \cite{salguero2019mapa}. El sistema geolocaliza y documenta variables sociodemográficas complejas. Sin embargo, su principal cuello de botella es arquitectónico: la ingesta, lectura, extracción de características y captura en base de datos de cada caso reportado en prensa obedece a un flujo de trabajo predominantemente manual y artesanal. Esta dependencia absoluta de la curaduría humana impide la escalabilidad de la herramienta e imposibilita el análisis retrospectivo masivo de fuentes hemerográficas a velocidad computacional.
+El proyecto cartográfico desarrollado por la investigadora María Salguero constituye un esfuerzo
+pionero e históricamente vital para la visibilización geográfica de la crisis \cite{salguero2019mapa}.
+El sistema geolocaliza y documenta variables sociodemográficas complejas. Sin embargo su principal
+cuello de botella es arquitectónico en cuanto a que la ingesta, lectura, extracción de características y
+captura en base de datos de cada caso reportado en prensa que debido a la falta de una metodología bien definida
+obedece a un flujo de trabajo manual y artesanal. Esta dependencia absoluta de la intervención humana
+imposibilita el análisis retrospectivo masivo de fuentes hemerográficas a velocidad
+computacional.
 
 \subsection{Fundación Futuro con Derechos}
-Organizaciones civiles dedicadas a la intervención directa, como la Fundación Futuro con Derechos, ilustran el problema operativo en su nivel más granular. En su intento por identificar casos emergentes de orfandad para ofrecer resguardo institucional o asesoría legal expedita, el personal de estas organizaciones invierte rutinariamente decenas de horas-hombre semanales realizando búsquedas manuales exhaustivas en portales de noticias \cite{futuro2023reporte}. Este proceso es no determinista, propenso a sesgos de fatiga y económicamente insostenible para asociaciones sin fines de lucro.
+Organizaciones civiles dedicadas a la intervención directa como la Fundación Futuro con
+Derechos, ilustran el problema operativo mas claramente. En su intento por identificar casos
+emergentes de orfandad para ofrecer resguardo institucional o asesoría legal expedita, el personal de
+estas organizaciones invierte rutinariamente decenas de horas-hombre semanales realizando búsquedas
+manuales exhaustivas en portales de noticias \cite{futuro2023reporte}. Este proceso es no determinista,
+propenso a sesgos de fatiga y económicamente insostenible para asociaciones sin fines de lucro.
 
-\section{Análisis Comparativo y Brecha Identificada (El Factor Diferenciador)}
+\section{Análisis comparativo y brecha identificada}
 \label{sec:ea_brecha}
 
-El análisis del estado actual del arte revela una brecha tecnológica insalvable bajo los paradigmas vigentes que es
-\textbf{la desconexión entre la recolección masiva de datos no estructurados y la comprensión semántica profunda de
-las víctimas colaterales.} Las herramientas comerciales recolectan sin comprender, mientras que los esfuerzos civiles
-comprenden profundamente pero no logran recolectar ni escalar la información de forma automatizada.
+El análisis del estado actual del arte revela una brecha tecnológica interesante bajo los paradigmas
+vigentes que es \textbf{la desconexión entre la recolección masiva de datos no estructurados y la
+comprensión semántica profunda de las víctimas colaterales.} Las herramientas comerciales recolectan sin
+comprender, mientras que los esfuerzos civiles comprenden profundamente pero no logran recolectar ni
+escalar la información de forma automatizada.
 
-La aportación fundamental de este Trabajo Terminal yace precisamente en la clausura de esta brecha. El sistema propuesto
-no es un simple buscador de palabras clave ni un mapa de captura manual. Su innovación radica en la orquestación integral
-de un flujo de trabajo automatizado que suprime la intervención humana en las etapas de descubrimiento y filtrado:
+La aportación fundamental de este Trabajo Terminal yace precisamente en la solución de esta brecha.
+El sistema propuesto no es un simple buscador de palabras clave ni un mapa de captura manual. Su
+innovación radica en la orquestación integral de un flujo de trabajo automatizado que suprime la
+intervención humana en las etapas de descubrimiento y filtrado:
 
 \begin{enumerate}
     \item \textbf{Recolección:} Ingesta concurrente y evasiva de fuentes RSS y motores de búsqueda.
@@ -54,22 +99,26 @@ de un flujo de trabajo automatizado que suprime la intervención humana en las e
     \item \textbf{Clasificación Semántica:} Inferencia computacional del contexto exacto de orfandad utilizando modelos fundacionales de atención profunda en español (BETO).
 \end{enumerate}
 
-En suma, no existe en la literatura actual, ni en el ecosistema civil mexicano, una herramienta de software que ejecute este ciclo completo (recolección, limpieza, deduplicación y clasificación neuro-simbólica) de forma unificada y específicamente calibrada para el problema social de los NNA víctimas indirectas de feminicidio. Este proyecto trasciende la estadística descriptiva para instaurar una plataforma de inteligencia prospectiva y de respuesta rápida.
+En suma, no existe en el ecosistema civil mexicano una herramienta de software que ejecute este ciclo
+completo (recolección, limpieza, deduplicación y clasificación neuro-simbólica) de forma unificada y
+específicamente calibrada para el problema social de los NNA víctimas indirectas de feminicdio. Este
+proyecto trasciende la estadística descriptiva para instaurar una plataforma de inteligencia y de
+respuesta rápida.
 
 %----------------------------------------------------------------------------------------
-\section{Técnicas de Extracción de Datos en Entornos Web Adversariales}
+\section{Técnicas de extracción de datos}
 \label{sec:ea_tecnicas_extraccion}
 %----------------------------------------------------------------------------------------
 
-La recolección de datos periodísticos en fuentes abiertas constituye un problema
-técnico no trivial en el ecosistema web contemporáneo. Los medios de comunicación
-digitales han desplegado progresivamente capas de defensa perimetral cuyo objetivo
-primario es la protección contra el scraping masivo. La selección de la técnica
-de extracción adecuada determina directamente la cobertura alcanzable del sistema,
-su tasa de éxito sostenida y su consumo de recursos computacionales. En la
-literatura de recuperación de información y OSINT se identifican tres vertientes
-metodológicas principales, evaluadas a continuación en función de su idoneidad
-para el dominio de este proyecto.
+La recolección de datos periodísticos en fuentes abiertas es un problema
+técnico pues los medios de comunicación digitales han desplegado capas de
+defensa perimetral cuyo objetivo primario es la protección contra el scraping
+masivo. La selección de la técnica de extracción adecuada determina directamente
+la cobertura alcanzable del sistema, su tasa de éxito sostenida y su consumo
+de recursos computacionales. En la literatura de recuperación de información y
+OSINT se identifican tres vertientes metodológicas principales, que se evaluaron
+en función de su efectividad y eficiencia para la recolección de datos
+periodísticos en México.
 
 \subsection{Extracción Estática (HTML Parsing con BeautifulSoup)}
 \label{subsec:ea_beautifulsoup}

@@ -10304,3 +10304,283 @@ DETAIL:  Key (email)=(admin@sistema-nna.local) already exists.
 2026-05-12 11:15:10,354 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
 2026-05-12 11:15:10,384 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: Unterminated string starting at: line 10 column 5 (char 2246)
 2026-05-12 11:15:10,387 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-17 23:56:17,277 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-17 23:56:17,322 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-17 23:56:17,323 - app - INFO - Esquema FTS inicializado
+2026-05-17 23:56:17,328 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-17 23:56:17,328 - app - INFO - Esquema FTS inicializado
+2026-05-17 23:56:17,428 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-17 23:56:17,428 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-17 23:56:43,425 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-17 23:56:43,437 - app - INFO - Logout: hector
+2026-05-17 23:56:46,206 - app - WARNING - Login fallido para 'hectormm10' desde 172.19.0.1
+2026-05-17 23:56:48,744 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-18 02:29:37,193 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 02:29:37,236 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:29:37,236 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:29:37,241 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:29:37,242 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:29:37,325 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:29:37,325 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:40:44,701 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 02:40:44,741 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:40:44,742 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:40:44,742 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:40:44,742 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:40:44,810 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:40:44,812 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:41:47,860 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 02:41:47,877 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:41:47,878 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:41:47,886 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:41:47,887 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:41:47,946 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:41:47,953 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:43:46,007 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 02:43:46,025 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:43:46,026 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:43:46,030 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:43:46,031 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:43:46,098 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:43:46,103 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:46:34,819 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:46:34,820 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:46:34,880 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:46:35,099 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:46:35,099 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:46:35,152 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:46:54,621 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-18 02:48:19,138 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'lina | alejandra', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-18 02:48:19,144 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%lina alejandra%', 'contenido_1': '%lina alejandra%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 02:48:33,982 - app - INFO - Logout: hector
+2026-05-18 02:48:57,771 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-18 02:49:48,499 - app - INFO - Logout: hector
+2026-05-18 02:49:50,946 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-18 02:56:14,533 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 02:56:14,555 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:56:14,555 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:56:14,560 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 02:56:14,560 - app - INFO - Esquema FTS inicializado
+2026-05-18 02:56:14,625 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 02:56:14,625 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 03:09:39,636 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 03:09:39,675 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 03:09:39,675 - app - INFO - Esquema FTS inicializado
+2026-05-18 03:09:39,681 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-18 03:09:39,681 - app - INFO - Esquema FTS inicializado
+2026-05-18 03:09:39,758 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 03:09:39,759 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-18 03:16:15,065 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'jalisco', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-18 03:16:15,072 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%jalisco%', 'contenido_1': '%jalisco%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 03:16:19,399 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'jalisco', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-18 03:16:19,400 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%jalisco%', 'contenido_1': '%jalisco%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 03:16:19,919 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'jalisco', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-18 03:16:19,920 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%jalisco%', 'contenido_1': '%jalisco%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-18 03:16:47,858 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'jalisco', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-18 03:16:47,860 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%jalisco%', 'contenido_1': '%jalisco%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)

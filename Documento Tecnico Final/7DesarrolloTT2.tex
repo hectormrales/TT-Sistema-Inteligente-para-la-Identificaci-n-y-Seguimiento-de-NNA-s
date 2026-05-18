@@ -4,13 +4,13 @@
 \chapter{Desarrollo de Trabajo Terminal II}
 \label{cap:desarrolloTT2}
 
-Este capítulo constituye el desarrollo ingenieril del Trabajo Terminal II.
-A diferencia del enfoque descriptivo empleado en el capitulo anterior, la narrativa aquí
-es evolutiva y autocrítica pues cada decisión de diseño se presenta como respuesta directa
-a una deficiencia medida y documentada de la iteración anterior. El Prototipo~3 y el
-Prototipo~4 no surgieron de una planificación inicial perfecta, sino de un proceso riguroso
-de \textit{diagnóstico, rediseño e integración incremental} que hizo posible transformar
-un clasificador heurístico frágil en una plataforma robusta y escalable.
+Este capítulo constituye el desarrollo del Trabajo Terminal II.A diferencia del enfoque
+descriptivo empleado en el capitulo anterior, la narrativa aquí es evolutiva y
+autocrítica pues cada decisión de diseño se presenta como respuesta directa
+a una deficiencia medida y documentada de la iteración anterior. El Prototipo 3 y el
+Prototipo 4 no surgieron de una planificación inicial sino de un proceso de \textit{diagnóstico,
+rediseño e integración incremental} que hizo posible transformar
+un clasificador heurístico basado en palabras clave en una plataforma robusta y escalable.
 
 La arquitectura resultante opera sobre tres objetivos específicos derivados del protocolo
 2026-A135: (OE-1) Identificar y seleccionar fuentes públicas confiables que contengan información relacionada con feminicidios y
@@ -19,25 +19,25 @@ clave a partir de textos no estructurados, y (OE-4) Diseñar una base de datos e
 recolectada de manera eficiente y segura. Estos tres ejes gestionan todas las decisiones técnicas documentadas
 en las siguientes secciones.
 
-\section{Contexto: Deuda técnica heredada de TT1}
-\label{sec:tt2_deuda_tecnica}
+\section{Contexto: Limitaciones del Prototipo 2}
+\label{sec:tt2_limitaciones}
 
 
 A finales del semestre pasado(2026-1) el sistema hasta el momento presentaba tres limitaciones estructurales
-que propiciaron un rediseño del sistema.
+que motivaron un rediseño del sistema.
 
-\textbf{Limitación~1 Ceguera sintáctica del motor RegEx.}
+\textbf{Limitación~1 Semántica del motor RegEx.}
 El módulo \texttt{FeminicideDetector} del prototipo~2 evaluaba la \textit{co-ocurrencia
 espacial} de tokens léxicos sin comprender el rol gramatical de cada entidad. La tasa
-de falsos positivos vistos manualmente alcanzó el \textbf{80\%}, notamos que se manifestaba
-principalmente en tres escenarios de falla sistémica: 
+de falsos positivos vista manualmente alcanzó el \textbf{60\%} y notamos que se manifestaba
+principalmente en tres escenarios: 
 \begin{enumerate}
-    \item Titulares como \textit{"Menor de edad detenido por feminicidio"},
-          donde el modelo detectaba la co-ocurrencia "menor"+"feminicidio"
-          y activaba la alerta de orfandad, cuando en realidad el menor era
+    \item Titulares como \textit{"Menor de edad detenido por feminicidio"}
+          donde el modelo detectaba la co-ocurrencia de "menor" y "feminicidio"
+          lo que activaba la alerta de orfandad cuando en realidad el menor era
           el agresor y no una víctima indirecta.
-    \item Notas estadísticas gubernamentales (\textit{"10 feminicidios mensuales,
-          5 huérfanos en promedio"}) que disparaban prioridad máxima al concentrar
+    \item Noticias estadísticas gubernamentales (\textit{"10 feminicidios mensuales,
+          5 huérfanos en promedio"}) que activaban la alerta de orfandad al concentrar
           todos los tokens detonantes en un solo párrafo.
     \item Noticias donde la víctima directa del feminicidio era una menor
           de edad y eran confundidas sistemáticamente con casos de orfandad colateral.
@@ -46,9 +46,9 @@ principalmente en tres escenarios de falla sistémica:
 \textbf{Limitación~2 Cuello de botella en persistencia plana.}
 El almacenamiento en archivos CSV (\texttt{noticias.csv}) impedía la ejecución de
 consultas de filtrado sin cargar la totalidad del corpus en memoria RAM
-($O(n)$ sobre el conjunto completo). Con un volumen de 250~registros en el prototipo 2,
-la latencia era tolerable pero proyectado a escala nacional (miles de noticias),
-esta arquitectura resultaba ser ineficiente mientras que la ausencia de integridad referencial
+($O(n)$ sobre el conjunto completo). Con un volumen de 250~registros en el prototipo 2
+la latencia era tolerable pero proyectado a escala nacional (que son miles de noticias)
+esta arquitectura no lo soportaria y la ausencia de integridad referencial
 hace dificil mantener relaciones consistentes entre noticias, fuentes y resultados de
 análisis.
 
@@ -56,10 +56,20 @@ análisis.
 El agrupamiento temático se ejecutaba \textit{después} de la clasificación individual lo
 que privaba al clasificador del contexto global. Una noticia genérica sobre política
 criminal podía obtener el mismo score heurístico que un caso concreto de feminicidio
-con NNA afectados, sin que el sistema supiera en que contexto se encontraba.
+con NNA afectados y esto sin que el sistema supiera en que contexto se encontraba.
 
-Estas tres limitaciones definieron con precisión el alcance del sistema y el orden de
+Estas tres limitaciones nos ayudaron a definir el alcance del sistema y el orden de
 implementación de las soluciones.
+
+\textbf{Limitación~4 Ausencia de investigación profunda por caso.}
+El pipeline del TT1 producía clasificaciones de relevancia pero no extraía
+información estructurada sobre los casos específicos: quién era la víctima directa,
+cuántos menores quedaron huérfanos, en qué estado se encontraban o qué institución
+estaba a cargo. Esta limitación era especialmente crítica porque el propósito
+central del sistema no es solo detectar noticias relevantes sino construir fichas
+de caso para facilitar la intervención de los investigadores. La información estructurada
+disponible en el web abierto (notas complementarias, boletines del DIF, seguimientos
+periodísticos) no estaba siendo aprovechada en ninguna etapa del pipeline.
 
 
 \section{Patrones arquitectónicos del flujo analítico}
@@ -571,6 +581,200 @@ determinista y auditablemente correcto para los patrones de dominio conocidos. E
 transición suave entre ``confiar en la IA'' y ``confiar en las reglas'' es la esencia
 del paradigma neuro-simbólico.
 
+\subsection{Investigador Profundo: DuckDuckGo y Gemini Flash}
+\label{subsec:tt2_investigador}
+
+Una de las decisiones de diseño más importantes del Prototipo~4 fue la de
+\textbf{no integrar la investigación profunda dentro del flujo recolector-analítico
+automático}. Esta decisión, que en un principio parecía una limitación, resultó
+ser la solución arquitectónicamente correcta después de intentar lo contrario.
+
+\subsubsection*{El problema de integrar la investigación en el pipeline automático}
+
+Durante el desarrollo inicial del P4, la primera propuesta consistía en ejecutar
+una investigación profunda automáticamente sobre cada noticia clasificada como
+``Alta'' al finalizar el paso~9. El módulo \texttt{DeepInvestigator} realizaría
+búsquedas web y sintetizaría la ficha de caso sin intervención del usuario.
+Sin embargo, al implementar un prototipo de esta integración se encontraron
+très problemas inmediatos:
+
+\begin{enumerate}
+    \item \textbf{Latencia no tolerable.} Cada investigación implica al menos
+          dos llamadas a DuckDuckGo (búsqueda + extracción de contenido de las
+          URLs retornadas), seguidas de dos llamadas a la API de Gemini Flash
+          (generación de query y síntesis del JSON final). En pruebas con un
+          corpus de 80~noticias de ``Alta'' relevancia, el pipeline tardaba
+          entre 45 y 90~minutos adicionales, lo que hacía el ciclo de análisis
+          inviable para uso cotidiano.
+
+    \item \textbf{Costo de API desproporcionado.} La API de Google Gemini
+          tiene límites de cuota en el plan gratuito (por minuto y por día).
+          Investigar automáticamente todas las noticias ``Alta'' saturaba la
+          cuota en el primer tercio del corpus, dejando el resto sin
+          investigación y generando errores silenciosos que corrompían los
+          registros de la base de datos.
+
+    \item \textbf{Irrelevancia del 40\% de los casos.} Al revisar manualmente
+          los resultados de la investigación automática, se determinó que
+          aproximadamente el 40\% de las noticias clasificadas como ``Alta''
+          eran casos que el investigador ya conocía o que no requerían
+          seguimiento activo. Investigar esos casos automáticamente era
+          desperdicio de cómputo y cuota.
+\end{enumerate}
+
+\subsubsection*{La solución: investigación interactiva bajo demanda}
+
+Ante estos problemas, se adoptó un diseño \textbf{reactivo e interactivo}:
+el \texttt{DeepInvestigator} se convierte en una herramienta que el investigador
+activa manualmente sobre una noticia específica desde el dashboard, una vez
+que ha revisado su score y decidido que merece profundización. Esta decisión
+corrige los tres problemas anteriores de forma directa:
+(a)~la latencia pasa de ser un problema de pipeline a una operación asincrónica
+en segundo plano \texttt{(background thread)} que no bloquea la interfaz;
+(b)~el costo de API queda acotado a los casos que el investigador considera
+prioritarios;
+(c)~se elimina el desperdicio computacional de investigar casos ya conocidos.
+
+El flujo de interacción implementado en el endpoint
+\texttt{POST /api/investigate/\{noticia\_id\}} y su par de consulta de estado
+\texttt{GET /api/investigate/status/\{noticia\_id\}} funciona así:
+
+\begin{lstlisting}[language=Python,
+    caption={Flujo as\'{\i}ncrono del \texttt{DeepInvestigator} desde el dashboard},
+    label={lst:investigador_async}]
+# El usuario hace clic en "Investigar" desde la ficha de la noticia
+# El endpoint lanza el investigador en un hilo daemon
+thread = threading.Thread(
+    target=_run_investigation_bg,
+    args=(noticia_id, noticia.titulo, noticia.contenido, app),
+    daemon=True,
+)
+thread.start()
+# Respuesta inmediata: {"status": "started"}
+# El frontend consulta /api/investigate/status/{id}
+# hasta recibir {"status": "done", "result": {...}}
+\end{lstlisting}
+
+\subsubsection*{El pipeline interno del DeepInvestigator}
+
+Una vez activado, el módulo \texttt{DeepInvestigator} (\texttt{src/analysis/investigator.py})
+ejecutará cuatro pasos secuenciales:
+
+\begin{enumerate}
+    \item \textbf{Generación de query (Gemini Flash).} El modelo recibe el
+          título y los primeros párrafos de la noticia y genera una \textit{frase
+          de búsqueda de alta especificidad} (máximo 6~palabras) que incluya
+          el nombre de la víctima y detalles únicos del caso. Esta query es
+          preferible al título literal porque filtra resultados genéricos
+          sobre la misma temática pero de distinto evento.
+
+    \item \textbf{Búsqueda en DuckDuckGo.} La query se envía tanto a la
+          versión HTML de DuckDuckGo (\texttt{html.duckduckgo.com}) como a
+          la versión Lite (\texttt{lite.duckduckgo.com}) para maximizar la
+          cobertura ante bloqueos intermitentes. Las URLs retornadas se
+          limpian para eliminar redirecciones internas de DDG
+          (\texttt{uddg=} en los query strings).
+
+    \item \textbf{Scraping de contenido complementario.}
+          Para cada URL retornada por DDG, \texttt{StealthSession} extrae
+          el texto del artículo, filtrando ruido HTML (\texttt{<nav>},
+          \texttt{<footer>}, scripts y formularios). El texto de todas
+          las fuentes se concatena en un bloque único (hasta
+          15{,}000~caracteres) que funciona como contexto enriquecido.
+
+    \item \textbf{Síntesis estructurada (Gemini Flash).} El bloque de texto
+          multi-fuente se envía a Gemini con un prompt de analista criminal
+          especializado en derechos de la infancia. La respuesta es un
+          JSON estricto con siete campos:
+          \texttt{ubicacion}, \texttt{victimas}, \texttt{ninos\_afectados},
+          \texttt{edades}, \texttt{situacion\_actual}, \texttt{medios\_contacto}
+          y \texttt{resumen}. El campo \texttt{medios\_contacto} es
+          especialmente relevante pues Gemini infiere el DIF municipal
+          o la Fiscalía del estado según la ubicación del caso, incluso
+          cuando el texto no los menciona explícitamente.
+\end{enumerate}
+
+Cuando DuckDuckGo no retorna URLs utilizables (por bloqueo o ausencia de resultados),
+el módulo activa un \textbf{fallback de búsqueda nativa de Gemini}: la API
+utiliza el herramienta \texttt{GoogleSearch} nativa del modelo (disponible en
+\texttt{gemini-2.5-flash}) para realizar la búsqueda internamente sin necesidad
+de scraping externo, representando el último recurso antes de retornar un error.
+
+\subsubsection*{El módulo de identificación por enlace externo}
+
+El segundo caso de uso del \texttt{DeepInvestigator} resuelve una necesidad
+práctica identificada durante las pruebas de campo: ¿qué ocurre cuando el
+investigador encuentra una noticia relevante navegando en la web que el
+pipeline \textit{no detectó}?
+
+El endpoint \texttt{POST /api/identify-link} recibe una URL externa y ejecuta
+el siguiente flujo:
+
+\begin{enumerate}
+    \item \textbf{Extracción de contenido.} \texttt{StealthSession} accede
+          a la URL y extrae el texto del artículo con las mismas técnicas
+          de limpieza que el scraper principal.
+
+    \item \textbf{Validación del contenido (Gemini Flash).} Antes de
+          continuar, se le pide a Gemini que genere un título corto
+          del artículo. Si Gemini devuelve \texttt{NOTICIA\_INVALIDA}
+          (porque la URL apunta a un aviso de cookies, un error 403 o
+          una página de inicio sin contenido), el endpoint retorna
+          un error descriptivo sin continuar. Este paso ahorra llamadas
+          API innecesarias.
+
+    \item \textbf{Investigación completa.} Si el contenido es válido,
+          se reutiliza directamente el método \texttt{investigate(title,
+          content)}, ejecutando los cuatro pasos de generación de query,
+          búsqueda DDG, scraping multi-fuente y síntesis Gemini.
+\end{enumerate}
+
+Este módulo es técnicamente una \textbf{reutilización completa del pipeline de
+investigación} con un preprocesamiento adicional de validación. Su existencia
+resuelve la limitación~4 identificada en la sección anterior: el investigador
+puede incorporar al sistema cualquier noticia que el flujo automático no haya
+capturado, aprovechando la misma infraestructura de extracción estructurada.
+
+La siguiente tabla resume los dos casos de uso del módulo y sus endpoints
+correspondientes:
+
+\begin{table}[H]
+\centering
+\begin{threeparttable}
+\caption{Casos de uso del módulo \texttt{DeepInvestigator}}
+\label{tab:investigador_casos}
+\begin{tabular}{|p{3.5cm}|p{4cm}|p{4.5cm}|}
+\hline
+\textbf{Caso de uso} & \textbf{Endpoint} & \textbf{Descripción} \\
+\hline
+Investigación bajo demanda &
+\texttt{POST /api/investigate/\{id\}} &
+El investigador selecciona una noticia del dashboard con score ``Alta'' y
+activa la ficha de caso estructurada. \\
+\hline
+Consulta de estado &
+\texttt{GET /api/investigate/status/\{id\}} &
+El frontend consulta el estado del hilo de investigación
+(\texttt{running}, \texttt{done}, \texttt{error}). \\
+\hline
+Identificación de enlace externo &
+\texttt{POST /api/identify-link} &
+El investigador pega la URL de una noticia no detectada por el
+pipeline; el sistema la investiga y devuelve la ficha estructurada.\\
+\hline
+Seguimiento de casos &
+\texttt{POST /api/seguimiento/add/\{id\}} &
+Agrega una noticia investigada a la lista de seguimiento activo.\\
+\hline
+Exportación de seguimiento &
+\texttt{GET /api/seguimiento/export/csv} &
+Exporta todos los casos en seguimiento con sus fichas de investigación
+a un archivo CSV enriquecido.\\
+\hline
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
 %----------------------------------------------------------------------------------------
 \section{Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}
 \label{sec:tt2_sintesis}
@@ -660,4 +864,18 @@ flujo de datos, descrito para su posterior implementación en TikZ o Mermaid:
     \item[Nivel 5 — Persistencia (P3):] Los resultados se almacenan simultáneamente
           en CSV (compatibilidad) y PostgreSQL (FTS, integridad referencial,
           acceso concurrente desde el dashboard Flask).
+
+    \item[Nivel 6 — Dashboard e Investigación Profunda (P4):] El investigador
+          accede al dashboard Flask que expone los resultados del pipeline.
+          Sobre cualquier noticia clasificada como ``Alta'', puede activar
+          el \texttt{DeepInvestigator} que ejecuta en paralelo: (1)~Gemini Flash
+          genera una query específica del caso; (2)~DuckDuckGo retorna URLs
+          de fuentes complementarias; (3)~\texttt{StealthSession} extrae
+          el contenido de cada fuente; y (4)~Gemini Flash sintetiza una
+          ficha JSON estructurada. Adicionalmente, si el investigador
+          detecta una noticia relevante no capturada por el pipeline,
+          puede proporcionar su URL directamente al módulo de identificación
+          por enlace externo, reutilizando el mismo pipeline de investigación.
+          Los casos que requieren monitoreo continuo se agregan a la lista
+          de seguimiento activo, exportable como CSV enriquecido.
 \end{description}

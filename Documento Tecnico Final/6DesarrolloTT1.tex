@@ -50,7 +50,7 @@ técnicas alarmantes:
 \subsection{Decisión Técnica}
 \label{subsec:p0_leccion}
 
-El fracaso del prototipo 0 hizo evidente que el scraping al HTML directo no era una estrategia viable
+El fallo del prototipo 0 hizo evidente que el scraping al HTML directo no era una estrategia viable
 para el monitoreo de medios de noticias modernos. Por lo que se decidió abandonar el scraping directo
 y migrar hacia fuentes diseñadas para la ingestión automatizada, como lo son los feeds RSS y las APIs.
 
@@ -92,22 +92,21 @@ Las limitaciones del P1 fueron de tres órdenes:
 
 \begin{description}
     \item[\textbf{Techo semántico del detector.}] La detección por palabras clave
-          aisladas generó una tasa de falsos positivos del \textbf{40\%}: noticias
+          aisladas generó una tasa de falsos positivos del \textbf{80\%}: noticias
           sobre legislación (``aprobación de ley de protección al menor''), campañas
           de prevención y estadísticas de incidencia activaban el detector sin
           representar casos concretos de orfandad.
 
-    \item[\textbf{Maldición de la dimensionalidad en K-Means.}] El algoritmo asume
+    \item[\textbf{Dimensionalidad escasa en K-Means.}] El algoritmo asume
           clústeres globulares de tamaño similar y requiere especificar $k$
-          \textit{a priori}. Con 96 documentos y $k=4$, el sistema forzó eventos
+          \textit{a priori}. Con 96 documentos y $k=4$ el sistema forzaba eventos
           periodísticos distintos en el mismo clúster para balancear tamaños,
           generando grupos sin coherencia semántica real. El \textit{Silhouette
-          Score} resultante fue de \textbf{0.23} ---calidad de agrupamiento
-          inaceptable---. El vocabulario limitado a 1{,}000 características
-          también excluía términos especializados del dominio como
-          \textit{``custodia''}, \textit{``DIF''} y \textit{``tutor legal''}.
+          Score} resultante fue de \textbf{0.23} (baja calidad de agrupamiento).
+          El vocabulario limitado a 1{,}000 características también excluía
+          términos especializados del dominio como \textit{``custodia''}, \textit{``DIF''} y \textit{``tutor legal''}.
 
-    \item[\textbf{Cobertura y escalabilidad.}] El sistema cubría solo medios
+    \item[\textbf{Cobertura.}] El sistema cubría solo medios
           nacionales con feed RSS público, excluyendo la prensa regional donde
           suelen aparecer los casos más específicos de feminicidios con NNA
           identificados.
@@ -121,7 +120,7 @@ Las limitaciones del P1 fueron de tres órdenes:
 \subsection{Evolución del sistema}
 \label{subsec:p2_evolucion}
 
-El Prototipo~2 que fue la culminación del TT-1 reestructuró
+El Prototipo~2 que fue la culminación del TT1 reestructuró
 el sistema en respuesta directa a las limitaciones del P1. Los cambios fueron
 sustanciales en las tres capas del flujo de procesamiento:
 
@@ -130,10 +129,8 @@ sustanciales en las tres capas del flujo de procesamiento:
     Se amplió la estrategia de ingesta a tres mecanismos complementarios:
     (a)~\textbf{10 feeds RSS} nacionales y de género (incorporando CIMAC Noticias
     y Milenio, especializadas en violencia de género);
-    (b)~\textbf{Google News API} con 5 consultas de dominio
-    (\textit{``feminicidio México''}, \textit{``asesinato mujer''},
-    \textit{``violencia género''}, etc.), con rate limiting de delays aleatorios
-    2--5~s y checkpoints cada 30~peticiones para evitar HTTP~429;
+    (b)~\textbf{Google News} con 5 consultas de dominio
+    (\textit{``feminicidio México''}, \textit{``asesinato mujer''}, \textit{``violencia género''}),
     (c)~\textbf{Historical Scraper} mediante paginación mensual de Google News,
     cubriendo el período mayo--noviembre 2025 (6~meses de retrospectiva).
 
@@ -143,218 +140,119 @@ sustanciales en las tres capas del flujo de procesamiento:
     patrones contextuales como \texttt{r'mujer.*asesinada'} y
     \texttt{r'cadáver.*femenino'}), 15~patrones de NNA (patrones relacionales
     como \texttt{r'hijo.*huérfano'} y \texttt{r'adolescente.*perdió.*madre'})
-    y \textbf{17~patrones de exclusión}. Esta última categoría fue la innovación
-    crítica del P2: al detectar términos como \texttt{r'ley.*protección'},
+    y \textbf{17~patrones de exclusión}. Esta última categoría fue un cambio importante
+    en el P2 pues al detectar términos como \texttt{r'ley.*protección'},
     \texttt{r'estadística'} o \texttt{r'campaña.*prevención'}, la noticia era
-    descartada automáticamente antes de alcanzar el clasificador, resolviendo el
-    principal fallo del P1. El sistema asignaba además un \textit{score} de
+    descartada automáticamen. Además el sistema asignaba un \textit{score} de
     confianza continuo y una prioridad discreta (Alta/Media/Baja/Irrelevante).
 
     \item[\textbf{Agrupamiento: DBSCAN en lugar de K-Means.}]
-    El cambio de K-Means a DBSCAN (\texttt{eps=0.8}, \texttt{min\_samples=2},
-    \texttt{metric='cosine'}) responde a las propiedades de la distribución de
+    El cambio de K-Means a DBSCAN respondia a las propiedades de la distribución de
     noticias periodísticas: la mayoría de los feminicidios son eventos únicos
-    con cobertura mínima (1--2~noticias), mientras que un evento mediáticamente
-    relevante (como el caso Ángela Birkenbach) genera una densidad local de
-    5--10~noticias. DBSCAN identifica naturalmente estas densidades sin
-    requerir $k$ \textit{a priori}, asignando como ruido (\texttt{topic\_id=-1})
-    los eventos genuinamente únicos, que precisamente son los más valiosos para
-    el sistema: representan casos individuales no redundantes.
+    con cobertura mínima (1 o 2 noticias), mientras que un evento mediáticamente
+    relevante (como el caso de Ángela Birkenbach) genera una densidad local de
+    5 a 10 noticias. DBSCAN identificaba naturalmente estas densidades sin
+    requerir un valor de \textit{a priori} para el numero de clústeres, asignando como ruido
+    los eventos que si son únicos y que precisamente son los más valiosos para
+    el sistema pues representan casos individuales.
 \end{description}
-
-%----------------------------------------------------------------------------------------
-\section{Métricas Baseline del TT-1}
-\label{sec:metricas_baseline}
-%----------------------------------------------------------------------------------------
-
-La Tabla~\ref{tab:baseline_tt1} consolida los resultados cuantitativos de la
-ejecución de referencia del Prototipo~2, realizada el 18 de noviembre de 2025
-(datos almacenados en \texttt{data/reporte\_ml.json} y
-\texttt{data/clusters\_info.csv}), que constituyen la \textbf{línea base oficial}
-contra la cual se evalúan las mejoras del TT-2.
-
-\begin{table}[H]
-\centering
-\caption{Métricas Baseline del TT-1 (Prototipo 2, 18 Nov 2025)}
-\label{tab:baseline_tt1}
-\renewcommand{\arraystretch}{1.5}
-\begin{tabular}{|p{5.0cm}|p{3.5cm}|p{5.0cm}|}
-\hline
-\rowcolor{black}
-\textcolor{white}{\textbf{Métrica}} &
-\textcolor{white}{\textbf{Valor (P2)}} &
-\textcolor{white}{\textbf{Contexto}} \\
-\hline
-\textbf{Noticias raw recolectadas} &
-470 &
-RSS (72) + Google News (148) + Historical Scraper (250) \\
-\hline
-\textbf{Noticias únicas (post-dedup)} &
-281 &
-40.2\% de duplicados detectados (189); threshold coseno 0.75 \\
-\hline
-\textbf{Noticias clasificadas como objetivo} &
-52 (18.5\%) &
-Superan criterio doble: feminicidio confirmado + mención de NNA \\
-\hline
-\textbf{Distribución de prioridad} &
-Alta: 5 (1.8\%) \newline Media: 11 (3.9\%) \newline Baja: 36 (12.8\%) &
-Basada en el score de confianza del \texttt{FeminicideDetector} \\
-\hline
-\textbf{Tasa de falsos positivos (P2)} &
-\textbf{10\%} &
-Validación manual de muestra aleatoria de 20 noticias; 2/20 FP \\
-\hline
-\textbf{Tasa de falsos positivos (P1)} &
-40\% &
-Reducción del 75\% lograda mediante los 17 patrones de exclusión \\
-\hline
-\textbf{Clústeres DBSCAN identificados} &
-3 &
-Clúster~0: estadísticas REDIM (7 noticias); Clúster~1: Caso Ángela Birkenbach (5); Clúster~2: huérfanos Animal Político (3) \\
-\hline
-\textbf{Outliers DBSCAN} &
-199 (81.4\%) &
-Noticias de casos únicos; comportamiento esperado y semánticamente correcto \\
-\hline
-\textbf{Silhouette Score --- P1 (K-Means)} &
-0.23 &
-Calidad de agrupamiento inaceptable; $k=4$ forzado arbitrariamente \\
-\hline
-\textbf{Silhouette Score --- P2 (DBSCAN)} &
-\textbf{0.48} &
-Calculado solo sobre los 3 clústeres densos; mejora del +109\% \\
-\hline
-\textbf{Cobertura temporal} &
-6 meses &
-Mayo--noviembre 2025; insuficiente para análisis de tendencias \\
-\hline
-\textbf{Entidades extraídas (NER)} &
-0 &
-Ausencia total; análisis estructurado requería lectura humana \\
-\hline
-\end{tabular}
-\end{table}
-
 
 \section{Limitaciones identificadas}
 \label{sec:limitaciones_motivacion}
 
 
-Las métricas no solo validan la viabilidad técnica del proyecto sino que también delimitan
-las condiciones de frontera que hacen que el sistema del P2 sea insuficiente para
-su adopción operativa por organizaciones civiles.
-
-\subsection{La barrera del 80\% de falsos positivos: Insuficiencia de la Sintaxis}
+\subsection{Falsos positivos: Insuficiencia de la Sintaxis}
 \label{subsec:limit_fp}
 
-El \texttt{FeminicideDetector} redujo los falsos positivos del 40\% (P1) al 10\%
-(P2), un avance medible e importante. Sin embargo, el análisis cualitativo de los
-2~falsos positivos en la muestra de 20~noticias revela un patrón que no puede
-resolverse añadiendo más expresiones regulares:
+El modulo de deteccion \texttt{FeminicideDetector} redujo los falsos positivos del 80\% (P1) al 60\%
+(P2) que si fue un avance significativo. Sin embargo el análisis de los falsos
+positivos revela un patrón que no puede resolverse únicamente con expresiones regulares:
 
 \begin{itemize}
-    \item \textit{``Durango aprueba la Ley Nicole para prohibir cirugías estéticas
-          en menores de edad''}: La noticia activa el patrón de NNA (\textit{``menores
-          de edad''}) sin que los patrones de exclusión capturaran el término
-          \textit{``aprueba''} en ese contexto legislativo específico.
-    \item \textit{``REDIM reporta: 1 de cada 4 NNA vive en situación de violencia
-          familiar''}: El término \textit{``NNA''} y \textit{``violencia''} activan el
+    \item \textit{"Durango aprueba la Ley Nicole para prohibir cirugías estéticas
+          en menores de edad"}: esta noticia activa el patrón de NNA ("menores
+          de edad") sin que los patrones de exclusión capturaran el término
+          \textit{"aprueba"} en ese contexto legislativo específico.
+    \item \textit{"REDIM reporta: 1 de cada 4 NNA vive en situación de violencia
+          familiar"}: El término \textit{"NNA"} y \textit{"violencia"} activan el
           detector en una nota estadística sin ningún caso concreto identificado.
 \end{itemize}
 
-El problema de fondo no es la cantidad de patrones ---el sistema ya tenía 72--- sino
-la \textbf{naturaleza sintáctica} del enfoque: la co-ocurrencia de términos no
+El problema de fondo no es la cantidad de patrones pues el sistema ya tenía 72, sino
+la \textbf{naturaleza sintáctica} del enfoque, la co-ocurrencia de términos no
 implica la co-ocurrencia de los \textit{roles semánticos} que esos términos desempeñan
-en la oración. Una expresión regular no puede distinguir si \textit{``menor''} en
+en la oración. Una expresión regular no puede distinguir si \textit{"menor"} en
 una noticia es la víctima directa (una menor asesinada), la víctima indirecta (el
-hijo huérfano de la madre asesinada), o el sujeto de una campaña legislativa.
-Esta distinción es esencial para el dominio del sistema, y es exactamente el tipo de
+hijo huérfano de la madre asesinada) o el sujeto de una campaña legislativa.
+Esta distinción es esencial para el dominio del sistema y fue exactamente el tipo de
 comprensión que los modelos de lenguaje bidireccionales como BETO proveen a través de
-sus mecanismos de atención: la representación de cada token es función del contexto
-\textit{completo} de la oración.
+sus mecanismos de atención, en donde la representación de cada token es función del contexto
+completo de la oración.
 
-\subsection{El Techo del Clustering Léxico: DBSCAN sobre TF-IDF}
+\subsection{Clustering Léxico: DBSCAN sobre TF-IDF}
 \label{subsec:limit_clustering}
 
-Los 3~clústeres identificados por DBSCAN son semánticamente coherentes, pero el
-81.4\% de outliers ---aunque correcto para eventos genuinamente únicos--- oculta
-un problema metodológico más profundo: noticias sobre el \textit{mismo evento
-fáctico} redactadas con vocabulario diferente por distintos medios no son agrupadas.
+Los 3 clústeres identificados por DBSCAN son semánticamente coherentes, pero cerca del 80\%
+de outliers que aunque eran correctos para eventos únicos ocultaban
+un problema más profundo y es que las noticias sobre el \textit{mismo evento}
+que eran redactadas con vocabulario diferente por distintos medios no eran agrupadas.
 
-Ejemplo documentado: \textit{``Mamá asesinada deja 2 hijos huérfanos en Ecatepec''
-(nota policiaca, \texttt{El Sol de México})} y
-\textit{``Feminicidio en el Estado de México: dos menores quedan sin madre''
-(nota de derechos humanos, \texttt{CIMAC Noticias})} reportan el mismo hecho con
-vocabularios disjuntos. Los vectores TF-IDF de ambas noticias tienen similitud
-coseno de 0.18 (muy por debajo del umbral eps=0.8), por lo que DBSCAN los clasifica
-como documentos independientes. En el espacio semántico de BETO, ambos documentos
-tendrían embeddings con similitud coseno superior a 0.85, siendo correctamente
+Ejemplo documentado: \textit{"Madre es asesinada y deja 2 hijos huérfanos en Ecatepec"}
+(nota policiaca de \texttt{El Sol de México}) y
+\textit{"Feminicidio en el Estado de México: dos menores quedan sin madre"}
+(nota de derechos humanos de \texttt{CIMAC Noticias}) reportaban el mismo caso con
+vocabularios distintos. Los vectores TF-IDF de ambas noticias tenian una similitud
+coseno de 0.18 (muy por debajo del umbral eps=0.8) por lo que DBSCAN los clasificaba
+como documentos independientes. En el espacio semántico de BETO, los documentos
+tendrían embeddings con similitud coseno superior a 0.85 siendo correctamente
 agrupados como instancias del mismo evento.
 
-\subsection{La Inescalabilidad del Almacenamiento en CSV}
+\subsection{La poca escalabilidad del almacenamiento en CSV}
 \label{subsec:limit_csv}
 
-La persistencia en archivos CSV impone restricciones estructurales que no son
-atributos del formato sino consecuencias de él:
+La persistencia en archivos CSV impone restricciones estructurales:
 
 \begin{itemize}
     \item \textbf{Ausencia de integridad referencial.} No existe mecanismo que
-          garantice que una detección apunte a una noticia existente, ni que
-          un clúster referencie documentos válidos.
-    \item \textbf{Sin acceso concurrente.} La escritura por el Worker y la
-          lectura por el dashboard desde el mismo archivo CSV introduce condiciones
-          de carrera; el P2 las mitigó mediante escritura atómica por renombrado,
-          pero no las eliminó.
-    \item \textbf{Consultas de complejidad $O(n)$.}  Filtrar las noticias de
-          prioridad Alta en el Estado de México entre junio y agosto de 2025
-          requería recorrer el CSV completo en memoria.
+          garantice que una detección apunte a una noticia existente.
+    \item \textbf{Sin acceso concurrente.} La escritura por el worker y la
+          lectura por el dashboard desde el mismo archivo CSV generaban condiciones
+          de carrera, en el P2 el problema se "solucionó" temporalmente mediante
+          escritura atómica por renombrado pero el problema no se eliminó.
 \end{itemize}
 
-\subsection{Síntesis: La Necesidad de Comprensión Semántica}
+\subsection{Síntesis: La necesidad de comprensión semántica}
 \label{subsec:limit_sintesis}
 
-Las tres limitaciones anteriores convergen en una conclusión arquitectónica
-unificada: el problema de la identificación de NNA en situación de orfandad por
-feminicidio \textbf{requiere comprensión semántica del lenguaje natural}, no solo
+Las limitaciones anteriores nos llevan a la conclusión de que el problema 
+de la identificación de NNA en situación de orfandad por
+feminicidio \textbf{requiere comprensión semántica del lenguaje natural} no solo
 reconocimiento de patrones léxicos. El texto de una noticia periodística es un
 artefacto pragmático donde el significado emerge de la interacción entre entidades,
-roles semánticos, modalidades y contexto narrativo ---dimensiones que están
-fundamentalmente fuera del alcance de las expresiones regulares.
+roles semánticos, modalidades y contexto narrativo, dimensiones que están
+fuera del alcance de las expresiones regulares.
 
-La decisión de migrar al paradigma neuro-simbólico del TT-2 no es una preferencia
-por la novedad tecnológica, sino la respuesta \textit{necesaria} a una limitación
-medida empíricamente: con el 10\% de falsos positivos documentado, un analista que
-revisara las 52~noticias clasificadas como objetivo encontraría 5~falsas alarmas;
-a escala de un sistema procesando 1{,}000~noticias diarias, esa tasa generaría
-$\sim$100~registros espurios al día, erosionando la confianza operativa del
-dashboard y la calidad del corpus.
-
-La Tabla~\ref{tab:baseline_tt2_meta} formaliza los objetivos cuantitativos que el
-TT-2 debe alcanzar para superar el baseline establecido por el TT-1.
+La tabla~\ref{tab:baseline_tt2_meta} muestra los objetivos cuantitativos que el
+Trabajo Terminal II debe alcanzar para superar lo establecido en el Trabajo Terminal I.
 
 \begin{table}[H]
 \centering
-\caption{Comparativa de Métricas: TT-1 (Baseline) vs. Metas del TT-2}
+\caption{Comparativa de métricas: TT1 vs. metas del TT2}
 \label{tab:baseline_tt2_meta}
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{|p{4.5cm}|c|c|c|}
 \hline
 \rowcolor{black}
 \textcolor{white}{\textbf{Métrica}} &
-\textcolor{white}{\textbf{TT-1 (P2)}} &
-\textcolor{white}{\textbf{Meta TT-2 (P4)}} &
+\textcolor{white}{\textbf{TT1 (P2)}} &
+\textcolor{white}{\textbf{Meta TT2 (P4)}} &
 \textcolor{white}{\textbf{Mejora}} \\
 \hline
-\textbf{Falsos positivos} & 10\% & $\leq$5\% & $-50\%$ \\
+\textbf{Falsos positivos} & 60\% & $\leq$30\% & $-50\%$ \\
 \hline
-\textbf{Fuentes monitoreadas} & 10 RSS + API & 45 RSS + API + Stealth & $+350\%$ \\
+\textbf{Fuentes monitoreadas} & 10 RSS + Google News & 45 RSS + Google News + Stealth & $+350\%$ \\
 \hline
-\textbf{Silhouette Score} & 0.48 & $\geq$0.60 & $+25\%$ \\
-\hline
-\textbf{Outliers de clustering} & 81.4\% & $\leq$55\% & $-32\%$ \\
-\hline
-\textbf{Cobertura temporal} & 6 meses & Continua (scheduler) & Operacional \\
+\textbf{Cobertura temporal} & 6 meses & Continua & Operacional \\
 \hline
 \textbf{Persistencia} & CSV (plano) & PostgreSQL 16 (ACID) & Estructural \\
 \hline
@@ -365,7 +263,6 @@ TT-2 debe alcanzar para superar el baseline establecido por el TT-1.
 \end{tabular}
 \end{table}
 
-Las metas de la Tabla~\ref{tab:baseline_tt2_meta} no son aspiraciones optimistas:
-son los umbrales mínimos que hacen del sistema una herramienta operativamente
+Las metas de la tabla~\ref{tab:baseline_tt2_meta} son los objetivos mínimos que hacen del sistema una herramienta operativamente
 confiable para organizaciones civiles que trabajan con casos reales de NNA en
 situación de vulnerabilidad.

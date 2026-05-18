@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,27 +13,29 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --navy:     #1a3a6b;
-            --navy-dk:  #122a52;
-            --navy-lt:  #2a5298;
-            --crimson:  #b03030;
+            --navy: #1a3a6b;
+            --navy-dk: #122a52;
+            --navy-lt: #2a5298;
+            --crimson: #b03030;
             --crimson-lt: #c0392b;
-            --teal:     #0e7c6e;
-            --teal-lt:  #16a085;
-            --amber:    #c47c10;
+            --teal: #0e7c6e;
+            --teal-lt: #16a085;
+            --amber: #c47c10;
             --amber-lt: #d68910;
-            --gray-bg:  #f0f2f7;
-            --card-bg:  #ffffff;
+            --gray-bg: #f0f2f7;
+            --card-bg: #ffffff;
             --text-main: #1c2b3a;
             --text-muted: #6b7a8d;
-            --border:   #dde3ef;
+            --border: #dde3ef;
         }
+
         body {
             font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--gray-bg);
             color: var(--text-main);
             font-size: 14px;
         }
+
         /* ── Topbar ─────────────────────────────────────── */
         .topbar {
             background: linear-gradient(90deg, var(--navy-dk) 0%, var(--navy) 100%);
@@ -42,71 +45,139 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
+
         .topbar-brand {
-            display: flex; align-items: center; gap: 10px;
-            text-decoration: none; color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
         }
+
         .brand-icon {
-            width: 42px; height: 42px;
-            display: flex; align-items: center; justify-content: center;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
             padding: 2px;
         }
+
         .brand-icon img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-        .brand-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.2); }
-        .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
-        .brand-title { font-weight: 700; font-size: 14.5px; letter-spacing: 0.02em; }
-        .brand-sub   { font-size: 10.5px; color: rgba(255,255,255,0.6); font-weight: 400; }
-        .topbar-nav  { display: flex; align-items: center; gap: 6px; }
+
+        .brand-divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 14.5px;
+            letter-spacing: 0.02em;
+        }
+
+        .brand-sub {
+            font-size: 10.5px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+        }
+
+        .topbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .btn-nav {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white; border-radius: 6px;
-            padding: 6px 14px; font-size: 13px; font-weight: 500;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
             text-decoration: none;
-            display: flex; align-items: center; gap: 6px;
-            transition: background 0.15s; cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+            cursor: pointer;
         }
-        .btn-nav:hover { background: rgba(255,255,255,0.22); color: white; }
-        .btn-nav.btn-run { background: var(--crimson); border-color: var(--crimson-lt); }
-        .btn-nav.btn-run:hover { background: var(--crimson-lt); }
+
+        .btn-nav:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: white;
+        }
+
+        .btn-nav.btn-run {
+            background: var(--crimson);
+            border-color: var(--crimson-lt);
+        }
+
+        .btn-nav.btn-run:hover {
+            background: var(--crimson-lt);
+        }
+
         .user-chip {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.85);
-            border-radius: 20px; padding: 4px 12px; font-size: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
         }
+
         .btn-logout {
             background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.7);
         }
+
         .btn-logout:hover {
-            background: rgba(220,50,50,0.4);
-            border-color: rgba(255,100,100,0.5); color: white;
+            background: rgba(220, 50, 50, 0.4);
+            border-color: rgba(255, 100, 100, 0.5);
+            color: white;
         }
+
         /* ── Subheader ──────────────────────────────────── */
         .subheader {
             background: var(--navy-dk);
-            color: rgba(255,255,255,0.75);
-            padding: 7px 1.5rem; font-size: 12px;
-            display: flex; align-items: center; gap: 16px;
+            color: rgba(255, 255, 255, 0.75);
+            padding: 7px 1.5rem;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
+
         .subheader .flag {
-            display: flex; align-items: center; gap: 5px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px; padding: 2px 8px;
-            font-weight: 600; color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-weight: 600;
+            color: white;
         }
+
         /* ── Floating Analysis Notification (Non-blocking) ── */
         .analysis-toast {
             position: fixed;
@@ -118,14 +189,23 @@
             border-radius: 12px;
             z-index: 10000;
             width: 320px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         @keyframes slideUp {
-            from { transform: translateY(100%) scale(0.9); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
+            from {
+                transform: translateY(100%) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
+
         .custom-input {
             border: 1.5px solid var(--border);
             border-radius: 8px;
@@ -133,333 +213,926 @@
             font-size: 13px;
             transition: all 0.2s;
         }
+
         .custom-input:focus {
             border-color: var(--navy-lt);
             box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
         }
-        .bg-navy { background-color: var(--navy) !important; }
-        .text-navy { color: var(--navy) !important; }
+
+        .bg-navy {
+            background-color: var(--navy) !important;
+        }
+
+        .text-navy {
+            color: var(--navy) !important;
+        }
+
         .btn-navy {
             background-color: var(--navy);
             color: white;
             border: none;
         }
+
         .btn-navy:hover {
             background-color: var(--navy-dk);
             color: white;
         }
+
         /* ── Main layout ────────────────────────────────── */
-        .main-content { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .main-content {
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
         /* ── Stat cards ─────────────────────────────────── */
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 14px; margin-bottom: 1.5rem;
+            gap: 14px;
+            margin-bottom: 1.5rem;
         }
+
         .stat-card {
-            background: var(--card-bg); border-radius: 14px;
+            background: var(--card-bg);
+            border-radius: 14px;
             padding: 20px 18px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
             border: 1px solid var(--border);
             border-top: 4px solid var(--border);
-            display: flex; flex-direction: column; gap: 6px;
-            transition: box-shadow 0.2s, transform 0.2s; cursor: default;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: default;
         }
-        .stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
-        .stat-card.c-total   { border-top-color: var(--navy-lt); }
-        .stat-card.c-nna     { border-top-color: var(--teal-lt); }
-        .stat-card.c-alta    { border-top-color: var(--crimson-lt); }
-        .stat-card.c-media   { border-top-color: var(--amber-lt); }
-        .stat-card.c-cluster { border-top-color: #7c5cbf; }
+
+        .stat-card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-card.c-total {
+            border-top-color: var(--navy-lt);
+        }
+
+        .stat-card.c-nna {
+            border-top-color: var(--teal-lt);
+        }
+
+        .stat-card.c-alta {
+            border-top-color: var(--crimson-lt);
+        }
+
+        .stat-card.c-media {
+            border-top-color: var(--amber-lt);
+        }
+
+        .stat-card.c-cluster {
+            border-top-color: #7c5cbf;
+        }
+
         .stat-icon {
-            width: 42px; height: 42px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 17px; margin-bottom: 6px;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            margin-bottom: 6px;
         }
-        .c-total .stat-icon   { background: #e8edf8; color: var(--navy-lt); }
-        .c-nna .stat-icon     { background: #e3f5f1; color: var(--teal-lt); }
-        .c-alta .stat-icon    { background: #fbeaea; color: var(--crimson-lt); }
-        .c-media .stat-icon   { background: #fdf3e3; color: var(--amber-lt); }
-        .c-cluster .stat-icon { background: #f0ebfb; color: #7c5cbf; }
-        .stat-value { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
-        .stat-label { font-size: 10.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+        .c-total .stat-icon {
+            background: #e8edf8;
+            color: var(--navy-lt);
+        }
+
+        .c-nna .stat-icon {
+            background: #e3f5f1;
+            color: var(--teal-lt);
+        }
+
+        .c-alta .stat-icon {
+            background: #fbeaea;
+            color: var(--crimson-lt);
+        }
+
+        .c-media .stat-icon {
+            background: #fdf3e3;
+            color: var(--amber-lt);
+        }
+
+        .c-cluster .stat-icon {
+            background: #f0ebfb;
+            color: #7c5cbf;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-top: 2px;
+        }
+
         /* ── Charts ─────────────────────────────────────── */
         .charts-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 14px; margin-bottom: 1.5rem;
+            gap: 14px;
+            margin-bottom: 1.5rem;
         }
+
         .chart-card {
-            background: var(--card-bg); border-radius: 12px;
-            padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
         }
+
         .chart-title {
-            font-size: 13px; font-weight: 600; color: var(--text-main);
-            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .chart-title i { color: var(--navy-lt); }
+
+        .chart-title i {
+            color: var(--navy-lt);
+        }
+
         .charts-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px; margin-bottom: 1.5rem;
+            gap: 14px;
+            margin-bottom: 1.5rem;
         }
+
         /* ── Search panel ───────────────────────────────── */
         .search-panel {
-            background: var(--card-bg); border-radius: 12px;
-            padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
             margin-bottom: 1.25rem;
         }
-        .search-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
-        .search-input-group { display: flex; gap: 8px; }
+
+        .search-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
         .search-input-group input {
-            flex: 1; border: 1.5px solid var(--border);
-            border-radius: 8px; padding: 9px 14px;
-            font-size: 13px; outline: none;
-            transition: border-color 0.15s; font-family: inherit;
+            flex: 1;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s;
+            font-family: inherit;
         }
-        .search-input-group input:focus { border-color: var(--navy-lt); }
+
+        .search-input-group input:focus {
+            border-color: var(--navy-lt);
+        }
+
         .btn-search {
-            background: var(--navy); color: white;
-            border: none; border-radius: 8px;
-            padding: 9px 18px; font-size: 13px;
-            font-weight: 500; cursor: pointer; font-family: inherit;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
         }
-        .btn-search:hover { background: var(--navy-lt); }
-        .search-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+        .btn-search:hover {
+            background: var(--navy-lt);
+        }
+
+        .search-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
         .filter-bar {
-            display: flex; align-items: center; gap: 6px;
-            margin-top: 12px; padding-top: 12px;
-            border-top: 1px solid var(--border); flex-wrap: wrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
         }
-        .filter-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-right: 4px;
+        }
+
         .filter-btn {
-            border: 1.5px solid var(--border); background: white;
-            color: var(--text-main); border-radius: 20px;
-            padding: 4px 14px; font-size: 12px; font-weight: 500;
-            cursor: pointer; transition: all 0.15s; font-family: inherit;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-main);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
         }
-        .filter-btn:hover, .filter-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
-        .filter-btn.f-alta:hover,  .filter-btn.f-alta.active  { background: var(--crimson); border-color: var(--crimson); color: white; }
-        .filter-btn.f-media:hover, .filter-btn.f-media.active { background: var(--amber);   border-color: var(--amber);   color: white; }
-        .filter-btn.f-nna:hover,   .filter-btn.f-nna.active   { background: var(--teal);    border-color: var(--teal);    color: white; }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--navy);
+            border-color: var(--navy);
+            color: white;
+        }
+
+        .filter-btn.f-alta:hover,
+        .filter-btn.f-alta.active {
+            background: var(--crimson);
+            border-color: var(--crimson);
+            color: white;
+        }
+
+        .filter-btn.f-media:hover,
+        .filter-btn.f-media.active {
+            background: var(--amber);
+            border-color: var(--amber);
+            color: white;
+        }
+
+        .filter-btn.f-nna:hover,
+        .filter-btn.f-nna.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: white;
+        }
+
         /* ── Export buttons ─────────────────────────────── */
         .export-bar {
-            display: flex; gap: 8px; align-items: center; margin-left: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-left: auto;
         }
+
         .btn-export {
-            border: 1.5px solid var(--border); background: white;
-            color: var(--text-main); border-radius: 6px;
-            padding: 5px 12px; font-size: 12px; font-weight: 500;
-            cursor: pointer; transition: all 0.15s; font-family: inherit;
-            text-decoration: none; display: flex; align-items: center; gap: 4px;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        .btn-export:hover { background: var(--navy); border-color: var(--navy); color: white; }
-        
+
+        .btn-export:hover {
+            background: var(--navy);
+            border-color: var(--navy);
+            color: white;
+        }
+
         /* ── Investigation Panel ───────────────────────── */
         .btn-investigate {
-            background: #fff; border: 1.5px solid var(--navy-lt); color: var(--navy-lt);
-            border-radius: 6px; padding: 5px 12px; font-size: 11.5px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px;
+            background: #fff;
+            border: 1.5px solid var(--navy-lt);
+            color: var(--navy-lt);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             letter-spacing: 0.02em;
         }
-        .btn-investigate:hover { background: var(--navy-lt); color: #fff; box-shadow: 0 2px 8px rgba(42,82,152,0.25); }
+
+        .btn-investigate:hover {
+            background: var(--navy-lt);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(42, 82, 152, 0.25);
+        }
+
         .investigation-panel {
-            margin-top: 14px; padding: 16px; background: #f4f7fd;
-            border-radius: 10px; border-left: 4px solid var(--navy-lt);
-            font-size: 13px; display: none;
+            margin-top: 14px;
+            padding: 16px;
+            background: #f4f7fd;
+            border-radius: 10px;
+            border-left: 4px solid var(--navy-lt);
+            font-size: 13px;
+            display: none;
         }
-        .investigation-panel.active { display: block; }
-        .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+        .investigation-panel.active {
+            display: block;
+        }
+
+        .inv-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
         .inv-field {
-            background: white; border-radius: 8px; padding: 10px 14px;
-            border: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px;
+            background: white;
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
-        .inv-label { font-weight: 700; color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
-        .inv-val { color: var(--text-main); font-size: 13px; font-weight: 500; }
+
+        .inv-label {
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .inv-val {
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
         .inv-summary {
-            margin-top: 12px; padding: 14px; border-radius: 8px;
-            background: white; border: 1px solid var(--border);
-            color: var(--text-main); line-height: 1.6; font-size: 13px;
+            margin-top: 12px;
+            padding: 14px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 13px;
         }
+
         /* ── Identificar Caso Tab ─────────────────────────── */
         .identify-hero {
             background: linear-gradient(135deg, var(--navy) 0%, var(--navy-lt) 100%);
-            border-radius: 14px; padding: 32px 36px; margin-bottom: 20px;
-            color: white; position: relative; overflow: hidden;
+            border-radius: 14px;
+            padding: 32px 36px;
+            margin-bottom: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
+
         .identify-hero::before {
-            content: ''; position: absolute; right: -40px; top: -40px;
-            width: 200px; height: 200px; border-radius: 50%;
-            background: rgba(255,255,255,0.05);
+            content: '';
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
         }
-        .identify-hero h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-        .identify-hero p { font-size: 13px; color: rgba(255,255,255,0.8); margin: 0; max-width: 600px; }
+
+        .identify-hero h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .identify-hero p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            max-width: 600px;
+        }
+
         .identify-url-bar {
-            display: flex; gap: 10px; margin-top: 22px;
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
         }
+
         .identify-url-bar input {
-            flex: 1; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.3);
-            border-radius: 10px; padding: 12px 18px; color: white; font-size: 14px;
-            font-family: inherit; outline: none; transition: all 0.2s;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 12px 18px;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
         }
-        .identify-url-bar input::placeholder { color: rgba(255,255,255,0.5); }
-        .identify-url-bar input:focus { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.6); }
+
+        .identify-url-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .identify-url-bar input:focus {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
         .btn-analyze {
-            background: white; color: var(--navy); border: none; border-radius: 10px;
-            padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer;
-            font-family: inherit; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+            background: white;
+            color: var(--navy);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             white-space: nowrap;
         }
-        .btn-analyze:hover { background: #f0f4ff; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transform: translateY(-1px); }
+
+        .btn-analyze:hover {
+            background: #f0f4ff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
         .identify-result-card {
-            background: var(--card-bg); border-radius: 14px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden;
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
             border: 1px solid var(--border);
         }
+
         .identify-result-header {
-            padding: 16px 24px; border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
             background: linear-gradient(90deg, #f0f4ff, #f8f9fa);
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .identify-result-title { font-weight: 700; font-size: 14px; color: var(--navy); display: flex; align-items: center; gap: 8px; }
-        .identify-result-body { padding: 24px; }
+
+        .identify-result-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .identify-result-body {
+            padding: 24px;
+        }
+
         .identify-steps {
-            display: flex; gap: 24px; margin-bottom: 24px;
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
         }
+
         .identify-step {
-            flex: 1; background: var(--gray-bg); border-radius: 10px; padding: 14px 16px;
-            display: flex; align-items: flex-start; gap: 12px;
+            flex: 1;
+            background: var(--gray-bg);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
         }
+
         .identify-step-icon {
-            width: 34px; height: 34px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
         }
-        .step-1 .identify-step-icon { background: #e8edf8; color: var(--navy-lt); }
-        .step-2 .identify-step-icon { background: #e3f5f1; color: var(--teal-lt); }
-        .step-3 .identify-step-icon { background: #fbeaea; color: var(--crimson); }
-        .identify-step-text { font-size: 12px; color: var(--text-muted); }
-        .identify-step-text strong { display: block; color: var(--text-main); font-size: 12.5px; margin-bottom: 2px; }
-        
+
+        .step-1 .identify-step-icon {
+            background: #e8edf8;
+            color: var(--navy-lt);
+        }
+
+        .step-2 .identify-step-icon {
+            background: #e3f5f1;
+            color: var(--teal-lt);
+        }
+
+        .step-3 .identify-step-icon {
+            background: #fbeaea;
+            color: var(--crimson);
+        }
+
+        .identify-step-text {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .identify-step-text strong {
+            display: block;
+            color: var(--text-main);
+            font-size: 12.5px;
+            margin-bottom: 2px;
+        }
+
         /* ── News panel ─────────────────────────────────── */
         .news-panel {
-            background: var(--card-bg); border-radius: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
         }
+
         .news-panel-header {
-            padding: 14px 20px; border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            background: #fafbfd; flex-wrap: wrap; gap: 8px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fafbfd;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .panel-title { font-weight: 600; font-size: 14px; color: var(--text-main); }
-        .results-count { font-size: 12px; color: var(--text-muted); background: var(--gray-bg); border-radius: 12px; padding: 2px 10px; }
-        .news-panel-body { padding: 16px 20px; }
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-        .empty-state i { font-size: 36px; margin-bottom: 12px; opacity: 0.4; display: block; }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .results-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--gray-bg);
+            border-radius: 12px;
+            padding: 2px 10px;
+        }
+
+        .news-panel-body {
+            padding: 16px 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+            display: block;
+        }
+
         /* ── News items ─────────────────────────────────── */
         .news-item {
-            border: 1px solid var(--border); border-radius: 10px;
-            padding: 14px 16px; margin-bottom: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
             transition: box-shadow 0.15s, transform 0.15s;
-            position: relative; overflow: hidden;
+            position: relative;
+            overflow: hidden;
         }
+
         .news-item::before {
-            content: ''; position: absolute;
-            left: 0; top: 0; bottom: 0; width: 4px;
-            background: var(--border); border-radius: 4px 0 0 4px;
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--border);
+            border-radius: 4px 0 0 4px;
         }
-        .news-item.rel-alta::before  { background: var(--crimson); }
-        .news-item.rel-media::before { background: var(--amber); }
-        .news-item.rel-baja::before  { background: #95a5a6; }
-        .news-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.1); transform: translateY(-1px); }
-        .news-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-        .news-title { font-size: 13.5px; font-weight: 600; color: var(--text-main); line-height: 1.4; flex: 1; }
-        .badges { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; align-items: flex-start; }
-        .badge-rel { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
-        .badge-alta  { background: #fbeaea; color: var(--crimson); border: 1px solid #f5c6c6; }
-        .badge-media { background: #fdf3e3; color: var(--amber);   border: 1px solid #f5ddb6; }
-        .badge-baja  { background: #f0f0f0; color: #666;           border: 1px solid #ddd; }
-        .badge-nna   { background: var(--teal-lt); color: white; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+        .news-item.rel-alta::before {
+            background: var(--crimson);
+        }
+
+        .news-item.rel-media::before {
+            background: var(--amber);
+        }
+
+        .news-item.rel-baja::before {
+            background: #95a5a6;
+        }
+
+        .news-item:hover {
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .news-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .badges {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .badge-rel {
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .badge-alta {
+            background: #fbeaea;
+            color: var(--crimson);
+            border: 1px solid #f5c6c6;
+        }
+
+        .badge-media {
+            background: #fdf3e3;
+            color: var(--amber);
+            border: 1px solid #f5ddb6;
+        }
+
+        .badge-baja {
+            background: #f0f0f0;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .badge-nna {
+            background: var(--teal-lt);
+            color: white;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
         .news-excerpt {
-            font-size: 12.5px; color: var(--text-muted); line-height: 1.5;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.5;
             margin-bottom: 10px;
-            display: -webkit-box; -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical; overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
+
         .news-footer {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 11.5px; color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+            color: var(--text-muted);
             border-top: 1px solid var(--border);
-            padding-top: 8px; flex-wrap: wrap; gap: 4px;
+            padding-top: 8px;
+            flex-wrap: wrap;
+            gap: 4px;
         }
-        .news-meta { display: flex; align-items: center; gap: 12px; }
-        .score-pills { display: flex; gap: 6px; }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-pills {
+            display: flex;
+            gap: 6px;
+        }
+
         .score-pill {
-            display: flex; align-items: center; gap: 3px;
-            font-size: 11px; background: var(--gray-bg);
-            border-radius: 4px; padding: 2px 7px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+            background: var(--gray-bg);
+            border-radius: 4px;
+            padding: 2px 7px;
         }
-        .score-pill.s-fem { color: var(--crimson); }
-        .score-pill.s-nna { color: var(--teal); }
-        .news-link { color: var(--navy-lt); text-decoration: none; font-weight: 500; }
-        .news-link:hover { text-decoration: underline; }
+
+        .score-pill.s-fem {
+            color: var(--crimson);
+        }
+
+        .score-pill.s-nna {
+            color: var(--teal);
+        }
+
+        .news-link {
+            color: var(--navy-lt);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .news-link:hover {
+            text-decoration: underline;
+        }
+
         /* ── Bookmark buttons ───────────────────────────── */
         .btn-bookmark {
-            background: none; border: none; cursor: pointer;
-            color: var(--text-muted); font-size: 14px; padding: 2px 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 2px 4px;
             transition: color 0.15s;
         }
-        .btn-bookmark:hover, .btn-bookmark.active { color: var(--amber); }
+
+        .btn-bookmark:hover,
+        .btn-bookmark.active {
+            color: var(--amber);
+        }
+
         /* ── Pagination ─────────────────────────────────── */
         .pagination-bar {
-            display: flex; justify-content: center; align-items: center;
-            gap: 4px; margin-top: 18px;
-            padding-top: 14px; border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
         }
+
         .page-btn {
-            border: 1.5px solid var(--border); background: white;
-            color: var(--text-main); border-radius: 6px;
-            padding: 5px 12px; font-size: 12px; cursor: pointer;
-            transition: all 0.12s; font-family: inherit;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.12s;
+            font-family: inherit;
         }
-        .page-btn:hover:not(:disabled) { border-color: var(--navy); color: var(--navy); }
-        .page-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
-        .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .page-btn.active {
+            background: var(--navy);
+            border-color: var(--navy);
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
         /* ── Tabs ───────────────────────────────────────── */
         .section-tabs {
-            display: flex; gap: 4px; margin-bottom: 1.5rem;
-            background: var(--card-bg); padding: 6px; border-radius: 10px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            display: flex;
+            gap: 4px;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
+
         .tab-btn {
-            border: none; background: transparent; color: var(--text-muted);
-            padding: 9px 20px; font-size: 13px; font-weight: 500;
-            border-radius: 8px; cursor: pointer; font-family: inherit;
-            transition: all 0.18s; display: flex; align-items: center; gap: 7px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            padding: 9px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 7px;
         }
-        .tab-btn:hover { background: var(--gray-bg); color: var(--text-main); }
-        .tab-btn.active { background: var(--navy); color: white; box-shadow: 0 2px 8px rgba(26,58,107,0.25); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+
+        .tab-btn:hover {
+            background: var(--gray-bg);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--navy);
+            color: white;
+            box-shadow: 0 2px 8px rgba(26, 58, 107, 0.25);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* ── Footer ─────────────────────────────────────── */
         .site-footer {
-            text-align: center; padding: 20px;
-            color: var(--text-muted); font-size: 11.5px;
-            border-top: 1px solid var(--border); margin-top: 2rem;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 11.5px;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
         }
-        .site-footer strong { color: var(--navy); }
+
+        .site-footer strong {
+            color: var(--navy);
+        }
+
         /* ── Responsive ─────────────────────────────────── */
         @media (max-width: 900px) {
-            .stat-grid { grid-template-columns: repeat(3, 1fr); }
-            .charts-grid { grid-template-columns: 1fr; }
-            .charts-row-2 { grid-template-columns: 1fr; }
+            .stat-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-row-2 {
+                grid-template-columns: 1fr;
+            }
         }
+
         @media (max-width: 600px) {
-            .stat-grid { grid-template-columns: repeat(2, 1fr); }
-            .brand-sub { display: none; }
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .brand-sub {
+                display: none;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Floating Analysis Notification (Non-blocking) -->
@@ -470,10 +1143,12 @@
                 <div class="fw-bold" style="font-size: 13px;">Procesamiento en curso...</div>
                 <div id="analysisTimer" class="text-white-50" style="font-size: 11px;">Iniciado hace 0s</div>
             </div>
-            <button type="button" class="btn-close btn-close-white ms-2" onclick="toggleAnalysisToast(false)" style="font-size: 10px;"></button>
+            <button type="button" class="btn-close btn-close-white ms-2" onclick="toggleAnalysisToast(false)"
+                style="font-size: 10px;"></button>
         </div>
         <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.1);">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-white" role="progressbar" style="width: 100%"></div>
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-white" role="progressbar"
+                style="width: 100%"></div>
         </div>
     </div>
 
@@ -483,13 +1158,15 @@
             <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
                 <div class="modal-header bg-navy text-white py-3">
                     <h5 class="modal-title fs-6 fw-bold" id="settingsModalLabel">
-                        <i class="fas fa-cog me-2"></i>Configuración de Recolección
+                        <i class="fas fa-cog me-2"></i>Configuración de recolección
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <p class="text-muted mb-4" style="font-size: 13px;">
-                        Selecciona un rango de fechas para el scraping. Si se dejan vacíos, se usarán los últimos 30 días de los feeds RSS.
+                        Selecciona un rango de fechas para el scraping. Si se dejan vacías solo se tomarán los últimos
+                        30 días.
                     </p>
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -503,37 +1180,45 @@
                     </div>
                     <div class="row g-3 mt-2">
                         <div class="col-12">
-                            <label class="form-label fw-bold text-navy" style="font-size: 12px;">TIPO DE BÚSQUEDA</label>
+                            <label class="form-label fw-bold text-navy" style="font-size: 12px;">TIPO DE
+                                BÚSQUEDA</label>
                             <select id="configScraperType" class="form-select custom-input" style="font-size: 13px;">
                                 <option value="all">Ambas (General + Avanzada)</option>
-                                <option value="google">1. Búsqueda General (Google News)</option>
-                                <option value="custom">2. Búsqueda Avanzada (Fuentes configuradas)</option>
+                                <option value="google">Búsqueda general (Google News)</option>
+                                <option value="custom">Búsqueda avanzada (Fuentes configuradas)</option>
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="mt-4 p-3 rounded-3 bg-light border border-warning-subtle">
                         <div class="d-flex gap-2">
                             <i class="fas fa-exclamation-triangle text-warning mt-1"></i>
                             <div style="font-size: 11.5px;">
-                                <strong>Nota:</strong> Los feeds RSS tienen límites de profundidad. Intentar recuperar noticias muy antiguas podría no devolver resultados si el feed ya las eliminó.
+                                <strong>Nota:</strong> Los feeds RSS tienen límites de profundidad. Intentar recuperar
+                                noticias muy antiguas podría no devolver resultados si el feed ya las eliminó.
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-4 pt-3 border-top">
-                        <h6 class="text-danger fw-bold mb-2" style="font-size: 12px;"><i class="fas fa-trash-alt me-1"></i> ZONA DE PELIGRO</h6>
+                        <h6 class="text-danger fw-bold mb-2" style="font-size: 12px;"><i
+                                class="fas fa-trash-alt me-1"></i> ZONA DE PELIGRO</h6>
                         <p class="text-muted mb-2" style="font-size: 11px;">
-                            Borrar el historial eliminará todas las noticias analizadas y crudas. El sistema volverá a recolectar todo desde cero en el próximo escaneo.
+                            Borrar el historial eliminará todas las noticias analizadas y crudas. El sistema volverá a
+                            recolectar todo desde cero en el próximo escaneo.
                         </p>
-                        <button type="button" class="btn btn-outline-danger w-100 py-2" style="font-size: 12px; font-weight: 600; border-style: dashed;" onclick="confirmClearHistory()">
+                        <button type="button" class="btn btn-outline-danger w-100 py-2"
+                            style="font-size: 12px; font-weight: 600; border-style: dashed;"
+                            onclick="confirmClearHistory()">
                             Borrar todo el historial de noticias
                         </button>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0 p-3">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal" style="font-size: 13px; font-weight: 500;">Cancelar</button>
-                    <button type="button" class="btn btn-navy px-4" onclick="runAnalysisWithConfig()" style="font-size: 13px; font-weight: 600;">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal"
+                        style="font-size: 13px; font-weight: 500;">Cancelar</button>
+                    <button type="button" class="btn btn-navy px-4" onclick="runAnalysisWithConfig()"
+                        style="font-size: 13px; font-weight: 600;">
                         <i class="fas fa-play me-2"></i>Iniciar Proceso
                     </button>
                 </div>
@@ -550,7 +1235,7 @@
             <div class="brand-divider"></div>
             <div class="brand-text">
                 <span class="brand-title">Plataforma NNA</span>
-                <span class="brand-sub">Sistema de Seguimiento · Víctimas Indirectas del Feminicidio</span>
+                <span class="brand-sub">Sistema de seguimiento a víctimas indirectas del feminicidio</span>
             </div>
         </a>
         <div class="topbar-nav">
@@ -559,11 +1244,13 @@
                     <i class="fas fa-sync-alt"></i>
                     <span class="d-none d-md-inline">Actualizar datos</span>
                 </button>
-                <button class="btn-nav" style="border-left: 1px solid rgba(255,255,255,0.2); border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 10px; padding-right: 10px;" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Configurar rango de fechas">
+                <button class="btn-nav"
+                    style="border-left: 1px solid rgba(255,255,255,0.2); border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 10px; padding-right: 10px;"
+                    data-bs-toggle="modal" data-bs-target="#settingsModal" title="Configurar rango de fechas">
                     <i class="fas fa-cog"></i>
                 </button>
             </div>
-            
+
             <a href="{{ url_for('sources.index') }}" class="btn-nav">
                 <i class="fas fa-rss"></i>
                 <span class="d-none d-md-inline">Fuentes</span>
@@ -580,7 +1267,8 @@
     <!-- Sub-header contextual -->
     <div class="subheader">
         <span class="flag"> Trabajo Terminal</span>
-        <span class="d-none d-md-inline">Sistema Inteligente para la Identificacion y Seguimiento de Derechos de NNA afectados por feminicidios en México</span>
+        <span class="d-none d-md-inline">Sistema Inteligente para la Identificacion y Seguimiento de Derechos de NNA
+            afectados por feminicidios en México</span>
         <span class="ms-auto" style="font-size:11px;">Última actualización: <span id="headerUpdate">—</span></span>
     </div>
 
@@ -625,7 +1313,8 @@
             </button>
             <button class="tab-btn" data-tab="guardadas" onclick="switchTab('guardadas', this)">
                 <i class="fas fa-bookmark"></i> Guardadas
-                <span id="savedCount" style="background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:10px;display:none;">0</span>
+                <span id="savedCount"
+                    style="background:var(--amber);color:white;border-radius:10px;padding:1px 7px;font-size:10px;display:none;">0</span>
             </button>
             <button class="tab-btn" data-tab="identificar" onclick="switchTab('identificar', this)">
                 <i class="fas fa-search-plus"></i> Identificar caso
@@ -640,7 +1329,7 @@
             <!-- Búsqueda y filtros -->
             <div class="search-panel">
                 <div class="search-label">
-                    <i class="fas fa-search me-1"></i>Búsqueda inteligente
+                    <i class="fas fa-search me-1"></i>Búsqueda
                 </div>
                 <div class="search-input-group">
                     <input type="text" id="searchInput"
@@ -651,27 +1340,28 @@
                     </button>
                 </div>
                 <div class="search-hint">
-                    <i class="fas fa-magic me-1"></i>
-                    La búsqueda expande automáticamente sinónimos: "niños" incluye "menores", "NNA", "infantes"
+                    La búsqueda expande automáticamente sinónimos como "niños" incluye "menores", "NNA", "infantes"
                 </div>
                 <div class="filter-bar">
                     <span class="filter-label">Filtros:</span>
                     <button class="filter-btn active" id="fb-todas" onclick="applyFilter('todas')">Todas</button>
-                    <button class="filter-btn f-alta"  id="fb-alta"  onclick="applyFilter('alta')">
+                    <button class="filter-btn f-alta" id="fb-alta" onclick="applyFilter('alta')">
                         <i class="fas fa-circle" style="font-size:7px;"></i> Alta relevancia
                     </button>
                     <button class="filter-btn f-media" id="fb-media" onclick="applyFilter('media')">
                         <i class="fas fa-circle" style="font-size:7px;"></i> Media relevancia
                     </button>
-                    <button class="filter-btn f-nna"   id="fb-nna"   onclick="applyFilter('nna')">
+                    <button class="filter-btn f-nna" id="fb-nna" onclick="applyFilter('nna')">
                         <i class="fas fa-child" style="font-size:9px;"></i> NNA identificados
                     </button>
-                    <button class="filter-btn" id="fb-objetivo" onclick="applyFilter('objetivo')" style="border-color: #2a5298; color: #2a5298;">
+                    <button class="filter-btn" id="fb-objetivo" onclick="applyFilter('objetivo')"
+                        style="border-color: #2a5298; color: #2a5298;">
                         <i class="fas fa-crosshairs"></i> Casos Objetivo
                     </button>
                     <div class="export-bar">
                         <span class="filter-label">Historial:</span>
-                        <select id="batchSelect" class="form-select form-select-sm" style="font-size: 11px; width: auto; display: inline-block;" onchange="onBatchChange()">
+                        <select id="batchSelect" class="form-select form-select-sm"
+                            style="font-size: 11px; width: auto; display: inline-block;" onchange="onBatchChange()">
                             <option value="">Cargando...</option>
                         </select>
                         <span class="filter-label" style="margin-left:12px;">Orden:</span>
@@ -684,7 +1374,9 @@
                         <a href="/api/export/csv" class="btn-export" title="Exportar datos analizados a CSV">
                             <i class="fas fa-file-csv"></i> CSV Final
                         </a>
-                        <a href="/api/export/csv/raw" class="btn-export" title="Descargar todas las noticias crudas recolectadas por el scraper" style="border-color: var(--amber); color: var(--amber);">
+                        <a href="/api/export/csv/raw" class="btn-export"
+                            title="Descargar todas las noticias crudas recolectadas por el scraper"
+                            style="border-color: var(--amber); color: var(--amber);">
                             <i class="fas fa-download"></i> CSV Raw
                         </a>
                     </div>
@@ -726,7 +1418,8 @@
             </div>
             <div class="charts-row-2">
                 <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-map-marked-alt"></i> Top estados con mayor incidencia</div>
+                    <div class="chart-title"><i class="fas fa-map-marked-alt"></i> Top estados con mayor incidencia
+                    </div>
                     <canvas id="chartEstados" height="250"></canvas>
                 </div>
                 <div class="chart-card">
@@ -758,7 +1451,8 @@
                         <div class="empty-state">
                             <i class="fas fa-bookmark"></i>
                             <p>No hay noticias guardadas.</p>
-                            <small>Haz clic en el ícono <i class="fas fa-bookmark"></i> de una noticia para guardarla y darle seguimiento.</small>
+                            <small>Haz clic en el ícono <i class="fas fa-bookmark"></i> de una noticia para guardarla y
+                                darle seguimiento.</small>
                         </div>
                     </div>
                 </div>
@@ -772,15 +1466,19 @@
             <div class="identify-hero">
                 <div style="position:relative;z-index:1;">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                        <div style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="fas fa-search-plus"></i></div>
-                        <h2 class="mb-0">Identificar Caso por Noticia</h2>
+                        <div
+                            style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;">
+                            <i class="fas fa-search-plus"></i>
+                        </div>
+                        <h2 class="mb-0">Identificar caso por noticia</h2>
                     </div>
-                    <p>Pega el enlace de cualquier noticia web. La IA extraerá su contenido, buscará fuentes cruzadas y generará un informe estructurado del caso con datos sobre NNA afectados.</p>
+                    <p>Aqui puedes pegar el enlace de cualquier noticia web. El modulo de busqueda profunda extraerá su
+                        contenido, buscará fuentes cruzadas y
+                        generará un informe estructurado del caso con datos sobre NNA afectados.</p>
                     <div class="identify-url-bar">
                         <input type="url" id="identifyUrlInput"
                             placeholder="https://www.elfinanciero.com.mx/estados/2025/05/08/noticia..."
-                            autocomplete="off"
-                            onkeydown="if(event.key==='Enter') identifyLink()">
+                            autocomplete="off" onkeydown="if(event.key==='Enter') identifyLink()">
                         <button class="btn-analyze" onclick="identifyLink()" id="btnAnalyze">
                             <i class="fas fa-robot"></i> Analizar caso
                         </button>
@@ -801,14 +1499,14 @@
                     <div class="identify-step-icon"><i class="fas fa-globe"></i></div>
                     <div class="identify-step-text">
                         <strong>2. Búsqueda cruzada</strong>
-                        Genera queries con IA y busca noticias relacionadas en la web para enriquecer el análisis.
+                        Genera queries y busca noticias relacionadas en la web para enriquecer el análisis.
                     </div>
                 </div>
                 <div class="identify-step step-3">
                     <div class="identify-step-icon"><i class="fas fa-file-alt"></i></div>
                     <div class="identify-step-text">
                         <strong>3. Informe estructurado</strong>
-                        Consolida toda la información en un reporte con ubicación, víctimas y NNA afectados.
+                        Se genera un reporte con información sobre ubicación, víctimas y NNA afectados.
                     </div>
                 </div>
             </div>
@@ -818,10 +1516,11 @@
                 <div class="identify-result-header">
                     <span class="identify-result-title">
                         <i class="fas fa-shield-alt" style="color:var(--teal);"></i>
-                        Informe del Caso — Análisis IA
+                        Informe del Caso
                     </span>
-                    <span style="font-size:11px;color:var(--text-muted);background:white;border:1px solid var(--border);border-radius:6px;padding:3px 10px;">
-                        <i class="fas fa-robot me-1"></i>Gemini AI Engine
+                    <span
+                        style="font-size:11px;color:var(--text-muted);background:white;border:1px solid var(--border);border-radius:6px;padding:3px 10px;">
+                        <i class="fas fa-robot me-1"></i>Gemini AI
                     </span>
                 </div>
                 <div class="identify-result-body">
@@ -832,19 +1531,25 @@
 
         <!-- ╔═══ TAB: Seguimiento de Casos ═══╗ -->
         <div id="tab-seguimiento" class="tab-content">
-            <div class="identify-hero" style="background: linear-gradient(135deg, var(--teal) 0%, var(--teal-lt) 100%);">
+            <div class="identify-hero"
+                style="background: linear-gradient(135deg, var(--teal) 0%, var(--teal-lt) 100%);">
                 <div style="position:relative;z-index:1;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+                    <div
+                        style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
                         <div style="display:flex;align-items:center;gap:12px;">
-                            <div style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="fas fa-folder-open"></i></div>
-                            <h2 class="mb-0">Seguimiento de Casos Investigados</h2>
+                            <div
+                                style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <h2 class="mb-0">Seguimiento de casos investigados</h2>
                         </div>
-                        <a href="/api/seguimiento/export/csv" class="btn" style="background:white;color:var(--teal-dk);font-weight:700;border:none;border-radius:8px;padding:8px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.1);"><i class="fas fa-file-csv me-1"></i>Exportar CSV</a>
                     </div>
-                    <p>Historial detallado de los casos que han sido procesados a profundidad por el motor de IA. Incluye geolocalización interactiva, análisis de involucrados y fuentes contrastadas para facilitar la toma de decisiones del analista.</p>
+                    <p>Historial de los casos que han sido procesados a investigacion profunda.
+                        Incluye geolocalización, análisis de involucrados y fuentes para
+                        facilitar la toma de decisiones del analista.</p>
                 </div>
             </div>
-            
+
             <div id="seguimientoContainer">
                 <div class="empty-state">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -856,452 +1561,453 @@
     </div><!-- /main-content -->
 
     <footer class="site-footer">
-        <strong>Plataforma NNA — Sistema Inteligente de Seguimiento</strong><br>
-        <span style="color:var(--text-muted);">Identificación y Seguimiento de Derechos de NNA Afectados por Feminicidios en México</span>
+        <strong>Plataforma NNA's - Sistema Inteligente de Seguimiento</strong><br>
+        <span style="color:var(--text-muted);">Identificación y Seguimiento de Derechos de NNA's Afectados por
+            Feminicidios</span>
         <div class="footer-badges">
             <span class="footer-badge"><i class="fas fa-shield-alt"></i> Uso exclusivo institucional</span>
-            <span class="footer-badge"><i class="fas fa-map-marker-alt"></i> República Mexicana</span>
-            <span class="footer-badge"><i class="fas fa-robot"></i> Powered by Gemini AI</span>
-            <span class="footer-badge"><i class="fas fa-database"></i> PostgreSQL + BETO NLP</span>
+            <span class="footer-badge"><i class="fas fa-graduation-cap"></i> Escuela Superior de Cómputo</span>
+            <span class="footer-badge"><i class="fas fa-school"></i> Instituto Politécnico Nacional</span>
         </div>
-        <div style="margin-top:10px;font-size:10.5px;color:var(--border);">Los datos provienen de medios de comunicación mexicanos verificados. Esta plataforma no sustituye asesoría legal o psicosocial.</div>
+        <div style="margin-top:10px;font-size:10.5px;color:var(--border);">Los datos provienen de medios de comunicación
+            mexicanos verificados. Esta plataforma no sustituye asesoría legal o psicosocial.</div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // ══════════════════════════════════════════════════════════
-    //  Estado global
-    // ══════════════════════════════════════════════════════════
-    let state = { page: 1, filter: 'todas', search: '', sort: 'relevancia', total: 0, totalPages: 1, batchId: '' };
-    let charts = {};
-    let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
+        // ══════════════════════════════════════════════════════════
+        //  Estado global
+        // ══════════════════════════════════════════════════════════
+        let state = { page: 1, filter: 'todas', search: '', sort: 'relevancia', total: 0, totalPages: 1, batchId: '' };
+        let charts = {};
+        let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
 
-    // ══════════════════════════════════════════════════════════
-    //  Tabs
-    // ══════════════════════════════════════════════════════════
-    function switchTab(tab, el) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById('tab-' + tab).classList.add('active');
-        if (el) el.classList.add('active');
-        if (tab === 'graficos') loadCharts();
-        if (tab === 'guardadas') renderSaved();
-        if (tab === 'seguimiento') loadSeguimientoCasos();
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  Stats
-    // ══════════════════════════════════════════════════════════
-    async function loadStats() {
-        try {
-            let url = '/api/stats';
-            if (state.batchId) {
-                url += '?batch_id=' + encodeURIComponent(state.batchId);
-            }
-            const r = await fetch(url);
-            if (!r.ok) return;
-            const s = await r.json();
-            document.getElementById('totalNoticias').textContent   = fmt(s.total_noticias);
-            document.getElementById('noticiasNNA').textContent     = fmt(s.noticias_nna);
-            document.getElementById('altaRelevancia').textContent  = fmt(s.alta_relevancia || 0);
-            document.getElementById('mediaRelevancia').textContent = fmt(s.media_relevancia || 0);
-            document.getElementById('clusters').textContent        = fmt(s.clusters || s.topics || 0);
-            document.getElementById('headerUpdate').textContent    = s.ultima_actualizacion || '—';
-            
-            // Si no teníamos un batchId seleccionado, usar el que viene del backend
-            if (!state.batchId && s.current_batch_id) {
-                state.batchId = s.current_batch_id;
-                await loadBatches();
-            }
-        } catch(e) { console.warn('Stats error:', e); }
-    }
-
-    async function loadBatches() {
-        try {
-            const r = await fetch('/api/batches');
-            if (!r.ok) return;
-            const data = await r.json();
-            const select = document.getElementById('batchSelect');
-            select.innerHTML = '';
-            
-            if (data.batches && data.batches.length > 0) {
-                // Ordenar de más reciente a más antiguo asumiendo formato YYYYMMDD_HHMMSS
-                data.batches.sort().reverse();
-                data.batches.forEach(b => {
-                    const option = document.createElement('option');
-                    option.value = b;
-                    
-                    // Formatear para lectura amigable
-                    let lbl = b;
-                    if (b.length === 15 && b.indexOf('_') === 8) {
-                        lbl = b.substring(6,8) + '/' + b.substring(4,6) + '/' + b.substring(0,4) + ' ' + 
-                              b.substring(9,11) + ':' + b.substring(11,13);
-                    }
-                    option.textContent = lbl;
-                    if (b === state.batchId) option.selected = true;
-                    select.appendChild(option);
-                });
-            } else {
-                select.innerHTML = '<option value="">Sin historial</option>';
-            }
-        } catch(e) { console.warn('Batches error:', e); }
-    }
-
-    function onBatchChange() {
-        state.batchId = document.getElementById('batchSelect').value;
-        state.page = 1;
-        loadStats();
-        loadNews();
-        loadCharts();
-    }
-
-    function fmt(n) {
-        if (n === undefined || n === null) return '—';
-        return Number(n).toLocaleString('es-MX');
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  Filters
-    // ══════════════════════════════════════════════════════════
-    function applyFilter(filter) {
-        state.filter = filter; state.page = 1; state.search = '';
-        document.getElementById('searchInput').value = '';
-        ['todas','alta','media','nna','objetivo'].forEach(f => {
-            document.getElementById('fb-' + f).classList.toggle('active', f === filter);
-        });
-        loadNews();
-    }
-
-    function applySort(sort) {
-        state.sort = sort; state.page = 1;
-        ['fecha','relevancia'].forEach(s => {
-            document.getElementById('sort-' + s).classList.toggle('active', s === sort);
-        });
-        loadNews();
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  News loading
-    // ══════════════════════════════════════════════════════════
-    async function loadNews() {
-        const container = document.getElementById('newsContainer');
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando…</p></div>';
-        try {
-            let url;
-            if (state.search) {
-                url = '/api/search?q=' + encodeURIComponent(state.search);
-                if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
-            } else {
-                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
-                if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
-                    const cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
-                    url += '&clasificacion=' + encodeURIComponent(cls);
-                }
-                if (state.batchId) {
-                    url += '&batch_id=' + encodeURIComponent(state.batchId);
-                }
-            }
-            const r = await fetch(url);
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            const data = await r.json();
-            const noticias = data.noticias || [];
-            state.total = data.total || data.resultados || noticias.length;
-            state.totalPages = data.total_pages || 1;
-            const labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados' };
-            document.getElementById('resultsTitle').textContent = state.search
-                ? 'Resultados para "' + state.search + '"'
-                : labels[state.filter];
-            document.getElementById('resultsCount').textContent = fmt(state.total) + ' resultado' + (state.total !== 1 ? 's' : '');
-            renderNews(noticias);
-            renderPagination();
-        } catch(e) {
-            console.error('Noticias error:', e);
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
-        }
-    }
-
-    function renderNews(noticias) {
-        const c = document.getElementById('newsContainer');
-        if (!noticias.length) {
-            c.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No hay noticias con estos filtros.</p><button class="filter-btn mt-2" onclick="applyFilter(\'todas\')">Ver todas</button></div>';
-            return;
-        }
-        c.innerHTML = noticias.map(buildCard).join('');
-    }
-
-    function buildCard(n) {
-        // v5.1 fix: Usa clasificacion_final para que el badge coincida con el backend
-        const cls = ((n.clasificacion_final && n.clasificacion_final !== 'No relevante') ? n.clasificacion_final : (n.clasificacion || '')).toLowerCase();
-        const rel = n.relevancia_final || n.score_compuesto || 0;
-        const pct = (rel * 100).toFixed(0);
-        const femPct = ((n.score_feminicidio || 0) * 100).toFixed(0);
-        const nnaPct = ((n.score_nna || 0) * 100).toFixed(0);
-        const hasNNA = n.menores_identificados === 'Si';
-        const isSaved = savedNews.some(function(s) { return s.id === n.id || s.titulo === n.titulo; });
-
-        var relBadge = '';
-        if (cls === 'alta')       relBadge = '<span class="badge-rel badge-alta">Alta ' + pct + '%</span>';
-        else if (cls === 'media') relBadge = '<span class="badge-rel badge-media">Media ' + pct + '%</span>';
-        else if (cls === 'baja')  relBadge = '<span class="badge-rel badge-baja">Baja ' + pct + '%</span>';
-        var nnaBadge = hasNNA ? '<span class="badge-nna"><i class="fas fa-child me-1"></i>NNA</span>' : '';
-
-        var enlace = n.enlace
-            ? '<a href="' + esc(n.enlace) + '" target="_blank" rel="noopener" class="news-link"><i class="fas fa-external-link-alt me-1"></i>Ver nota</a>'
-            : '<span>' + esc(n.fuente || '') + '</span>';
-
-        var bookmarkClass = isSaved ? 'active' : '';
-        var bookmarkIcon = isSaved ? 'fas' : 'far';
-        // Store the news id for the bookmark toggle
-        var nId = n.id || 0;
-        
-        var invHtml = '';
-        if (state.filter === 'objetivo') {
-            invHtml = '<div class="mt-2 text-end">' +
-                      '<button class="btn-investigate" id="btn-inv-' + nId + '" onclick="startInvestigation(' + nId + ')"><i class="fas fa-search-plus"></i> Investigar más en web</button>' +
-                      '</div>' +
-                      '<div class="investigation-panel" id="inv-panel-' + nId + '"></div>';
+        // ══════════════════════════════════════════════════════════
+        //  Tabs
+        // ══════════════════════════════════════════════════════════
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            if (el) el.classList.add('active');
+            if (tab === 'graficos') loadCharts();
+            if (tab === 'guardadas') renderSaved();
+            if (tab === 'seguimiento') loadSeguimientoCasos();
         }
 
-        var html = '<div class="news-item rel-' + cls + '">' +
-            '<div class="news-header">' +
-                '<div class="news-title">' + esc(n.titulo || '') + '</div>' +
-                '<div class="badges">' +
-                    '<button class="btn-bookmark ' + bookmarkClass + '" onclick="toggleSaveById(' + nId + ')" title="' + (isSaved ? 'Quitar de guardadas' : 'Guardar para seguimiento') + '">' +
-                        '<i class="' + bookmarkIcon + ' fa-bookmark"></i>' +
-                    '</button>' +
-                    relBadge + nnaBadge +
-                '</div>' +
-            '</div>' +
-            '<div class="news-excerpt">' + esc((n.contenido || '').substring(0, 280)) + '</div>' +
-            '<div class="news-footer">' +
-                '<div class="news-meta">' +
-                    '<span><i class="fas fa-calendar-alt me-1"></i>' + fmtDate(n.fecha) + '</span>' +
-                    enlace +
-                '</div>' +
-                '<div class="score-pills">' +
-                    '<span class="score-pill s-fem" title="Score feminicidio"><i class="fas fa-venus"></i> ' + femPct + '%</span>' +
-                    '<span class="score-pill s-nna" title="Score NNA"><i class="fas fa-child"></i> ' + nnaPct + '%</span>' +
-                    (n.cluster !== undefined && n.cluster >= 0 ? '<span class="score-pill" title="Grupo temático">G' + n.cluster + '</span>' : '') +
-                '</div>' +
-            '</div>' +
-            invHtml +
-        '</div>';
-        
-        // Renderizar investigación si ya existe en JSON
-        if (state.filter === 'objetivo' && n.investigacion_json) {
-            setTimeout(() => renderInvestigationResult(nId, n.investigacion_json), 10);
-        }
-        
-        return html;
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  Pagination
-    // ══════════════════════════════════════════════════════════
-    function renderPagination() {
-        var bar = document.getElementById('paginationBar');
-        if (state.totalPages <= 1 || state.search) { bar.style.display = 'none'; return; }
-        bar.style.display = 'flex';
-        var p = state.page, t = state.totalPages;
-        var start = Math.max(1, p - 2), end = Math.min(t, start + 4);
-        var html = '<button class="page-btn" onclick="goPage(' + (p-1) + ')" ' + (p<=1?'disabled':'') + '><i class="fas fa-chevron-left"></i></button>';
-        for (var i = start; i <= end; i++) html += '<button class="page-btn ' + (i===p?'active':'') + '" onclick="goPage(' + i + ')">' + i + '</button>';
-        html += '<button class="page-btn" onclick="goPage(' + (p+1) + ')" ' + (p>=t?'disabled':'') + '><i class="fas fa-chevron-right"></i></button>';
-        bar.innerHTML = html;
-    }
-
-    function goPage(p) {
-        if (p < 1 || p > state.totalPages) return;
-        state.page = p; loadNews();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  Search
-    // ══════════════════════════════════════════════════════════
-    async function searchNews() {
-        var q = document.getElementById('searchInput').value.trim();
-        if (!q) { applyFilter('todas'); return; }
-        state.search = q; state.page = 1;
-        ['todas','alta','media','nna'].forEach(function(f) { document.getElementById('fb-' + f).classList.remove('active'); });
-        await loadNews();
-    }
-
-    document.getElementById('searchInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') searchNews();
-        if (e.key === 'Escape') applyFilter('todas');
-    });
-
-    // ══════════════════════════════════════════════════════════
-    //  Run Analysis & Background Polling
-    // ══════════════════════════════════════════════════════════
-    
-    function toggleAnalysisToast(show) {
-        const toast = document.getElementById('analysisNotification');
-        if (toast) toast.style.display = show ? 'block' : 'none';
-    }
-
-    async function runAnalysisWithConfig() {
-        const start = document.getElementById('configStartDate').value;
-        const end = document.getElementById('configEndDate').value;
-        const scraperType = document.getElementById('configScraperType') ? document.getElementById('configScraperType').value : 'all';
-        
-        // Cerrar modal
-        const modalEl = document.getElementById('settingsModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
-        
-        await runAnalysis(start, end, scraperType);
-    }
-
-    async function runAnalysis(startDate = null, endDate = null, scraperType = 'all') {
-        const startTime = Date.now();
-        
-        // Mostrar notificación flotante
-        toggleAnalysisToast(true);
-        updateAnalysisTimer(0);
-        
-        try {
-            let url = '/api/analyze?postgres=true&semantic=true';
-            if (startDate) url += '&start_date=' + encodeURIComponent(startDate);
-            if (endDate) url += '&end_date=' + encodeURIComponent(endDate);
-            if (scraperType) url += '&scraper=' + encodeURIComponent(scraperType);
-            
-            const r = await fetch(url);
-            const data = await r.json();
-
-            if (data.status === 'already_running' || data.status === 'started') {
-                // Iniciar polling
-                startStatusPolling(startTime);
-            } else {
-                toggleAnalysisToast(false);
-                showToast('No se pudo iniciar el análisis: ' + (data.message || 'error'), 'error');
-            }
-        } catch(e) {
-            console.error('Error iniciando análisis:', e);
-            toggleAnalysisToast(false);
-            showToast('Error de conexión al servidor.', 'error');
-        }
-    }
-
-    function updateAnalysisTimer(seconds) {
-        const timer = document.getElementById('analysisTimer');
-        if (!timer) return;
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        timer.textContent = `Iniciado hace ${mins}m ${secs}s`;
-    }
-
-    function startStatusPolling(startTime) {
-        const pollInterval = setInterval(async function() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            updateAnalysisTimer(elapsed);
-
+        // ══════════════════════════════════════════════════════════
+        //  Stats
+        // ══════════════════════════════════════════════════════════
+        async function loadStats() {
             try {
-                const r = await fetch('/api/analyze/status');
-                const st = await r.json();
-                
-                if (!st.running) {
-                    clearInterval(pollInterval);
-                    toggleAnalysisToast(false);
-                    
-                    if (st.error) {
-                        showToast('Error en el análisis: ' + st.error, 'error');
-                    } else {
-                        showToast('¡Análisis completado con éxito!', 'success');
-                        // REFRESH AUTOMÁTICO
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
+                let url = '/api/stats';
+                if (state.batchId) {
+                    url += '?batch_id=' + encodeURIComponent(state.batchId);
+                }
+                const r = await fetch(url);
+                if (!r.ok) return;
+                const s = await r.json();
+                document.getElementById('totalNoticias').textContent = fmt(s.total_noticias);
+                document.getElementById('noticiasNNA').textContent = fmt(s.noticias_nna);
+                document.getElementById('altaRelevancia').textContent = fmt(s.alta_relevancia || 0);
+                document.getElementById('mediaRelevancia').textContent = fmt(s.media_relevancia || 0);
+                document.getElementById('clusters').textContent = fmt(s.clusters || s.topics || 0);
+                document.getElementById('headerUpdate').textContent = s.ultima_actualizacion || '—';
+
+                // Si no teníamos un batchId seleccionado, usar el que viene del backend
+                if (!state.batchId && s.current_batch_id) {
+                    state.batchId = s.current_batch_id;
+                    await loadBatches();
+                }
+            } catch (e) { console.warn('Stats error:', e); }
+        }
+
+        async function loadBatches() {
+            try {
+                const r = await fetch('/api/batches');
+                if (!r.ok) return;
+                const data = await r.json();
+                const select = document.getElementById('batchSelect');
+                select.innerHTML = '';
+
+                if (data.batches && data.batches.length > 0) {
+                    // Ordenar de más reciente a más antiguo asumiendo formato YYYYMMDD_HHMMSS
+                    data.batches.sort().reverse();
+                    data.batches.forEach(b => {
+                        const option = document.createElement('option');
+                        option.value = b;
+
+                        // Formatear para lectura amigable
+                        let lbl = b;
+                        if (b.length === 15 && b.indexOf('_') === 8) {
+                            lbl = b.substring(6, 8) + '/' + b.substring(4, 6) + '/' + b.substring(0, 4) + ' ' +
+                                b.substring(9, 11) + ':' + b.substring(11, 13);
+                        }
+                        option.textContent = lbl;
+                        if (b === state.batchId) option.selected = true;
+                        select.appendChild(option);
+                    });
+                } else {
+                    select.innerHTML = '<option value="">Sin historial</option>';
+                }
+            } catch (e) { console.warn('Batches error:', e); }
+        }
+
+        function onBatchChange() {
+            state.batchId = document.getElementById('batchSelect').value;
+            state.page = 1;
+            loadStats();
+            loadNews();
+            loadCharts();
+        }
+
+        function fmt(n) {
+            if (n === undefined || n === null) return '—';
+            return Number(n).toLocaleString('es-MX');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Filters
+        // ══════════════════════════════════════════════════════════
+        function applyFilter(filter) {
+            state.filter = filter; state.page = 1; state.search = '';
+            document.getElementById('searchInput').value = '';
+            ['todas', 'alta', 'media', 'nna', 'objetivo'].forEach(f => {
+                document.getElementById('fb-' + f).classList.toggle('active', f === filter);
+            });
+            loadNews();
+        }
+
+        function applySort(sort) {
+            state.sort = sort; state.page = 1;
+            ['fecha', 'relevancia'].forEach(s => {
+                document.getElementById('sort-' + s).classList.toggle('active', s === sort);
+            });
+            loadNews();
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  News loading
+        // ══════════════════════════════════════════════════════════
+        async function loadNews() {
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando…</p></div>';
+            try {
+                let url;
+                if (state.search) {
+                    url = '/api/search?q=' + encodeURIComponent(state.search);
+                    if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
+                } else {
+                    url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
+                    if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
+                        const cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                        url += '&clasificacion=' + encodeURIComponent(cls);
+                    }
+                    if (state.batchId) {
+                        url += '&batch_id=' + encodeURIComponent(state.batchId);
                     }
                 }
-            } catch(e) {
-                console.warn('Error en polling de status:', e);
+                const r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                const noticias = data.noticias || [];
+                state.total = data.total || data.resultados || noticias.length;
+                state.totalPages = data.total_pages || 1;
+                const labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados' };
+                document.getElementById('resultsTitle').textContent = state.search
+                    ? 'Resultados para "' + state.search + '"'
+                    : labels[state.filter];
+                document.getElementById('resultsCount').textContent = fmt(state.total) + ' resultado' + (state.total !== 1 ? 's' : '');
+                renderNews(noticias);
+                renderPagination();
+            } catch (e) {
+                console.error('Noticias error:', e);
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
             }
-        }, 5000);
-    }
+        }
 
-    // ══════════════════════════════════════════════════════════
-    //  Seguimiento de Casos
-    // ══════════════════════════════════════════════════════════
-    async function loadSeguimientoCasos() {
-        const container = document.getElementById('seguimientoContainer');
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando casos investigados…</p></div>';
-        try {
-            const r = await fetch('/api/seguimiento/casos');
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            const data = await r.json();
-            const casos = data.casos || [];
-            
-            if (casos.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Aún no hay casos investigados a profundidad.</p><small>Usa el botón "Investigar más en la web" en las noticias para generar informes detallados.</small></div>';
+        function renderNews(noticias) {
+            const c = document.getElementById('newsContainer');
+            if (!noticias.length) {
+                c.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No hay noticias con estos filtros.</p><button class="filter-btn mt-2" onclick="applyFilter(\'todas\')">Ver todas</button></div>';
                 return;
             }
-            
-            container.innerHTML = casos.map(renderCasoSeguimiento).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar el historial de casos.</p></div>';
-        }
-    }
-
-    function renderCasoSeguimiento(caso) {
-        const inv = caso.investigacion_json || {};
-        const location = inv.ubicacion || 'Ubicación no especificada';
-        const abstract = inv.resumen_abstracto || inv.resumen || 'Sin resumen disponible';
-        
-        let mapUrl = '';
-        if (location && location.toLowerCase() !== 'no especificada' && location.toLowerCase() !== 'desconocida') {
-            mapUrl = 'https://maps.google.com/maps?q=' + encodeURIComponent(location) + '&t=&z=10&ie=UTF8&iwloc=&output=embed';
-        }
-        
-        const mapHtml = mapUrl 
-            ? '<div style="margin-top:20px; border-radius:12px; overflow:hidden; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.05); height:300px;"><iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' + mapUrl + '"></iframe></div>' 
-            : '';
-            
-        // Render sources
-        const sources = inv.fuentes_adicionales || inv.fuentes || [];
-        let sourcesHtml = '';
-        if (sources.length > 0) {
-            sourcesHtml = '<div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); font-size:12px;"><strong style="color:var(--text-muted); text-transform:uppercase; font-size:10px; letter-spacing:0.05em; display:block; margin-bottom:10px;"><i class="fas fa-link me-1"></i>Fuentes Consultadas para Validación</strong><div style="display:flex; flex-wrap:wrap; gap:8px;">';
-            sources.forEach(src => {
-                const link = typeof src === 'string' ? src : src.url;
-                if (!link) return;
-                const domain = link.replace('http://','').replace('https://','').split(/[/?#]/)[0];
-                sourcesHtml += '<a href="' + esc(link) + '" target="_blank" style="background:rgba(42,82,152,0.05); color:var(--navy-lt); padding:6px 12px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:500; border:1px solid rgba(42,82,152,0.15); transition:all 0.2s;"><i class="fas fa-external-link-alt" style="font-size:10px;"></i>' + esc(domain) + '</a>';
-            });
-            sourcesHtml += '</div></div>';
+            c.innerHTML = noticias.map(buildCard).join('');
         }
 
-        // Render nna ages
-        let nnaHtml = '';
-        let edadesData = inv.edades || inv.edades_nna;
-        if (Array.isArray(edadesData) && edadesData.length > 0) {
-            nnaHtml = edadesData.map(e => '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(e) + '</span>').join(' ');
-        } else if (typeof edadesData === 'string' || typeof edadesData === 'number') {
-            nnaHtml = '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(edadesData) + '</span>';
-        } else if (edadesData && typeof edadesData === 'object') {
-             const values = Object.values(edadesData);
-             nnaHtml = values.length > 0 ? values.map(v => '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(v) + '</span>').join(' ') : 'No especificada';
-        } else {
-            nnaHtml = '<span style="color:var(--text-muted); font-size:11.5px;">No especificada</span>';
+        function buildCard(n) {
+            // v5.1 fix: Usa clasificacion_final para que el badge coincida con el backend
+            const cls = ((n.clasificacion_final && n.clasificacion_final !== 'No relevante') ? n.clasificacion_final : (n.clasificacion || '')).toLowerCase();
+            const rel = n.relevancia_final || n.score_compuesto || 0;
+            const pct = (rel * 100).toFixed(0);
+            const femPct = ((n.score_feminicidio || 0) * 100).toFixed(0);
+            const nnaPct = ((n.score_nna || 0) * 100).toFixed(0);
+            const hasNNA = n.menores_identificados === 'Si';
+            const isSaved = savedNews.some(function (s) { return s.id === n.id || s.titulo === n.titulo; });
+
+            var relBadge = '';
+            if (cls === 'alta') relBadge = '<span class="badge-rel badge-alta">Alta ' + pct + '%</span>';
+            else if (cls === 'media') relBadge = '<span class="badge-rel badge-media">Media ' + pct + '%</span>';
+            else if (cls === 'baja') relBadge = '<span class="badge-rel badge-baja">Baja ' + pct + '%</span>';
+            var nnaBadge = hasNNA ? '<span class="badge-nna"><i class="fas fa-child me-1"></i>NNA</span>' : '';
+
+            var enlace = n.enlace
+                ? '<a href="' + esc(n.enlace) + '" target="_blank" rel="noopener" class="news-link"><i class="fas fa-external-link-alt me-1"></i>Ver nota</a>'
+                : '<span>' + esc(n.fuente || '') + '</span>';
+
+            var bookmarkClass = isSaved ? 'active' : '';
+            var bookmarkIcon = isSaved ? 'fas' : 'far';
+            // Store the news id for the bookmark toggle
+            var nId = n.id || 0;
+
+            var invHtml = '';
+            if (state.filter === 'objetivo') {
+                invHtml = '<div class="mt-2 text-end">' +
+                    '<button class="btn-investigate" id="btn-inv-' + nId + '" onclick="startInvestigation(' + nId + ')"><i class="fas fa-search-plus"></i> Investigar más en web</button>' +
+                    '</div>' +
+                    '<div class="investigation-panel" id="inv-panel-' + nId + '"></div>';
+            }
+
+            var html = '<div class="news-item rel-' + cls + '">' +
+                '<div class="news-header">' +
+                '<div class="news-title">' + esc(n.titulo || '') + '</div>' +
+                '<div class="badges">' +
+                '<button class="btn-bookmark ' + bookmarkClass + '" onclick="toggleSaveById(' + nId + ')" title="' + (isSaved ? 'Quitar de guardadas' : 'Guardar para seguimiento') + '">' +
+                '<i class="' + bookmarkIcon + ' fa-bookmark"></i>' +
+                '</button>' +
+                relBadge + nnaBadge +
+                '</div>' +
+                '</div>' +
+                '<div class="news-excerpt">' + esc((n.contenido || '').substring(0, 280)) + '</div>' +
+                '<div class="news-footer">' +
+                '<div class="news-meta">' +
+                '<span><i class="fas fa-calendar-alt me-1"></i>' + fmtDate(n.fecha) + '</span>' +
+                enlace +
+                '</div>' +
+                '<div class="score-pills">' +
+                '<span class="score-pill s-fem" title="Score feminicidio"><i class="fas fa-venus"></i> ' + femPct + '%</span>' +
+                '<span class="score-pill s-nna" title="Score NNA"><i class="fas fa-child"></i> ' + nnaPct + '%</span>' +
+                (n.cluster !== undefined && n.cluster >= 0 ? '<span class="score-pill" title="Grupo temático">G' + n.cluster + '</span>' : '') +
+                '</div>' +
+                '</div>' +
+                invHtml +
+                '</div>';
+
+            // Renderizar investigación si ya existe en JSON
+            if (state.filter === 'objetivo' && n.investigacion_json) {
+                setTimeout(() => renderInvestigationResult(nId, n.investigacion_json), 10);
+            }
+
+            return html;
         }
 
-        let victimasStr = 'No especificadas';
-        if (inv.victimas) {
-            if (Array.isArray(inv.victimas)) {
-                victimasStr = inv.victimas.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
-            } else if (typeof inv.victimas === 'object') {
-                const vals = Object.values(inv.victimas);
-                victimasStr = vals.length > 0 ? vals.join(', ') : 'No especificadas';
-            } else {
-                victimasStr = inv.victimas;
+        // ══════════════════════════════════════════════════════════
+        //  Pagination
+        // ══════════════════════════════════════════════════════════
+        function renderPagination() {
+            var bar = document.getElementById('paginationBar');
+            if (state.totalPages <= 1 || state.search) { bar.style.display = 'none'; return; }
+            bar.style.display = 'flex';
+            var p = state.page, t = state.totalPages;
+            var start = Math.max(1, p - 2), end = Math.min(t, start + 4);
+            var html = '<button class="page-btn" onclick="goPage(' + (p - 1) + ')" ' + (p <= 1 ? 'disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
+            for (var i = start; i <= end; i++) html += '<button class="page-btn ' + (i === p ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+            html += '<button class="page-btn" onclick="goPage(' + (p + 1) + ')" ' + (p >= t ? 'disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
+            bar.innerHTML = html;
+        }
+
+        function goPage(p) {
+            if (p < 1 || p > state.totalPages) return;
+            state.page = p; loadNews();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Search
+        // ══════════════════════════════════════════════════════════
+        async function searchNews() {
+            var q = document.getElementById('searchInput').value.trim();
+            if (!q) { applyFilter('todas'); return; }
+            state.search = q; state.page = 1;
+            ['todas', 'alta', 'media', 'nna'].forEach(function (f) { document.getElementById('fb-' + f).classList.remove('active'); });
+            await loadNews();
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') searchNews();
+            if (e.key === 'Escape') applyFilter('todas');
+        });
+
+        // ══════════════════════════════════════════════════════════
+        //  Run Analysis & Background Polling
+        // ══════════════════════════════════════════════════════════
+
+        function toggleAnalysisToast(show) {
+            const toast = document.getElementById('analysisNotification');
+            if (toast) toast.style.display = show ? 'block' : 'none';
+        }
+
+        async function runAnalysisWithConfig() {
+            const start = document.getElementById('configStartDate').value;
+            const end = document.getElementById('configEndDate').value;
+            const scraperType = document.getElementById('configScraperType') ? document.getElementById('configScraperType').value : 'all';
+
+            // Cerrar modal
+            const modalEl = document.getElementById('settingsModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            await runAnalysis(start, end, scraperType);
+        }
+
+        async function runAnalysis(startDate = null, endDate = null, scraperType = 'all') {
+            const startTime = Date.now();
+
+            // Mostrar notificación flotante
+            toggleAnalysisToast(true);
+            updateAnalysisTimer(0);
+
+            try {
+                let url = '/api/analyze?postgres=true&semantic=true';
+                if (startDate) url += '&start_date=' + encodeURIComponent(startDate);
+                if (endDate) url += '&end_date=' + encodeURIComponent(endDate);
+                if (scraperType) url += '&scraper=' + encodeURIComponent(scraperType);
+
+                const r = await fetch(url);
+                const data = await r.json();
+
+                if (data.status === 'already_running' || data.status === 'started') {
+                    // Iniciar polling
+                    startStatusPolling(startTime);
+                } else {
+                    toggleAnalysisToast(false);
+                    showToast('No se pudo iniciar el análisis: ' + (data.message || 'error'), 'error');
+                }
+            } catch (e) {
+                console.error('Error iniciando análisis:', e);
+                toggleAnalysisToast(false);
+                showToast('Error de conexión al servidor.', 'error');
             }
         }
-        const scoreCompuesto = ((caso.score_compuesto || 0) * 100).toFixed(0);
-        const cardId = 'seg-card-' + caso.id;
 
-        return `
+        function updateAnalysisTimer(seconds) {
+            const timer = document.getElementById('analysisTimer');
+            if (!timer) return;
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timer.textContent = `Iniciado hace ${mins}m ${secs}s`;
+        }
+
+        function startStatusPolling(startTime) {
+            const pollInterval = setInterval(async function () {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                updateAnalysisTimer(elapsed);
+
+                try {
+                    const r = await fetch('/api/analyze/status');
+                    const st = await r.json();
+
+                    if (!st.running) {
+                        clearInterval(pollInterval);
+                        toggleAnalysisToast(false);
+
+                        if (st.error) {
+                            showToast('Error en el análisis: ' + st.error, 'error');
+                        } else {
+                            showToast('¡Análisis completado con éxito!', 'success');
+                            // REFRESH AUTOMÁTICO
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error en polling de status:', e);
+                }
+            }, 5000);
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Seguimiento de Casos
+        // ══════════════════════════════════════════════════════════
+        async function loadSeguimientoCasos() {
+            const container = document.getElementById('seguimientoContainer');
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando casos investigados…</p></div>';
+            try {
+                const r = await fetch('/api/seguimiento/casos');
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                const casos = data.casos || [];
+
+                if (casos.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Aún no hay casos investigados a profundidad.</p><small>Usa el botón "Investigar más en la web" en las noticias para generar informes detallados.</small></div>';
+                    return;
+                }
+
+                container.innerHTML = casos.map(renderCasoSeguimiento).join('');
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar el historial de casos.</p></div>';
+            }
+        }
+
+        function renderCasoSeguimiento(caso) {
+            const inv = caso.investigacion_json || {};
+            const location = inv.ubicacion || 'Ubicación no especificada';
+            const abstract = inv.resumen_abstracto || inv.resumen || 'Sin resumen disponible';
+
+            let mapUrl = '';
+            if (location && location.toLowerCase() !== 'no especificada' && location.toLowerCase() !== 'desconocida') {
+                mapUrl = 'https://maps.google.com/maps?q=' + encodeURIComponent(location) + '&t=&z=10&ie=UTF8&iwloc=&output=embed';
+            }
+
+            const mapHtml = mapUrl
+                ? '<div style="margin-top:20px; border-radius:12px; overflow:hidden; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.05); height:300px;"><iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' + mapUrl + '"></iframe></div>'
+                : '';
+
+            // Render sources
+            const sources = inv.fuentes_adicionales || inv.fuentes || [];
+            let sourcesHtml = '';
+            if (sources.length > 0) {
+                sourcesHtml = '<div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); font-size:12px;"><strong style="color:var(--text-muted); text-transform:uppercase; font-size:10px; letter-spacing:0.05em; display:block; margin-bottom:10px;"><i class="fas fa-link me-1"></i>Fuentes Consultadas para Validación</strong><div style="display:flex; flex-wrap:wrap; gap:8px;">';
+                sources.forEach(src => {
+                    const link = typeof src === 'string' ? src : src.url;
+                    if (!link) return;
+                    const domain = link.replace('http://', '').replace('https://', '').split(/[/?#]/)[0];
+                    sourcesHtml += '<a href="' + esc(link) + '" target="_blank" style="background:rgba(42,82,152,0.05); color:var(--navy-lt); padding:6px 12px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:500; border:1px solid rgba(42,82,152,0.15); transition:all 0.2s;"><i class="fas fa-external-link-alt" style="font-size:10px;"></i>' + esc(domain) + '</a>';
+                });
+                sourcesHtml += '</div></div>';
+            }
+
+            // Render nna ages
+            let nnaHtml = '';
+            let edadesData = inv.edades || inv.edades_nna;
+            if (Array.isArray(edadesData) && edadesData.length > 0) {
+                nnaHtml = edadesData.map(e => '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(e) + '</span>').join(' ');
+            } else if (typeof edadesData === 'string' || typeof edadesData === 'number') {
+                nnaHtml = '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(edadesData) + '</span>';
+            } else if (edadesData && typeof edadesData === 'object') {
+                const values = Object.values(edadesData);
+                nnaHtml = values.length > 0 ? values.map(v => '<span style="background:#e3f5f1; color:var(--teal-lt); font-weight:700; padding:3px 10px; border-radius:10px; font-size:11.5px; border:1px solid #c0ebe0;">' + esc(v) + '</span>').join(' ') : 'No especificada';
+            } else {
+                nnaHtml = '<span style="color:var(--text-muted); font-size:11.5px;">No especificada</span>';
+            }
+
+            let victimasStr = 'No especificadas';
+            if (inv.victimas) {
+                if (Array.isArray(inv.victimas)) {
+                    victimasStr = inv.victimas.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
+                } else if (typeof inv.victimas === 'object') {
+                    const vals = Object.values(inv.victimas);
+                    victimasStr = vals.length > 0 ? vals.join(', ') : 'No especificadas';
+                } else {
+                    victimasStr = inv.victimas;
+                }
+            }
+            const scoreCompuesto = ((caso.score_compuesto || 0) * 100).toFixed(0);
+            const cardId = 'seg-card-' + caso.id;
+
+            return `
         <div class="news-item" style="background:var(--card-bg); padding:20px; border-radius:16px; margin-bottom:20px; box-shadow:0 4px 16px rgba(0,0,0,0.05); border:1px solid rgba(42,82,152,0.15); border-left:5px solid var(--teal); cursor:pointer; transition:transform 0.2s;" onclick="toggleSeguimiento('${cardId}')">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
                 <div>
@@ -1371,555 +2077,556 @@
             </div>
         </div>
         `;
-    }
-
-    function toggleSeguimiento(id) {
-        var el = document.getElementById(id);
-        if (el.style.display === 'none') {
-            el.style.display = 'block';
-        } else {
-            el.style.display = 'none';
         }
-    }
 
-    // ══════════════════════════════════════════════════════════
-    //  Charts (Chart.js)
-    // ══════════════════════════════════════════════════════════
-    async function loadCharts() {
-        await Promise.all([
-            loadChartTemporal(),
-            loadChartRelevancia(),
-            loadChartEstados(),
-            loadChartFuentes(),
-        ]);
-    }
-
-    async function loadChartTemporal() {
-        try {
-            var r = await fetch('/api/charts/temporal');
-            var d = await r.json();
-            if (charts.temporal) charts.temporal.destroy();
-            charts.temporal = new Chart(document.getElementById('chartTemporal'), {
-                type: 'line',
-                data: {
-                    labels: d.labels || [],
-                    datasets: [{
-                        label: 'Total noticias',
-                        data: d.total || [],
-                        borderColor: '#2a5298',
-                        backgroundColor: 'rgba(42,82,152,0.1)',
-                        fill: true,
-                        tension: 0.3,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'bottom' } },
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
-                        x: { title: { display: true, text: 'Mes' } },
-                    },
-                },
-            });
-        } catch(e) { console.warn('Chart temporal error:', e); }
-    }
-
-    async function loadChartRelevancia() {
-        try {
-            var r = await fetch('/api/charts/relevancia');
-            var d = await r.json();
-            if (charts.relevancia) charts.relevancia.destroy();
-            charts.relevancia = new Chart(document.getElementById('chartRelevancia'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Alta', 'Media', 'Baja', 'No relevante'],
-                    datasets: [{
-                        data: [d.alta || 0, d.media || 0, d.baja || 0, d.no_relevante || 0],
-                        backgroundColor: ['#c0392b', '#d68910', '#95a5a6', '#dde3ef'],
-                        borderWidth: 2,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true } },
-                    },
-                },
-            });
-        } catch(e) { console.warn('Chart relevancia error:', e); }
-    }
-
-    async function loadChartEstados() {
-        try {
-            var r = await fetch('/api/charts/estados');
-            var d = await r.json();
-            if (charts.estados) charts.estados.destroy();
-            charts.estados = new Chart(document.getElementById('chartEstados'), {
-                type: 'bar',
-                data: {
-                    labels: d.labels || [],
-                    datasets: [{
-                        label: 'Noticias por estado',
-                        data: d.values || [],
-                        backgroundColor: 'rgba(176,48,48,0.75)',
-                        borderColor: '#b03030',
-                        borderWidth: 1,
-                    }],
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
-                    },
-                },
-            });
-        } catch(e) { console.warn('Chart estados error:', e); }
-    }
-
-    async function loadChartFuentes() {
-        try {
-            var r = await fetch('/api/charts/fuentes');
-            var d = await r.json();
-            if (charts.fuentes) charts.fuentes.destroy();
-            charts.fuentes = new Chart(document.getElementById('chartFuentes'), {
-                type: 'bar',
-                data: {
-                    labels: d.labels || [],
-                    datasets: [{
-                        label: 'Artículos por fuente',
-                        data: d.values || [],
-                        backgroundColor: 'rgba(42,82,152,0.75)',
-                        borderColor: '#2a5298',
-                        borderWidth: 1,
-                    }],
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { beginAtZero: true, title: { display: true, text: 'Artículos' } },
-                    },
-                },
-            });
-        } catch(e) { console.warn('Chart fuentes error:', e); }
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  Saved / Bookmarks (NGO case tracking)
-    // ══════════════════════════════════════════════════════════
-    // Global cache of loaded noticias for bookmark lookups
-    var _loadedNoticias = [];
-
-    function toggleSaveById(id) {
-        // Find the noticia either from last loaded results or from savedNews
-        var noticia = _loadedNoticias.find(function(n) { return n.id === id; })
-                   || savedNews.find(function(n) { return n.id === id; });
-        if (!noticia) return;
-        var idx = savedNews.findIndex(function(s) { return s.id === noticia.id; });
-        if (idx >= 0) {
-            savedNews.splice(idx, 1);
-            showToast('Noticia removida de guardadas', 'info');
-        } else {
-            noticia._savedAt = new Date().toISOString();
-            savedNews.push(noticia);
-            showToast('Noticia guardada para seguimiento', 'success');
+        function toggleSeguimiento(id) {
+            var el = document.getElementById(id);
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
         }
-        localStorage.setItem('nna_saved', JSON.stringify(savedNews));
-        updateSavedCount();
-        // Re-render current view to update bookmark icons
-        if (document.getElementById('tab-noticias').classList.contains('active')) loadNews();
-        if (document.getElementById('tab-guardadas').classList.contains('active')) renderSaved();
-    }
 
-    function updateSavedCount() {
-        var badge = document.getElementById('savedCount');
-        if (savedNews.length > 0) {
-            badge.textContent = savedNews.length;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
+        // ══════════════════════════════════════════════════════════
+        //  Charts (Chart.js)
+        // ══════════════════════════════════════════════════════════
+        async function loadCharts() {
+            await Promise.all([
+                loadChartTemporal(),
+                loadChartRelevancia(),
+                loadChartEstados(),
+                loadChartFuentes(),
+            ]);
         }
-    }
 
-    function renderSaved() {
-        var c = document.getElementById('savedContainer');
-        if (!savedNews.length) {
-            c.innerHTML = '<div class="empty-state"><i class="fas fa-bookmark"></i><p>No hay noticias guardadas.</p><small>Haz clic en el ícono <i class="fas fa-bookmark"></i> de una noticia para guardarla.</small></div>';
-            return;
+        async function loadChartTemporal() {
+            try {
+                var r = await fetch('/api/charts/temporal');
+                var d = await r.json();
+                if (charts.temporal) charts.temporal.destroy();
+                charts.temporal = new Chart(document.getElementById('chartTemporal'), {
+                    type: 'line',
+                    data: {
+                        labels: d.labels || [],
+                        datasets: [{
+                            label: 'Total noticias',
+                            data: d.total || [],
+                            borderColor: '#2a5298',
+                            backgroundColor: 'rgba(42,82,152,0.1)',
+                            fill: true,
+                            tension: 0.3,
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
+                            x: { title: { display: true, text: 'Mes' } },
+                        },
+                    },
+                });
+            } catch (e) { console.warn('Chart temporal error:', e); }
         }
-        c.innerHTML = savedNews.map(buildCard).join('');
-    }
 
-    function exportSaved() {
-        if (!savedNews.length) { showToast('No hay noticias guardadas', 'error'); return; }
-        var headers = ['titulo','fecha','fuente','enlace','clasificacion','score_feminicidio','score_nna','menores_identificados'];
-        var csv = headers.join(',') + '\n';
-        savedNews.forEach(function(n) {
-            csv += headers.map(function(h) { return '"' + (n[h] || '').toString().replace(/"/g, '""') + '"'; }).join(',') + '\n';
-        });
-        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        var link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'noticias_guardadas_' + new Date().toISOString().slice(0,10) + '.csv';
-        link.click();
-        showToast('CSV de noticias guardadas descargado', 'success');
-    }
+        async function loadChartRelevancia() {
+            try {
+                var r = await fetch('/api/charts/relevancia');
+                var d = await r.json();
+                if (charts.relevancia) charts.relevancia.destroy();
+                charts.relevancia = new Chart(document.getElementById('chartRelevancia'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Alta', 'Media', 'Baja', 'No relevante'],
+                        datasets: [{
+                            data: [d.alta || 0, d.media || 0, d.baja || 0, d.no_relevante || 0],
+                            backgroundColor: ['#c0392b', '#d68910', '#95a5a6', '#dde3ef'],
+                            borderWidth: 2,
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { usePointStyle: true } },
+                        },
+                    },
+                });
+            } catch (e) { console.warn('Chart relevancia error:', e); }
+        }
 
-    function clearSaved() {
-        if (!savedNews.length) return;
-        if (confirm('¿Eliminar todas las noticias guardadas?')) {
-            savedNews = [];
-            localStorage.setItem('nna_saved', '[]');
+        async function loadChartEstados() {
+            try {
+                var r = await fetch('/api/charts/estados');
+                var d = await r.json();
+                if (charts.estados) charts.estados.destroy();
+                charts.estados = new Chart(document.getElementById('chartEstados'), {
+                    type: 'bar',
+                    data: {
+                        labels: d.labels || [],
+                        datasets: [{
+                            label: 'Noticias por estado',
+                            data: d.values || [],
+                            backgroundColor: 'rgba(176,48,48,0.75)',
+                            borderColor: '#b03030',
+                            borderWidth: 1,
+                        }],
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
+                        },
+                    },
+                });
+            } catch (e) { console.warn('Chart estados error:', e); }
+        }
+
+        async function loadChartFuentes() {
+            try {
+                var r = await fetch('/api/charts/fuentes');
+                var d = await r.json();
+                if (charts.fuentes) charts.fuentes.destroy();
+                charts.fuentes = new Chart(document.getElementById('chartFuentes'), {
+                    type: 'bar',
+                    data: {
+                        labels: d.labels || [],
+                        datasets: [{
+                            label: 'Artículos por fuente',
+                            data: d.values || [],
+                            backgroundColor: 'rgba(42,82,152,0.75)',
+                            borderColor: '#2a5298',
+                            borderWidth: 1,
+                        }],
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, title: { display: true, text: 'Artículos' } },
+                        },
+                    },
+                });
+            } catch (e) { console.warn('Chart fuentes error:', e); }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Saved / Bookmarks (NGO case tracking)
+        // ══════════════════════════════════════════════════════════
+        // Global cache of loaded noticias for bookmark lookups
+        var _loadedNoticias = [];
+
+        function toggleSaveById(id) {
+            // Find the noticia either from last loaded results or from savedNews
+            var noticia = _loadedNoticias.find(function (n) { return n.id === id; })
+                || savedNews.find(function (n) { return n.id === id; });
+            if (!noticia) return;
+            var idx = savedNews.findIndex(function (s) { return s.id === noticia.id; });
+            if (idx >= 0) {
+                savedNews.splice(idx, 1);
+                showToast('Noticia removida de guardadas', 'info');
+            } else {
+                noticia._savedAt = new Date().toISOString();
+                savedNews.push(noticia);
+                showToast('Noticia guardada para seguimiento', 'success');
+            }
+            localStorage.setItem('nna_saved', JSON.stringify(savedNews));
             updateSavedCount();
-            renderSaved();
-            showToast('Noticias guardadas eliminadas', 'info');
+            // Re-render current view to update bookmark icons
+            if (document.getElementById('tab-noticias').classList.contains('active')) loadNews();
+            if (document.getElementById('tab-guardadas').classList.contains('active')) renderSaved();
         }
-    }
 
-    // ══════════════════════════════════════════════════════════
-    //  History Management
-    // ══════════════════════════════════════════════════════════
-    async function confirmClearHistory() {
-        if (confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente TODA la base de datos de noticias y archivos CSV. El sistema quedará vacío y volverá a recolectar todo desde cero en el próximo análisis.')) {
-            if (confirm('Última advertencia: No se puede deshacer. ¿Proceder?')) {
-                await clearHistory();
+        function updateSavedCount() {
+            var badge = document.getElementById('savedCount');
+            if (savedNews.length > 0) {
+                badge.textContent = savedNews.length;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
             }
         }
-    }
 
-    async function clearHistory() {
-        showToast('Borrando historial...', 'info');
-        try {
-            // Obtener el token CSRF del meta tag
-            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+        function renderSaved() {
+            var c = document.getElementById('savedContainer');
+            if (!savedNews.length) {
+                c.innerHTML = '<div class="empty-state"><i class="fas fa-bookmark"></i><p>No hay noticias guardadas.</p><small>Haz clic en el ícono <i class="fas fa-bookmark"></i> de una noticia para guardarla.</small></div>';
+                return;
+            }
+            c.innerHTML = savedNews.map(buildCard).join('');
+        }
 
-            var r = await fetch('/api/history/clear', { 
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                }
+        function exportSaved() {
+            if (!savedNews.length) { showToast('No hay noticias guardadas', 'error'); return; }
+            var headers = ['titulo', 'fecha', 'fuente', 'enlace', 'clasificacion', 'score_feminicidio', 'score_nna', 'menores_identificados'];
+            var csv = headers.join(',') + '\n';
+            savedNews.forEach(function (n) {
+                csv += headers.map(function (h) { return '"' + (n[h] || '').toString().replace(/"/g, '""') + '"'; }).join(',') + '\n';
             });
-            var d = await r.json();
-            if (d.status === 'success') {
-                showToast(d.message, 'success');
-                // Cerrar modal si está abierto
-                var modalEl = document.getElementById('settingsModal');
-                if (modalEl) {
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
-                }
-                // Recargar dashboard
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showToast('Error: ' + d.error, 'error');
-            }
-        } catch(e) {
-            console.error('Clear history error:', e);
-            showToast('Error de conexión al borrar historial', 'error');
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'noticias_guardadas_' + new Date().toISOString().slice(0, 10) + '.csv';
+            link.click();
+            showToast('CSV de noticias guardadas descargado', 'success');
         }
-    }
 
-    // ══════════════════════════════════════════════════════════
-    //  Utilities
-    // ══════════════════════════════════════════════════════════
-    function showToast(msg, type) {
-        var el = document.createElement('div');
-        var bg = type === 'success' ? 'var(--teal)' : type === 'error' ? 'var(--crimson)' : 'var(--navy)';
-        el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:' + bg + ';color:white;padding:12px 20px;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,0.25);font-size:13px;font-weight:500;max-width:320px;transition:opacity 0.3s;';
-        el.textContent = msg;
-        document.body.appendChild(el);
-        setTimeout(function() { el.style.opacity = '0'; }, 3800);
-        setTimeout(function() { el.remove(); }, 4200);
-    }
+        function clearSaved() {
+            if (!savedNews.length) return;
+            if (confirm('¿Eliminar todas las noticias guardadas?')) {
+                savedNews = [];
+                localStorage.setItem('nna_saved', '[]');
+                updateSavedCount();
+                renderSaved();
+                showToast('Noticias guardadas eliminadas', 'info');
+            }
+        }
 
-    function esc(s) {
-        if (!s) return '';
-        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    }
-
-    function fmtDate(iso) {
-        if (!iso) return '—';
-        try {
-            var d = new Date(iso);
-            if (isNaN(d.getTime())) return String(iso).substring(0,10);
-            return d.toLocaleDateString('es-MX', {day:'2-digit',month:'short',year:'numeric'});
-        } catch(e) { return String(iso).substring(0,10); }
-    }
-
-    // ══════════════════════════════════════════════════════════
-    //  Patch loadNews to cache loaded noticias for bookmarks
-    // ══════════════════════════════════════════════════════════
-    var _origLoadNews = loadNews;
-    loadNews = async function() {
-        var container = document.getElementById('newsContainer');
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando…</p></div>';
-        try {
-            var url;
-            if (state.search) {
-                url = '/api/search?q=' + encodeURIComponent(state.search);
-                if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
-            } else {
-                url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
-                if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
-                    var cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
-                    url += '&clasificacion=' + encodeURIComponent(cls);
-                }
-                if (state.batchId) {
-                    url += '&batch_id=' + encodeURIComponent(state.batchId);
+        // ══════════════════════════════════════════════════════════
+        //  History Management
+        // ══════════════════════════════════════════════════════════
+        async function confirmClearHistory() {
+            if (confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente TODA la base de datos de noticias y archivos CSV. El sistema quedará vacío y volverá a recolectar todo desde cero en el próximo análisis.')) {
+                if (confirm('Última advertencia: No se puede deshacer. ¿Proceder?')) {
+                    await clearHistory();
                 }
             }
-            var r = await fetch(url);
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            var data = await r.json();
-            var noticias = data.noticias || [];
-            _loadedNoticias = noticias; // cache for bookmarks
-            state.total = data.total || data.resultados || noticias.length;
-            state.totalPages = data.total_pages || 1;
-            var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados', 'objetivo': 'Casos Objetivo' };
-            document.getElementById('resultsTitle').textContent = state.search
-                ? 'Resultados para "' + state.search + '"'
-                : labels[state.filter];
-            document.getElementById('resultsCount').textContent = fmt(state.total) + ' resultado' + (state.total !== 1 ? 's' : '');
-            renderNews(noticias);
-            renderPagination();
-        } catch(e) {
-            console.error('Noticias error:', e);
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
         }
-    };
 
-    // ══════════════════════════════════════════════════════════
-    //  Deep Investigation
-    // ══════════════════════════════════════════════════════════
-    
-    window._investigationIntervals = window._investigationIntervals || {};
+        async function clearHistory() {
+            showToast('Borrando historial...', 'info');
+            try {
+                // Obtener el token CSRF del meta tag
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
 
-    async function startInvestigation(id) {
-        var btn = document.getElementById('btn-inv-' + id);
-        var panel = document.getElementById('inv-panel-' + id);
-        if (btn) btn.disabled = true;
-        
-        panel.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Buscando información adicional y analizando contexto... (esto puede tardar 20-30 segundos)';
-        panel.classList.add('active');
-        
-        try {
-            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
-            var r = await fetch('/api/investigate/' + id, { 
-                method: 'POST',
-                headers: { 'X-CSRFToken': csrfToken }
-            });
-            var d = await r.json();
-            
-            if (d.status === 'done') {
-                renderInvestigationResult(id, d.result);
-            } else if (d.status === 'started' || d.status === 'running') {
-                // Empezar a hacer polling
-                if (window._investigationIntervals[id]) clearInterval(window._investigationIntervals[id]);
-                window._investigationIntervals[id] = setInterval(() => pollInvestigation(id), 3000);
-            } else {
-                panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error: ' + esc(d.error || 'Desconocido') + '</span>';
+                var r = await fetch('/api/history/clear', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+                var d = await r.json();
+                if (d.status === 'success') {
+                    showToast(d.message, 'success');
+                    // Cerrar modal si está abierto
+                    var modalEl = document.getElementById('settingsModal');
+                    if (modalEl) {
+                        var modal = bootstrap.Modal.getInstance(modalEl);
+                        if (modal) modal.hide();
+                    }
+                    // Recargar dashboard
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Error: ' + d.error, 'error');
+                }
+            } catch (e) {
+                console.error('Clear history error:', e);
+                showToast('Error de conexión al borrar historial', 'error');
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Utilities
+        // ══════════════════════════════════════════════════════════
+        function showToast(msg, type) {
+            var el = document.createElement('div');
+            var bg = type === 'success' ? 'var(--teal)' : type === 'error' ? 'var(--crimson)' : 'var(--navy)';
+            el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:' + bg + ';color:white;padding:12px 20px;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,0.25);font-size:13px;font-weight:500;max-width:320px;transition:opacity 0.3s;';
+            el.textContent = msg;
+            document.body.appendChild(el);
+            setTimeout(function () { el.style.opacity = '0'; }, 3800);
+            setTimeout(function () { el.remove(); }, 4200);
+        }
+
+        function esc(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function fmtDate(iso) {
+            if (!iso) return '—';
+            try {
+                var d = new Date(iso);
+                if (isNaN(d.getTime())) return String(iso).substring(0, 10);
+                return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+            } catch (e) { return String(iso).substring(0, 10); }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Patch loadNews to cache loaded noticias for bookmarks
+        // ══════════════════════════════════════════════════════════
+        var _origLoadNews = loadNews;
+        loadNews = async function () {
+            var container = document.getElementById('newsContainer');
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando…</p></div>';
+            try {
+                var url;
+                if (state.search) {
+                    url = '/api/search?q=' + encodeURIComponent(state.search);
+                    if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
+                } else {
+                    url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
+                    if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
+                        var cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                        url += '&clasificacion=' + encodeURIComponent(cls);
+                    }
+                    if (state.batchId) {
+                        url += '&batch_id=' + encodeURIComponent(state.batchId);
+                    }
+                }
+                var r = await fetch(url);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                var data = await r.json();
+                var noticias = data.noticias || [];
+                _loadedNoticias = noticias; // cache for bookmarks
+                state.total = data.total || data.resultados || noticias.length;
+                state.totalPages = data.total_pages || 1;
+                var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados', 'objetivo': 'Casos Objetivo' };
+                document.getElementById('resultsTitle').textContent = state.search
+                    ? 'Resultados para "' + state.search + '"'
+                    : labels[state.filter];
+                document.getElementById('resultsCount').textContent = fmt(state.total) + ' resultado' + (state.total !== 1 ? 's' : '');
+                renderNews(noticias);
+                renderPagination();
+            } catch (e) {
+                console.error('Noticias error:', e);
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--crimson);"></i><p>Error al cargar noticias.</p></div>';
+            }
+        };
+
+        // ══════════════════════════════════════════════════════════
+        //  Deep Investigation
+        // ══════════════════════════════════════════════════════════
+
+        window._investigationIntervals = window._investigationIntervals || {};
+
+        async function startInvestigation(id) {
+            var btn = document.getElementById('btn-inv-' + id);
+            var panel = document.getElementById('inv-panel-' + id);
+            if (btn) btn.disabled = true;
+
+            panel.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Buscando información adicional y analizando contexto... (esto puede tardar 20-30 segundos)';
+            panel.classList.add('active');
+
+            try {
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+                var r = await fetch('/api/investigate/' + id, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                var d = await r.json();
+
+                if (d.status === 'done') {
+                    renderInvestigationResult(id, d.result);
+                } else if (d.status === 'started' || d.status === 'running') {
+                    // Empezar a hacer polling
+                    if (window._investigationIntervals[id]) clearInterval(window._investigationIntervals[id]);
+                    window._investigationIntervals[id] = setInterval(() => pollInvestigation(id), 3000);
+                } else {
+                    panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error: ' + esc(d.error || 'Desconocido') + '</span>';
+                    if (btn) btn.disabled = false;
+                }
+            } catch (e) {
+                panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error de conexión</span>';
                 if (btn) btn.disabled = false;
             }
-        } catch(e) {
-            panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error de conexión</span>';
-            if (btn) btn.disabled = false;
         }
-    }
 
-    async function pollInvestigation(id) {
-        try {
-            var r = await fetch('/api/investigate/status/' + id);
-            var d = await r.json();
-            
-            if (d.status === 'done') {
-                clearInterval(window._investigationIntervals[id]);
-                renderInvestigationResult(id, d.result);
-            } else if (d.status === 'error') {
-                clearInterval(window._investigationIntervals[id]);
-                var panel = document.getElementById('inv-panel-' + id);
-                if (panel) panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error en análisis: ' + esc(d.error || 'Desconocido') + '</span>';
-                var btn = document.getElementById('btn-inv-' + id);
-                if (btn) btn.disabled = false;
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    }
+        async function pollInvestigation(id) {
+            try {
+                var r = await fetch('/api/investigate/status/' + id);
+                var d = await r.json();
 
-    function renderInvestigationResult(id, result) {
-        var panel = document.getElementById('inv-panel-' + id);
-        var btn = document.getElementById('btn-inv-' + id);
-        if (!panel) return;
-        if (btn) btn.style.display = 'none';
-        panel.classList.add('active');
-        renderInvestigationResultInto('inv-panel-' + id, result, id);
-    }
-
-    async function identifyLink() {
-        const urlInput = document.getElementById('identifyUrlInput');
-        const url = urlInput.value.trim();
-        if (!url) { showToast('Por favor ingresa una URL válida', 'error'); return; }
-        
-        const container = document.getElementById('identifyResultContainer');
-        const panel = document.getElementById('identifyResultPanel');
-        const btn = document.getElementById('btnAnalyze');
-        
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando...'; }
-        container.style.display = 'block';
-        panel.innerHTML = '<div style="text-align:center;padding:36px 20px;"><div style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:#e8edf8;border-radius:50%;margin-bottom:16px;"><i class="fas fa-spinner fa-spin" style="font-size:24px;color:var(--navy-lt);"></i></div><div style="font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;">Procesando caso con IA</div><div style="font-size:13px;color:var(--text-muted);">Extrayendo contenido · Buscando fuentes · Generando informe<br><small>Esto puede tomar hasta 40 segundos</small></div></div>';
-        
-        try {
-            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
-            
-            const r = await fetch('/api/identify-link', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken 
-                },
-                body: JSON.stringify({ url: url })
-            });
-            
-            const data = await r.json();
-            if (data.error) {
-                panel.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ' + esc(data.mensaje || data.error) + '</div>';
-            } else {
-                // Reutilizamos la lógica de renderizado de investigaciones
-                // Pero con un estilo ligeramente diferente para este panel
-                renderInvestigationResultInto('identifyResultPanel', data);
-            }
-        } catch (e) {
-            console.error(e);
-            panel.innerHTML = '<div style="padding:20px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;color:#b91c1c;"><i class="fas fa-exclamation-triangle me-2"></i>Error de conexión al servidor. Intente nuevamente.</div>';
-        } finally {
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-robot"></i> Analizar caso'; }
-        }
-    }
-
-    function renderInvestigationResultInto(panelId, result, noticiaId) {
-        const panel = document.getElementById(panelId);
-        if (!panel) return;
-        
-        if (result.error) {
-            panel.innerHTML = '<div style="padding:20px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;color:#b91c1c;"><i class="fas fa-exclamation-triangle me-2"></i>' + esc(result.mensaje || result.error || 'Error desconocido') + '</div>';
-            return;
-        }
-        
-        let html = '<div class="inv-grid">';
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-map-marker-alt me-1"></i>Ubicación</span><span class="inv-val">' + esc(result.ubicacion || 'No especificado') + '</span></div>';
-        let victimasVal = result.victimas || 'No especificado';
-        if (victimasVal && typeof victimasVal === 'object' && !Array.isArray(victimasVal)) {
-            const vals = Object.values(victimasVal);
-            victimasVal = vals.length > 0 ? vals.join(', ') : 'No especificado';
-        } else if (Array.isArray(victimasVal)) {
-            victimasVal = victimasVal.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
-        }
-        
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val">' + esc(victimasVal) + '</span></div>';
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val">' + esc(String(result.ninos_afectados || result.nna_afectados || 'No especificado')) + '</span></div>';
-        
-        // Corregir problema [object Object] para edades
-        let edadesVal = result.edades || result.edades_nna || 'No especificado';
-        if (edadesVal && typeof edadesVal === 'object' && !Array.isArray(edadesVal)) {
-            const vals = Object.values(edadesVal);
-            edadesVal = vals.length > 0 ? vals.join(', ') : 'No especificado';
-        } else if (Array.isArray(edadesVal)) {
-            edadesVal = edadesVal.join(', ');
-        }
-        
-        html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val">' + esc(edadesVal) + '</span></div>';
-        
-        // Nuevo campo: situación actual
-        html += '<div class="inv-field" style="grid-column: 1 / -1; background:#fef9e7; border-color:#f9e79f;"><span class="inv-label" style="color:#b7950b;"><i class="fas fa-home me-1"></i>Situación Actual NNA</span><span class="inv-val" style="color:var(--text-main);">' + esc(result.situacion_actual || 'No especificada') + '</span></div>';
-        
-        // Nuevo campo: medios de contacto
-        html += '<div class="inv-field" style="grid-column: 1 / -1;"><span class="inv-label" style="color:var(--navy-lt);"><i class="fas fa-phone-alt me-1"></i>Medios de contacto sugeridos</span><span class="inv-val" style="color:var(--text-main); font-weight:600;">' + esc(result.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía o DIF local.') + '</span></div>';
-        
-        html += '</div>';
-        
-        html += '<div class="inv-summary"><strong style="display:block;margin-bottom:8px;color:var(--navy);font-size:12px;text-transform:uppercase;letter-spacing:0.05em;"><i class="fas fa-align-left me-1"></i>Resumen ejecutivo del caso</strong>' + esc(result.resumen || '') + '</div>';
-        
-        if (result.fuentes && result.fuentes.length > 0) {
-            html += '<div class="mt-3 pt-3" style="border-top:1px solid var(--border);">';
-            html += '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;"><i class="fas fa-link me-1"></i>Fuentes consultadas para validación</div>';
-            html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
-            result.fuentes.forEach(f => {
-                try {
-                    html += '<a href="' + esc(f) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:500;color:var(--navy-lt);background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:4px 10px;text-decoration:none;"><i class="fas fa-external-link-alt" style="font-size:9px;"></i>' + esc(new URL(f).hostname.replace('www.','')) + '</a>';
-                } catch(e) {}
-            });
-            html += '</div></div>';
-        }
-        
-        if (result.query_usada) {
-            html += '<div class="mt-3" style="font-size:11px;color:var(--text-muted);"><i class="fas fa-search me-1"></i>Query generada: <em>' + esc(result.query_usada) + '</em></div>';
-        }
-        
-        // Botón de dar seguimiento
-        if (noticiaId) {
-            // Solo si no está ya en seguimiento. Asumimos que podemos mostrar el botón y el backend verificará.
-            html += '<div class="mt-3 text-end">';
-            html += '<button id="btn-add-seg-' + noticiaId + '" class="btn btn-primary" style="background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:600;padding:8px 16px;" onclick="darSeguimiento(' + noticiaId + ')">';
-            html += '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
-            html += '</button></div>';
-        }
-        
-        panel.innerHTML = html;
-    }
-
-    async function darSeguimiento(id) {
-        var btn = document.getElementById('btn-add-seg-' + id);
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Guardando...';
-        }
-        try {
-            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
-            
-            const r = await fetch('/api/seguimiento/add/' + id, { 
-                method: 'POST',
-                headers: { 'X-CSRFToken': csrfToken }
-            });
-            const d = await r.json();
-            
-            if (d.status === 'success') {
-                showToast('Caso agregado a seguimiento exitosamente', 'success');
-                if (btn) {
-                    btn.innerHTML = '<i class="fas fa-check me-1"></i>En seguimiento';
-                    btn.style.background = 'var(--gray)';
+                if (d.status === 'done') {
+                    clearInterval(window._investigationIntervals[id]);
+                    renderInvestigationResult(id, d.result);
+                } else if (d.status === 'error') {
+                    clearInterval(window._investigationIntervals[id]);
+                    var panel = document.getElementById('inv-panel-' + id);
+                    if (panel) panel.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Error en análisis: ' + esc(d.error || 'Desconocido') + '</span>';
+                    var btn = document.getElementById('btn-inv-' + id);
+                    if (btn) btn.disabled = false;
                 }
-                switchTab('seguimiento', document.querySelector('[data-tab="seguimiento"]'));
-            } else {
-                showToast(d.error || 'Error al dar seguimiento', 'error');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderInvestigationResult(id, result) {
+            var panel = document.getElementById('inv-panel-' + id);
+            var btn = document.getElementById('btn-inv-' + id);
+            if (!panel) return;
+            if (btn) btn.style.display = 'none';
+            panel.classList.add('active');
+            renderInvestigationResultInto('inv-panel-' + id, result, id);
+        }
+
+        async function identifyLink() {
+            const urlInput = document.getElementById('identifyUrlInput');
+            const url = urlInput.value.trim();
+            if (!url) { showToast('Por favor ingresa una URL válida', 'error'); return; }
+
+            const container = document.getElementById('identifyResultContainer');
+            const panel = document.getElementById('identifyResultPanel');
+            const btn = document.getElementById('btnAnalyze');
+
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando...'; }
+            container.style.display = 'block';
+            panel.innerHTML = '<div style="text-align:center;padding:36px 20px;"><div style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:#e8edf8;border-radius:50%;margin-bottom:16px;"><i class="fas fa-spinner fa-spin" style="font-size:24px;color:var(--navy-lt);"></i></div><div style="font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;">Procesando caso con IA</div><div style="font-size:13px;color:var(--text-muted);">Extrayendo contenido · Buscando fuentes · Generando informe<br><small>Esto puede tomar hasta 40 segundos</small></div></div>';
+
+            try {
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+                const r = await fetch('/api/identify-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await r.json();
+                if (data.error) {
+                    panel.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ' + esc(data.mensaje || data.error) + '</div>';
+                } else {
+                    // Reutilizamos la lógica de renderizado de investigaciones
+                    // Pero con un estilo ligeramente diferente para este panel
+                    renderInvestigationResultInto('identifyResultPanel', data);
+                }
+            } catch (e) {
+                console.error(e);
+                panel.innerHTML = '<div style="padding:20px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;color:#b91c1c;"><i class="fas fa-exclamation-triangle me-2"></i>Error de conexión al servidor. Intente nuevamente.</div>';
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-robot"></i> Analizar caso'; }
+            }
+        }
+
+        function renderInvestigationResultInto(panelId, result, noticiaId) {
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+
+            if (result.error) {
+                panel.innerHTML = '<div style="padding:20px;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;color:#b91c1c;"><i class="fas fa-exclamation-triangle me-2"></i>' + esc(result.mensaje || result.error || 'Error desconocido') + '</div>';
+                return;
+            }
+
+            let html = '<div class="inv-grid">';
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-map-marker-alt me-1"></i>Ubicación</span><span class="inv-val">' + esc(result.ubicacion || 'No especificado') + '</span></div>';
+            let victimasVal = result.victimas || 'No especificado';
+            if (victimasVal && typeof victimasVal === 'object' && !Array.isArray(victimasVal)) {
+                const vals = Object.values(victimasVal);
+                victimasVal = vals.length > 0 ? vals.join(', ') : 'No especificado';
+            } else if (Array.isArray(victimasVal)) {
+                victimasVal = victimasVal.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
+            }
+
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val">' + esc(victimasVal) + '</span></div>';
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val">' + esc(String(result.ninos_afectados || result.nna_afectados || 'No especificado')) + '</span></div>';
+
+            // Corregir problema [object Object] para edades
+            let edadesVal = result.edades || result.edades_nna || 'No especificado';
+            if (edadesVal && typeof edadesVal === 'object' && !Array.isArray(edadesVal)) {
+                const vals = Object.values(edadesVal);
+                edadesVal = vals.length > 0 ? vals.join(', ') : 'No especificado';
+            } else if (Array.isArray(edadesVal)) {
+                edadesVal = edadesVal.join(', ');
+            }
+
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val">' + esc(edadesVal) + '</span></div>';
+
+            // Nuevo campo: situación actual
+            html += '<div class="inv-field" style="grid-column: 1 / -1; background:#fef9e7; border-color:#f9e79f;"><span class="inv-label" style="color:#b7950b;"><i class="fas fa-home me-1"></i>Situación Actual NNA</span><span class="inv-val" style="color:var(--text-main);">' + esc(result.situacion_actual || 'No especificada') + '</span></div>';
+
+            // Nuevo campo: medios de contacto
+            html += '<div class="inv-field" style="grid-column: 1 / -1;"><span class="inv-label" style="color:var(--navy-lt);"><i class="fas fa-phone-alt me-1"></i>Medios de contacto sugeridos</span><span class="inv-val" style="color:var(--text-main); font-weight:600;">' + esc(result.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía o DIF local.') + '</span></div>';
+
+            html += '</div>';
+
+            html += '<div class="inv-summary"><strong style="display:block;margin-bottom:8px;color:var(--navy);font-size:12px;text-transform:uppercase;letter-spacing:0.05em;"><i class="fas fa-align-left me-1"></i>Resumen ejecutivo del caso</strong>' + esc(result.resumen || '') + '</div>';
+
+            if (result.fuentes && result.fuentes.length > 0) {
+                html += '<div class="mt-3 pt-3" style="border-top:1px solid var(--border);">';
+                html += '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;"><i class="fas fa-link me-1"></i>Fuentes consultadas para validación</div>';
+                html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+                result.fuentes.forEach(f => {
+                    try {
+                        html += '<a href="' + esc(f) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:500;color:var(--navy-lt);background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:4px 10px;text-decoration:none;"><i class="fas fa-external-link-alt" style="font-size:9px;"></i>' + esc(new URL(f).hostname.replace('www.', '')) + '</a>';
+                    } catch (e) { }
+                });
+                html += '</div></div>';
+            }
+
+            if (result.query_usada) {
+                html += '<div class="mt-3" style="font-size:11px;color:var(--text-muted);"><i class="fas fa-search me-1"></i>Query generada: <em>' + esc(result.query_usada) + '</em></div>';
+            }
+
+            // Botón de dar seguimiento
+            if (noticiaId) {
+                // Solo si no está ya en seguimiento. Asumimos que podemos mostrar el botón y el backend verificará.
+                html += '<div class="mt-3 text-end">';
+                html += '<button id="btn-add-seg-' + noticiaId + '" class="btn btn-primary" style="background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:600;padding:8px 16px;" onclick="darSeguimiento(' + noticiaId + ')">';
+                html += '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
+                html += '</button></div>';
+            }
+
+            panel.innerHTML = html;
+        }
+
+        async function darSeguimiento(id) {
+            var btn = document.getElementById('btn-add-seg-' + id);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Guardando...';
+            }
+            try {
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+                const r = await fetch('/api/seguimiento/add/' + id, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const d = await r.json();
+
+                if (d.status === 'success') {
+                    showToast('Caso agregado a seguimiento exitosamente', 'success');
+                    if (btn) {
+                        btn.innerHTML = '<i class="fas fa-check me-1"></i>En seguimiento';
+                        btn.style.background = 'var(--gray)';
+                    }
+                    switchTab('seguimiento', document.querySelector('[data-tab="seguimiento"]'));
+                } else {
+                    showToast(d.error || 'Error al dar seguimiento', 'error');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
+                    }
+                }
+            } catch (e) {
+                showToast('Error de conexión', 'error');
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
                 }
             }
-        } catch(e) {
-            showToast('Error de conexión', 'error');
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-folder-plus me-1"></i>Dar seguimiento al caso';
-            }
         }
-    }
 
-    // ══════════════════════════════════════════════════════════
-    //  Init
-    // ══════════════════════════════════════════════════════════
-    document.addEventListener('DOMContentLoaded', function() {
-        loadStats();
-        loadNews();
-        updateSavedCount();
-    });
+        // ══════════════════════════════════════════════════════════
+        //  Init
+        // ══════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStats();
+            loadNews();
+            updateSavedCount();
+        });
     </script>
 </body>
+
 </html>

@@ -1,0 +1,41 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph Ejemplos["Justificación del Temperature Scaling"]
+    direction LR
+        N1["Sin escala:<br>Similitudes muy cercanas (0.82 vs 0.79)<br>→ score=0.57 (Falta de certeza)"]
+        N2["Con τ=5:<br>Amplifica la separación antes de Softmax<br>→ score=0.82 (Decisión clara)"]
+  end
+    IN["[Título + Contenido]"] --> T("WordPiece Tokenizer")
+    T -.-> T_Desc["Divide en subpalabras"]
+    T --> TR("12 capas Transformer<br>(Modelo BETO 110M)")
+    TR -.-> TR_Desc["Comprende el rol semántico (ej. víctima vs agresor)"]
+    TR --> EMB("Embedding [CLS] 768D")
+    EMB -.-> EMB_Desc["Vector que encapsula el significado global del texto"]
+    EMB --> ZS("Clasificación Zero-Shot")
+    ZS -.-> ZS_Desc@{ label: "Similitud Coseno contra etiquetas:<br>relevante vs no relevante" }
+    ZS --> TS("Temperature Scaling (τ=5)")
+    TS --> OUT("Score de relevancia ∈ [0,1]")
+    TS -.-> Ejemplos
+
+    ZS_Desc@{ shape: rect}
+     N1:::note
+     N2:::note
+     IN:::input
+     T:::process
+     T_Desc:::desc
+     TR:::process
+     TR_Desc:::desc
+     EMB:::process
+     EMB_Desc:::desc
+     ZS:::process
+     ZS_Desc:::desc
+     TS:::process
+     OUT:::highlight
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef process fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+    classDef highlight fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+    classDef note fill:#fff9c4,stroke:#fbc02d,stroke-width:1px,color:#f57f17
+    classDef desc fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5,color:#555
