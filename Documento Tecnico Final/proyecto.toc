@@ -63,8 +63,8 @@
 \contentsline {subsection}{\numberline {5.3.1}Red por los Derechos de la Infancia en México (REDIM)}{29}{subsection.5.3.1}%
 \contentsline {subsection}{\numberline {5.3.2}El Mapa de los Feminicidios en México}{29}{subsection.5.3.2}%
 \contentsline {subsection}{\numberline {5.3.3}Fundación Futuro con Derechos}{29}{subsection.5.3.3}%
-\contentsline {section}{\numberline {5.4}Análisis Comparativo y Brecha Identificada (El Factor Diferenciador)}{29}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Técnicas de Extracción de Datos en Entornos Web Adversariales}{30}{section.5.5}%
+\contentsline {section}{\numberline {5.4}Análisis comparativo y brecha identificada}{29}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Técnicas de extracción de datos}{30}{section.5.5}%
 \contentsline {subsection}{\numberline {5.5.1}Extracción Estática (HTML Parsing con BeautifulSoup)}{30}{subsection.5.5.1}%
 \contentsline {subsection}{\numberline {5.5.2}Automatización de Navegador (Selenium / Playwright)}{31}{subsection.5.5.2}%
 \contentsline {subsection}{\numberline {5.5.3}Agregación Estructurada (RSS/Atom) y Stealth Sessions}{31}{subsection.5.5.3}%
@@ -122,7 +122,7 @@
 \contentsline {subsection}{\numberline {7.6.1}Modelo de Dominio}{54}{subsection.7.6.1}%
 \contentsline {subsection}{\numberline {7.6.2}Diccionario de Datos Extendido}{54}{subsection.7.6.2}%
 \contentsline {chapter}{\numberline {8}Desarrollo de Trabajo Terminal II}{58}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Contexto: Deuda técnica heredada de TT1}{58}{section.8.1}%
+\contentsline {section}{\numberline {8.1}Contexto: Limitaciones del Prototipo 2}{58}{section.8.1}%
 \contentsline {section}{\numberline {8.2}Patrones arquitectónicos del flujo analítico}{59}{section.8.2}%
 \contentsline {subsection}{\numberline {8.2.1}Patrón \textit {Repository} para la capa de persistencia}{59}{subsection.8.2.1}%
 \contentsline {subsection}{\numberline {8.2.2}Patrón \textit {Pipeline} para el flujo analítico}{59}{subsection.8.2.2}%
@@ -139,21 +139,22 @@
 \contentsline {subsection}{\numberline {8.4.3}El Bypass de Oro: Decisión Simbólica Absoluta}{64}{subsection.8.4.3}%
 \contentsline {subsection}{\numberline {8.4.4}El Bozal de Penalización: El Contexto de Clúster como Corrector}{65}{subsection.8.4.4}%
 \contentsline {subsection}{\numberline {8.4.5}El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}{65}{subsection.8.4.5}%
-\contentsline {section}{\numberline {8.5}Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}{66}{section.8.5}%
-\contentsline {section}{\numberline {8.6}Diagrama Conceptual del Sistema}{67}{section.8.6}%
-\contentsline {section}{\numberline {8.7}Verificación, Validación y Pruebas (QA)}{69}{section.8.7}%
-\contentsline {subsection}{\numberline {8.7.1}Pruebas Unitarias y Aislamiento de Componentes}{69}{subsection.8.7.1}%
-\contentsline {subsection}{\numberline {8.7.2}Pruebas de Caja Negra: Validación del Bozal de Penalización}{69}{subsection.8.7.2}%
-\contentsline {subsection}{\numberline {8.7.3}Matriz de Casos de Prueba}{69}{subsection.8.7.3}%
-\contentsline {chapter}{\numberline {9}Resultados y Evaluación}{71}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Evaluación de la Recolección (Volumen de Ingesta)}{71}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{71}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Evaluación del Agrupamiento (BERTopic)}{72}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{72}{section.9.4}%
-\contentsline {chapter}{\numberline {10}Conclusiones}{74}{chapter.10}%
-\contentsline {chapter}{\numberline {11}Trabajo Futuro}{76}{chapter.11}%
-\contentsline {section}{\numberline {11.1}Extracción de Entidades Nombradas (NER) bajo Principios Éticos}{76}{section.11.1}%
-\contentsline {section}{\numberline {11.2}Generación Automática de Reportes (Exportación)}{76}{section.11.2}%
-\contentsline {section}{\numberline {11.3}API Pública e Interoperabilidad para Organizaciones Civiles}{77}{section.11.3}%
-\contentsline {section}{\numberline {11.4}Despliegue en la Nube (Cloud Architecture) y Escalabilidad}{77}{section.11.4}%
-\contentsline {section}{\numberline {11.5}Validación Piloto en Campo y Refinamiento UX/UI}{77}{section.11.5}%
+\contentsline {subsection}{\numberline {8.4.6}Investigador Profundo: DuckDuckGo y Gemini Flash}{66}{subsection.8.4.6}%
+\contentsline {section}{\numberline {8.5}Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}{69}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Diagrama Conceptual del Sistema}{70}{section.8.6}%
+\contentsline {section}{\numberline {8.7}Verificación, Validación y Pruebas (QA)}{71}{section.8.7}%
+\contentsline {subsection}{\numberline {8.7.1}Pruebas Unitarias y Aislamiento de Componentes}{71}{subsection.8.7.1}%
+\contentsline {subsection}{\numberline {8.7.2}Pruebas de Caja Negra: Validación del Bozal de Penalización}{71}{subsection.8.7.2}%
+\contentsline {subsection}{\numberline {8.7.3}Matriz de Casos de Prueba}{71}{subsection.8.7.3}%
+\contentsline {chapter}{\numberline {9}Resultados y Evaluación}{73}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Evaluación de la Recolección (Volumen de Ingesta)}{73}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{73}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Evaluación del Agrupamiento (BERTopic)}{74}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{74}{section.9.4}%
+\contentsline {chapter}{\numberline {10}Conclusiones}{76}{chapter.10}%
+\contentsline {chapter}{\numberline {11}Trabajo Futuro}{78}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Extracción de Entidades Nombradas (NER) bajo Principios Éticos}{78}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Generación Automática de Reportes (Exportación)}{78}{section.11.2}%
+\contentsline {section}{\numberline {11.3}API Pública e Interoperabilidad para Organizaciones Civiles}{79}{section.11.3}%
+\contentsline {section}{\numberline {11.4}Despliegue en la Nube (Cloud Architecture) y Escalabilidad}{79}{section.11.4}%
+\contentsline {section}{\numberline {11.5}Validación Piloto en Campo y Refinamiento UX/UI}{79}{section.11.5}%

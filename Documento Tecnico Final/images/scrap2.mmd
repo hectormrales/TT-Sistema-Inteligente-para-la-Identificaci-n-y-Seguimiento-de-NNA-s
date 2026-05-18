@@ -1,0 +1,19 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+
+    continua -- OK --> G{"Tipo de\ncontenido"}
+    G -- RSS/Atom --> H["Parsear XML"]
+    G -- Sitemap --> I["Seguir URLs"]
+    G -- HTML --> J["Extraer artículo\nCSS, JSON-LD, Trafilatura"]
+    H --> K{"¿Es noticia\nde México?"}
+    I --> K
+    J --> K
+    K -- No --> L(["Descartado"])
+    K -- Sí --> M(["Al flujo de PNL"])
+
+
+    style L fill:#dc2626,color:#fff
+    style M fill:#16a34a,color:#fff

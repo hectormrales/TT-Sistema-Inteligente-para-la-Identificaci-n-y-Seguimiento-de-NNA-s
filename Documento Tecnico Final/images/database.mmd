@@ -1,0 +1,73 @@
+erDiagram
+    NOTICIAS {
+        int     id              PK
+        string  titulo
+        text    contenido
+        string  enlace          UK
+        string  fuente
+        datetime fecha
+        float   score_feminicidio
+        float   score_nna
+        float   score_compuesto
+        float   relevancia_final
+        string  clasificacion_final  "Alta/Media/Baja/No relevante"
+        float   score_semantico
+        string  modo_deteccion      "zero_shot|hybrid|heuristico"
+        int     cluster_id      FK
+        int     topic_id
+        string  topic_description
+        float   max_similarity
+        string  content_hash    "MD5 para dedup"
+        string  scrape_method   "rss|html|sitemap"
+        string  menores_identificados "Sí/No"
+        string  batch_id        "ID ejecución"
+        json    investigacion_json   "Investigación LLM"
+        tsvector busqueda_fts   "GIN index FTS"
+        datetime created_at
+        datetime updated_at
+    }
+
+    DETECCIONES {
+        int     id              PK
+        int     noticia_id      FK "1-a-1 con NOTICIAS"
+        float   score_heuristico
+        string  clasificacion_heuristica
+        json    keywords_feminicidio
+        json    keywords_nna
+        float   score_semantico
+        string  confianza_semantica   "alta/media/baja"
+        string  modo_semantico
+        float   score_hibrido
+        float   alpha_usado
+        string  clasificacion_hibrida
+        boolean menores_identificados
+        int     num_menores_mencionados
+        json    edades_mencionadas
+        datetime created_at
+    }
+
+    CLUSTERS_SEMANTICOS {
+        int     id              PK "topic_id de BERTopic"
+        string  etiqueta
+        text    descripcion
+        json    terminos_principales  "c-TF-IDF top words"
+        int     num_documentos
+        float   cohesion
+        boolean es_outlier           "True si topic_id = -1"
+        string  modelo_version
+        datetime created_at
+    }
+
+    ENTIDADES {
+        int     id              PK
+        int     noticia_id      FK
+        string  texto
+        string  tipo            "PER|LOC|ORG|MISC"
+        int     posicion_inicio
+        int     posicion_fin
+        float   confianza
+    }
+
+    NOTICIAS ||--o| DETECCIONES       : "1 noticia → 1 detección"
+    NOTICIAS }o--|| CLUSTERS_SEMANTICOS : "N noticias → 1 cluster"
+    NOTICIAS ||--o{ ENTIDADES          : "1 noticia → N entidades NER"

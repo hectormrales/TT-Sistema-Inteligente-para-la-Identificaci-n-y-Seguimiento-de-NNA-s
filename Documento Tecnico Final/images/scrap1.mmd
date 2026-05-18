@@ -1,0 +1,17 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+    A(["🌐 URL de Fuente"]) --> B{"robots.txt\n¿Permitido?"}
+    B -- Sí --> C["Sesión normal"]
+    B -- No --> D["Modo Stealth\nTLS real, delays,rotación UA"]
+    C --> E{"Circuit Breaker\n¿Dominio activo?"}
+    D --> E
+    E -- 3+ fallos → Cooldown --> F(["Dominio omitido"])
+    E -- OK --> G{"Tipo de\ncontenido"}
+
+
+    style A fill:#4f46e5,color:#fff
+    style D fill:#7c3aed,color:#fff
+    style F fill:#d97706,color:#fff
