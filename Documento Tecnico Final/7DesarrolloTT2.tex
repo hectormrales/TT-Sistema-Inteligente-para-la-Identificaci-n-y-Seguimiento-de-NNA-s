@@ -320,58 +320,57 @@ eliminó \textbf{213 duplicados} (25.1\% del total), con la siguiente distribuci
 \label{sec:tt2_prototipo4}
 
  
-El Prototipo~4 integra las capacidades del P3 con dos innovaciones arquitectónicas
-que definen la madurez del sistema: el agrupamiento semántico global con BERTopic
-como etapa \textit{previa} a la clasificación, y la lógica de decisión
-neuro-simbólica que combina el razonamiento probabilístico de BETO con reglas
-simbólicas deterministas. La motivación central de este diseño es una premisa
-técnica que la experimentación del TT2 validó empíricamente:
+El prototipo 4 integra las capacidades del P3 con dos nuevas capacidades
+que aumentan la eficiencia del sistema como colocar el agrupamiento semántico global ahora 
+con BERTopic como etapa previa a la clasificación ademas de la lógica de decisión
+neuro-simbólica que combina el razonamiento probabilístico de BETO con 
+reglas deterministas. La motivación central de este diseño es una conclusión
+técnica que durante el desarrollo del TT2 se pudo validar y es que
 \textbf{la IA sola no es suficiente}.
 
-\subsection{Por qué la IA Sola No Basta: Alucinaciones de BETO}
+\subsection{Por qué la IA sola no basta}
 \label{subsec:tt2_limitaciones_ia}
 
-Durante las pruebas de integración del P3, se identificaron escenarios donde BETO
+Durante las pruebas del Prototipo 3 se pudo identificar escenarios donde BETO
 en modo \textit{zero-shot} producía clasificaciones erróneas con alta confianza
-(score $> 0.70$) en exactamente los casos más peligrosos para el sistema:
+(score arriba del 0.70) en algunos de los casos más críticos para el sistema.
 
 \begin{itemize}
     \item \textbf{Notas estadísticas con narrativa emocional.} Artículos de opinión
           que describían la crisis de orfandad por feminicidio en términos generales
-          y empáticos (\textit{``miles de niños que perdieron a su madre''}) obtenían
-          scores BETO de hasta 0.81, a pesar de no reportar ningún caso concreto
+          y empáticos como por ejemplo (\textit{"miles de niños que perdieron a su madre"}) obtenían
+          scores BETO de hasta 0.81 a pesar de que no reportaban ningún caso concreto
           ni identificable.
 
     \item \textbf{Notas donde el menor es el agresor.} Ante titulares como
-          \textit{``Hijo adolescente mata a su madre en Ecatepec''}, BETO asignaba
-          scores de relevancia moderados (0.55--0.65) porque el embedding semántico
-          capturaba la correlación superficial entre ``hijo'' + ``madre'' +
-          ``asesinato'', sin discernir que el rol del menor era el de agresor.
+          \textit{"Hijo adolescente mata a su madre en Ecatepec"} BETO asignaba
+          scores de relevancia moderados (entre 0.55 y 0.65) porque el embedding semántico
+          capturaba la correlación superficial entre "hijo", "madre" y "asesinato" sin
+          identificar que el rol del menor era el de agresor.
 
     \item \textbf{Reportes de políticas públicas con vocabulario de dominio.}
           Notas sobre programas de becas para hijos de víctimas de feminicidio
-          activaban BETO con scores de 0.60--0.75 al concentrar exactamente los
-          tokens de dominio más relevantes, sin relatar ningún caso específico.
+          activaban BETO con scores entre 0.60 y 0.75 al concentrar exactamente los
+          tokens de dominio más relevantes y esto sin relatar ningún caso específico.
 \end{itemize}
 
-Estos escenarios demuestran que un modelo de lenguaje, por sofisticado que sea,
-opera fundamentalmente sobre correlaciones estadísticas en el espacio de embeddings.
-La \textit{comprensión} del rol semántico (quién es víctima, quién es agresor,
+Estos escenarios mostraron que los modelos de lenguaje por mas sofisticados que sean
+operan principalmente sobre correlaciones estadísticas en el espacio de embeddings.
+La comprensión del rol semántico (de quién es víctima, quién es agresor,
 si la nota relata un hecho o un análisis) requiere conocimiento estructurado del
 dominio que BETO no puede inferir exclusivamente de la distribución de tokens.
-La solución es la arquitectura neuro-simbólica: las reglas simbólicas (basadas en
-el conocimiento explícito del equipo de desarrollo sobre el dominio) \textbf{corrigen
-las alucinaciones} del componente neuronal.
+La solución es la arquitectura neuro-simbólica donde las reglas simbólicas ( que estan
+basadas en el conocimiento explícito sobre el dominio) \textbf{corrigen
+las alucinaciones} del componente neuronal. 
 
-\subsection{BERTopic como Filtro de Contexto Global (OE-4)}
+\subsection{BERTopic como filtro de contexto global}
 \label{subsec:tt2_bertopic}
 
-Una innovación arquitectónica fundamental del P4 es la \textbf{inversión del orden}
-de ejecución respecto al TT1: el agrupamiento semántico (BERTopic, \texttt{step\_10})
-se ejecuta \textit{antes} que la clasificación individual (BETO, \texttt{step\_9}).
-Esta decisión de diseño responde a una necesidad de contexto: clasificar una noticia
-de forma aislada es inherentemente más impreciso que clasificarla sabiendo cómo se
-relaciona con el corpus completo del periodo.
+Una implementación fundamental en este prototipo es la inversión del orden
+de ejecución respecto al TT1 donde el agrupamiento semántico (DBSCAN en eso entonces) 
+se ejecutaba después de la clasificación individual. Esta decisión de diseño responde
+a una necesidad de contexto donde clasificar una noticia de forma aislada es mucho más
+impreciso que clasificarla sabiendo cómo se relaciona con el corpus completo del periodo.
 
 BERTopic implementa una cadena de tres algoritmos: (1)~BETO embeddings para
 representar cada documento en el espacio vectorial de 768~dimensiones; (2)~UMAP
