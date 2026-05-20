@@ -1,0 +1,14 @@
+flowchart LR
+    %% Definición de estilos para mantener un diseño limpio y profesional
+    classDef nodeStyle fill:#7B68EE,stroke:#333,stroke-width:1px,color:#FFFFFF,shadow:true;
+
+    A["<b>1. Hash MD5</b><br/>Filtro de duplicados<br/>exactos"] 
+    B["<b>2. Similitud Jaccard</b><br/>Captura de<br/>reescrituras simples<br/><i>(umbral ≥ 0.70)</i>"]
+    C["<b>3. SimHash 64-bit</b><br/>Detección de<br/>cuasi-duplicados<br/><i>(dist. hamming ≤ 6)</i>"]
+    D["<b>4. Coseno TF-IDF</b><br/>Verificación final<br/>del contenido<br/><i>(umbral ≥ 0.85)</i>"]
+
+    %% Conexiones simulando un pipeline
+    A ==> B ==> C ==> D
+
+    %% Aplicar estilos
+    class A,B,C,D nodeStyle;

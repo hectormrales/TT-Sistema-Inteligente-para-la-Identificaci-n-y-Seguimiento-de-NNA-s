@@ -130,31 +130,30 @@
 \contentsline {subsection}{\numberline {8.3.1}Migración de CSV a PostgreSQL}{60}{subsection.8.3.1}%
 \contentsline {subsection}{\numberline {8.3.2}Arquitectura del motor BETO}{60}{subsection.8.3.2}%
 \contentsline {subsection}{\numberline {8.3.3}Clasificación \textit {Zero-Shot} y \textit {Temperature Scaling}}{61}{subsection.8.3.3}%
-\contentsline {subsection}{\numberline {8.3.4}Inferencia por Lotes (\textit {Batch Inference})}{61}{subsection.8.3.4}%
-\contentsline {subsection}{\numberline {8.3.5}Evolución del Recolector: \texttt {StealthSession} v7.0}{62}{subsection.8.3.5}%
-\contentsline {subsection}{\numberline {8.3.6}Deduplicación en Cascada de Cuatro Fases}{62}{subsection.8.3.6}%
-\contentsline {section}{\numberline {8.4}Prototipo 4: Arquitectura Neuro-Simbólica Completa}{63}{section.8.4}%
-\contentsline {subsection}{\numberline {8.4.1}Por qué la IA Sola No Basta: Alucinaciones de BETO}{63}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.3.4}Evolución del recolector}{61}{subsection.8.3.4}%
+\contentsline {subsection}{\numberline {8.3.5}Deduplicación en cascada de cuatro fases}{63}{subsection.8.3.5}%
+\contentsline {section}{\numberline {8.4}Prototipo 4 Arquitectura neuro-simbólica}{63}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}Por qué la IA Sola No Basta: Alucinaciones de BETO}{64}{subsection.8.4.1}%
 \contentsline {subsection}{\numberline {8.4.2}BERTopic como Filtro de Contexto Global (OE-4)}{64}{subsection.8.4.2}%
-\contentsline {subsection}{\numberline {8.4.3}El Bypass de Oro: Decisión Simbólica Absoluta}{64}{subsection.8.4.3}%
+\contentsline {subsection}{\numberline {8.4.3}El Bypass de Oro: Decisión Simbólica Absoluta}{65}{subsection.8.4.3}%
 \contentsline {subsection}{\numberline {8.4.4}El Bozal de Penalización: El Contexto de Clúster como Corrector}{65}{subsection.8.4.4}%
-\contentsline {subsection}{\numberline {8.4.5}El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}{65}{subsection.8.4.5}%
+\contentsline {subsection}{\numberline {8.4.5}El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}{66}{subsection.8.4.5}%
 \contentsline {subsection}{\numberline {8.4.6}Investigador Profundo: DuckDuckGo y Gemini Flash}{66}{subsection.8.4.6}%
 \contentsline {section}{\numberline {8.5}Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}{69}{section.8.5}%
 \contentsline {section}{\numberline {8.6}Diagrama Conceptual del Sistema}{70}{section.8.6}%
-\contentsline {section}{\numberline {8.7}Verificación, Validación y Pruebas (QA)}{71}{section.8.7}%
-\contentsline {subsection}{\numberline {8.7.1}Pruebas Unitarias y Aislamiento de Componentes}{71}{subsection.8.7.1}%
-\contentsline {subsection}{\numberline {8.7.2}Pruebas de Caja Negra: Validación del Bozal de Penalización}{71}{subsection.8.7.2}%
-\contentsline {subsection}{\numberline {8.7.3}Matriz de Casos de Prueba}{71}{subsection.8.7.3}%
-\contentsline {chapter}{\numberline {9}Resultados y Evaluación}{73}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Evaluación de la Recolección (Volumen de Ingesta)}{73}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{73}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Evaluación del Agrupamiento (BERTopic)}{74}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{74}{section.9.4}%
-\contentsline {chapter}{\numberline {10}Conclusiones}{76}{chapter.10}%
-\contentsline {chapter}{\numberline {11}Trabajo Futuro}{78}{chapter.11}%
-\contentsline {section}{\numberline {11.1}Extracción de Entidades Nombradas (NER) bajo Principios Éticos}{78}{section.11.1}%
-\contentsline {section}{\numberline {11.2}Generación Automática de Reportes (Exportación)}{78}{section.11.2}%
-\contentsline {section}{\numberline {11.3}API Pública e Interoperabilidad para Organizaciones Civiles}{79}{section.11.3}%
-\contentsline {section}{\numberline {11.4}Despliegue en la Nube (Cloud Architecture) y Escalabilidad}{79}{section.11.4}%
-\contentsline {section}{\numberline {11.5}Validación Piloto en Campo y Refinamiento UX/UI}{79}{section.11.5}%
+\contentsline {section}{\numberline {8.7}Verificación, Validación y Pruebas (QA)}{72}{section.8.7}%
+\contentsline {subsection}{\numberline {8.7.1}Pruebas Unitarias y Aislamiento de Componentes}{72}{subsection.8.7.1}%
+\contentsline {subsection}{\numberline {8.7.2}Pruebas de Caja Negra: Validación del Bozal de Penalización}{72}{subsection.8.7.2}%
+\contentsline {subsection}{\numberline {8.7.3}Matriz de Casos de Prueba}{72}{subsection.8.7.3}%
+\contentsline {chapter}{\numberline {9}Resultados y Evaluación}{74}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Evaluación de la Recolección (Volumen de Ingesta)}{74}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{74}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Evaluación del Agrupamiento (BERTopic)}{75}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{75}{section.9.4}%
+\contentsline {chapter}{\numberline {10}Conclusiones}{77}{chapter.10}%
+\contentsline {chapter}{\numberline {11}Trabajo Futuro}{79}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Extracción de Entidades Nombradas (NER) bajo Principios Éticos}{79}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Generación Automática de Reportes (Exportación)}{79}{section.11.2}%
+\contentsline {section}{\numberline {11.3}API Pública e Interoperabilidad para Organizaciones Civiles}{80}{section.11.3}%
+\contentsline {section}{\numberline {11.4}Despliegue en la Nube (Cloud Architecture) y Escalabilidad}{80}{section.11.4}%
+\contentsline {section}{\numberline {11.5}Validación Piloto en Campo y Refinamiento UX/UI}{80}{section.11.5}%

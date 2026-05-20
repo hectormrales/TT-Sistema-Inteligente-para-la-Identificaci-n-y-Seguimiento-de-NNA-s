@@ -168,7 +168,7 @@ La arquitectura interna del clasificador implementada en la clase
 
 \begin{enumerate}
     \item \textbf{Tokenización WordPiece.} El texto de entrada (título concatenado
-          con los primeros 1{,}500~caracteres del contenido, separados por el token
+          con los primeros 1{,}500 caracteres del contenido separados por el token
           especial \texttt{[SEP]}) es fragmentado mediante el algoritmo WordPiece
           que descompone palabras fuera de vocabulario en sub-tokens reconocibles.
           Esto resuelve el problema de variantes ortográficas comunes en el periodismo
@@ -186,7 +186,7 @@ La arquitectura interna del clasificador implementada en la clase
           \texttt{[CLS]} (primer token de toda secuencia BERT) acumula durante el
           \textit{forward pass} una representación condensada del significado global
           del texto. Se extrae el \textit{hidden state} de este token como un vector
-          de 768 dimensiones, que posteriormente se normaliza mediante norma~L2
+          de 768 dimensiones que posteriormente se normaliza mediante norma L2
           para habilitar la comparación por similitud coseno.
 \end{enumerate}
 
@@ -195,178 +195,131 @@ La arquitectura interna del clasificador implementada en la clase
 \label{subsec:tt2_zeroshot}
 
 Dado que el proyecto no disponía de un corpus etiquetado de suficiente volumen para
-fine-tuning supervisado al inicio del TT2, se adoptó el paradigma de clasificación
+fine-tuning supervisado al inicio del TT2 se optó por el paradigma de clasificación
 \textbf{\textit{zero-shot}} por similitud coseno. El sistema pre-calcula embeddings
 BETO para dos descripciones de categorías cuidadosamente redactadas
-(\texttt{CATEGORY\_DESCRIPTIONS} en \texttt{semantic\_detector.py}), que especifican
-en lenguaje natural qué constituye una noticia ``relevante'' versus ``no relevante''
-para el dominio del sistema. La categoría ``relevante'' describe explícitamente
-\textit{``un caso concreto de feminicidio donde los hijos de la víctima quedaron en
-orfandad o resguardo institucional''}, mientras que la categoría ``no relevante''
-enumera explícitamente los falsos positivos recurrentes del TT1: estadísticas,
+(en \texttt{semantic\_detector.py}) que especifican en lenguaje natural qué constituye
+una noticia "relevante" contra una "no relevante" para el dominio del sistema. La categoría
+"relevante" describe explícitamente \textit{"un caso concreto de feminicidio donde los hijos
+de la víctima quedaron en orfandad o resguardo institucional"}, mientras que la categoría "no relevante"
+enumera explícitamente los falsos positivos que fueron recurrentes en TT1 como notas estadísticas,
 políticas públicas, feminicidios de menores y agresores menores de edad.
 
-En tiempo de inferencia, el embedding del texto de la noticia se compara contra
-ambas descripciones mediante producto punto (equivalente a similitud coseno para
-vectores normalizados). Las similitudes crudas ($s_r$, $s_{nr}$) tienden a ser
-extremadamente cercanas (diferencias de 0.02--0.05), generando incertidumbre de
-clasificación. Para resolver este problema se aplica \textbf{\textit{Temperature
-Scaling}} con factor térmico~5, que actúa como amplificador de la separación
-probabilística antes de la función Softmax:
+En tiempo de inferencia el embedding del texto de la noticia se compara contra
+ambas descripciones mediante producto punto el cual es equivalente a similitud coseno para
+vectores normalizados. Las similitudes crudas tienden a ser extremadamente cercanas con
+diferencias de 0.02-0.05 lo que genera incertidumbre en la clasificación. Para resolver este
+problema se aplica \textbf{\textit{Temperature Scaling}} con factor térmico 5, que actúa
+como amplificador de la separación probabilística antes de la función Softmax.
 
-\begin{lstlisting}[language=Python,
-    caption={\textit{Temperature Scaling} para polarizaci\'on de probabilidades BETO},
-    label={lst:temp_scaling}]
-# Factor termico tau=5: amplifica la distancia entre similitudes
-# Ante sim_relevante=0.82 y sim_no_relevante=0.79,
-# sin escala: score = 0.57 (ambiguo)
-# con tau=5:  score = 0.82 (decision clara)
-exp_rel   = np.exp(sim_relevante   * 5)
-exp_norel = np.exp(sim_no_relevante * 5)
-score = exp_rel / (exp_rel + exp_norel)  # P(relevante) in [0, 1]
-\end{lstlisting}
-
-Este mecanismo es conceptualmente análogo al \textit{temperature scaling} utilizado
-en calibración de modelos de clasificación \cite{guo2017calibration}, pero aplicado
-aquí en la dirección inversa: en lugar de suavizar distribuciones sobre-confiadas,
+Este mecanismo es análogo al \textit{temperature scaling} utilizado
+en calibración de modelos de clasificación \cite{guo2017calibration} solo que aplicado
+en dirección inversa pues en lugar de suavizar distribuciones sobre-confiadas,
 se \textit{agudiza} una distribución cruda sub-confiada para forzar una toma de
 decisión clara.
 
-\subsection{Inferencia por Lotes (\textit{Batch Inference})}
-\label{subsec:tt2_batch}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/BETO.png}
+    \caption{Arquitectura del motor BETO y clasificación \textit{Zero-Shot} con \textit{Temperature Scaling}.}
+    \label{fig:arquitectura_beto_zeroshot}
+\end{figure}
 
-Una limitación práctica crítica del enfoque de inferencia individual
-(\texttt{predict()}) es la ineficiencia computacional: cada llamada inicializa un
-\textit{forward pass} con un solo ejemplo, desaprovechando el paralelismo de las
-operaciones matriciales de PyTorch. Para corregir esta deficiencia, el método
-\texttt{predict\_batch()} procesa el corpus completo en lotes de
-\texttt{BATCH\_SIZE=16} noticias, habilitando el paralelismo de GPU cuando está
-disponible:
-
-\begin{lstlisting}[language=Python,
-    caption={Inferencia por lotes vectorizada en \texttt{predict\_batch}},
-    label={lst:batch_inference}]
-# Embeddings matriciales: (N, 768) en un solo forward pass por lote
-text_embs = self._get_embeddings_batch(texts)  # shape: (N, 768)
-cat_rel   = self._category_embeddings["relevante"]   # shape: (768,)
-cat_norel = self._category_embeddings["no_relevante"] # shape: (768,)
-
-# Producto matricial: N similitudes en paralelo (vs. N forward passes)
-sim_relevante    = np.dot(text_embs, cat_rel)    # shape: (N,)
-sim_no_relevante = np.dot(text_embs, cat_norel)  # shape: (N,)
-
-# Temperature scaling vectorizado
-scores = np.exp(sim_relevante * 5) / (
-    np.exp(sim_relevante * 5) + np.exp(sim_no_relevante * 5)
-)
-\end{lstlisting}
-
-La reducción de tiempo de inferencia observada en pruebas con \textit{N}=300
-noticias fue de aproximadamente \textbf{4.2×} respecto al procesamiento individual,
-pasando de $\sim$190~segundos a $\sim$45~segundos en CPU (Intel Core i7, sin GPU
-dedicada), lo que hace el pipeline ejecutable en hardware de desarrollo estándar.
-
-\subsection{Evolución del Recolector: \texttt{StealthSession} v7.0}
+\subsection{Evolución del recolector}
 \label{subsec:tt2_stealth}
 
-La recolección de noticias enfrentó durante el TT1 una barrera que los prototipos
-iniciales no pudieron superar: los \textit{Web Application Firewalls} (WAF) de
-Cloudflare y Akamai detectaban y bloqueaban las sesiones HTTP del scraper mediante
-\textbf{\textit{TLS/JA3 fingerprinting}}. Este mecanismo compara el \textit{hash}
-criptográfico del saludo TLS del cliente (que identifica unívocamente la librería
-SSL utilizada) contra el User-Agent declarado. Una sesión que declara ser
+La recolección de noticias enfrentó durante TT1 una barrera que los prototipos
+iniciales no pudieron superar que fueron los \textit{Web Application Firewalls}
+(WAF) de Cloudflare y Akamai que detectaban y bloqueaban las sesiones HTTP del
+scraper mediante \textbf{\textit{TLS/JA3 fingerprinting}}. Este mecanismo compara
+el \textit{hash} criptográfico del saludo TLS del cliente (que identifica sin error
+la librería SSL utilizada) contra el User-Agent declarado. Una sesión que declara ser
 \texttt{Chrome/124} pero cuyo handshake TLS corresponde a Python/\texttt{requests}
-es inmediatamente bloqueada como bot.
+es inmediatamente bloqueada como bot. 
 
-El Prototipo~3 introduce \texttt{StealthSession} v7.0, que resuelve este problema
+En el Prototipo 3 se introduce \texttt{StealthSession} que resolvia este problema
 mediante tres técnicas complementarias:
 
 \begin{enumerate}
     \item \textbf{Emulación de fingerprint TLS via \texttt{cloudscraper}.}
           La librería \texttt{cloudscraper} reemplaza la pila TLS de Python con una
-          que genera hashes JA3 idénticos a los de Chrome/Windows, haciendo el
-          handshake criptográficamente indistinguible de un navegador real. Adicionalmente,
+          que genera hashes JA3 idénticos a los de Chrome/Windows lo que hace que el
+          handshake sea criptográficamente indistinguible de un navegador real. Ademas
           resuelve automáticamente los \textit{JavaScript challenges} de Cloudflare
-          (challeng\-page 403/503) que el Prototipo~0 no podía superar.
+          (challeng\-page 403/503) que desde el Prototipo 0 no se habían podido superar.
 
-    \item \textbf{Delays con distribución log-normal.}
-          El TT1 utilizaba delays uniformes \texttt{U(8, 20)}~segundos entre
-          requests, un patrón trivialmente detectable por cualquier WAF moderno que
-          analice la distribución temporal de las solicitudes. La distribución
-          uniforme tiene densidad constante en todo el intervalo; los humanos reales
-          exhiben un patrón asimétrico con \textit{cola derecha larga}: la mayoría
-          de acciones son rápidas (clicks, scrolls) y ocasionalmente hay pausas
-          largas (lectura detenida). Este comportamiento es capturado por la
-          distribución log-normal con parámetros $\mu=2.5$, $\sigma=0.7$, que
-          genera una mediana de $\approx 12.2$~s y colas que alcanzan hasta 45~s:
-
-\begin{lstlisting}[language=Python,
-    caption={Delay log-normal en \texttt{StealthSession} — imitando lectura humana},
-    label={lst:lognormal_delay}]
-# Distribucion log-normal (mu=2.5, sigma=0.7):
-#   Mediana: ~12.2s  |  P75: ~18s  |  P95: ~32s  |  P99: ~45s
-# vs. Uniforme U(8,20): detectada por WAFs en ~50 requests
-target_delay = random.lognormvariate(mu=2.5, sigma=0.7)
-target_delay = max(2.0, min(target_delay, 60.0))  # Clamp absoluto
-\end{lstlisting}
+    \item \textbf{Delays con distribución.}
+          En TT1 los delays entre requests eran uniformes \texttt{U(8, 20)} segundos, lo que
+          lo hacia un patrón detectable por cualquier WAF moderno que analice la distribución
+          temporal de las solicitudes. La distribución uniforme tiene densidad constante en todo el
+          intervalo pero los humanos "reales" tienen un patrón asimétrico con \textit{cola larga} donde
+          la mayoría de acciones son rápidas (como clicks o scrolls) y ocasionalmente hay pausas
+          largas (como la lectura de un articulo). Este comportamiento es capturado por la distribución
+          log-normal con parámetros $\mu=2.5$, $\sigma=0.7$, que genera una mediana de
+          aproximada de 12.2 segundos y colas que alcanzan hasta 45 segundos.
 
     \item \textbf{\textit{Circuit Breaker} por dominio.}
           El patrón \textit{Circuit Breaker} (Fowler, 2014) evita saturar dominios
-          que fallan repetidamente. Después de 3~fallos consecutivos contra un dominio,
-          el circuito se ``abre'' y rechaza requests por 300~s, transicionando a
-          estado \texttt{HALF-OPEN} para permitir un request de prueba. Si tiene
-          éxito, el circuito se cierra; si falla, el cooldown se extiende a 600~s.
-          Este mecanismo reduce el riesgo de ban permanente de IP al evitar presionar
-          un sitio que activamente está bloqueando las sesiones.
+          que fallan repetidamente. Lo que hace que despues de 3 fallos consecutivos en un dominio
+          este circuito se abra y rechace requests por 300 segundos, pasandolo a un estado
+          semi-abierto para permitir un request de prueba y si este tiene éxito el circuito se cierra pero 
+          si falla el cooldown se extiende a 600 segundos. Este mecanismo reduce el riesgo de un bloqueo
+          permanente de IP al evitar presionar un sitio que activamente está bloqueando las sesiones.
 \end{enumerate}
-
-\subsection{Deduplicación en Cascada de Cuatro Fases}
+ 
+\subsection{Deduplicación en cascada de cuatro fases}
 \label{subsec:tt2_dedup}
 
-Una consecuencia directa de la arquitectura multi-fuente (45~RSS + Google News +
-scraping HTML) es la aparición de noticias cuasi-duplicadas: el mismo evento cubierto
-por tres medios diferentes con redacciones parcialmente distintas. Sin deduplicación,
+Una consecuencia directa de esta arquitectura multi-fuente (45 RSS + Google News +
+scraping HTML) es la aparición de noticias cuasi-duplicadas pues el mismo evento es cubierto
+por diferentes medios con redacciones parcialmente distintas. Sin deduplicación
 el corpus infla artificialmente la estadística y puede generar alertas redundantes
 en el dashboard.
 
-El módulo \texttt{NewsDeduplicator} implementa una cascada de cuatro algoritmos
-de complejidad creciente, aplicados en orden de coste computacional ascendente,
+El módulo de deduplicación implementa una cascada de cuatro algoritmos
+de complejidad creciente que son aplicados en orden de coste computacional ascendente y
 de modo que los casos más obvios se resuelven con el método más barato y solo los
-casos ambiguos escalan al siguiente nivel:
+casos ambiguos escalan al siguiente nivel.
 
 \begin{enumerate}
-    \item \textbf{Hash MD5 exacto.} Detecta duplicados byte a byte (mismo texto,
+    \item \textbf{Hash MD5 exacto.} Detecta duplicados literalmente (mismo texto,
           misma fuente). Complejidad $O(1)$ por par. Elimina re-publicaciones idénticas.
 
     \item \textbf{Similitud de Jaccard sobre conjuntos de \textit{tokens}.}
           Mide la razón de intersección sobre unión de los conjuntos de palabras de
-          dos títulos. Umbral: $J \geq 0.70$. Captura reescrituras con sustituciones
-          léxicas simples (\textit{``fue asesinada''} $\leftrightarrow$
-          \textit{``perdió la vida''}).
+          dos títulos, con un umbral de $J \geq 0.70$ este captura reescrituras con
+          sustituciones léxicas simples (\textit{"Niña de 11 años fue asesinada"} $\leftrightarrow$
+          \textit{"Niña de 11 años perdió la vida"}). 
 
-    \item \textbf{SimHash.} Genera una firma de 64~bits por documento mediante
-          proyecciones aleatorias del espacio TF-IDF. Dos documentos con distancia
-          Hamming $\leq 6$ bits se consideran cuasi-duplicados. Escala a millones
+    \item \textbf{SimHash.} Genera una firma de 64 bits por cada documento mediante
+          proyecciones aleatorias sobre el espacio TF-IDF. Dos documentos con distancia
+          Hamming de 6 bits se consideran cuasi-duplicados. Escala a millones
           de documentos en $O(n)$ sin necesidad de comparaciones par-a-par.
 
     \item \textbf{Similitud coseno TF-IDF.} Para los pares que superan las fases
-          anteriores pero generan dudas, se calcula la similitud coseno completa
-          entre los vectores TF-IDF del contenido. Umbral: $\cos \geq 0.85$.
-          Este paso es $O(n^2)$ en el peor caso pero, gracias al pre-filtrado de
-          las fases anteriores, solo se aplica a un subconjunto pequeño de pares.
+          anteriores pero generan dudas se calcula la similitud coseno completa
+          entre los vectores TF-IDF del contenido con un umbral de $\cos \geq 0.85$.
+          En este paso el costo es $O(n^2)$ en el peor caso pero gracias al pre-filtrado de
+          las fases anteriores solo se aplica a un subconjunto pequeño de pares.
 \end{enumerate}
 
-En las pruebas de validación del Prototipo~3 (corpus de 847~noticias recolectadas
-en un ciclo de 30~días), la cascada eliminó \textbf{213~duplicados} (25.1\% del
-total), con la siguiente distribución por fase: 89~por MD5 (exactos), 61~por
-Jaccard, 43~por SimHash y 20~por coseno TF-IDF. El corpus resultante de 634~noticias
-únicas fue el insumo para el Prototipo~4.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/dedup.png}
+    \caption{Flujo de deduplicación en cascada.}
+    \label{fig:flujo_deduplicacion}
+\end{figure}
 
-%----------------------------------------------------------------------------------------
-\section{Prototipo 4: Arquitectura Neuro-Simbólica Completa}
+En las pruebas de validación (corpus de 847 noticias recolectadas en un ciclo de 90 días), la cascada
+eliminó \textbf{213 duplicados} (25.1\% del total), con la siguiente distribución por fase: 89 por MD5
+(exactos), 61 por Jaccard, 43 por SimHash y 20 por similitud coseno TF-IDF. El corpus resultante de
+634 noticias únicas fue usado para la evaluación del Prototipo 4.
+
+
+\section{Prototipo 4 Arquitectura neuro-simbólica}
 \label{sec:tt2_prototipo4}
-%----------------------------------------------------------------------------------------
 
+ 
 El Prototipo~4 integra las capacidades del P3 con dos innovaciones arquitectónicas
 que definen la madurez del sistema: el agrupamiento semántico global con BERTopic
 como etapa \textit{previa} a la clasificación, y la lógica de decisión
@@ -655,11 +608,11 @@ thread.start()
 # hasta recibir {"status": "done", "result": {...}}
 \end{lstlisting}
 
-\subsubsection*{El pipeline interno del DeepInvestigator}
+\subsubsection*{Modulo de investigación profunda}
 
-Una vez activado, el módulo \texttt{DeepInvestigator} (\texttt{src/analysis/investigator.py})
+Una vez activado el módulo \texttt{DeepInvestigator} (\texttt{src/analysis/investigator.py})
 ejecutará cuatro pasos secuenciales:
-
+ 
 \begin{enumerate}
     \item \textbf{Generación de query (Gemini Flash).} El modelo recibe el
           título y los primeros párrafos de la noticia y genera una \textit{frase
