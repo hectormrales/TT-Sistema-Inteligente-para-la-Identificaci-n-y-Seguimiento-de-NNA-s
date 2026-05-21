@@ -65,11 +65,30 @@ from sklearn.metrics import (
 
 logger = logging.getLogger(__name__)
 
+# Import lazy del módulo PoC de roles (spaCy — carga pesada, se hace on-demand)
+try:
+    from scripts.poc_roles_victimas import analizar_roles_victimas as _poc_analizar
+    _POC_DISPONIBLE = True
+except ImportError:
+    try:
+        # Fallback: módulo en el mismo directorio / PYTHONPATH alternativo
+        import sys, pathlib
+        sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.parent / "scripts"))
+        from poc_roles_victimas import analizar_roles_victimas as _poc_analizar
+        _POC_DISPONIBLE = True
+    except ImportError:
+        _poc_analizar = None
+        _POC_DISPONIBLE = False
+        logger.warning(
+            "[SemanticDetector] poc_roles_victimas no encontrado. "
+            "Pre-filtro sintáctico DESHABILITADO."
+        )
+ 
 # ── Configuración del modelo ────────────────────────────────
 
 BETO_MODEL_NAME = "dccuchile/bert-base-spanish-wwm-cased"
 MAX_SEQ_LENGTH = 512
-BATCH_SIZE = 16
+BATCH_SIZE = 4
 LEARNING_RATE = 2e-5
 NUM_EPOCHS = 4
 WARMUP_RATIO = 0.1
@@ -229,6 +248,10 @@ class SemanticDetector:
         self._embeddings_cache: dict[str, np.ndarray] = {}
         self.mode = mode
 
+        # Pre-filtro sintáctico (spaCy) — carga lazy
+        self._spacy_nlp = None          # instancia spaCy (se carga al primer uso)
+        self._prefiltro_habilitado = _POC_DISPONIBLE
+
         if mode == "auto":
             self.mode = self._detect_mode()
 
@@ -387,11 +410,94 @@ class SemanticDetector:
         """Similitud coseno entre dos vectores normalizados."""
         return float(np.dot(a, b))
 
+    # ── Pre-filtro sintáctico (spaCy + PoC) ──────────────────
+
+    def _cargar_spacy(self):
+        """Carga es_core_news_lg de forma lazy (solo la primera vez que se necesita)."""
+        if self._spacy_nlp is None:
+            try:
+                import spacy
+                self._spacy_nlp = spacy.load("es_core_news_lg")
+                logger.info("[PreFiltro] Modelo spaCy es_core_news_lg cargado.")
+            except Exception as exc:
+                logger.warning(
+                    "[PreFiltro] No se pudo cargar spaCy (%s). "
+                    "Pre-filtro deshabilitado para esta sesión.", exc
+                )
+                self._prefiltro_habilitado = False
+
+    def pre_filtro_sintactico(self, texto: str) -> dict:
+        """
+        Ejecuta la PoC de roles víctima/agresor sobre el texto ANTES de BETO.
+
+        Objetivo dual:
+          1. BLOQUEO rápido (score=0.0): si la PoC detecta que el menor es
+             víctima directa de violencia (FP sintáctico confirmado), se
+             retorna inmediatamente sin invocar BETO — ahorrando ~200-600 ms
+             de inferencia por noticia y blindando el sistema.
+          2. ACELERACIÓN positiva: si la PoC confirma el patrón
+             (mujer víctima + menor superviviente), se añade la señal al
+             dict de retorno para que predict() pueda usarla como boost
+             si lo desea en versiones futuras.
+
+        Args:
+            texto: Texto completo de la noticia (título + contenido).
+
+        Returns:
+            dict con claves:
+              - habilitado (bool): Si el pre-filtro pudo ejecutarse.
+              - bloquear (bool): True ⇒ FP confirmado, NO pasar a BETO.
+              - caso_valido (bool): True ⇒ PoC detectó patrón positivo.
+              - roles (dict): Detalle de roles extraídos por la PoC.
+              - razon (str): Descripción legible del resultado.
+        """
+        if not self._prefiltro_habilitado:
+            return {"habilitado": False, "bloquear": False,
+                    "caso_valido": False, "roles": {}, "razon": "pre-filtro no disponible"}
+
+        self._cargar_spacy()
+        if not self._prefiltro_habilitado:  # carga falló
+            return {"habilitado": False, "bloquear": False,
+                    "caso_valido": False, "roles": {}, "razon": "spaCy no disponible"}
+
+        try:
+            caso_valido, roles = _poc_analizar(texto, self._spacy_nlp)
+            es_fp = roles.get("menor_victima_directa", False)
+
+            if es_fp:
+                razon = (
+                    f"FP bloqueado: menor como víctima directa de violencia — "
+                    f"verbo(s): {[t.get('verbo') for t in roles.get('oraciones_procesadas', []) if t.get('tipo') == 'FALSO_POSITIVO']}"
+                )
+                logger.info("[PreFiltro] BLOQUEO → %s", razon)
+                return {
+                    "habilitado": True, "bloquear": True,
+                    "caso_valido": False, "roles": roles, "razon": razon,
+                }
+
+            razon = "caso_valido" if caso_valido else "sin_evidencia_suficiente"
+            return {
+                "habilitado": True, "bloquear": False,
+                "caso_valido": caso_valido, "roles": roles, "razon": razon,
+            }
+
+        except Exception as exc:
+            logger.warning("[PreFiltro] Error en análisis sintáctico: %s", exc)
+            return {"habilitado": False, "bloquear": False,
+                    "caso_valido": False, "roles": {}, "razon": str(exc)}
+
     # ── Clasificación ───────────────────────────────────────
 
     def predict(self, title: str, content: str) -> dict:
         """
         Clasifica una noticia como relevante o no relevante.
+
+        Flujo con pre-filtro sintáctico (v3):
+          1. pre_filtro_sintactico(): análisis spaCy de roles víctima/agresor.
+             • Si hay FP confirmado (menor asesinado) → retorna score=0.0
+               SIN invocar BETO (ahorra ~200-600 ms por noticia).
+             • Si no hay bloqueo → continúa con BETO normalmente.
+          2. BETO (finetuned o zero_shot).
 
         Args:
             title: Título de la noticia.
@@ -403,13 +509,31 @@ class SemanticDetector:
               - es_relevante (bool): True si score >= 0.5
               - confianza (str): 'alta', 'media', 'baja'
               - modo (str): modo de clasificación usado
+              - prefiltro (dict): resultado del pre-filtro sintáctico
         """
-        text = f"{title} [SEP] {content[:1500]}"
+        texto_completo = f"{title} {content[:1500]}"
 
+        # ── Pre-filtro sintáctico ────────────────────────────────────────
+        prefiltro = self.pre_filtro_sintactico(texto_completo)
+        if prefiltro["bloquear"]:
+            return {
+                "score_semantico": 0.0,
+                "es_relevante": False,
+                "confianza": "alta",
+                "modo": "prefiltro_sintactico_bloqueado",
+                "clasificacion": "No relevante",
+                "prefiltro": prefiltro,
+            }
+
+        # ── Inferencia BETO ──────────────────────────────────────────────
+        text = f"{title} [SEP] {content[:1500]}"
         if self.mode == "finetuned":
-            return self._predict_finetuned(text)
+            resultado = self._predict_finetuned(text)
         else:
-            return self._predict_zero_shot(text)
+            resultado = self._predict_zero_shot(text)
+
+        resultado["prefiltro"] = prefiltro
+        return resultado
 
     def _predict_zero_shot(self, text: str) -> dict:
         """
@@ -482,47 +606,77 @@ class SemanticDetector:
         """
         Clasificación por lotes para eficiencia.
 
-        Procesa múltiples noticias en lotes de BATCH_SIZE,
-        aprovechando paralelismo de GPU si está disponible.
+        Flujo con pre-filtro sintáctico (v3):
+          Para cada noticia, ejecuta pre_filtro_sintactico() ANTES de
+          acumular el lote para BETO. Las noticias con FP confirmado se
+          cortocircuitan inmediatamente (score=0.0) y NO entran al lote
+          de inferencia BETO, reduciendo el tamaño efectivo del batch.
+
+        Procesa el resto en lotes de BATCH_SIZE, aprovechando paralelismo
+        de GPU si está disponible.
         """
-        results = []
-        texts = [
-            f"{t} [SEP] {c[:1500]}" for t, c in zip(titles, contents)
-        ]
+        n = len(titles)
+        # Mapa: índice original → resultado (para los FP bloqueados)
+        resultados_finales: list[Optional[dict]] = [None] * n
+        # Índices y textos que SHI pasan al batch BETO
+        indices_beto: list[int] = []
+        texts_beto: list[str] = []
 
-        if self.mode == "finetuned":
-            # Batch inference con DataLoader
-            dataset = NNANewsDataset(
-                texts, [0] * len(texts), self.tokenizer
-            )
-            loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False)
+        # ── Pre-filtro por noticia ──────────────────────────────────
+        for idx, (title, content) in enumerate(zip(titles, contents)):
+            texto_completo = f"{title} {content[:1500]}"
+            prefiltro = self.pre_filtro_sintactico(texto_completo)
+            if prefiltro["bloquear"]:
+                resultados_finales[idx] = {
+                    "score_semantico": 0.0,
+                    "es_relevante": False,
+                    "confianza": "alta",
+                    "modo": "prefiltro_sintactico_bloqueado",
+                    "clasificacion": "No relevante",
+                    "prefiltro": prefiltro,
+                }
+            else:
+                indices_beto.append(idx)
+                texts_beto.append(f"{title} [SEP] {content[:1500]}")
 
-            self.model.eval()
-            with torch.no_grad():
-                for batch in loader:
-                    input_ids = batch["input_ids"].to(self.device)
-                    attention_mask = batch["attention_mask"].to(self.device)
+        # ── Batch BETO solo con las noticias no bloqueadas ───────────
+        if texts_beto:
+            if self.mode == "finetuned":
+                dataset = NNANewsDataset(
+                    texts_beto, [0] * len(texts_beto), self.tokenizer
+                )
+                loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-                    outputs = self.model(
-                        input_ids=input_ids,
-                        attention_mask=attention_mask,
-                    )
-                    probs = torch.softmax(outputs["logits"], dim=1)
-                    scores = probs[:, 1].cpu().numpy()
+                beto_results: list[dict] = []
+                self.model.eval()
+                with torch.no_grad():
+                    for batch in loader:
+                        input_ids = batch["input_ids"].to(self.device)
+                        attention_mask = batch["attention_mask"].to(self.device)
 
-                    for score in scores:
-                        s = float(score)
-                        results.append({
-                            "score_semantico": round(s, 4),
-                            "es_relevante": s >= 0.5,
-                            "confianza": self._confidence_level(s),
-                            "modo": "finetuned",
-                        })
-        else:
-            # Zero-shot: procesamiento por lotes vectorizado
-            results = self._predict_zero_shot_batch(texts)
+                        outputs = self.model(
+                            input_ids=input_ids,
+                            attention_mask=attention_mask,
+                        )
+                        probs = torch.softmax(outputs["logits"], dim=1)
+                        scores = probs[:, 1].cpu().numpy()
 
-        return results
+                        for score in scores:
+                            s = float(score)
+                            beto_results.append({
+                                "score_semantico": round(s, 4),
+                                "es_relevante": s >= 0.5,
+                                "confianza": self._confidence_level(s),
+                                "modo": "finetuned",
+                            })
+            else:
+                beto_results = self._predict_zero_shot_batch(texts_beto)
+
+            # Reinsertar en posiciones originales
+            for local_idx, orig_idx in enumerate(indices_beto):
+                resultados_finales[orig_idx] = beto_results[local_idx]
+
+        return resultados_finales  # type: ignore[return-value]
 
     def _get_embeddings_batch(self, texts: list[str]) -> np.ndarray:
         """Obtiene embeddings [CLS] de BETO para un lote de textos."""

@@ -15,7 +15,7 @@ services:
     networks:
       - nna-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,6 +28,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+      - ./models/finetuned:/app/models/finetuned
       - models_cache:/app/models/cache
     env_file:
       - .env
@@ -36,6 +37,7 @@ services:
       - DATA_DIR=/app/data
       - LOGS_DIR=/app/logs
       - MODELS_DIR=/app/models
+      - FINETUNED_MODEL_DIR=/app/models/finetuned
       - TRANSFORMERS_CACHE=/app/models/cache
       - HF_HOME=/app/models/cache
       - TZ=America/Mexico_City
@@ -45,7 +47,7 @@ services:
     depends_on:
       nna-postgres:
         condition: service_healthy
-    command: ["python", "scheduler.py", "schedule"]
+    command: [ "python", "scheduler.py", "schedule" ]
 
   # ── Aplicación web Flask ──────────────────────────────────
   nna-webapp:
@@ -57,6 +59,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+      - ./models/finetuned:/app/models/finetuned
       - models_cache:/app/models/cache
     env_file:
       - .env
@@ -67,6 +70,7 @@ services:
       - DATA_DIR=/app/data
       - LOGS_DIR=/app/logs
       - MODELS_DIR=/app/models
+      - FINETUNED_MODEL_DIR=/app/models/finetuned
       - TRANSFORMERS_CACHE=/app/models/cache
       - HF_HOME=/app/models/cache
       - TZ=America/Mexico_City
@@ -78,7 +82,7 @@ services:
         condition: service_healthy
       nna-analyzer:
         condition: service_started
-    command: ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "300", "wsgi:app"]
+    command: [ "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "300", "wsgi:app" ]
 
 networks:
   nna-network:

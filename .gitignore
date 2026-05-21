@@ -27,3 +27,8 @@ logs/*.log
 
 # Datos generados (los CSV crudos se generan en ejecución)
 data/export_*.csv
+
+# Modelos pesados
+models/finetuned/*.pt
+models/finetuned/*.bin
+models/cache/

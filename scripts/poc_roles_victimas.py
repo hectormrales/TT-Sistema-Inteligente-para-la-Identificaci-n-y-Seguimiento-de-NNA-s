@@ -17,6 +17,27 @@ Hipótesis central:
   El caso opuesto (menor como objeto de verbo de violencia) es
   un FALSO POSITIVO que este módulo rechaza.
 
+Correcciones v2:
+  [Fix-1] L3 léxico: las palabras sueltas (señales_lex) solo suman
+          si L1 ya detectó al menos un verbo de violencia en el texto.
+          Los patrones multipalabra (patrones_mp) siguen disparando solos.
+  [Fix-2] VERBOS_SUPERVIVENCIA amplíado: presenciar, resguardar,
+          testificar. L1b también captura construcciones pasivas buscando
+          el participio auxiliado por "ser/estar" + sujeto menor.
+  [Fix-3] L2 descarta tokens cuya dep_ sea 'obl:agent' o cuyo head
+          inmediato sea la preposición "por", ya que son los AGENTES
+          de la voz pasiva (victimarios), no las víctimas.
+
+Parche v3 (robustez del parser):
+  [Fix-4] _es_agente_pasivo amplíado: spaCy a veces etiqueta el agente
+          pasivo como 'obl' o 'nmod' en lugar de 'obl:agent'. Se añade
+          detección por hijo izquierdo con texto "por" (dep_ == 'case')
+          para cubrir estos casos de forma dep-agnostic.
+  [Fix-5] Retorno forzado True: si un patron_mp FUERTE hace match
+          (implica la presencia confirmada del menor) y L2 está limpio,
+          se acepta el caso aunque L1a no logró extraer a la mujer como
+          objeto directo en el árbol de dependencias.
+
 Dependencias:
     pip install spacy
     python -m spacy download es_core_news_lg
@@ -55,18 +76,20 @@ VERBOS_VIOLENCIA = {
 }
 
 # Verbos que sugieren supervivencia o situación de orfandad del menor
+# [Fix-2] Añadidos: presenciar, testificar, resguardar (ya estaba como lema base)
 VERBOS_SUPERVIVENCIA = {
     "sobrevivir", "quedar", "rescatar", "encontrar", "hallar",
-    "salvar", "proteger", "resguardar", "resguardar", "internar",
+    "salvar", "proteger", "resguardar", "internar",
     "trasladar", "permanecer", "estar", "llorar", "presenciar",
-    "ver", "orfanar",
+    "ver", "orfanar", "testificar",
 }
 
 # Relaciones de dependencia que marcan sujeto
 RELS_SUJETO = {"nsubj", "nsubj:pass", "csubj"}
 
 # Relaciones de dependencia que marcan objeto directo / oblicuo
-RELS_OBJETO = {"obj", "iobj", "obl", "obl:agent", "nmod"}
+# [Fix-3] 'obl:agent' se EXCLUYE de la comprobación de FP (se trata aparte)
+RELS_OBJETO = {"obj", "iobj", "obl", "nmod"}
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -115,6 +138,56 @@ def _obtener_span_nominal(token: Token) -> list[Token]:
     return grupo
 
 
+def _es_agente_pasivo(token: Token) -> bool:
+    """
+    [Fix-3 + Fix-4 + Fix-4b] Devuelve True si el token es el AGENTE de una
+    construcción pasiva y por lo tanto es el VICTIMARIO, no la víctima.
+    Cubre todos los casos que spaCy puede generar en español, incluyendo
+    titulares en Title Case donde el parser falla al asignar dep_ correcto:
+
+      Caso A (ideal):   dep_ == 'obl:agent'  → relación explícita de agente.
+      Caso B (común):   head directo del token es la preposición "por".
+      Caso C (Fix-4):   token con dep_ obl/nmod tiene hijo izquierdo "por"
+                        con dep_=="case" (spaCy invierte la relación).
+      Caso D (Fix-4b):  VENTANA LÉXICA — independiente del árbol de dep_.
+                        Si alguno de los 3 tokens inmediatamente anteriores
+                        en el texto normalizado es "por", el token se clasifica
+                        como victimario. Esto resuelve el fallo en titulares
+                        con Title Case como "Es Asesinada Por Su Propio Hijo"
+                        donde spaCy no asigna ninguna de las dep_ anteriores.
+    """
+    # Caso A: relación canónica de agente pasivo
+    if token.dep_ == "obl:agent":
+        return True
+
+    # Caso B: el head inmediato del token ES la preposición "por"
+    if _normalizar(token.head.text) == "por" and token.head.dep_ == "case":
+        return True
+
+    # Caso C (Fix-4): token obl/nmod con hijo izquierdo "por" + dep_=="case"
+    if token.dep_ in ("obl", "nmod"):
+        for child in token.children:
+            if (
+                child.i < token.i
+                and child.dep_ == "case"
+                and _normalizar(child.text) == "por"
+            ):
+                return True
+
+    # Caso D (Fix-4b): ventana léxica de los 3 tokens anteriores en el doc.
+    # No depende del árbol sintáctico: solo mira el texto plano normalizado.
+    # Si el token está en posición >= 1 en el documento, revisamos hasta 3
+    # tokens previos buscando la preposición "por".
+    sent = token.sent
+    token_pos_en_sent = token.i - sent.start  # posición relativa en la oración
+    inicio = max(0, token_pos_en_sent - 3)
+    ventana = [sent[j] for j in range(inicio, token_pos_en_sent)]
+    if any(_normalizar(t.text) == "por" for t in ventana):
+        return True
+
+    return False
+
+
 # ═══════════════════════════════════════════════════════════════
 # FUNCIÓN PRINCIPAL DE ANÁLISIS
 # ═══════════════════════════════════════════════════════════════
@@ -131,15 +204,21 @@ def analizar_roles_victimas(
       L1 — Análisis de dependencias sintácticas por oración:
            Busca verbos de violencia cuyo objeto sea una MUJER y verbos
            de supervivencia cuyo sujeto sea un MENOR en la misma noticia.
+           L1b también detecta construcciones pasivas donde el menor
+           aparece como sujeto paciente (nsubj:pass) de verbos de superv.
 
       L2 — Detección de rol inverso (rechazo de falsos positivos):
            Si un MENOR aparece como OBJETO de un verbo de violencia,
            se marca como falso positivo y se devuelve False.
+           [Fix-3] Se ignoran tokens con dep_ == 'obl:agent' o cuyo head
+           sea la preposición "por" (son agentes/victimarios, no víctimas).
 
       L3 — Señales léxicas de refuerzo:
            Presencia de "huérfano/a", "quedó al cuidado", "DIF",
-           "resguardado" como evidencia adicional independiente
-           del árbol de dependencias.
+           "resguardado" como evidencia adicional.
+           [Fix-1] Las palabras sueltas (señales_lex) solo cuentan si L1
+           detectó al menos un verbo de violencia en el texto completo.
+           Los patrones_mp (regex multipalabra) siguen siendo independientes.
 
     Args:
         texto: Texto de la noticia (título + contenido recomendado).
@@ -164,29 +243,10 @@ def analizar_roles_victimas(
         "oraciones_procesadas": [],    # Trazas del árbol de dependencias
     }
 
-    # ── L3: Búsqueda léxica de señales de orfandad ─────────────
-    señales_lex = {
-        "huerfano", "huérfano", "huerfana", "huérfana",
-        "orfandad", "dif", "resguardado", "resguardada",
-        "custodia", "tutela", "amparo",
-    }
-    texto_norm = _normalizar(texto)
-    for señal in señales_lex:
-        if señal in texto_norm:
-            roles["señales_orfandad"].append(señal)
-
-    # También buscar patrones multipalabra críticos
-    patrones_mp = [
-        r"qued[oó]\s+(al\s+)?cuidado",
-        r"hijo[s]?\s+qued[oa]ron",
-        r"menor[es]?\s+sobrevivi[oó]",
-        r"niño[s]?\s+fueron\s+(rescatados?|halladoss?|encontrados?)",
-    ]
-    for patron in patrones_mp:
-        if re.search(patron, texto_norm):
-            roles["señales_orfandad"].append(f"[patrón]: {patron}")
-
     # ── L1 + L2: Análisis por oración en el árbol de dependencias ──
+    # NOTA: Ejecutamos L1/L2 ANTES de L3 para saber si hubo verbo de violencia.
+    hay_verbo_violencia_l1 = False  # [Fix-1] bandera para condicionar L3
+
     for sent in doc.sents:
         for token in sent:
             # Solo procesamos verbos
@@ -200,20 +260,34 @@ def analizar_roles_victimas(
             if not (es_violencia or es_superv):
                 continue  # Verbo irrelevante para el análisis
 
+            if es_violencia:
+                hay_verbo_violencia_l1 = True  # [Fix-1]
+
             # Recopilar sujetos y objetos del verbo actual
             sujetos = [h for h in token.children if h.dep_ in RELS_SUJETO]
             objetos  = [h for h in token.children if h.dep_ in RELS_OBJETO]
 
             # ── L2: ¿Hay un MENOR como OBJETO de un verbo de violencia? ──
-            # Este es el caso de falso positivo: "el padre mató a su hija"
+            # [Fix-3] Se descartan tokens que sean agentes de voz pasiva.
             if es_violencia:
                 for obj in objetos:
-                    if _es_menor(obj):
+                    if _es_menor(obj) and not _es_agente_pasivo(obj):
                         roles["menor_victima_directa"] = True
                         roles["oraciones_procesadas"].append({
                             "tipo": "FALSO_POSITIVO",
                             "verbo": token.text,
                             "menor_obj": obj.text,
+                            "oracion": sent.text[:120],
+                        })
+                # [Fix-3] También revisar hijos con dep_ == 'obl:agent' explícitamente
+                # para registrarlos como agentes, no como FP
+                for child in token.children:
+                    if child.dep_ == "obl:agent" and _es_menor(child):
+                        # Es el agresor en la voz pasiva → no es FP
+                        roles["oraciones_procesadas"].append({
+                            "tipo": "AGENTE_PASIVO_IGNORADO",
+                            "verbo": token.text,
+                            "agente": child.text,
                             "oracion": sent.text[:120],
                         })
 
@@ -230,6 +304,8 @@ def analizar_roles_victimas(
                         })
 
             # ── L1b: ¿Hay un MENOR como SUJETO de un verbo de supervivencia? ──
+            # [Fix-2] Incluye nsubj:pass para construcciones pasivas como
+            # "fueron puestos bajo resguardo", "niño que presenció el feminicidio"
             if es_superv:
                 for subj in sujetos:
                     if _es_menor(subj):
@@ -240,6 +316,34 @@ def analizar_roles_victimas(
                             "menor_subj": subj.text,
                             "oracion": sent.text[:120],
                         })
+
+    # ── L3: Búsqueda léxica de señales de orfandad ─────────────
+    # [Fix-1] Las señales_lex (palabras sueltas) SOLO suman si L1 detectó
+    # al menos un verbo de violencia. Los patrones_mp son independientes.
+    señales_lex = {
+        "huerfano", "huérfano", "huerfana", "huérfana",
+        "orfandad", "dif", "resguardado", "resguardada",
+        "custodia", "tutela", "amparo",
+    }
+    texto_norm = _normalizar(texto)
+
+    if hay_verbo_violencia_l1:  # [Fix-1] condición de guardia
+        for señal in señales_lex:
+            if señal in texto_norm:
+                roles["señales_orfandad"].append(señal)
+
+    # Patrones multipalabra: disparan independientemente (tienen más contexto)
+    patrones_mp = [
+        r"qued[oó]\s+(al\s+)?cuidado",
+        r"hijo[s]?\s+qued[oa]ron",
+        r"menor[es]?\s+sobrevivi[oó]",
+        r"niño[s]?\s+fueron\s+(rescatados?|hallados?|encontrados?)",
+        r"menores?\s+(bajo|en)\s+resguardo",          # [Fix-2] nuevo patrón
+        r"(niño|menor|hija?)\s+que\s+presenci[oó]",   # [Fix-2] nuevo patrón
+    ]
+    for patron in patrones_mp:
+        if re.search(patron, texto_norm):
+            roles["señales_orfandad"].append(f"[patrón]: {patron}")
 
     # ── Decisión final ──────────────────────────────────────────
     #
@@ -252,10 +356,45 @@ def analizar_roles_victimas(
     #       • Menor detectado como superviviente/sujeto (L1b)
     #       • Señal léxica de orfandad (L3)
     #
+    # [Fix-5] RETORNO FORZADO por patrón fuerte:
+    #   Si un patron_mp de alta especificidad hizo match (contiene evidencia
+    #   explícita del menor: «presenció», «bajo resguardo», «hijos quedaron»)
+    #   Y L2 está limpio (no hay menor como víctima directa),
+    #   se acepta el caso SIN exigir que L1a haya extraído a la mujer como
+    #   objeto directo —el parser puede fallar en titulares cortos—.
+    # [Fix-5b] PATRONES_FUERTES sin acentos: texto_norm ya pasó por _normalizar(),
+    # que elimina diacríticos → "presenció" → "presencio", "quedó" → "quedo", etc.
+    # Los patrones NO deben contener acentos; se añaden variantes con/sin acento
+    # solo en la forma base para mayor cobertura.
+    PATRONES_FUERTES = [
+        r"quedo\s+(al\s+)?cuidado",                                  # quedó al cuidado
+        r"hijo[s]?\s+quedar?on",                                     # hijos quedaron
+        r"menor[es]?\s+sobrevivio",                                  # menor sobrevivió
+        r"ni[nm]o[s]?\s+fueron\s+(rescatados?|hallados?|encontrados?)",  # niños fueron
+        r"menores?\s+(bajo|en)\s+resguardo",                         # bajo resguardo
+        r"(nin[oa]s?|menores?|hij[oa]s?)\s+que\s+presencio",        # que presenció
+        r"(nin[oa]s?|menores?|hij[oa]s?)\s+presencio\s+el",         # presenció el [crimen]
+        r"(nin[oa]s?|menores?|hij[oa]s?)\s+fueron\s+puestos?",      # fueron puestos
+        r"testigo[s]?\s+(del?\s+)?feminicidio",                     # testigo del feminicidio
+    ]
+    # IMPORTANTE: re.search sobre texto_norm (sin acentos, minúsculas)
+    hay_patron_fuerte = any(
+        re.search(p, texto_norm) for p in PATRONES_FUERTES
+    )
+
     hay_victima_adulta  = len(roles["victima_adulta"]) > 0
     hay_menor_superv    = len(roles["menor_superviviente"]) > 0
     hay_señal_orfandad  = len(roles["señales_orfandad"]) > 0
     es_falso_positivo   = roles["menor_victima_directa"]
+
+    # [Fix-5] Retorno forzado: patrón fuerte + L2 limpio → True
+    if hay_patron_fuerte and not es_falso_positivo:
+        roles["oraciones_procesadas"].append({
+            "tipo": "PATRON_FUERTE_FORZADO",
+            "verbo": "—",
+            "oracion": texto_norm[:120],
+        })
+        return True, roles
 
     es_caso_valido = (
         not es_falso_positivo
@@ -339,6 +478,54 @@ if __name__ == "__main__":
             ),
             False,
         ),
+
+        # ── Caso 6 [Fix-1]: NEGATIVO VERDADERO — "DIF" en política ──
+        # Noticia de presupuesto del DIF; sin verbo de violencia → L3 no activa.
+        (
+            "⬜ NEGATIVO VERDADERO — Noticia de política con 'DIF' (Fix-1)",
+            (
+                "El Congreso aprobó un incremento del 12% al presupuesto del DIF nacional. "
+                "La secretaria de Bienestar indicó que los recursos se destinarán a programas "
+                "de orfandad y tutela en comunidades marginadas."
+            ),
+            False,
+        ),
+
+        # ── Caso 7 [Fix-2]: POSITIVO VERDADERO — "presenció feminicidio" ──
+        # Menor testigo del crimen; capturado por patrón multipalabra L3.
+        (
+            "✅ POSITIVO VERDADERO — Niño que presenció feminicidio (Fix-2)",
+            (
+                "La madre fue asesinada a balazos frente a su domicilio en Culiacán. "
+                "Su hijo de 6 años, que presenció el feminicidio, fue trasladado a una "
+                "casa de acogida por personal del DIF municipal."
+            ),
+            True,
+        ),
+
+        # ── Caso 8 [Fix-2]: POSITIVO VERDADERO — "menores bajo resguardo" ──
+        # Construcción pasiva; capturado por patrón multipalabra L3.
+        (
+            "✅ POSITIVO VERDADERO — Menores bajo resguardo (Fix-2)",
+            (
+                "Una mujer fue ultimada por su pareja en la colonia Doctores. "
+                "Sus dos hijos menores de edad fueron puestos bajo resguardo "
+                "de las autoridades del DIF capitalino."
+            ),
+            True,
+        ),
+
+        # ── Caso 9 [Fix-3]: NEGATIVO VERDADERO — "Mujer asesinada por su hijo" ──
+        # "hijo" es agente pasivo (obl:agent); NO debe disparar FP de menor atacado.
+        (
+            "❌ FALSO POSITIVO esperado → debe ser False — Hijo victimario (Fix-3)",
+            (
+                "Mujer asesinada por su hijo en la alcaldía Iztapalapa. "
+                "El joven de 22 años fue detenido por elementos de la SSC. "
+                "La víctima tenía 48 años y no dejó menores de edad a su cargo."
+            ),
+            False,
+        ),
     ]
 
     # ─────────────────────────────────────────────────────────────
@@ -384,7 +571,8 @@ if __name__ == "__main__":
                 verb = traza.get("verbo", "?")
                 ent  = traza.get(
                     "mujer_obj",
-                    traza.get("menor_subj", traza.get("menor_obj", "?"))
+                    traza.get("menor_subj", traza.get("menor_obj",
+                    traza.get("agente", "?")))
                 )
                 oracion_corta = traza["oracion"][:80]
                 print(f"      [{tipo}] verbo='{verb}' entidad='{ent}'")

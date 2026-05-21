@@ -1,8 +1,8 @@
 {
-  "total_noticias": 740,
-  "noticias_con_nna": 241,
-  "alta_relevancia": 32,
-  "media_relevancia": 57,
+  "total_noticias": 681,
+  "noticias_con_nna": 206,
+  "alta_relevancia": 170,
+  "media_relevancia": 500,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -20,12 +20,12 @@
     "texto_combinado",
     "most_similar_doc_idx",
     "max_similarity",
-    "topic_id",
-    "topic_description",
     "score_semantico",
     "modo_deteccion",
     "relevancia_final",
-    "clasificacion_final"
+    "clasificacion_final",
+    "topic_id",
+    "topic_description"
   ],
   "version": "relevance_analyzer_v5.0_TT2",
   "algoritmos_usados": [

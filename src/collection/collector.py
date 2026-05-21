@@ -1414,7 +1414,7 @@ def collect_all_news(
     # Ordenar por fecha descendente (más reciente primero)
     if not df.empty:
         try:
-            df['_fecha_sort'] = pd.to_datetime(df['fecha'], errors='coerce')
+            df['_fecha_sort'] = pd.to_datetime(df['fecha'], errors='coerce', utc=True)
             df = df.sort_values(
                 '_fecha_sort', ascending=False, na_position='last'
             ).reset_index(drop=True)
