@@ -12,12 +12,14 @@ Pipeline de análisis NLP con filtrado inteligente (v5.0 — TT2):
     7. Reclasificación TF-IDF: re-score usando los vectores aprendidos
     8. Búsqueda con sinónimos
 
-  Nuevos pasos TT2 (orden de ejecución real):
-    10. Clustering semántico con BERTopic (OE-4) — Mapa global de contexto
-        Procesa TODAS las noticias (600+) para dar volumen a UMAP/HDBSCAN.
-    9.  Detección semántica con BETO (OE-1) — Sensible al clúster
-        Usa topic_id de BERTopic: outliers (topic_id=-1) exigen umbral
-        BETO más alto (0.65 vs 0.50) para clasificar como "Alta".
+  Nuevos pasos TT2 (orden de ejecución real, v5.1):
+    9.  Detección semántica con BETO (OE-1) — Umbral único
+        Bypass de Oro (keywords exactas) → Alta inmediata.
+        Para el resto: score_semantico >= 0.50 → Alta, 0.30 → Media.
+    10. Clustering semántico con BERTopic (OE-4) — Post-filtro
+        Solo opera sobre noticias ya clasificadas Alta/Media para
+        evitar contaminar UMAP/HDBSCAN con ruido. min_cluster_size
+        se ajusta dinámicamente al tamaño del corpus filtrado.
     11. Persistencia en PostgreSQL con FTS (OE-3)
 
 Cambios v5.0:
@@ -517,16 +519,17 @@ class SimplifiedNewsAnalyzer:
         # self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
 
-        # Paso 10: Clustering BERTopic (OE-4) — ANTES de BETO
-        # BERTopic necesita volumen (600+ docs) para que UMAP/HDBSCAN
-        # encuentren clústeres reales. Asigna topic_id a TODAS las filas.
-        if enable_bertopic:
-            self.step_10_bertopic_clustering()
-
-        # Paso 9: Detección semántica BETO (OE-1) — sensible al clúster
-        # Usa topic_id de BERTopic para ajustar umbrales de exigencia.
+        # Paso 9: Detección semántica BETO (OE-1) — umbral único
+        # Clasifica cada noticia con score_semantico; el Bypass de Oro
+        # eleva a "Alta" sin importar BETO. Resultado: clasificacion_final.
         if enable_semantic:
             self.step_9_semantic_detection()
+
+        # Paso 10: Clustering BERTopic (OE-4) — DESPUÉS del filtro
+        # Solo recibe noticias Alta/Media para que UMAP/HDBSCAN
+        # trabajen con señal limpia, sin ruido de noticias irrelevantes.
+        if enable_bertopic:
+            self.step_10_bertopic_clustering()
 
         # Guardar CSV (siempre, para backward compatibility)
         self.save_final_results()
@@ -596,13 +599,13 @@ class SimplifiedNewsAnalyzer:
         # self.step_7_tfidf_rescore()
         self.step_8_enhanced_search_setup()
 
-        # Paso 10: Clustering BERTopic (OE-4) — ANTES de BETO
-        if enable_bertopic:
-            self.step_10_bertopic_clustering()
-
-        # Paso 9: Detección semántica BETO (OE-1) — sensible al clúster
+        # Paso 9: Detección semántica BETO (OE-1) — umbral único
         if enable_semantic:
             self.step_9_semantic_detection()
+
+        # Paso 10: Clustering BERTopic (OE-4) — DESPUÉS del filtro
+        if enable_bertopic:
+            self.step_10_bertopic_clustering()
 
         # Guardar CSV
         self.save_final_results()
@@ -620,32 +623,37 @@ class SimplifiedNewsAnalyzer:
 
     def step_9_semantic_detection(self) -> pd.DataFrame:
         """
-        OE-1: Detección semántica con BETO.
+        OE-1: Detección semántica con BETO (lógica simplificada v5.1).
 
-        Usa el SemanticDetector en modo hybrid (zero-shot + heurístico)
-        para complementar el scoring heurístico existente.
+        Reglas de clasificación (en orden de prioridad):
 
-        El score semántico se combina con el heurístico:
-          relevancia_final = α * semántico + (1-α) * heurístico
-        donde α se ajusta dinámicamente según la confianza del modelo.
+          NIVEL 0 — BYPASS DE ORO (keywords exactas del collector):
+            Si score_victima_indirecta >= 0.80 Y score_feminicidio > 0.10
+            → clasificacion_final = "Alta" OBLIGATORIAMENTE.
+            BETO no puede contradecir una coincidencia de texto exacta.
+
+          NIVEL 1 — SCORE SEMÁNTICO BETO (umbral único):
+            score_semantico >= 0.50  → "Alta"
+            score_semantico >= 0.30  → "Media"
+            score_semantico <  0.30  → "Baja" / "No relevante"
+
+        Se elimina: alpha dinámico, umbrales por cluster BERTopic,
+        vía rápida y Collector-Alta. El score semántico es soberano.
         """
         print("=== PASO 9: DETECCIÓN SEMÁNTICA BETO (OE-1) ===")
         assert self.df_processed is not None, "Ejecute pasos anteriores primero"
 
         try:
-            from src.analysis.semantic_detector import SemanticDetector, HybridScorer
+            from src.analysis.semantic_detector import SemanticDetector
 
             detector = SemanticDetector(mode="zero_shot")
 
-            scores_semanticos = []
             total = len(self.df_processed)
-
-            # Uso de inferencia por lotes para mayor velocidad
             titulos = self.df_processed["titulo"].fillna("").astype(str).tolist()
             contenidos = self.df_processed["contenido"].fillna("").astype(str).tolist()
 
+            # Inferencia por lotes
             try:
-                # Utilizamos predict_batch para procesar todas las noticias a la vez
                 resultados_batch = detector.predict_batch(titulos, contenidos)
                 scores_semanticos = [r.get("score_semantico", 0.0) for r in resultados_batch]
             except Exception as e:
@@ -653,128 +661,52 @@ class SimplifiedNewsAnalyzer:
                 scores_semanticos = [0.0] * total
 
             self.df_processed["score_semantico"] = scores_semanticos
-            self.df_processed["modo_deteccion"] = "hybrid"
+            self.df_processed["modo_deteccion"] = "semantic_v51"
 
-            # Combinar con heurístico usando fórmula alpha-weighted y clasificación estricta
-            for i, (idx, row) in enumerate(self.df_processed.iterrows()):
-                # IMPORTANTE: Leer score_compuesto DIRECTO del collector,
-                # NO relevancia_final (que puede estar contaminada por step_7)
-                h_score = float(row.get("score_compuesto", 0))
-                s_score = float(row.get("score_semantico", 0))
+            # ── Clasificación por noticia ────────────────────────────
+            for idx, row in self.df_processed.iterrows():
+                s_score = float(row.get("score_semantico", 0.0))
+                score_fem = float(row.get("score_feminicidio", 0.0))
+                score_v_ind = float(row.get("score_victima_indirecta", 0.0))
 
-                # Alpha ponderado: si el score semántico es fuerte, confiar más en él
-                distance = abs(s_score - 0.5)
-                if distance > 0.3:
-                    alpha = 0.7  # Alta confianza → peso al semántico
-                elif distance > 0.15:
-                    alpha = 0.5  # Media confianza
-                else:
-                    alpha = 0.3  # Baja confianza → peso al heurístico
+                # NIVEL 0: BYPASS DE ORO
+                # Keywords exactas del collector → Alta garantizada.
+                es_bypass_oro = (score_v_ind >= 0.80 and score_fem > 0.10)
 
-                score_final = alpha * s_score + (1 - alpha) * h_score
-                
-                # Solo subir si BETO tiene confianza alta
-                if s_score > h_score and distance > 0.2:
-                    score_final = max(h_score, score_final)  # BETO sube con confianza
-
-                # --- LÓGICA NEURO-SIMBÓLICA CON CONTEXTO DE CLÚSTER ---
-                # Extraemos los scores individuales
-                score_fem = float(row.get("score_feminicidio", 0))
-                score_v_ind = float(row.get("score_victima_indirecta", 0))
-                score_caso = float(row.get("score_caso", 0))
-
-                # ── NIVEL 0: BYPASS DE ORO (independiente de BETO) ──
-                # Si el collector ya confirmó Keywords de Oro
-                # (score_v_ind >= 0.80 implica que _check_keywords_de_oro() fue True),
-                # la clasificación es "Alta" OBLIGATORIAMENTE.
-                # BETO no puede contradecir una coincidencia de texto exacta.
-                es_bypass_oro = (
-                    score_v_ind >= 0.80 and
-                    score_fem > 0.10
-                )
-
-                # ── NIVEL 0.5: Collector ya clasificó Alta con score fuerte ──
-                # Si el collector asignó score_compuesto >= 0.70, respetar.
-                es_collector_alta = (
-                    h_score >= 0.70 and
-                    score_fem > 0.15 and
-                    (score_v_ind > 0.25 or float(row.get("score_nna", 0)) > 0.25)
-                )
-
-                if es_bypass_oro or es_collector_alta:
+                if es_bypass_oro:
                     clasificacion = "Alta"
-                    score_final = max(h_score, 0.85)
-                    if es_bypass_oro:
-                        logger.info(
-                            f"  ★ Bypass de Oro: v_ind={score_v_ind:.2f}, "
-                            f"fem={score_fem:.2f} → Alta (BETO ignorado)"
-                        )
-                    else:
-                        logger.info(
-                            f"  ★ Collector Alta confirmado: h_score={h_score:.2f}, "
-                            f"fem={score_fem:.2f}, v_ind={score_v_ind:.2f} → Alta"
-                        )
+                    score_final = max(float(row.get("score_compuesto", 0.0)), 0.85)
+                    logger.info(
+                        f"  ★ Bypass de Oro: v_ind={score_v_ind:.2f}, "
+                        f"fem={score_fem:.2f} → Alta"
+                    )
+
+                # NIVEL 1: UMBRAL ÚNICO BETO
+                elif s_score >= 0.50:
+                    clasificacion = "Alta"
+                    score_final = s_score
+
+                elif s_score >= 0.30:
+                    clasificacion = "Media"
+                    score_final = s_score
+
+                elif s_score >= 0.15:
+                    clasificacion = "Baja"
+                    score_final = s_score
+
                 else:
-                    # ── NIVEL 3: Contexto de Clúster BERTopic ──
-                    # Si BERTopic ya corrió, topic_id está disponible.
-                    # Outliers (topic_id == -1) son noticias genéricas/extrañas:
-                    #   → se eleva el umbral BETO de 0.50 a 0.65
-                    # Clústeres válidos (topic_id >= 0) mantienen umbral normal.
-                    topic_id_val = row.get("topic_id", -1)
-                    try:
-                        topic_id_int = int(topic_id_val) if pd.notna(topic_id_val) else -1
-                    except (ValueError, TypeError):
-                        topic_id_int = -1
-                    es_outlier_cluster = (topic_id_int == -1)
-
-                    umbral_beto_alta = 0.65 if es_outlier_cluster else 0.50
-                    umbral_beto_rapida = 0.50 if es_outlier_cluster else 0.35
-
-                    # Condición estricta para ALTA relevancia (ruta principal)
-                    es_alta_relevancia = (
-                        score_fem > 0.15 and
-                        score_v_ind > 0.25 and
-                        score_caso > 0.15 and
-                        s_score > umbral_beto_alta
-                    )
-
-                    # ── Vía Rápida: señal v_ind moderada + feminicidio + BETO ──
-                    # v9.1: Umbral bajado de 0.60 a 0.40 para capturar
-                    # "presenció feminicidio" (v_ind≈0.50) y patrones similares
-                    es_via_rapida = (
-                        score_v_ind > 0.40 and
-                        score_fem > 0.15 and
-                        s_score > umbral_beto_rapida
-                    )
-
-                    if es_alta_relevancia or es_via_rapida:
-                        clasificacion = "Alta"
-                        score_final = max(score_final, 0.65)
-                        ctx = "outlier" if es_outlier_cluster else f"t{topic_id_int}"
-                        if es_via_rapida and not es_alta_relevancia:
-                            logger.info(
-                                f"  ★ Vía Rápida [{ctx}]: v_ind={score_v_ind:.2f}, "
-                                f"fem={score_fem:.2f}, BETO={s_score:.2f} → Alta"
-                            )
-                        elif es_outlier_cluster:
-                            logger.info(
-                                f"  ⚡ Alta en outlier cluster: BETO={s_score:.2f} "
-                                f"(umbral={umbral_beto_alta}) → Alta"
-                            )
-                    else:
-                        if score_final >= 0.40:
-                            clasificacion = "Media"
-                        elif score_final >= 0.20:
-                            clasificacion = "Baja"
-                        else:
-                            clasificacion = "No relevante"
+                    clasificacion = "No relevante"
+                    score_final = s_score
 
                 self.df_processed.at[idx, "relevancia_final"] = round(score_final, 4)
                 self.df_processed.at[idx, "clasificacion_final"] = clasificacion
 
-            avg_sem = np.mean(scores_semanticos)
+            # Resumen
+            avg_sem = float(np.mean(scores_semanticos))
+            alta = int((self.df_processed["clasificacion_final"] == "Alta").sum())
+            media = int((self.df_processed["clasificacion_final"] == "Media").sum())
             print(f"  Score semántico promedio: {avg_sem:.4f}")
-            print(f"  {total} noticias procesadas con BETO (Batch Inference)")
+            print(f"  {total} noticias procesadas | Alta: {alta} | Media: {media}")
 
         except ImportError as e:
             print(f"  [!] Módulo semántico no disponible: {e}")
@@ -787,43 +719,71 @@ class SimplifiedNewsAnalyzer:
 
     def step_10_bertopic_clustering(self) -> pd.DataFrame:
         """
-        OE-4: Clustering semántico con BERTopic.
+        OE-4: Clustering semántico con BERTopic (post-filtro v5.1).
 
-        Reemplaza K-Means con BERTopic que usa:
-          BETO embeddings → UMAP → HDBSCAN → c-TF-IDF
+        Opera SOLO sobre noticias ya clasificadas como 'Alta' o 'Media'
+        por step_9. Esto garantiza que UMAP/HDBSCAN reciben señal limpia
+        sin ruido de artículos irrelevantes.
 
-        Los resultados se agregan como columnas adicionales sin
-        sobreescribir los clusters de K-Means para comparación.
+        min_cluster_size se ajusta dinámicamente:
+          corpus >= 100  → 8  (valor estándar)
+          corpus 50-99   → 5
+          corpus 20-49   → 3
+          corpus < 20    → clustering omitido (corpus insuficiente)
         """
-        print("=== PASO 10: CLUSTERING BERTOPIC (OE-4) ===")
+        print("=== PASO 10: CLUSTERING BERTOPIC (OE-4, post-filtro) ===")
         assert self.df_processed is not None, "Ejecute pasos anteriores primero"
 
         try:
             from src.analysis.bertopic_clustering import SemanticClustering
 
+            # Filtrar solo noticias relevantes (Alta / Media)
+            mask_relevante = self.df_processed["clasificacion_final"].isin(["Alta", "Media"])
+            df_relevante = self.df_processed[mask_relevante].copy()
+            n_relevante = len(df_relevante)
+
+            print(f"  Corpus para BERTopic: {n_relevante} noticias (Alta/Media)")
+
+            MIN_DOCS = 20
+            if n_relevante < MIN_DOCS:
+                print(f"  [!] Corpus insuficiente ({n_relevante} < {MIN_DOCS}). BERTopic omitido.")
+                return self.df_processed
+
+            # Ajuste dinámico de min_cluster_size
+            if n_relevante >= 100:
+                min_cs = 8
+            elif n_relevante >= 50:
+                min_cs = 5
+            else:
+                min_cs = 3
+            print(f"  min_cluster_size ajustado a: {min_cs}")
+
             clustering = SemanticClustering(
-                min_cluster_size=8,
+                min_cluster_size=min_cs,
                 reduce_outliers=True,
             )
 
-            # Preparar documentos
-            docs = self.df_processed["contenido"].fillna("").astype(str).tolist()
-            titles = self.df_processed["titulo"].fillna("").astype(str).tolist()
-
-            if len(docs) < 30:
-                print("  [!] Muy pocos documentos para BERTopic (mínimo 30)")
-                return self.df_processed
+            # Preparar documentos del subconjunto relevante
+            docs = df_relevante["contenido"].fillna("").astype(str).tolist()
+            titles = df_relevante["titulo"].fillna("").astype(str).tolist()
 
             results = clustering.fit_transform(docs=docs, titles=titles)
 
-            # Agregar resultados al DataFrame
-            self.df_processed["topic_id"] = results["topics"]
-
-            # Asignar cluster_id basado en topic (para PostgreSQL)
+            # Escribir topic_id y topic_description solo en las filas relevantes
             labels = results.get("labels", {})
-            self.df_processed["topic_description"] = [
-                labels.get(t, f"Tema {t}") for t in results["topics"]
-            ]
+            topic_ids = results["topics"]
+            topic_descs = [labels.get(t, f"Tema {t}") for t in topic_ids]
+
+            # Inicializar columnas con valores neutros para todas las filas
+            if "topic_id" not in self.df_processed.columns:
+                self.df_processed["topic_id"] = -1
+            if "topic_description" not in self.df_processed.columns:
+                self.df_processed["topic_description"] = "Sin cluster"
+
+            relevant_indices = df_relevante.index.tolist()
+            for i, idx in enumerate(relevant_indices):
+                self.df_processed.at[idx, "topic_id"] = topic_ids[i]
+                self.df_processed.at[idx, "topic_description"] = topic_descs[i]
 
             # Guardar modelo
             try:

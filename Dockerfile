@@ -30,6 +30,8 @@ RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/wh
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# Descargar el modelo de NLP en español para spaCy
+RUN pip install https://github.com/explosion/spacy-models/releases/download/es_core_news_lg-3.7.0/es_core_news_lg-3.7.0.tar.gz
 
 COPY . .
 

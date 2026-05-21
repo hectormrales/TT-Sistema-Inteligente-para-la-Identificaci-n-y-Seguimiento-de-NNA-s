@@ -10584,3 +10584,23 @@ FROM noticias
 WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
 [parameters: {'titulo_1': '%jalisco%', 'contenido_1': '%jalisco%'}]
 (Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-20 17:55:15,178 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-20 17:55:15,234 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-20 17:55:15,234 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-20 17:55:15,235 - app - INFO - Esquema FTS inicializado
+2026-05-20 17:55:15,235 - app - INFO - Esquema FTS inicializado
+2026-05-20 17:55:15,352 - root - INFO - Datos cargados: 740 noticias desde análisis
+2026-05-20 17:55:15,352 - root - INFO - Datos cargados: 740 noticias desde análisis

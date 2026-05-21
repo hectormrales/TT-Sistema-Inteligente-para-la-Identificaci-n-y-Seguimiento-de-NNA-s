@@ -20,13 +20,15 @@ Arquitectura:
   │  P(relevante) ∈ [0, 1]                                  │
   └─────────────────────────────────────────────────────────┘
 
-Modos de operación:
-  1. Zero-shot: Usa BETO pre-entrenado con clasificación por similitud
-     coseno contra descripciones de categorías (sin fine-tuning).
-  2. Fine-tuned: Entrena el clasificador binario con datos etiquetados
-     recogidos por el sistema heurístico existente.
-  3. Híbrido: Combina score semántico con score heurístico para
-     maximizar precisión y recall.
+Modos de operación (prioridad v5.1):
+  1. Fine-tuned (PRIORITARIO): Clasificador binario entrenado con datos
+     etiquetados del pipeline heurístico. Es el único modo que comprende
+     sintaxis relacional (ej. "niña sobrevive" ≠ "niña asesinada").
+  2. Zero-shot (ÚLTIMO RECURSO): Similitud coseno con BETO pre-entrenado.
+     Genera falsos positivos en contextos relacionales. Solo se activa si
+     no existe modelo fine-tuned, con advertencia explícita en el logger.
+  3. Auto: Selecciona finetuned si el modelo existe, zero_shot con warning
+     si no existe.
 
 Modelo base:
   - dccuchile/bert-base-spanish-wwm-cased (BETO)
@@ -233,14 +235,39 @@ class SemanticDetector:
         self._initialize()
 
     def _detect_mode(self) -> str:
-        """Detecta el mejor modo disponible."""
+        """
+        Detecta el mejor modo disponible (v5.1).
+
+        Prioridad estricta:
+          1. finetuned — si model.pt existe en FINETUNED_DIR
+          2. zero_shot — ÚLTIMO RECURSO con advertencia explícita
+
+        Zero-shot produce falsos positivos críticos en contextos
+        relacionales (ej. "madre asesinada, niña sobrevive").
+        Se requiere ejecutar fine_tune() antes de usar en producción.
+        """
         finetuned_path = os.path.join(FINETUNED_DIR, "model.pt")
         if os.path.exists(finetuned_path):
+            logger.info(f"Modelo fine-tuned encontrado en: {finetuned_path}")
             return "finetuned"
+
+        logger.warning(
+            "[SemanticDetector] ⚠️  MODELO FINE-TUNED NO ENCONTRADO en '%s'. "
+            "Cayendo en zero_shot como último recurso. "
+            "Este modo genera falsos positivos en contextos relacionales. "
+            "Ejecute fine_tune() con datos etiquetados antes de usar en producción.",
+            FINETUNED_DIR,
+        )
         return "zero_shot"
 
     def _initialize(self):
-        """Inicializa tokenizer y modelo según el modo."""
+        """
+        Inicializa tokenizer y modelo según el modo (v5.1).
+
+        Para 'finetuned': carga model.pt desde FINETUNED_DIR.
+        Para 'zero_shot': advierte del riesgo y carga BETO base.
+        Para 'hybrid': intenta finetuned; si falla, cae en zero_shot CON WARNINGS.
+        """
         logger.info(f"Inicializando SemanticDetector en modo: {self.mode}")
 
         os.makedirs(CACHE_DIR, exist_ok=True)
@@ -252,14 +279,25 @@ class SemanticDetector:
 
         if self.mode == "finetuned":
             self._load_finetuned()
+
         elif self.mode == "zero_shot":
+            logger.warning(
+                "[SemanticDetector] ⚠️  Modo zero_shot activo. "
+                "La similitud coseno NO comprende sintaxis relacional. "
+                "Se recomienda ejecutar fine_tune() para producción."
+            )
             self._init_zero_shot()
+
         elif self.mode == "hybrid":
-            # Intentar cargar fine-tuned, fallback a zero-shot
             try:
                 self._load_finetuned()
-            except Exception:
-                logger.warning("Modelo fine-tuned no disponible, usando zero-shot")
+                logger.info("Modo hybrid: usando modelo fine-tuned como base")
+            except FileNotFoundError:
+                logger.warning(
+                    "[SemanticDetector] ⚠️  Modo hybrid: fine-tuned no disponible. "
+                    "Degradando a zero_shot. Ejecute fine_tune() para mejorar precisión."
+                )
+                self.mode = "zero_shot"
                 self._init_zero_shot()
 
     def _init_zero_shot(self):
@@ -568,27 +606,31 @@ class SemanticDetector:
         val_split: float = 0.2,
         epochs: int = NUM_EPOCHS,
         lr: float = LEARNING_RATE,
+        early_stopping_patience: int = 2,
     ) -> dict:
         """
-        Fine-tuning del clasificador BETO con datos etiquetados.
+        Fine-tuning del clasificador BETO con Early Stopping basado en F1.
 
         Proceso:
           1. División train/validation estratificada
           2. Creación de DataLoaders
-          3. Entrenamiento con AdamW + scheduler lineal
-          4. Evaluación por época con early stopping
-          5. Guardado del mejor modelo
+          3. Entrenamiento con AdamW + scheduler lineal con warmup
+          4. Evaluación por época; guarda solo el mejor checkpoint (F1 val)
+          5. Early stopping: detiene si F1 no mejora en `patience` épocas
+          6. Recarga el mejor checkpoint al terminar
 
         Args:
             df: DataFrame con columnas de texto y etiquetas (0/1).
             text_col: Columna con el texto.
             label_col: Columna con etiquetas binarias.
             val_split: Fracción para validación.
-            epochs: Número de épocas.
+            epochs: Número máximo de épocas.
             lr: Learning rate.
+            early_stopping_patience: Épocas sin mejora antes de parar.
+                Recomendado: 2 para datasets pequeños, 3 para medianos.
 
         Returns:
-            dict con métricas de entrenamiento.
+            dict con métricas de entrenamiento e historial por época.
         """
         from sklearn.model_selection import train_test_split
         from torch.optim import AdamW
@@ -629,9 +671,13 @@ class SemanticDetector:
             total_iters=int(total_steps * WARMUP_RATIO),
         )
 
-        # Entrenamiento
+        # ── Entrenamiento con Early Stopping ─────────────────────
         best_f1 = 0.0
+        epochs_no_improve = 0
+        best_checkpoint_path = os.path.join(FINETUNED_DIR, "model.pt")
         history = {"train_loss": [], "val_f1": [], "val_precision": [], "val_recall": []}
+
+        os.makedirs(FINETUNED_DIR, exist_ok=True)
 
         for epoch in range(epochs):
             # ── Train ──
@@ -676,25 +722,37 @@ class SemanticDetector:
             history["val_f1"].append(f1)
 
             logger.info(
-                f"Época {epoch+1}/{epochs} — "
-                f"Loss: {avg_loss:.4f} | "
-                f"P: {precision:.4f} | R: {recall:.4f} | F1: {f1:.4f}"
+                "Época %d/%d — Loss: %.4f | P: %.4f | R: %.4f | F1: %.4f",
+                epoch + 1, epochs, avg_loss, precision, recall, f1,
             )
 
-            # Guardar mejor modelo
+            # ── Early Stopping basado en F1 de validación ──
             if f1 > best_f1:
                 best_f1 = f1
-                os.makedirs(FINETUNED_DIR, exist_ok=True)
-                torch.save(
-                    model.state_dict(),
-                    os.path.join(FINETUNED_DIR, "model.pt"),
+                epochs_no_improve = 0
+                torch.save(model.state_dict(), best_checkpoint_path)
+                logger.info(
+                    "  → ✅ Mejor modelo guardado (F1=%.4f) en %s",
+                    f1, best_checkpoint_path,
                 )
-                logger.info(f"  → Mejor modelo guardado (F1={f1:.4f})")
+            else:
+                epochs_no_improve += 1
+                logger.info(
+                    "  → Sin mejora de F1 (%.4f ≤ %.4f). Paciencia: %d/%d",
+                    f1, best_f1, epochs_no_improve, early_stopping_patience,
+                )
+                if epochs_no_improve >= early_stopping_patience:
+                    logger.warning(
+                        "[EarlyStopping] Deteniendo entrenamiento en época %d/%d. "
+                        "F1 no mejoró en %d épocas consecutivas. Mejor F1: %.4f",
+                        epoch + 1, epochs, early_stopping_patience, best_f1,
+                    )
+                    break
 
-        # Recargar mejor modelo
-        self.model = model
+        # Recargar el mejor checkpoint (no la última época)
         self._load_finetuned()
         self.mode = "finetuned"
+        logger.info("Modelo recargado desde el mejor checkpoint (F1=%.4f)", best_f1)
 
         # Reporte final
         report = classification_report(
@@ -721,61 +779,103 @@ class SemanticDetector:
 
         return metrics
 
-    def prepare_training_data(self, df: pd.DataFrame) -> pd.DataFrame:
+    def prepare_training_data(
+        self,
+        df: pd.DataFrame,
+        balance_ratio: float = 1.5,
+    ) -> pd.DataFrame:
         """
-        Prepara datos de entrenamiento desde el output del sistema heurístico.
+        Prepara datos de entrenamiento desde el DataFrame histórico (v5.1).
 
-        Usa las clasificaciones heurísticas existentes como etiquetas
-        pseudo-supervisadas:
-          - 'Alta' o 'Media' → etiqueta 1 (relevante)
-          - 'No relevante' o 'Baja' con score < 0.15 → etiqueta 0
+        Reglas de etiquetado (estrictas para minimizar falsos positivos):
+          Etiqueta 1 (Relevante):
+            - clasificacion_final == 'Alta'  (señal fuerte del heurístico)
+            - menores_identificados == 'Si'  (confirmación heurística NNA)
+          Etiqueta 0 (No relevante):
+            - Cualquier otro caso (Media, Baja, No relevante)
+            - Media se descarta intencionalmente para que el modelo aprenda
+              solo de los casos más claros y no propague ambigüedad.
 
-        Esto permite bootstrap del clasificador semántico usando
-        los datos ya recolectados por el sistema actual.
+        Balanceo de clases (ratio configurable):
+          - Siempre se respeta la clase minoritaria completa.
+          - La clase mayoritaria se submuestrea a min(n_min * balance_ratio, n_max).
+          - Con replace=False para no repetir ejemplos reales.
+          - El ratio 1.5 (default) permite clase mayoritaria 50% mayor.
+
+        Args:
+            df: DataFrame del histórico con columnas del pipeline.
+            balance_ratio: Cuántas veces puede ser la clase mayoritaria
+                respecto a la minoritaria. Default 1.5 → máx 3:2.
+
+        Returns:
+            DataFrame con columnas ['texto', 'etiqueta'] listo para fine_tune().
         """
         df_train = df.copy()
 
-        # Crear texto combinado
+        # ── Texto combinado: título duplicado para darle más peso ──
         df_train["texto"] = (
-            df_train["titulo"].fillna("") + " [SEP] " +
-            df_train["contenido"].fillna("").str[:1500]
+            df_train["titulo"].fillna("") + " "
+            + df_train["titulo"].fillna("") + " [SEP] "
+            + df_train["contenido"].fillna("").str[:1500]
         )
 
-        # Generar etiquetas desde clasificación heurística
-        clf_col = "clasificacion_final" if "clasificacion_final" in df.columns else "clasificacion"
-        score_col = "relevancia_final" if "relevancia_final" in df.columns else "score_compuesto"
+        # ── Columnas de referencia (con fallbacks defensivos) ──
+        clf_col = (
+            "clasificacion_final" if "clasificacion_final" in df.columns
+            else "clasificacion"
+        )
+        nna_col = "menores_identificados" if "menores_identificados" in df.columns else None
 
-        def _label(row):
-            clf = row.get(clf_col, "No relevante")
-            score = row.get(score_col, 0)
-            if clf in ("Alta", "Media"):
+        # ── Función de etiquetado estricto ──
+        def _label(row) -> int:
+            clf = str(row.get(clf_col, "No relevante"))
+            # Caso Alta: señal heurística fuerte
+            if clf == "Alta":
                 return 1
-            if clf == "Baja" and score >= 0.20:
+            # Refuerzo: NNA identificado explícitamente
+            if nna_col and str(row.get(nna_col, "No")).strip().lower() == "si":
                 return 1
+            # Todo lo demás es negativo
             return 0
 
         df_train["etiqueta"] = df_train.apply(_label, axis=1)
 
-        # Balance de clases: submuestreo de la clase mayoritaria
+        # ── Balance de clases ──
         pos = df_train[df_train["etiqueta"] == 1]
         neg = df_train[df_train["etiqueta"] == 0]
+        n_pos, n_neg = len(pos), len(neg)
 
-        if len(pos) > 0 and len(neg) > 0:
-            min_count = min(len(pos), len(neg))
-            max_count = min(min_count * 2, max(len(pos), len(neg)))
-            if len(pos) > len(neg):
-                pos = pos.sample(n=max_count, random_state=42, replace=True)
-            else:
-                neg = neg.sample(n=max_count, random_state=42, replace=True)
-            df_train = pd.concat([pos, neg]).sample(frac=1, random_state=42)
+        if n_pos == 0 or n_neg == 0:
+            logger.warning(
+                "[prepare_training_data] Una clase está vacía "
+                "(pos=%d, neg=%d). Revisa los datos de entrada.", n_pos, n_neg
+            )
+            return df_train[["texto", "etiqueta"]].reset_index(drop=True)
 
-        logger.info(
-            f"Datos de entrenamiento: {len(df_train)} muestras "
-            f"({(df_train['etiqueta'] == 1).sum()} positivas, "
-            f"{(df_train['etiqueta'] == 0).sum()} negativas)"
+        n_minor = min(n_pos, n_neg)
+        n_major_target = min(int(n_minor * balance_ratio), max(n_pos, n_neg))
+
+        if n_pos >= n_neg:  # Submuestrear positivos
+            pos = pos.sample(n=n_major_target, random_state=42, replace=False)
+        else:               # Submuestrear negativos
+            neg = neg.sample(n=n_major_target, random_state=42, replace=False)
+
+        df_balanced = (
+            pd.concat([pos, neg])
+            .sample(frac=1, random_state=42)
+            .reset_index(drop=True)
         )
 
-        return df_train[["texto", "etiqueta"]].reset_index(drop=True)
+        n_final_pos = int((df_balanced["etiqueta"] == 1).sum())
+        n_final_neg = int((df_balanced["etiqueta"] == 0).sum())
+        logger.info(
+            "[prepare_training_data] %d muestras listas para entrenamiento "
+            "(positivas=%d, negativas=%d, ratio=%.2f)",
+            len(df_balanced), n_final_pos, n_final_neg,
+            n_final_pos / max(n_final_neg, 1),
+        )
+
+        return df_balanced[["texto", "etiqueta"]]
 
     # ── Extracción de embeddings ────────────────────────────
 
