@@ -12501,3 +12501,12 @@ WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido
 2026-05-21 16:45:18,215 - app - INFO - Esquema FTS inicializado
 2026-05-21 16:45:18,318 - root - INFO - Datos cargados: 638 noticias desde análisis
 2026-05-21 16:45:18,319 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 17:00:43,568 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-05-21 17:08:51,214 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 17:08:55,304 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 17:08:55,434 - app - INFO - Logout: hectorm11
+2026-05-21 17:08:59,227 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-05-21 17:09:04,367 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 17:09:09,520 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 17:09:12,770 - app - INFO - Logout: hectorm11
+2026-05-21 17:09:16,024 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
