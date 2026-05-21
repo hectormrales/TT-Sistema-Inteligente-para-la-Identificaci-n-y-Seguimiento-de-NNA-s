@@ -234,8 +234,13 @@ class SemanticDetector:
 
     def __init__(self, mode: str = "auto"):
         """
-        Args:
-            mode: 'zero_shot', 'finetuned', 'hybrid', 'auto'
+        El argumento `mode` es ignorado. El modo SIEMPRE se lee de la
+        variable de entorno DETECTOR_MODE (default: "fine-tuned").
+        Esto garantiza que la configuración de Docker/docker-compose
+        sea la única fuente de verdad, sin importar cómo se instancia
+        la clase desde el código.
+
+        DETECTOR_MODE válidos: 'fine-tuned' | 'finetuned' | 'zero_shot' | 'hybrid'
         """
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() else "cpu"
@@ -246,32 +251,61 @@ class SemanticDetector:
         self.model = None
         self.zero_shot_pipeline = None
         self._embeddings_cache: dict[str, np.ndarray] = {}
-        self.mode = mode
 
         # Pre-filtro sintáctico (spaCy) — carga lazy
-        self._spacy_nlp = None          # instancia spaCy (se carga al primer uso)
+        self._spacy_nlp = None
         self._prefiltro_habilitado = _POC_DISPONIBLE
 
-        if mode == "auto":
+        # ── Resolución del modo: SIEMPRE desde el entorno ─────────────────
+        # El parámetro `mode` se ignora deliberadamente para que DETECTOR_MODE
+        # sea la única fuente de verdad (comportamiento requerido en Docker).
+        env_mode = os.environ.get("DETECTOR_MODE", "fine-tuned").strip().lower()
+
+        if env_mode in ("fine-tuned", "finetuned"):
+            self.mode = "finetuned"
+        elif env_mode == "zero_shot":
+            self.mode = "zero_shot"
+        elif env_mode == "hybrid":
+            self.mode = "hybrid"
+        else:
+            logger.warning(
+                "[SemanticDetector] Valor desconocido en DETECTOR_MODE='%s'. "
+                "Usando 'finetuned' por defecto.", env_mode
+            )
+            self.mode = "finetuned"
+
+        logger.info(
+            "[SemanticDetector] Modo resuelto desde DETECTOR_MODE='%s' → '%s'",
+            env_mode, self.mode,
+        )
+
+        # Si el modo resuelto es finetuned, verificar existencia del archivo
+        # ANTES de comprometerse con él; si no existe, caer en zero_shot.
+        if self.mode == "finetuned":
             self.mode = self._detect_mode()
 
         self._initialize()
 
     def _detect_mode(self) -> str:
         """
-        Detecta el mejor modo disponible (v5.1).
+        Detecta el mejor modo disponible (v5.2).
 
         Prioridad estricta:
-          1. finetuned — si model.pt existe en FINETUNED_DIR
+          1. finetuned — si model.pt existe en FINETUNED_DIR (ruta absoluta)
           2. zero_shot — ÚLTIMO RECURSO con advertencia explícita
 
-        Zero-shot produce falsos positivos críticos en contextos
-        relacionales (ej. "madre asesinada, niña sobrevive").
-        Se requiere ejecutar fine_tune() antes de usar en producción.
+        Nota: FINETUNED_DIR se resuelve como ruta absoluta para garantizar
+        que funcione independientemente del CWD del proceso (crítico en Docker).
         """
-        finetuned_path = os.path.join(FINETUNED_DIR, "model.pt")
+        # Resolver siempre como ruta absoluta para evitar dependencia del CWD
+        finetuned_dir_abs = os.path.abspath(FINETUNED_DIR)
+        finetuned_path = os.path.join(finetuned_dir_abs, "model.pt")
+
         if os.path.exists(finetuned_path):
-            logger.info(f"Modelo fine-tuned encontrado en: {finetuned_path}")
+            logger.info(
+                "[SemanticDetector] Modelo fine-tuned encontrado en: %s",
+                finetuned_path,
+            )
             return "finetuned"
 
         logger.warning(
@@ -279,17 +313,18 @@ class SemanticDetector:
             "Cayendo en zero_shot como último recurso. "
             "Este modo genera falsos positivos en contextos relacionales. "
             "Ejecute fine_tune() con datos etiquetados antes de usar en producción.",
-            FINETUNED_DIR,
+            finetuned_path,
         )
         return "zero_shot"
 
     def _initialize(self):
         """
-        Inicializa tokenizer y modelo según el modo (v5.1).
+        Inicializa tokenizer y modelo según el modo (v5.2).
 
-        Para 'finetuned': carga model.pt desde FINETUNED_DIR.
+        Para 'finetuned': intenta cargar model.pt desde FINETUNED_DIR.
+                          Si falla, emite warning y cae en zero_shot.
         Para 'zero_shot': advierte del riesgo y carga BETO base.
-        Para 'hybrid': intenta finetuned; si falla, cae en zero_shot CON WARNINGS.
+        Para 'hybrid':    intenta finetuned; si falla, cae en zero_shot con warnings.
         """
         logger.info(f"Inicializando SemanticDetector en modo: {self.mode}")
 
@@ -301,7 +336,18 @@ class SemanticDetector:
         )
 
         if self.mode == "finetuned":
-            self._load_finetuned()
+            try:
+                self._load_finetuned()
+            except FileNotFoundError as exc:
+                logger.warning(
+                    "[SemanticDetector] ⚠️  No se pudo cargar el modelo fine-tuned: %s. "
+                    "Degradando automáticamente a zero_shot. "
+                    "Verifique que FINETUNED_MODEL_DIR apunte a la ruta correcta "
+                    "y que model.pt tenga permisos de lectura.",
+                    exc,
+                )
+                self.mode = "zero_shot"
+                self._init_zero_shot()
 
         elif self.mode == "zero_shot":
             logger.warning(
@@ -323,32 +369,13 @@ class SemanticDetector:
                 self.mode = "zero_shot"
                 self._init_zero_shot()
 
-    def _init_zero_shot(self):
-        """
-        Inicializa clasificación zero-shot.
-
-        Usa el modelo BETO base para generar embeddings del texto
-        y las descripciones de categorías. La clasificación se hace
-        por similitud coseno entre embeddings.
-
-        Ventaja: No requiere datos de entrenamiento.
-        Limitación: Precisión inferior a fine-tuning (~80-85%).
-        """
-        self.model = AutoModel.from_pretrained(
-            BETO_MODEL_NAME, cache_dir=CACHE_DIR
-        ).to(self.device)
-        self.model.eval()
-
-        # Pre-calcular embeddings de categorías
-        self._category_embeddings = {}
-        for cat, desc in CATEGORY_DESCRIPTIONS.items():
-            self._category_embeddings[cat] = self._get_embedding(desc)
-
-        logger.info("Zero-shot inicializado con embeddings de categorías")
-
     def _load_finetuned(self):
-        """Carga modelo fine-tuned desde disco."""
-        finetuned_path = os.path.join(FINETUNED_DIR, "model.pt")
+        """Carga modelo fine-tuned desde disco con ruta absoluta resuelta."""
+        # Resolución absoluta: garantiza funcionamiento correcto en Docker
+        # independientemente del CWD del proceso (CRÍTICO).
+        finetuned_dir_abs = os.path.abspath(FINETUNED_DIR)
+        finetuned_path = os.path.join(finetuned_dir_abs, "model.pt")
+
         if not os.path.exists(finetuned_path):
             raise FileNotFoundError(
                 f"Modelo fine-tuned no encontrado en {finetuned_path}"
@@ -360,7 +387,8 @@ class SemanticDetector:
         )
         self.model.to(self.device)
         self.model.eval()
-        logger.info(f"Modelo fine-tuned cargado desde {finetuned_path}")
+        logger.info("[INFO] Modelo fine-tuned cargado exitosamente.")  # ← log exacto requerido
+
 
     def _get_embedding(self, text: str) -> np.ndarray:
         """

@@ -1,8 +1,8 @@
 {
-  "total_noticias": 681,
-  "noticias_con_nna": 206,
-  "alta_relevancia": 170,
-  "media_relevancia": 500,
+  "total_noticias": 638,
+  "noticias_con_nna": 204,
+  "alta_relevancia": 193,
+  "media_relevancia": 1,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -25,7 +25,8 @@
     "relevancia_final",
     "clasificacion_final",
     "topic_id",
-    "topic_description"
+    "topic_description",
+    "score_victima_indirecta"
   ],
   "version": "relevance_analyzer_v5.0_TT2",
   "algoritmos_usados": [

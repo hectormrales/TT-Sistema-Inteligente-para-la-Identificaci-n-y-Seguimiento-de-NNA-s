@@ -11778,3 +11778,726 @@ WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido
 2026-05-21 11:34:53,577 - src.analysis.bertopic_clustering - INFO - Guardados 26 clusters en PostgreSQL
 2026-05-21 11:34:53,608 - root - INFO - Datos cargados: 681 noticias desde análisis
 2026-05-21 11:34:53,609 - root - INFO - Análisis background completado exitosamente
+2026-05-21 13:18:34,883 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-21 13:18:34,931 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 13:18:34,932 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 13:18:34,932 - app - INFO - Esquema FTS inicializado
+2026-05-21 13:18:34,932 - app - INFO - Esquema FTS inicializado
+2026-05-21 13:18:35,051 - root - INFO - Datos cargados: 681 noticias desde análisis
+2026-05-21 13:18:35,051 - root - INFO - Datos cargados: 681 noticias desde análisis
+2026-05-21 13:45:16,833 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-21 13:45:16,880 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 13:45:16,881 - app - INFO - Esquema FTS inicializado
+2026-05-21 13:45:16,894 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 13:45:16,894 - app - INFO - Esquema FTS inicializado
+2026-05-21 13:45:17,006 - root - INFO - Datos cargados: 681 noticias desde análisis
+2026-05-21 13:45:17,006 - root - INFO - Datos cargados: 681 noticias desde análisis
+2026-05-21 13:47:42,129 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-05-21 13:47:42,144 - app - INFO - Logout: hectorm11
+2026-05-21 13:47:45,461 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-05-21 13:47:58,505 - app - INFO - Logout: hectorm11
+2026-05-21 13:48:01,120 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-05-21 13:48:20,461 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:20,469 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:20,515 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:20,585 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 13:48:57,082 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,086 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,106 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,114 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,160 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,190 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,199 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,227 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:48:57,299 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,072 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,079 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,083 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:49:02,087 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,103 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,113 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,120 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,129 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,147 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,162 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,171 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:02,194 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:49:02,200 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:28,139 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:49:28,146 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:49:28,171 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:28,176 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:28,194 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:28,232 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:49:28,244 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:07,607 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:07,615 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:07,636 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:12,868 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:12,980 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:50:13,018 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:34,764 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:34,768 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:34,789 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:34,813 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:50,654 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:50:50,670 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:50:50,708 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:50:50,732 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 13:50:50,777 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 13:50:50,787 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 13:50:50,790 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 13:50:50,833 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:50:50,842 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:50:50,853 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:50:50,876 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 13:51:02,789 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,792 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,796 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,800 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:51:02,808 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,821 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,825 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:51:02,834 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,844 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:02,913 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:51:16,692 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:51:36,864 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:36,875 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:51:36,922 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 13:51:36,975 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:51:37,000 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:17,374 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:17,418 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:52:17,492 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:17,498 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:17,550 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:17,571 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:17,588 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:52:31,481 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:39,269 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:52:39,278 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:53:31,914 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:53:31,939 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:53:32,039 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 13:53:38,639 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 13:53:38,657 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:53:45,214 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:53:45,218 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:53:45,222 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:53:45,238 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:53:45,241 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:53:52,715 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 13:54:10,387 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX
+2026-05-21 13:54:10,774 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX
+2026-05-21 13:54:34,186 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX
+2026-05-21 13:54:46,389 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-21 13:54:46,390 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-21 13:54:46,699 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-21 13:54:46,700 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-21 13:54:53,084 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+2026-05-21 13:54:53,086 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])
+2026-05-21 13:54:55,976 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-21 13:55:11,527 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mundo/2026/05/21/estados-unidos-acu… → activando stealth + intentando Google Cache
+2026-05-21 13:55:26,644 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 13:55:26,645 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 13:55:26,647 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mundo/2026/05/21/estados-unidos-acusa-a-raul-castro-de-asesinato/
+2026-05-21 13:56:07,867 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/20/detienen-en-culia… → activando stealth + intentando Google Cache
+2026-05-21 13:56:24,454 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 13:56:24,455 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 13:56:24,455 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/20/detienen-en-culiacan-a-omar-chavez-hijo-de-julio-cesar-chavez/
+2026-05-21 13:57:12,350 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/05/21/para-el-sistema-d… → activando stealth + intentando Google Cache
+2026-05-21 13:57:51,951 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 13:57:51,951 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 13:57:51,952 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/ciudad/2026/05/21/para-el-sistema-de-justicia-eso-vale-la-vida-de-una-mujer-trans-50-mil/
+2026-05-21 13:58:03,787 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/05/21/con-ataques-rebr… → activando stealth + intentando Google Cache
+2026-05-21 13:58:18,336 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 13:58:18,337 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 13:58:18,337 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/05/21/con-ataques-rebrota-la-violencia-en-zacatecas/
+2026-05-21 13:58:31,758 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/21/conoce-a… → activando stealth + intentando Google Cache
+2026-05-21 13:59:31,938 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 13:59:31,939 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 13:59:31,939 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/21/conoce-al-elenco-completo-de-entre-padre-e-hijo-de-netflix-fotos/
+2026-05-21 13:59:31,944 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-21 13:59:32,448 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+2026-05-21 13:59:32,449 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])
+2026-05-21 13:59:33,207 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.lajornadadeoriente.com.mx/…
+2026-05-21 13:59:33,207 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])
+2026-05-21 13:59:36,690 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 13:59:37,558 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s
+2026-05-21 13:59:49,820 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 5s
+2026-05-21 14:00:32,383 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 8s
+2026-05-21 14:00:32,383 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-21 14:00:40,385 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-21 14:00:40,385 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-21 14:00:40,746 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-21 14:00:46,074 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/arteseideas/futuro-futbol-es… → activando stealth + intentando Google Cache
+2026-05-21 14:00:59,517 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:00:59,518 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:00:59,518 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/arteseideas/futuro-futbol-estara-hombres-empiecen-jugar-mujeres-villoro-20260520-814648.html
+2026-05-21 14:01:32,670 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/tecnologia/x-pierde-litigio-… → activando stealth + intentando Google Cache
+2026-05-21 14:02:05,027 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:02:05,027 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:02:05,028 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/tecnologia/x-pierde-litigio-australia-incumplimiento-normas-proteccion-infantil-20260521-814680.html
+2026-05-21 14:02:05,032 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:02:07,127 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:02:24,832 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:24,839 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,046 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,057 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,066 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,086 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,090 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,105 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:02:44,120 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,772 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,781 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,785 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,788 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:03:01,793 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,799 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,806 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,814 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,822 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:01,831 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:03:24,379 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:04:24,456 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:04:32,345 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:04:32,352 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:04:32,382 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:04:43,838 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:04:43,841 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:04:43,845 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:05:14,236 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:14,240 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:14,244 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:05:14,248 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:14,252 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:14,255 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:14,262 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:47,871 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:05:47,911 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:05:56,700 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:06:09,144 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:06:09,224 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:06:38,286 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:06:38,303 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:06:38,356 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:06:54,695 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:06:59,235 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:07:16,873 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:07:16,894 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:07:16,961 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:07:17,458 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-21 14:07:17,459 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:07:29,400 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-21 14:07:29,401 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:07:47,974 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 14:07:47,998 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:07:51,064 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:07:51,067 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:07:51,077 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:07:51,093 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:07:51,098 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:07:51,101 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:07:59,977 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-21 14:08:00,012 - src.analysis.dedup - INFO - Deduplicación: 1270 noticias de entrada
+2026-05-21 14:08:00,064 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 605 duplicados
+2026-05-21 14:08:00,262 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
+2026-05-21 14:08:00,822 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 20 duplicados
+2026-05-21 14:08:01,024 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 3 duplicados
+2026-05-21 14:08:01,032 - src.analysis.dedup - INFO -   Resultado: 1270 → 641 únicos (629 duplicados eliminados)
+2026-05-21 14:08:01,332 - src.analysis.dedup - INFO - Deduplicación: 641 noticias de entrada
+2026-05-21 14:08:01,366 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-21 14:08:01,490 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-21 14:08:01,832 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-05-21 14:08:01,935 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 2 duplicados
+2026-05-21 14:08:01,939 - src.analysis.dedup - INFO -   Resultado: 641 → 639 únicos (2 duplicados eliminados)
+2026-05-21 14:08:11,082 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-21 14:08:11,083 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-05-21 14:08:11,337 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:08:11,338 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-21 14:08:11,387 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:08:11,518 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:08:11,564 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:08:11,660 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-21 14:08:11,762 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-21 14:08:11,836 - src.analysis.semantic_detector - WARNING - [SemanticDetector] ⚠️  Modo zero_shot activo. La similitud coseno NO comprende sintaxis relacional. Se recomienda ejecutar fine_tune() para producción.
+2026-05-21 14:08:11,940 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:08:11,988 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:08:12,123 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-21 14:08:12,226 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-21 14:08:12,393 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-21 14:08:12,500 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-21 14:08:12,696 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-21 14:08:12,883 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:08:12,972 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-21 14:08:15,451 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-05-21 14:08:19,289 - src.analysis.semantic_detector - INFO - [PreFiltro] Modelo spaCy es_core_news_lg cargado.
+2026-05-21 14:08:22,362 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan']
+2026-05-21 14:08:22,608 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['matar', 'matar']
+2026-05-21 14:08:23,559 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+2026-05-21 14:08:23,705 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['muere', 'muere']
+2026-05-21 14:08:23,739 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Matan', 'Matan']
+2026-05-21 14:08:23,840 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+2026-05-21 14:08:23,955 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+2026-05-21 14:08:23,991 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['matan', 'matan']
+2026-05-21 14:08:24,171 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesinada', 'asesinada']
+2026-05-21 14:08:24,259 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesina', 'asesina']
+2026-05-21 14:08:24,491 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+2026-05-21 14:09:55,959 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 628 documentos
+2026-05-21 14:10:17,133 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-21 14:10:17,393 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:17,512 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:17,607 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:17,672 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:17,674 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-21 14:10:17,775 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:17,817 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:17,907 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:17,962 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-21 14:10:18,088 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:18,150 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:18,262 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:18,323 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:18,421 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:10:18,522 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:18,578 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:19,170 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:10:19,264 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:10:19,372 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:10:19,529 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:10:19,624 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:19,681 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:19,794 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:19,852 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:19,947 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:19,998 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:20,092 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:20,147 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:20,240 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:20,306 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:20,402 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-21 14:10:20,513 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-21 14:10:22,972 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-21 14:10:23,289 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:10:23,348 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-21 14:10:23,441 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-21 14:10:23,454 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-21 14:11:11,704 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 205/628 (32.6%)
+2026-05-21 14:11:11,777 - src.analysis.bertopic_clustering - INFO - Clustering completado: 17 temas, outliers finales: 205/628 (32.6%)
+2026-05-21 14:11:14,506 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-21 14:11:20,106 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 14:11:22,336 - src.database.repository - INFO - Batch insert: 639 noticias insertadas
+2026-05-21 14:11:26,148 - src.analysis.bertopic_clustering - INFO - Guardados 18 clusters en PostgreSQL
+2026-05-21 14:11:26,195 - root - INFO - Datos cargados: 639 noticias desde análisis
+2026-05-21 14:11:26,197 - root - INFO - Análisis background completado exitosamente
+2026-05-21 14:16:34,570 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-21 14:16:34,588 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 14:16:34,588 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 14:16:34,589 - app - INFO - Esquema FTS inicializado
+2026-05-21 14:16:34,589 - app - INFO - Esquema FTS inicializado
+2026-05-21 14:16:34,928 - root - INFO - Datos cargados: 639 noticias desde análisis
+2026-05-21 14:16:34,930 - root - INFO - Datos cargados: 639 noticias desde análisis
+2026-05-21 14:17:22,238 - app - INFO - Logout: hectorm11
+2026-05-21 14:17:26,299 - app - INFO - Login exitoso: hectorm11 desde 172.19.0.1
+2026-05-21 14:17:53,417 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:17:53,424 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:17:53,456 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:17:53,497 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:18:12,632 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,635 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,651 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,658 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,694 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,720 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,727 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,750 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:12,814 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,393 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,400 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,404 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:18:23,408 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,414 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,418 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,422 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,426 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,435 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,443 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,450 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:23,465 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:18:23,472 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:40,110 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:18:40,118 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:18:40,142 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:40,148 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:40,171 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:40,207 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:18:40,218 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:01,180 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:01,188 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:01,204 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:15,559 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:15,653 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:19:15,685 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:22,095 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:22,100 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:22,118 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:22,135 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:32,159 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:19:32,175 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:19:32,210 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:19:32,232 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:19:32,274 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 14:19:32,281 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 14:19:32,285 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 14:19:32,323 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:19:32,332 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:19:32,340 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:19:32,361 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:20:07,346 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,349 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,353 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,357 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:20:07,363 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,372 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,375 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:20:07,382 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,391 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:20:07,433 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:20:24,822 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:21:02,291 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:02,306 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:02,370 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:21:02,458 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:21:02,483 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:40,717 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:40,755 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:21:40,823 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:40,829 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:40,877 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:40,894 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:21:40,909 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:21:57,482 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:22:16,877 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:22:16,886 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:22:56,185 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:22:56,208 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:22:56,305 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:23:04,774 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 14:23:04,792 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:23:21,916 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:23:21,921 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:23:21,924 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:23:21,939 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:23:21,943 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:23:32,633 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:23:53,819 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX
+2026-05-21 14:23:54,524 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX
+2026-05-21 14:24:11,480 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX
+2026-05-21 14:24:50,328 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-21 14:24:50,329 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:24:52,370 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://www.elfinanciero.com.mx/…
+2026-05-21 14:24:57,791 - src.collection.scraper - INFO - Bloqueo detectado en https://www.elfinanciero.com.mx/mundo/2026/05/21/traia-una-b… → activando stealth + intentando Google Cache
+2026-05-21 14:25:48,891 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:25:48,891 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:25:48,892 - trafilatura.core - WARNING - discarding data: https://www.elfinanciero.com.mx/mundo/2026/05/21/traia-una-bazuca-16-cuernos-de-chivo-y-mas-armas-detienen-a-mujer-con-arsenal-en-la-frontera-mexico-eu/
+2026-05-21 14:25:48,898 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elfinanciero.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:25:53,942 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+2026-05-21 14:25:53,942 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:25:56,653 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-21 14:26:06,167 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mundo/2026/05/21/estados-unidos-acu… → activando stealth + intentando Google Cache
+2026-05-21 14:26:28,922 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:26:28,923 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:26:28,923 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mundo/2026/05/21/estados-unidos-acusa-a-raul-castro-de-asesinato/
+2026-05-21 14:26:39,749 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/mexico/2026/05/20/detienen-en-culia… → activando stealth + intentando Google Cache
+2026-05-21 14:26:58,561 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:26:58,562 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:26:58,562 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/mexico/2026/05/20/detienen-en-culiacan-a-omar-chavez-hijo-de-julio-cesar-chavez/
+2026-05-21 14:27:24,346 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/05/21/para-el-sistema-d… → activando stealth + intentando Google Cache
+2026-05-21 14:27:33,877 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:27:33,878 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:27:33,878 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/ciudad/2026/05/21/para-el-sistema-de-justicia-eso-vale-la-vida-de-una-mujer-trans-50-mil/
+2026-05-21 14:28:14,858 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/05/21/con-ataques-rebr… → activando stealth + intentando Google Cache
+2026-05-21 14:28:36,466 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:28:36,466 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:28:36,467 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/05/21/con-ataques-rebrota-la-violencia-en-zacatecas/
+2026-05-21 14:28:44,115 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/21/conoce-a… → activando stealth + intentando Google Cache
+2026-05-21 14:29:19,769 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:29:19,770 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:29:19,770 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/21/conoce-al-elenco-completo-de-entre-padre-e-hijo-de-netflix-fotos/
+2026-05-21 14:29:19,775 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:29:20,306 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+2026-05-21 14:29:20,307 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])
+2026-05-21 14:29:20,967 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.lajornadadeoriente.com.mx/…
+2026-05-21 14:29:20,968 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:29:23,315 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:29:24,309 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 2s
+2026-05-21 14:29:43,699 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 4s
+2026-05-21 14:29:53,629 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 9s
+2026-05-21 14:29:53,630 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-21 14:30:02,365 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-21 14:30:02,366 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-21 14:30:02,912 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-21 14:30:25,400 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/arteseideas/futuro-futbol-es… → activando stealth + intentando Google Cache
+2026-05-21 14:30:39,441 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-21 14:30:39,442 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:30:39,443 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/arteseideas/futuro-futbol-estara-hombres-empiecen-jugar-mujeres-villoro-20260520-814648.html
+2026-05-21 14:30:55,385 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/tecnologia/x-pierde-litigio-… → activando stealth + intentando Google Cache
+2026-05-21 14:31:15,721 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+2026-05-21 14:31:15,721 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-21 14:31:15,722 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/tecnologia/x-pierde-litigio-australia-incumplimiento-normas-proteccion-infantil-20260521-814680.html
+2026-05-21 14:31:15,727 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:31:16,924 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:31:38,973 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:38,981 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,672 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,683 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,691 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,708 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,711 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,724 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:31:46,736 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,563 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,571 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,575 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,578 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:32:46,582 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,586 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,590 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,596 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,602 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:32:46,609 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:33:28,605 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:33:46,412 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:34:13,780 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:13,786 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:13,805 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:21,039 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:21,043 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:34:21,046 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:34:57,529 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:57,533 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:57,537 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:34:57,540 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:57,544 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:57,548 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:34:57,554 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:35:03,212 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:35:03,252 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:35:15,021 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:36:11,308 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:36:11,385 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:36:24,477 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:36:24,500 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:36:24,570 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:36:41,372 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:36:48,772 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:37:40,683 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:37:40,700 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:37:40,770 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-21 14:37:41,328 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-21 14:37:41,329 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:38:08,345 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-21 14:38:08,346 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:38:44,062 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-21 14:38:44,063 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-21 14:38:54,608 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-21 14:38:54,626 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:39:15,617 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-21 14:39:15,621 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:39:15,630 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:39:15,643 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:39:15,647 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:39:15,652 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-21 14:39:26,025 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-21 14:39:26,072 - src.analysis.dedup - INFO - Deduplicación: 1272 noticias de entrada
+2026-05-21 14:39:26,122 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 607 duplicados
+2026-05-21 14:39:26,334 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
+2026-05-21 14:39:26,901 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 21 duplicados
+2026-05-21 14:39:27,093 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 3 duplicados
+2026-05-21 14:39:27,100 - src.analysis.dedup - INFO -   Resultado: 1272 → 640 únicos (632 duplicados eliminados)
+2026-05-21 14:39:27,680 - src.analysis.dedup - INFO - Deduplicación: 640 noticias de entrada
+2026-05-21 14:39:27,738 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-21 14:39:27,894 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-21 14:39:28,272 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-05-21 14:39:28,454 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 2 duplicados
+2026-05-21 14:39:28,457 - src.analysis.dedup - INFO -   Resultado: 640 → 638 únicos (2 duplicados eliminados)
+2026-05-21 14:39:40,478 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-21 14:39:40,479 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: zero_shot
+2026-05-21 14:39:40,724 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:39:40,725 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-21 14:39:40,785 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:39:40,910 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:39:40,988 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:39:41,098 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-21 14:39:41,203 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-21 14:39:41,286 - src.analysis.semantic_detector - WARNING - [SemanticDetector] ⚠️  Modo zero_shot activo. La similitud coseno NO comprende sintaxis relacional. Se recomienda ejecutar fine_tune() para producción.
+2026-05-21 14:39:41,379 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:39:41,437 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:39:41,573 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-21 14:39:41,665 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-21 14:39:41,789 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-21 14:39:41,900 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-21 14:39:42,066 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-21 14:39:42,162 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:39:42,258 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-21 14:39:45,153 - src.analysis.semantic_detector - INFO - Zero-shot inicializado con embeddings de categorías
+2026-05-21 14:40:00,566 - src.analysis.semantic_detector - INFO - [PreFiltro] Modelo spaCy es_core_news_lg cargado.
+2026-05-21 14:40:03,815 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan']
+2026-05-21 14:40:04,146 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['matar', 'matar']
+2026-05-21 14:40:05,319 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+2026-05-21 14:40:05,511 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['muere', 'muere']
+2026-05-21 14:40:05,569 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Matan', 'Matan']
+2026-05-21 14:40:05,704 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+2026-05-21 14:40:05,825 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+2026-05-21 14:40:05,879 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['matan', 'matan']
+2026-05-21 14:40:06,076 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesinada', 'asesinada']
+2026-05-21 14:40:06,228 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesina', 'asesina']
+2026-05-21 14:40:06,427 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+2026-05-21 14:41:40,254 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 627 documentos
+2026-05-21 14:41:54,568 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-21 14:41:54,778 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:54,832 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:54,927 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:54,974 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:54,975 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-21 14:41:55,058 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:55,103 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:55,234 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:55,283 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-21 14:41:55,370 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:55,419 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:55,554 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:55,880 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:55,979 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:41:56,086 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:56,148 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:56,575 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:41:56,666 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:41:56,754 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:41:56,848 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-21 14:41:56,936 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:56,983 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:57,133 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:57,181 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:57,275 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:57,331 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:57,429 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:57,472 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:57,558 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:41:57,605 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-21 14:41:57,695 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-21 14:41:57,788 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-21 14:42:00,713 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-21 14:42:01,100 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-21 14:42:01,144 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-21 14:42:01,240 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-21 14:42:01,244 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-21 14:42:56,607 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 271/627 (43.2%)
+2026-05-21 14:42:56,700 - src.analysis.bertopic_clustering - INFO - Clustering completado: 19 temas, outliers finales: 271/627 (43.2%)
+2026-05-21 14:43:11,761 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-21 14:43:13,147 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 14:43:15,862 - src.database.repository - INFO - Batch insert: 638 noticias insertadas
+2026-05-21 14:43:20,322 - src.analysis.bertopic_clustering - INFO - Guardados 20 clusters en PostgreSQL
+2026-05-21 14:43:20,382 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 14:43:20,384 - root - INFO - Análisis background completado exitosamente
+2026-05-21 16:06:41,146 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-21 16:06:41,181 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 16:06:41,181 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 16:06:41,181 - app - INFO - Esquema FTS inicializado
+2026-05-21 16:06:41,182 - app - INFO - Esquema FTS inicializado
+2026-05-21 16:06:41,254 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 16:06:41,254 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 16:24:53,489 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-21 16:24:53,561 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 16:24:53,562 - app - INFO - Esquema FTS inicializado
+2026-05-21 16:24:53,574 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 16:24:53,575 - app - INFO - Esquema FTS inicializado
+2026-05-21 16:24:53,705 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 16:24:53,706 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 16:45:18,184 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-21 16:45:18,205 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 16:45:18,206 - app - INFO - Esquema FTS inicializado
+2026-05-21 16:45:18,215 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-21 16:45:18,215 - app - INFO - Esquema FTS inicializado
+2026-05-21 16:45:18,318 - root - INFO - Datos cargados: 638 noticias desde análisis
+2026-05-21 16:45:18,319 - root - INFO - Datos cargados: 638 noticias desde análisis
