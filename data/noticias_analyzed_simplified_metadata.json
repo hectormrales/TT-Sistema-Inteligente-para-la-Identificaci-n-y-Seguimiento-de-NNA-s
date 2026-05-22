@@ -1,8 +1,8 @@
 {
-  "total_noticias": 787,
-  "noticias_con_nna": 225,
-  "alta_relevancia": 162,
-  "media_relevancia": 3,
+  "total_noticias": 657,
+  "noticias_con_nna": 207,
+  "alta_relevancia": 20,
+  "media_relevancia": 106,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -20,8 +20,8 @@
     "texto_combinado",
     "most_similar_doc_idx",
     "max_similarity",
-    "score_semantico",
     "modo_deteccion",
+    "score_semantico",
     "relevancia_final",
     "clasificacion_final",
     "topic_id",

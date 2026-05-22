@@ -262,10 +262,13 @@ class SemanticClustering:
 
         # 4. Vectorizador para c-TF-IDF
         #    n-grams de 1 a 3 para capturar frases relevantes
+        #    v7.0: min_df dinámico para evitar crash con corpus pequeños
+        #    (ValueError: max_df corresponds to < documents than min_df)
+        dynamic_min_df = 1 if self.min_cluster_size <= 5 else 2
         vectorizer = CountVectorizer(
             stop_words=SPANISH_STOP_WORDS,
             ngram_range=(1, 3),
-            min_df=2,
+            min_df=dynamic_min_df,
         )
 
         # 5. Representación: KeyBERTInspired
@@ -273,6 +276,9 @@ class SemanticClustering:
         #    y embedding del n-gram candidato para seleccionar
         #    los términos más representativos
         representation = KeyBERTInspired(top_n_words=TOP_N_WORDS)
+
+        # min_topic_size dinámico: nunca mayor que min_cluster_size
+        effective_min_topic_size = min(MIN_TOPIC_SIZE, self.min_cluster_size)
 
         # Construir BERTopic
         self.topic_model = BERTopic(
@@ -282,7 +288,7 @@ class SemanticClustering:
             vectorizer_model=vectorizer,
             representation_model=representation,
             top_n_words=TOP_N_WORDS,
-            min_topic_size=MIN_TOPIC_SIZE,
+            min_topic_size=effective_min_topic_size,
             verbose=self.verbose,
             calculate_probabilities=True,  # Necesario para reduce_outliers
         )

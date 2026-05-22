@@ -467,7 +467,7 @@ class SemanticDetector:
     _ESCUDO_LEXICO: frozenset = frozenset({
         # Macroeconomía / Finanzas públicas
         "hacienda", "moody's", "moodys", "fitch", "s&p", "inflación",
-        "inflacion", "deflación", "deflacion", "peso", "dólar", "dolar",
+        "inflacion", "deflación", "deflacion", "dólar", "dolar",
         "tipo de cambio", "divisa", "divisas", "pib", "producto interno bruto",
         "deuda pública", "deuda publica", "déficit", "deficit", "superávit",
         "superavit", "presupuesto", "erario", "recaudación", "recaudacion",
@@ -524,10 +524,18 @@ class SemanticDetector:
         # Fenómenos sociales irrelevantes / Nota roja urbana
         "osamentas", "fosa clandestina",
         "jornada electoral", "bono", "bonos del tesoro",
-        # ── NUEVO v5.4: Anti-Leyes / Marco Teórico / Estadística ──────────
-        # Descarta notas legislativas, estadísticas y artículos de opinión
-        # que comparten vocabulario ("feminicidio", "menores") pero NO
-        # reportan un evento fáctico individual (quién, cuándo, dónde).
+    })
+
+    # ── Escudo Suave (Penalización, NO bloqueo) ───────────────────
+    #
+    # v7.0: Términos que señalan contenido NO-fáctico (leyes, estadísticas,
+    # opinión, casos internacionales) pero que pueden coexistir con un caso
+    # real en la misma noticia. Aplican penalización de score (-0.35) en
+    # lugar de veto absoluto, permitiendo que noticias con DOBLE contenido
+    # (ej: "Madre asesinada... según datos del REDIM") sobrevivan.
+    # ─────────────────────────────────────────────────────────────────────
+    _ESCUDO_SUAVE: frozenset = frozenset({
+        # Anti-Leyes / Marco Teórico / Estadística
         "iniciativa de ley", "iniciativa de reforma", "propuesta de ley",
         "propone ", "proponen ", "propuso ", "propuesta legislativa",
         "ley monzón", "ley general", "ley de acceso",
@@ -547,10 +555,7 @@ class SemanticDetector:
         "editorial ", "columnista", "opinión de", "opinion de",
         "expertos señalan", "especialistas advierten", "académicos",
         "estudio revela", "investigación revela", "encuesta ",
-        # ── NUEVO v5.4: Localidad / Extranjero ────────────────────────────
-        # Descarta noticias sobre feminicidios ocurridos fuera de México.
-        # Scope EXCLUSIVAMENTE nacional (territorio mexicano).
-        # Formas con y sin tilde para máxima cobertura.
+        # Localidad / Extranjero
         "en colombia", "colombia ", "bogotá", "bogota", "medellín", "medellin",
         "en argentina", "argentina ", "buenos aires", "córdoba argentina",
         "en españa", "españa ", "madrid ", "barcelona ", "sevilla ",
@@ -619,6 +624,8 @@ class SemanticDetector:
     )
 
     # Patrones que señalan FP (NO es un caso de orfandad por feminicidio)
+    # v7.0: Removidos patrones de contexto judicial/policial que aparecen
+    # en TODA noticia genuina (carpeta de investigación, vinculado a proceso, etc.)
     _PATRONES_FP: tuple = (
         # ── ROLES INVERTIDOS: hijo/hija mata a madre/padre ──
         r"hijo\w*\s+(?:la\s+)?(?:mat[óoaé]|asesin[óoaé]|habría\s+(?:matado|asesinado))",
@@ -638,19 +645,6 @@ class SemanticDetector:
         r"(?:adolescente|menor)\s+(?:es\s+)?(?:imputad[oa]|acusad[oa]|detenid[oa]|vinculad[oa])",
         r"formulan\s+imputación\s+a\s+(?:un\s+)?adolescente",
         r"menor\s+de\s+\d+\s+años\s+(?:por\s+)?(?:asesinato|feminicidio|homicidio)",
-        # ── NOTICIA POLICIAL/JUDICIAL sin nexo NNA-huérfano (NUEVO v6.1) ──
-        # Captura/detención del feminicida sin mención de hijos que quedaron solos.
-        r"capturan\s+(?:al\s+)?(?:presunto\s+)?feminicida\s+de",
-        r"detienen\s+(?:al\s+)?(?:presunto\s+)?feminicida\s+de",
-        r"arrestan\s+(?:al\s+)?(?:presunto\s+)?feminicida\s+de",
-        r"(?:capturan|detienen|arrestan|aprehenden)\s+(?:a\s+)?(?:al\s+)?(?:presunto\s+)?(?:homicida|asesino|feminicida)",
-        r"fue\s+(?:detenid[oa]|capturad[oa]|arrestad[oa])\s+el\s+(?:presunto\s+)?feminicida",
-        r"(?:vinculan|presentan|imputan)\s+a\s+proceso\s+(?:al\s+)?(?:presunto\s+)?(?:feminicida|asesino|homicida)",
-        r"(?:girar[ao]n|librar[ao]n)\s+(?:orden\s+de\s+)?aprehens[oi][oó]n",
-        r"senten(?:ci[ao]|cia)\s+(?:a\s+)?\d+\s+años\s+(?:de\s+)?(?:prisión|cárcel)",
-        r"proceso\s+(?:legal|penal|judicial)\s+(?:contra|por|al)",
-        r"vinculado\s+a\s+proceso",
-        r"carpeta\s+de\s+investigación",
         # ── TEMÁTICO: orfandad como tema genérico, NO caso fáctico ──
         r"(?:visibilizar|dimensionar|atender|documentar)\s+(?:la\s+)?orfandad",
         r"orfandad\s+por\s+feminicidio\s*:\s*\d+\s+años",
@@ -752,6 +746,24 @@ class SemanticDetector:
                 return True, kw
         return False, ""
 
+    def _escudo_suave(self, texto: str) -> tuple[bool, str]:
+        """
+        v7.0: Comprueba si el texto contiene keywords del Escudo Suave.
+
+        A diferencia del Escudo Léxico (bloqueo total), el Escudo Suave
+        aplica una penalización de score (-0.35) pero NO bloquea la noticia.
+        Esto permite que noticias con doble contenido (caso real + contexto
+        legislativo/estadístico) sobrevivan si la señal fáctica es fuerte.
+
+        Returns:
+            (penalizar: bool, keyword_encontrada: str)
+        """
+        texto_lower = texto.lower()
+        for kw in self._ESCUDO_SUAVE:
+            if kw in texto_lower:
+                return True, kw
+        return False, ""
+
     def pre_filtro_sintactico(self, texto: str) -> dict:
         """
         Ejecuta el Escudo Léxico y la PoC de roles víctima/agresor ANTES de BETO.
@@ -798,13 +810,27 @@ class SemanticDetector:
                 "caso_valido": False,
                 "roles": {},
                 "razon": razon,
+                "penalizacion_suave": 0.0,
             }
+
+        # ── ETAPA 0b: Escudo Suave (Penalización, NO bloqueo) ────────────
+        # v7.0: Detecta contenido legislativo/estadístico/internacional.
+        # Aplica penalización de -0.35 al score BETO pero NO bloquea.
+        penalizacion_suave = 0.0
+        penalizar, kw_suave = self._escudo_suave(texto)
+        if penalizar:
+            penalizacion_suave = -0.35
+            logger.info(
+                "[PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → '%s'",
+                kw_suave,
+            )
 
         # ── ETAPA 1 y 2: Pre-filtro sintáctico con spaCy ────────────────────
         if not self._prefiltro_habilitado:
             return {
                 "habilitado": False, "bloquear": False, "score_semantico": None,
                 "caso_valido": False, "roles": {}, "razon": "pre-filtro no disponible",
+                "penalizacion_suave": penalizacion_suave,
             }
 
         self._cargar_spacy()
@@ -812,6 +838,7 @@ class SemanticDetector:
             return {
                 "habilitado": False, "bloquear": False, "score_semantico": None,
                 "caso_valido": False, "roles": {}, "razon": "spaCy no disponible",
+                "penalizacion_suave": penalizacion_suave,
             }
 
         try:
@@ -828,12 +855,14 @@ class SemanticDetector:
                     "habilitado": True, "bloquear": True,
                     "score_semantico": 0.0,
                     "caso_valido": False, "roles": roles, "razon": razon,
+                    "penalizacion_suave": 0.0,
                 }
 
             razon = "caso_valido" if caso_valido else "sin_evidencia_suficiente"
             return {
                 "habilitado": True, "bloquear": False, "score_semantico": None,
                 "caso_valido": caso_valido, "roles": roles, "razon": razon,
+                "penalizacion_suave": penalizacion_suave,
             }
 
         except Exception as exc:
@@ -841,6 +870,7 @@ class SemanticDetector:
             return {
                 "habilitado": False, "bloquear": False, "score_semantico": None,
                 "caso_valido": False, "roles": {}, "razon": str(exc),
+                "penalizacion_suave": penalizacion_suave,
             }
 
     # ── Clasificación ───────────────────────────────────────
@@ -893,6 +923,24 @@ class SemanticDetector:
             resultado = self._predict_zero_shot(text)
 
         resultado["prefiltro"] = prefiltro
+
+        # ── Capa 2b: Aplicar penalización suave del Escudo Suave ─────────
+        # v7.0: En lugar de veto, ajusta el score BETO con la penalización.
+        # Noticias genuinas con score alto sobreviven incluso con penalización.
+        penalizacion = prefiltro.get("penalizacion_suave", 0.0)
+        if penalizacion != 0.0:
+            score_original = resultado["score_semantico"]
+            score_ajustado = max(0.0, score_original + penalizacion)
+            resultado["score_semantico"] = round(score_ajustado, 4)
+            # Reclasificar con el score ajustado
+            resultado["clasificacion"] = self._classify_score(score_ajustado)
+            resultado["es_relevante"] = resultado["clasificacion"] in ("Alta", "Media")
+            resultado["confianza"] = self._confidence_level(score_ajustado)
+            resultado["modo"] = resultado.get("modo", "") + "+escudo_suave"
+            logger.info(
+                "[EscudoSuave] Score %.4f → %.4f (penalización=%.2f)",
+                score_original, score_ajustado, penalizacion,
+            )
 
         # ── Capa 3: Post-filtro de Validación Semántica v6.0 ─────────────
         resultado = self._aplicar_post_filtro(resultado, texto_completo)
@@ -954,19 +1002,16 @@ class SemanticDetector:
                 resultado["clasificacion"] = "Media"
                 resultado["confianza"] = "media"
                 resultado["modo"] = resultado.get("modo", "") + "+postfiltro_revision"
-                # Mantiene es_relevante=True para que no se pierda
             else:
-                # Ambiguo en Media (0.50-0.84) sin evidencia VP → descartar
-                # Sin patrón fáctico claro, el score medio no es suficiente.
+                # v7.0: Media sin patrón claro → MANTENER como Media
+                # El periodismo mexicano de nota roja rara vez usa frases
+                # exactas de _PATRONES_VP. Descartar por ausencia de regex
+                # destruía casos válidos (causa raíz de "0 Alta").
                 logger.info(
-                    "[PostFiltro] REVISAR Media→No relevante (sin evidencia VP): %s",
+                    "[PostFiltro] MANTENER Media (sin patrón VP/FP): %s",
                     postfiltro["razon"],
                 )
-                resultado["score_semantico"] = 0.0
-                resultado["es_relevante"] = False
-                resultado["clasificacion"] = "No relevante"
-                resultado["confianza"] = "alta"
-                resultado["modo"] = resultado.get("modo", "") + "+postfiltro_media_descartada"
+                resultado["modo"] = resultado.get("modo", "") + "+postfiltro_media_conservada"
 
         else:
             # VP confirmado → mantener clasificación
@@ -1070,9 +1115,12 @@ class SemanticDetector:
         texts_beto: list[str] = []
 
         # ── Pre-filtro por noticia ──────────────────────────────────
+        # v7.0: Store prefiltros to reuse for soft penalty (avoid double call)
+        prefiltros_por_idx: dict[int, dict] = {}
         for idx, (title, content) in enumerate(zip(titles, contents)):
             texto_completo = f"{title} {content[:1500]}"
             prefiltro = self.pre_filtro_sintactico(texto_completo)
+            prefiltros_por_idx[idx] = prefiltro
             if prefiltro["bloquear"]:
                 resultados_finales[idx] = {
                     "score_semantico": 0.0,
@@ -1086,10 +1134,11 @@ class SemanticDetector:
                 indices_beto.append(idx)
                 texts_beto.append(f"{title} [SEP] {content[:1500]}")
 
-        # Guardar textos completos para el post-filtro
+        # Guardar textos completos y prefiltros para el post-procesamiento
         textos_completos_beto = [
             f"{titles[i]} {contents[i][:1500]}" for i in indices_beto
         ]
+        prefiltros_beto = [prefiltros_por_idx[i] for i in indices_beto]
 
         # ── Batch BETO solo con las noticias no bloqueadas ───────────
         if texts_beto:
@@ -1125,6 +1174,18 @@ class SemanticDetector:
                             })
             else:
                 beto_results = self._predict_zero_shot_batch(texts_beto)
+
+            # v7.0: Aplicar penalización suave ANTES del post-filtro
+            for local_idx in range(len(beto_results)):
+                penalizacion = prefiltros_beto[local_idx].get("penalizacion_suave", 0.0)
+                if penalizacion != 0.0:
+                    score_original = beto_results[local_idx]["score_semantico"]
+                    score_ajustado = max(0.0, score_original + penalizacion)
+                    beto_results[local_idx]["score_semantico"] = round(score_ajustado, 4)
+                    beto_results[local_idx]["clasificacion"] = self._classify_score(score_ajustado)
+                    beto_results[local_idx]["es_relevante"] = beto_results[local_idx]["clasificacion"] in ("Alta", "Media")
+                    beto_results[local_idx]["confianza"] = self._confidence_level(score_ajustado)
+                    beto_results[local_idx]["modo"] = beto_results[local_idx].get("modo", "") + "+escudo_suave"
 
             # Aplicar post-filtro v6.0 a cada resultado BETO
             for local_idx in range(len(beto_results)):
@@ -1206,41 +1267,42 @@ class SemanticDetector:
     @staticmethod
     def _classify_score(score: float) -> str:
         """
-        Clasifica el score en tres niveles con umbrales estrictos (v5.3).
+        Clasifica el score en tres niveles con umbrales relajados (v7.1).
 
-        Umbrales:
-          score >= 0.85  → "Alta"         (certeza alta, caso genuino)
-          0.50 <= s < 0.85 → "Media"      (posible, requiere revisión humana)
-          score < 0.50   → "No relevante" (descartado)
+        Umbrales v7.1 (calibrados a zero-shot cosine similarity):
+          score >= 0.60  → "Alta"         (caso genuino confirmado)
+          0.35 <= s < 0.60 → "Media"      (posible, requiere revisión humana)
+          score < 0.35   → "No relevante" (descartado)
 
-        Nota: tanto "Alta" como "Media" producen es_relevante=True para
-        no perder casos reales en la fase de captura; la distinción sirve
-        para priorizar la revisión humana en el dashboard.
+        Nota: En modo zero-shot, BETO rara vez supera 0.70 incluso para
+        casos genuinos. El modo finetuned produce scores más dispersos
+        (0.0-1.0) y se beneficia de un threshold más alto, pero estos
+        umbrales funcionan para ambos modos sin perder recall.
         """
-        if score >= 0.85:
+        if score >= 0.60:
             return "Alta"
-        elif score >= 0.50:
+        elif score >= 0.35:
             return "Media"
         return "No relevante"
 
     @staticmethod
     def _confidence_level(score: float) -> str:
         """
-        Nivel de confianza alineado con los umbrales v5.3.
+        Nivel de confianza alineado con los umbrales v7.1.
 
         Bandas:
-          score >= 0.85          → "alta"   (zona Alta confirmada)
-          0.65 <= score < 0.85   → "media"  (zona Media con buena señal)
-          0.50 <= score < 0.65   → "baja"   (zona Media limítrofe)
-          score < 0.50           → "alta"   (descarte con alta certeza)
+          score >= 0.60          → "alta"   (zona Alta confirmada)
+          0.47 <= score < 0.60   → "media"  (zona Media con buena señal)
+          0.35 <= score < 0.47   → "baja"   (zona Media limítrofe)
+          score < 0.35           → "alta"   (descarte con alta certeza)
         """
-        if score >= 0.85:
+        if score >= 0.60:
             return "alta"
-        elif score >= 0.65:
+        elif score >= 0.47:
             return "media"
-        elif score >= 0.50:
+        elif score >= 0.35:
             return "baja"
-        # score < 0.50: el descarte también es confiable
+        # score < 0.35: el descarte también es confiable
         return "alta"
 
     # ── Fine-tuning ─────────────────────────────────────────
@@ -1663,10 +1725,10 @@ class HybridScorer:
 
     @staticmethod
     def _classify(score: float) -> str:
-        """Clasifica por umbrales."""
-        if score >= 0.45:
+        """Clasifica por umbrales v7.1."""
+        if score >= 0.60:
             return "Alta"
-        elif score >= 0.30:
+        elif score >= 0.35:
             return "Media"
         elif score >= 0.15:
             return "Baja"

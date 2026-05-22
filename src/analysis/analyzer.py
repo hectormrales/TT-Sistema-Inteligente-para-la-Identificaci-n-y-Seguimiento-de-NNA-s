@@ -122,6 +122,11 @@ class SimplifiedNewsAnalyzer:
         self.synonym_dict = SynonymDictionary()
         self.current_batch_id: Optional[str] = None
 
+    @staticmethod
+    def _hdbscan_min_samples(min_cluster_size: int) -> int:
+        """Calcula min_samples proporcional a min_cluster_size."""
+        return max(1, min_cluster_size // 2)
+
     # ── Pasos del pipeline ──────────────────────────────────
 
     def step_1_collect_data(self, start_date: str | None = None, end_date: str | None = None, scraper_type: str = 'all') -> pd.DataFrame:
@@ -683,9 +688,9 @@ class SimplifiedNewsAnalyzer:
                 if clasificacion != "No relevante":
                     score_fem = float(row.get("score_feminicidio", 0.0) or 0.0)
                     score_v_ind = float(row.get("score_victima_indirecta", 0.0) or 0.0)
-                    if score_v_ind >= 0.80 and score_fem > 0.10:
+                    if score_v_ind >= 0.60 and score_fem > 0.10:
                         clasificacion = "Alta"
-                        score_semantico = max(score_semantico, 0.85)
+                        score_semantico = max(score_semantico, 0.75)
                         logger.info(
                             "  ★ Bypass de Oro confirmado (post-filtro OK): "
                             "v_ind=%.2f, fem=%.2f → Alta",
@@ -741,22 +746,27 @@ class SimplifiedNewsAnalyzer:
 
             print(f"  Corpus para BERTopic: {n_relevante} noticias (Alta/Media)")
 
-            MIN_DOCS = 20
+            # v7.0: MIN_DOCS bajado de 20 a 5 para no omitir clustering
+            # cuando el pipeline produce pocas noticias Alta/Media.
+            MIN_DOCS = 5
             if n_relevante < MIN_DOCS:
                 print(f"  [!] Corpus insuficiente ({n_relevante} < {MIN_DOCS}). BERTopic omitido.")
                 return self.df_processed
 
-            # Ajuste dinámico de min_cluster_size
+            # Ajuste dinámico de min_cluster_size (v7.0 — más agresivo)
             if n_relevante >= 100:
                 min_cs = 8
             elif n_relevante >= 50:
                 min_cs = 5
-            else:
+            elif n_relevante >= 20:
                 min_cs = 3
+            else:
+                min_cs = 2
             print(f"  min_cluster_size ajustado a: {min_cs}")
 
             clustering = SemanticClustering(
                 min_cluster_size=min_cs,
+                min_samples=min(self._hdbscan_min_samples(min_cs), min_cs),
                 reduce_outliers=True,
             )
 
@@ -764,7 +774,28 @@ class SimplifiedNewsAnalyzer:
             docs = df_relevante["contenido"].fillna("").astype(str).tolist()
             titles = df_relevante["titulo"].fillna("").astype(str).tolist()
 
-            results = clustering.fit_transform(docs=docs, titles=titles)
+            # v7.0: Wrap defensivo — BERTopic puede crashear con corpus
+            # pequeños por c-TF-IDF (max_df < min_df). Fallback graceful.
+            try:
+                results = clustering.fit_transform(docs=docs, titles=titles)
+            except ValueError as e:
+                logger.warning(
+                    "[BERTopic] Crash recuperable: %s. "
+                    "Reintentando con min_df=1...", e
+                )
+                # Reintentar con parámetros ultra-conservadores
+                clustering_retry = SemanticClustering(
+                    min_cluster_size=2,
+                    min_samples=1,
+                    reduce_outliers=False,
+                )
+                try:
+                    results = clustering_retry.fit_transform(docs=docs, titles=titles)
+                    clustering = clustering_retry
+                except Exception as e2:
+                    logger.error("[BERTopic] Segundo intento falló: %s", e2)
+                    print(f"  [!] BERTopic no pudo ejecutarse: {e2}")
+                    return self.df_processed
 
             # Escribir topic_id y topic_description solo en las filas relevantes
             labels = results.get("labels", {})
