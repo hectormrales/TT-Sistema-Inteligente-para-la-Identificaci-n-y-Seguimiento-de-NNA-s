@@ -623,24 +623,26 @@ class SimplifiedNewsAnalyzer:
 
     def step_9_semantic_detection(self) -> pd.DataFrame:
         """
-        OE-1: Detección semántica con BETO (lógica simplificada v5.1).
+        OE-1: Detección semántica con BETO (lógica v6.1 — post-filtro integrado).
 
-        Reglas de clasificación (en orden de prioridad):
+        Flujo de decisión corregido:
 
-          NIVEL 0 — BYPASS DE ORO (keywords exactas del collector):
-            Si score_victima_indirecta >= 0.80 Y score_feminicidio > 0.10
-            → clasificacion_final = "Alta" OBLIGATORIAMENTE.
-            BETO no puede contradecir una coincidencia de texto exacta.
+          PASO A — predict_batch() aplica 3 capas internas:
+            1. Pre-filtro: Escudo Léxico + spaCy → bloquea FP evidentes.
+            2. BETO (finetuned o zero_shot) → genera score_semantico.
+            3. Post-filtro v6.0: regex que valida el evento fáctico NNA-huérfano.
+               Puede degradar Alta→Media o Alta→No relevante.
+            El resultado incluye `clasificacion` ya procesada por los 3 filtros.
 
-          NIVEL 1 — SCORE SEMÁNTICO BETO (umbral único):
-            score_semantico >= 0.50  → "Alta"
-            score_semantico >= 0.30  → "Media"
-            score_semantico <  0.30  → "Baja" / "No relevante"
+          PASO B — Bypass de Oro (solo CONFIRMACIÓN, nunca elevación):
+            Solo se aplica si el post-filtro NO degradó la noticia a
+            "No relevante". Esto evita que keywords heurísticas eleven
+            noticias que el post-filtro ya identificó como FP.
 
-        Se elimina: alpha dinámico, umbrales por cluster BERTopic,
-        vía rápida y Collector-Alta. El score semántico es soberano.
+        NOTA: step_9 NO reaplica umbrales de score crudo. La clasificacion
+        final proviene de predict_batch() para preservar el post-filtro.
         """
-        print("=== PASO 9: DETECCIÓN SEMÁNTICA BETO (OE-1) ===")
+        print("=== PASO 9: DETECCIÓN SEMÁNTICA BETO (OE-1 v6.1) ===")
         assert self.df_processed is not None, "Ejecute pasos anteriores primero"
 
         try:
@@ -652,61 +654,56 @@ class SimplifiedNewsAnalyzer:
             titulos = self.df_processed["titulo"].fillna("").astype(str).tolist()
             contenidos = self.df_processed["contenido"].fillna("").astype(str).tolist()
 
-            # Inferencia por lotes
+            # ── Inferencia por lotes (pre-filtro + BETO + post-filtro v6.0) ──
             try:
                 resultados_batch = detector.predict_batch(titulos, contenidos)
-                scores_semanticos = [r.get("score_semantico", 0.0) for r in resultados_batch]
             except Exception as e:
                 logger.error(f"Error en predict_batch: {e}")
-                scores_semanticos = [0.0] * total
+                resultados_batch = [
+                    {"score_semantico": 0.0, "clasificacion": "No relevante"}
+                ] * total
 
-            self.df_processed["score_semantico"] = scores_semanticos
-            self.df_processed["modo_deteccion"] = "semantic_v51"
+            self.df_processed["modo_deteccion"] = "semantic_v61"
 
-            # ── Clasificación por noticia ────────────────────────────
-            for idx, row in self.df_processed.iterrows():
-                s_score = float(row.get("score_semantico", 0.0))
-                score_fem = float(row.get("score_feminicidio", 0.0))
-                score_v_ind = float(row.get("score_victima_indirecta", 0.0))
+            # ── Clasificación por noticia usando resultado completo de predict_batch ──
+            # CLAVE: usamos `clasificacion` del resultado, que ya pasó por:
+            #   1. Escudo Léxico + spaCy (pre-filtro)
+            #   2. BETO (score_semantico)
+            #   3. Post-filtro de validación semántica v6.0 (regex VP/FP)
+            # NO se reaplican umbrales de score crudo para no deshacer el post-filtro.
+            for local_idx, (df_idx, row) in enumerate(self.df_processed.iterrows()):
+                resultado = resultados_batch[local_idx]
+                score_semantico = float(resultado.get("score_semantico", 0.0))
+                # Clasificacion con los 3 filtros ya aplicados
+                clasificacion = resultado.get("clasificacion", "No relevante")
 
-                # NIVEL 0: BYPASS DE ORO
-                # Keywords exactas del collector → Alta garantizada.
-                es_bypass_oro = (score_v_ind >= 0.80 and score_fem > 0.10)
+                # ── BYPASS DE ORO (confirmación, nunca elevación) ────────────
+                # Solo actúa si el post-filtro NO degradó a "No relevante".
+                # Garantiza "Alta" cuando keywords exactas + post-filtro coinciden.
+                if clasificacion != "No relevante":
+                    score_fem = float(row.get("score_feminicidio", 0.0) or 0.0)
+                    score_v_ind = float(row.get("score_victima_indirecta", 0.0) or 0.0)
+                    if score_v_ind >= 0.80 and score_fem > 0.10:
+                        clasificacion = "Alta"
+                        score_semantico = max(score_semantico, 0.85)
+                        logger.info(
+                            "  ★ Bypass de Oro confirmado (post-filtro OK): "
+                            "v_ind=%.2f, fem=%.2f → Alta",
+                            score_v_ind, score_fem,
+                        )
 
-                if es_bypass_oro:
-                    clasificacion = "Alta"
-                    score_final = max(float(row.get("score_compuesto", 0.0)), 0.85)
-                    logger.info(
-                        f"  ★ Bypass de Oro: v_ind={score_v_ind:.2f}, "
-                        f"fem={score_fem:.2f} → Alta"
-                    )
-
-                # NIVEL 1: UMBRAL ÚNICO BETO
-                elif s_score >= 0.50:
-                    clasificacion = "Alta"
-                    score_final = s_score
-
-                elif s_score >= 0.30:
-                    clasificacion = "Media"
-                    score_final = s_score
-
-                elif s_score >= 0.15:
-                    clasificacion = "Baja"
-                    score_final = s_score
-
-                else:
-                    clasificacion = "No relevante"
-                    score_final = s_score
-
-                self.df_processed.at[idx, "relevancia_final"] = round(score_final, 4)
-                self.df_processed.at[idx, "clasificacion_final"] = clasificacion
+                self.df_processed.at[df_idx, "score_semantico"] = round(score_semantico, 4)
+                self.df_processed.at[df_idx, "relevancia_final"] = round(score_semantico, 4)
+                self.df_processed.at[df_idx, "clasificacion_final"] = clasificacion
 
             # Resumen
-            avg_sem = float(np.mean(scores_semanticos))
+            scores_semanticos = self.df_processed["score_semantico"].tolist()
+            avg_sem = float(np.mean(scores_semanticos)) if scores_semanticos else 0.0
             alta = int((self.df_processed["clasificacion_final"] == "Alta").sum())
             media = int((self.df_processed["clasificacion_final"] == "Media").sum())
+            no_rel = int((self.df_processed["clasificacion_final"] == "No relevante").sum())
             print(f"  Score semántico promedio: {avg_sem:.4f}")
-            print(f"  {total} noticias procesadas | Alta: {alta} | Media: {media}")
+            print(f"  {total} noticias procesadas | Alta: {alta} | Media: {media} | No relevante: {no_rel}")
 
         except ImportError as e:
             print(f"  [!] Módulo semántico no disponible: {e}")

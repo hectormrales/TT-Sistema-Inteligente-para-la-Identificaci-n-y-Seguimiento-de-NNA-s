@@ -42,6 +42,7 @@ Métricas objetivo (OE-1):
 """
 
 import os
+import re
 import json
 import logging
 import hashlib
@@ -454,19 +455,322 @@ class SemanticDetector:
                 )
                 self._prefiltro_habilitado = False
 
+    # ── Escudo Léxico (Blacklist) ─────────────────────────────
+    #
+    # Palabras que señalan dominios COMPLETAMENTE AJENOS al caso de uso
+    # (feminicidio → orfandad NNA). Su presencia indica FP estructural.
+    #
+    # Criterio: término que NUNCA aparece en noticias genuinas del corpus
+    # objetivo pero SÍ en noticias que BETO califica como "Alta" por tono
+    # periodístico/institucional compartido.
+    # ─────────────────────────────────────────────────────────────────────
+    _ESCUDO_LEXICO: frozenset = frozenset({
+        # Macroeconomía / Finanzas públicas
+        "hacienda", "moody's", "moodys", "fitch", "s&p", "inflación",
+        "inflacion", "deflación", "deflacion", "peso", "dólar", "dolar",
+        "tipo de cambio", "divisa", "divisas", "pib", "producto interno bruto",
+        "deuda pública", "deuda publica", "déficit", "deficit", "superávit",
+        "superavit", "presupuesto", "erario", "recaudación", "recaudacion",
+        "impuesto", "impuestos", "iva", "isr", "sat", "contribuyentes",
+        "contribuyente", "austeridad", "reservas internacionales",
+        "banco de méxico", "banco de mexico", "banxico", "tasa de interés",
+        "tasa de interes", "remesas", "balanza comercial", "exportaciones",
+        "importaciones", "aranceles", "arancel", "nearshoring",
+        # Energía / Combustibles / Infraestructura
+        "pemex", "cfe", "pipas", "gasolina", "gasolinazo", "litro de gasolina",
+        "combustible", "energía eléctrica", "energia electrica", "electricidad",
+        "apagón", "apagon", "planta eléctrica", "planta electrica", "refinería",
+        "refineria", "ducto", "oleoducto", "gasoducto", "megaobra", "tren maya",
+        "aeropuerto", "naicm", "aifa", "autopista", "carretera", "puente",
+        "viaducto", "metro cdmx", "metrobús", "metrobus", "trolebús", "trolebus",
+        # Clima / Medioambiente / Desastres naturales
+        "sequía", "sequia", "lluvia", "lluvias", "inundación", "inundacion",
+        "ciclón", "ciclon", "huracán", "huracan", "terremoto", "sismo",
+        "temblor", "erupción", "erupcion", "volcán", "volcan", "granizo",
+        "tormenta", "helada", "frente frío", "frente frio", "ola de calor",
+        "cambio climático", "cambio climatico", "emisiones de co2", "co2",
+        "deforestación", "deforestacion", "biodiversidad", "ecosistema",
+        "contaminación del agua", "contaminacion del agua",
+        "contaminación del aire", "contaminacion del aire",
+        # Espectáculos / Entretenimiento / Cultura
+        "concierto", "netflix", "amazon prime", "disney plus", "hbo max",
+        "spotify", "tiktok", "youtuber", "influencer", "reality show",
+        "premiación", "premiacion", "oscar", "grammy", "emmy", "cannes",
+        "festival de cine", "blockbuster", "taquilla", "estreno",
+        "videojuego", "esports", "twitch", "videoclip", "álbum", "album",
+        "gira musical", "tour", "opening act", "sold out",
+        # Política / Gobierno (temas no relacionados con NNA)
+        "elecciones", "elección", "eleccion", "candidato", "candidatura",
+        "partido político", "partido politico", "morena", "pan ", "pri ",
+        "prd ", "movimiento ciudadano", "ine ", "tribunal electoral",
+        "diputados", "senadores", "congreso de la unión", "congreso de la union",
+        "cámara de diputados", "camara de diputados", "reforma constitucional",
+        "plan de nación", "plan de nacion", "conferencia mañanera",
+        "conferencia maňanera", "mañanera", "manañera",
+        # Deportes
+        "futbol", "fútbol", "liga mx", "premier league", "champions league",
+        "mundial", "copa del mundo", "selección nacional", "seleccion nacional",
+        "olimpiadas", "paralímpicos", "paralimpicos", "maratón", "maraton",
+        "nfl", "nba", "mlb", "box", "boxeo", "lucha libre", "ciclismo",
+        "fórmula 1", "formula 1", "gp de mexico", "gp de méxico",
+        # Salud pública (epidemias/pandemia — no violencia de género)
+        "covid", "pandemia", "vacuna", "vacunación", "vacunacion",
+        "imss", "issste", "salud pública", "salud publica", "epidemia",
+        "brote", "variante", "ómicron", "omicron", "dengue", "cólera", "colera",
+        # Ciencia / Tecnología (no relacionados con NNA)
+        "inteligencia artificial", "chatgpt", "openai", "google bard",
+        "criptomoneda", "bitcoin", "ethereum", "blockchain", "nft",
+        "startup", "unicornio tecnológico", "unicornio tecnologico",
+        # Fenómenos sociales irrelevantes / Nota roja urbana
+        "osamentas", "fosa clandestina",
+        "jornada electoral", "bono", "bonos del tesoro",
+        # ── NUEVO v5.4: Anti-Leyes / Marco Teórico / Estadística ──────────
+        # Descarta notas legislativas, estadísticas y artículos de opinión
+        # que comparten vocabulario ("feminicidio", "menores") pero NO
+        # reportan un evento fáctico individual (quién, cuándo, dónde).
+        "iniciativa de ley", "iniciativa de reforma", "propuesta de ley",
+        "propone ", "proponen ", "propuso ", "propuesta legislativa",
+        "ley monzón", "ley general", "ley de acceso",
+        "reforma al código", "reforma penal", "código nacional",
+        "aprobó la ley", "aprueban la ley", "aprobaron la ley",
+        "senado aprobó", "cámara aprobó", "congreso aprobó",
+        "dictamen", "decreto presidencial", "punto de acuerdo",
+        "redim", "unicef", "onu mujeres", "inmujeres",
+        "estadística", "estadisticas", "estadísticas",
+        "tasa de feminicidio", "tasa de homicidio", "incidencia delictiva",
+        "informe anual", "reporte anual", "reporte trimestral",
+        "cifras de", "datos de violencia", "datos del snsp",
+        "secretariado ejecutivo", "snsp",
+        "alerta de género", "alerta de violencia de género",
+        "protocolo de actuación", "mecanismo de protección",
+        "columna de opinión", "artículo de opinión", "articulo de opinion",
+        "editorial ", "columnista", "opinión de", "opinion de",
+        "expertos señalan", "especialistas advierten", "académicos",
+        "estudio revela", "investigación revela", "encuesta ",
+        # ── NUEVO v5.4: Localidad / Extranjero ────────────────────────────
+        # Descarta noticias sobre feminicidios ocurridos fuera de México.
+        # Scope EXCLUSIVAMENTE nacional (territorio mexicano).
+        # Formas con y sin tilde para máxima cobertura.
+        "en colombia", "colombia ", "bogotá", "bogota", "medellín", "medellin",
+        "en argentina", "argentina ", "buenos aires", "córdoba argentina",
+        "en españa", "españa ", "madrid ", "barcelona ", "sevilla ",
+        "en chile", "chile ", "santiago de chile",
+        "en perú", "peru ", "lima perú", "lima peru",
+        "en venezuela", "venezuela ", "caracas ",
+        "en bolivia", "bolivia ", "la paz bolivia",
+        "en ecuador", "ecuador ", "quito ",
+        "en guatemala", "guatemala ", "ciudad de guatemala",
+        "en honduras", "honduras ", "tegucigalpa",
+        "en el salvador", "el salvador ", "san salvador",
+        "en nicaragua", "nicaragua ", "managua ",
+        "en costa rica", "costa rica ", "san josé costa",
+        "en panamá", "panama ", "ciudad de panamá",
+        "en cuba", "cuba ", "la habana",
+        "en república dominicana", "república dominicana", "republica dominicana",
+        "en paraguay", "paraguay ", "asunción",
+        "en uruguay", "uruguay ", "montevideo",
+        "en puerto rico", "puerto rico ",
+    })
+
+    # ── Post-Filtro de Validación Semántica v6.0 ────────────────
+    #
+    # Se ejecuta DESPUÉS de BETO cuando el score >= 0.85 ("Alta").
+    # Valida que el contenido realmente describe un evento fáctico
+    # donde NNA quedan huérfanos/sobrevivientes por feminicidio.
+    #
+    # Problema raíz: BETO asigna score > 0.90 a CUALQUIER texto con
+    # vocabulario {feminicidio, hijo, menor, mujer, asesinada} sin
+    # distinguir el ROL del menor (huérfano vs víctima vs agresor).
+    # ─────────────────────────────────────────────────────────────
+
+    # Patrones que CONFIRMAN que es un verdadero positivo (VP)
+    _PATRONES_VP: tuple = (
+        # NNA queda huérfano/desamparado
+        r"(?:quedaron?|quedan)\s+(?:en\s+)?(?:orfandad|huérfan|desamp)",
+        r"deja(?:ndo|ron|\s)\s*(?:a\s+)?(?:sus\s+)?(?:\d+\s+)?hijos?",
+        r"era\s+madre\s+de\s+\d+",
+        r"madre\s+de\s+(?:dos|tres|cuatro|cinco|seis|siete|familia)",
+        # NNA presencia el crimen
+        r"(?:frente|delante)\s+(?:a|de)\s+(?:sus?\s+)?hijos?",
+        r"hijos?\s+(?:estaban?|quedaron?)\s+presentes?",
+        r"(?:menor|niño|niña|hijo|hija)\s+(?:presenció|presenciaron|vio|atestiguó)",
+        r"(?:menor|niño|niña)\s+(?:que\s+)?presenció",
+        # NNA bajo resguardo institucional
+        r"(?:menores?|hijos?|niños?)\s+(?:bajo|en)\s+(?:resguardo|custodia|protección)",
+        r"(?:DIF|SNDIF|procuraduría)\s+(?:resguard|custodi|proteg)",
+        r"resguardo\s+del\s+DIF",
+        # Sustracción/desaparición de menor tras feminicidio (AMPLIADO v6.1)
+        r"(?:sustra|rapt|secuestr|desaparec)\w+\s+(?:a\s+)?(?:su\s+)?(?:menor|hija|hijo|niña|niño)",
+        r"(?:menor|hija|hijo|niña)\s+(?:reportada?|desaparecida?)\s+(?:como|tras|luego|después)",
+        r"doble\s+feminicidio.*(?:menor|hija|hijo)",
+        r"menor\s+s[ií]\s+fue\s+sustra[ií]d[ao]",
+        r"(?:menor|niñ[ao]|hija|hijo)\s+(?:fue\s+)?sustra[ií]d[ao]",
+        r"(?:halla|hallan|encuentran|localizan)\s+(?:a\s+)?(?:menor|niñ[ao])\s+(?:con\s+vida|sano|sana|ileso)",
+        # Orfandad fáctica explícita
+        r"(?:dos|tres|cuatro|\d+)\s+menores\s+(?:quedan|quedaron)\s+(?:en\s+)?orfandad",
+        r"hijos?\s+(?:quedaron?|quedan)\s+solos?",
+        r"(?:tragedia|feminicidio).*(?:deja|dejó).*(?:menor|huérfan|orfandad)",
+        # Hijo cuenta / testimonio de menor
+        r"(?:hijo|hija|menor|niño|niña)\s+(?:que\s+)?(?:relat|narr|cont|dijo|revel)",
+        r"testimonio\s+(?:del?\s+)?(?:menor|niño|niña|hijo)",
+        # Menor solo / abandonado tras el crimen
+        r"(?:menor|niñ[ao]|bebé)\s+(?:fue\s+)?(?:encontrad[oa]\s+solo|hall[ao]\s+solo|abandon[ao]\s+(?:en|junto))",
+        r"se\s+quedó\s+(?:solo|sola|sin\s+madre|sin\s+padres?|huérfan)",
+    )
+
+    # Patrones que señalan FP (NO es un caso de orfandad por feminicidio)
+    _PATRONES_FP: tuple = (
+        # ── ROLES INVERTIDOS: hijo/hija mata a madre/padre ──
+        r"hijo\w*\s+(?:la\s+)?(?:mat[óoaé]|asesin[óoaé]|habría\s+(?:matado|asesinado))",
+        r"hijo\w*\s+(?:presuntamente\s+)?(?:mata|asesina|habría)",
+        r"(?:su\s+)?hijo\w*\s+(?:la|lo|le)\s+(?:mat|asesin|apuñal|dispar)",
+        r"(?:hija|yerno)\s+(?:fueron?|fue)\s+detenid[oa]s?",
+        r"(?:hija|hijo).*(?:detenid[oa]|arrest[oa]d[oa])\s+(?:por|como)",
+        # ── MENOR como víctima DIRECTA del asesinato ──
+        r"(?:feminicidio|asesinato)\s+(?:de\s+)?(?:una\s+)?(?:menor|jovencita|niña|adolescente)\b",
+        r"(?:menor|niña|adolescente)\s+(?:de\s+\d+\s+años\s+)?(?:asesinada|encontrada\s+sin\s+vida)",
+        r"(?:mujer\s+)?(?:asesina|mata)\s+a\s+su\s+(?:hijo|hija)\b",
+        r"(?:homicidio|muerte)\s+de\s+su\s+hijo",
+        r"(?:olvidarlo|dejarlo|dejándolo)\s+(?:\d+\s+)?horas?\s+(?:en\s+)?(?:el\s+)?auto",
+        r"menor\s+cayó\s+de\s+un",
+        # ── MENOR como AGRESOR (perpetrador) ──
+        r"(?:detienen|arrestan|capturan)\s+a\s+(?:un\s+)?menor\s+(?:por|como|de)",
+        r"(?:adolescente|menor)\s+(?:es\s+)?(?:imputad[oa]|acusad[oa]|detenid[oa]|vinculad[oa])",
+        r"formulan\s+imputación\s+a\s+(?:un\s+)?adolescente",
+        r"menor\s+de\s+\d+\s+años\s+(?:por\s+)?(?:asesinato|feminicidio|homicidio)",
+        # ── NOTICIA POLICIAL/JUDICIAL sin nexo NNA-huérfano (NUEVO v6.1) ──
+        # Captura/detención del feminicida sin mención de hijos que quedaron solos.
+        r"capturan\s+(?:al\s+)?(?:presunto\s+)?feminicida\s+de",
+        r"detienen\s+(?:al\s+)?(?:presunto\s+)?feminicida\s+de",
+        r"arrestan\s+(?:al\s+)?(?:presunto\s+)?feminicida\s+de",
+        r"(?:capturan|detienen|arrestan|aprehenden)\s+(?:a\s+)?(?:al\s+)?(?:presunto\s+)?(?:homicida|asesino|feminicida)",
+        r"fue\s+(?:detenid[oa]|capturad[oa]|arrestad[oa])\s+el\s+(?:presunto\s+)?feminicida",
+        r"(?:vinculan|presentan|imputan)\s+a\s+proceso\s+(?:al\s+)?(?:presunto\s+)?(?:feminicida|asesino|homicida)",
+        r"(?:girar[ao]n|librar[ao]n)\s+(?:orden\s+de\s+)?aprehens[oi][oó]n",
+        r"senten(?:ci[ao]|cia)\s+(?:a\s+)?\d+\s+años\s+(?:de\s+)?(?:prisión|cárcel)",
+        r"proceso\s+(?:legal|penal|judicial)\s+(?:contra|por|al)",
+        r"vinculado\s+a\s+proceso",
+        r"carpeta\s+de\s+investigación",
+        # ── TEMÁTICO: orfandad como tema genérico, NO caso fáctico ──
+        r"(?:visibilizar|dimensionar|atender|documentar)\s+(?:la\s+)?orfandad",
+        r"orfandad\s+por\s+feminicidio\s*:\s*\d+\s+años",
+        r"(?:deuda|crisis|problema|reto)\s+(?:que|de).*orfandad",
+        r"podcast|editorial|opinión|columna",
+        # ── ESTADÍSTICAS / RANKINGS ──
+        r"(?:primer|segund|tercer|cuart|quint|sext|séptim|octav|noven|décim)\w*\s+lugar",
+        r"\d+\s+de\s+cada\s+\d+\s+(?:menor|niñ|mujer)",
+        r"\d+\s+(?:niñas|menores|mujeres)\s+(?:asesinadas|desaparecidas)\s+en\s+(?:una\s+)?década",
+        r"se\s+(?:disparó|incrementó|registró)\s+\d+%",
+        r"(?:cifras?|datos?)\s+(?:del?\s+)?(?:SNSP|INEGI|SESNSP)",
+        # ── LEGISLATIVO / INSTITUCIONAL (que evadió el escudo léxico) ──
+        r"(?:sentencia|fallo|resolución)\s+(?:de\s+)?(?:la\s+)?(?:CoIDH|Corte\s+IDH|CIDH)",
+        r"(?:congreso|senado|cámara)\s+(?:obligará|aprobó|aprueba)",
+        r"(?:obligará?|obliga)\s+al\s+Estado\s+a\s+(?:proteger|atender)",
+        r"(?:incrementa|aumenta|destina)\s+recursos\s+(?:para|a)",
+        r"beca\s+(?:rita|benito|bienestar)",
+        # ── ABUSO SEXUAL / EXPLOTACIÓN (no feminicidio) ──
+        r"abuso\s+sexual\s+(?:contra|de|a)\s+(?:un[oa]?\s+)?menor",
+        r"(?:corrupción|explotación|trata)\s+de\s+menores",
+        r"(?:extorsión|secuestro)\s+a\s+mujeres",
+        # ── VIOLENCIA GENÉRICA sin nexo NNA-huérfano ──
+        r"(?:matan|asesinan|ejecutan)\s+a\s+(?:un\s+)?(?:hombre|mesero|pareja)",
+        r"(?:matan|asesinan)\s+a\s+(?:madre\s+e\s+hijo|pareja)\s+(?:cuando|mientras)\s+(?:intentaban|iban)",
+        r"ataque\s+armado\s+en\s+(?:parque|calle|bar|restaurante)",
+    )
+
+    @classmethod
+    def _post_filtro_validacion(cls, texto: str) -> dict:
+        """
+        Post-filtro de Validación Semántica v6.0.
+
+        Se ejecuta DESPUÉS de BETO cuando el score >= 0.85 para
+        verificar que el texto realmente describe un caso fáctico de
+        NNA que queda huérfano/sobreviviente por feminicidio.
+
+        Estrategia:
+          1. Buscar patrones FP → si match, degradar a "No relevante".
+          2. Buscar patrones VP → si match, confirmar como "Alta".
+          3. Sin match claro → degradar a "Media" (requiere revisión).
+
+        Args:
+            texto: Texto completo (título + contenido).
+
+        Returns:
+            dict con:
+              - validado (bool): True si el texto pasa la validación.
+              - accion (str): "confirmar", "degradar" o "revisar".
+              - razon (str): Explicación legible.
+              - patron (str): Patrón que activó la decisión.
+        """
+        texto_lower = texto.lower()
+
+        # ── Paso 1: Buscar patrones FP (señales de falso positivo) ──
+        for patron in cls._PATRONES_FP:
+            match = re.search(patron, texto_lower)
+            if match:
+                return {
+                    "validado": False,
+                    "accion": "degradar",
+                    "razon": f"PostFiltro FP: '{match.group()}'",
+                    "patron": patron,
+                }
+
+        # ── Paso 2: Buscar patrones VP (señales de verdadero positivo) ──
+        for patron in cls._PATRONES_VP:
+            match = re.search(patron, texto_lower)
+            if match:
+                return {
+                    "validado": True,
+                    "accion": "confirmar",
+                    "razon": f"PostFiltro VP confirmado: '{match.group()}'",
+                    "patron": patron,
+                }
+
+        # ── Paso 3: Sin evidencia clara → degradar a Media para revisión ──
+        return {
+            "validado": False,
+            "accion": "revisar",
+            "razon": "PostFiltro: sin patrón VP/FP claro, requiere revisión humana",
+            "patron": "",
+        }
+
+    def _escudo_lexico(self, texto: str) -> tuple[bool, str]:
+        """
+        Comprueba si el texto contiene alguna stop-keyword del Escudo Léxico.
+
+        Búsqueda case-insensitive sobre el texto completo.
+        frozenset garantiza búsqueda O(1) por keyword.
+
+        Returns:
+            (bloqueado: bool, keyword_encontrada: str)
+              - bloqueado=True  → keyword_encontrada es la primera coincidencia.
+              - bloqueado=False → keyword_encontrada es "".
+        """
+        texto_lower = texto.lower()
+        for kw in self._ESCUDO_LEXICO:
+            if kw in texto_lower:
+                return True, kw
+        return False, ""
+
     def pre_filtro_sintactico(self, texto: str) -> dict:
         """
-        Ejecuta la PoC de roles víctima/agresor sobre el texto ANTES de BETO.
+        Ejecuta el Escudo Léxico y la PoC de roles víctima/agresor ANTES de BETO.
 
-        Objetivo dual:
-          1. BLOQUEO rápido (score=0.0): si la PoC detecta que el menor es
-             víctima directa de violencia (FP sintáctico confirmado), se
-             retorna inmediatamente sin invocar BETO — ahorrando ~200-600 ms
-             de inferencia por noticia y blindando el sistema.
+        Etapas (en orden de prioridad / menor costo computacional primero):
+
+          0. ESCUDO LÉXICO (nueva capa v5.3 — O(n_keywords) sobre texto plano):
+             Bloqueo inmediato si el texto contiene una stop-keyword de dominio
+             ajeno (macroeconomía, espectáculos, clima, política, etc.).
+             → Retorna bloquear=True, score_semantico=0.0 SIN invocar spaCy/BETO.
+
+          1. BLOQUEO sintáctico (PoC spaCy — ~50-150 ms):
+             Si la PoC detecta que el menor es víctima directa de violencia
+             (FP sintáctico confirmado), retorna score=0.0 sin invocar BETO.
+
           2. ACELERACIÓN positiva: si la PoC confirma el patrón
-             (mujer víctima + menor superviviente), se añade la señal al
+             (mujer víctima + menor superviviente), añade la señal al
              dict de retorno para que predict() pueda usarla como boost
-             si lo desea en versiones futuras.
+             en versiones futuras.
 
         Args:
             texto: Texto completo de la noticia (título + contenido).
@@ -475,18 +779,40 @@ class SemanticDetector:
             dict con claves:
               - habilitado (bool): Si el pre-filtro pudo ejecutarse.
               - bloquear (bool): True ⇒ FP confirmado, NO pasar a BETO.
+              - score_semantico (float): 0.0 si bloqueado por Escudo Léxico.
               - caso_valido (bool): True ⇒ PoC detectó patrón positivo.
               - roles (dict): Detalle de roles extraídos por la PoC.
               - razon (str): Descripción legible del resultado.
         """
+        # ── ETAPA 0: Escudo Léxico (Blacklist) ──────────────────────────────
+        # Costo: O(n_keywords × len(texto)) — operación de cadena pura, sin ML.
+        # Se ejecuta PRIMERO para ahorrar spaCy + BETO (~200-800 ms por noticia).
+        bloqueado_lexico, kw_encontrada = self._escudo_lexico(texto)
+        if bloqueado_lexico:
+            razon = f"FP bloqueado por Escudo Léxico: {kw_encontrada}"
+            logger.info("[PreFiltro/EscudoLexico] BLOQUEO → '%s'", kw_encontrada)
+            return {
+                "habilitado": True,
+                "bloquear": True,
+                "score_semantico": 0.0,
+                "caso_valido": False,
+                "roles": {},
+                "razon": razon,
+            }
+
+        # ── ETAPA 1 y 2: Pre-filtro sintáctico con spaCy ────────────────────
         if not self._prefiltro_habilitado:
-            return {"habilitado": False, "bloquear": False,
-                    "caso_valido": False, "roles": {}, "razon": "pre-filtro no disponible"}
+            return {
+                "habilitado": False, "bloquear": False, "score_semantico": None,
+                "caso_valido": False, "roles": {}, "razon": "pre-filtro no disponible",
+            }
 
         self._cargar_spacy()
         if not self._prefiltro_habilitado:  # carga falló
-            return {"habilitado": False, "bloquear": False,
-                    "caso_valido": False, "roles": {}, "razon": "spaCy no disponible"}
+            return {
+                "habilitado": False, "bloquear": False, "score_semantico": None,
+                "caso_valido": False, "roles": {}, "razon": "spaCy no disponible",
+            }
 
         try:
             caso_valido, roles = _poc_analizar(texto, self._spacy_nlp)
@@ -500,19 +826,22 @@ class SemanticDetector:
                 logger.info("[PreFiltro] BLOQUEO → %s", razon)
                 return {
                     "habilitado": True, "bloquear": True,
+                    "score_semantico": 0.0,
                     "caso_valido": False, "roles": roles, "razon": razon,
                 }
 
             razon = "caso_valido" if caso_valido else "sin_evidencia_suficiente"
             return {
-                "habilitado": True, "bloquear": False,
+                "habilitado": True, "bloquear": False, "score_semantico": None,
                 "caso_valido": caso_valido, "roles": roles, "razon": razon,
             }
 
         except Exception as exc:
             logger.warning("[PreFiltro] Error en análisis sintáctico: %s", exc)
-            return {"habilitado": False, "bloquear": False,
-                    "caso_valido": False, "roles": {}, "razon": str(exc)}
+            return {
+                "habilitado": False, "bloquear": False, "score_semantico": None,
+                "caso_valido": False, "roles": {}, "razon": str(exc),
+            }
 
     # ── Clasificación ───────────────────────────────────────
 
@@ -520,12 +849,14 @@ class SemanticDetector:
         """
         Clasifica una noticia como relevante o no relevante.
 
-        Flujo con pre-filtro sintáctico (v3):
-          1. pre_filtro_sintactico(): análisis spaCy de roles víctima/agresor.
-             • Si hay FP confirmado (menor asesinado) → retorna score=0.0
-               SIN invocar BETO (ahorra ~200-600 ms por noticia).
-             • Si no hay bloqueo → continúa con BETO normalmente.
+        Flujo v6.0 (3 capas de filtrado):
+          1. pre_filtro_sintactico(): Escudo Léxico + spaCy.
+             • Si FP confirmado → retorna score=0.0 SIN invocar BETO.
           2. BETO (finetuned o zero_shot).
+          3. Post-filtro de Validación Semántica (NUEVO v6.0):
+             • Si BETO da "Alta" (>= 0.85), valida con regex que el
+               texto realmente describe NNA huérfano por feminicidio.
+             • Puede degradar a "No relevante" o "Media".
 
         Args:
             title: Título de la noticia.
@@ -538,10 +869,11 @@ class SemanticDetector:
               - confianza (str): 'alta', 'media', 'baja'
               - modo (str): modo de clasificación usado
               - prefiltro (dict): resultado del pre-filtro sintáctico
+              - postfiltro (dict): resultado del post-filtro v6.0
         """
         texto_completo = f"{title} {content[:1500]}"
 
-        # ── Pre-filtro sintáctico ────────────────────────────────────────
+        # ── Capa 1: Pre-filtro sintáctico ────────────────────────────────
         prefiltro = self.pre_filtro_sintactico(texto_completo)
         if prefiltro["bloquear"]:
             return {
@@ -553,7 +885,7 @@ class SemanticDetector:
                 "prefiltro": prefiltro,
             }
 
-        # ── Inferencia BETO ──────────────────────────────────────────────
+        # ── Capa 2: Inferencia BETO ──────────────────────────────────────
         text = f"{title} [SEP] {content[:1500]}"
         if self.mode == "finetuned":
             resultado = self._predict_finetuned(text)
@@ -561,6 +893,88 @@ class SemanticDetector:
             resultado = self._predict_zero_shot(text)
 
         resultado["prefiltro"] = prefiltro
+
+        # ── Capa 3: Post-filtro de Validación Semántica v6.0 ─────────────
+        resultado = self._aplicar_post_filtro(resultado, texto_completo)
+
+        return resultado
+
+    def _aplicar_post_filtro(self, resultado: dict, texto: str) -> dict:
+        """
+        Aplica el post-filtro de validación semántica v6.1.
+
+        Se ejecuta para noticias "Alta" (≥0.85) Y "Media" (0.50-0.84).
+        Acciones posibles según clasificacion:
+
+          Para "Alta":
+            - "confirmar": VP confirmado, mantiene "Alta".
+            - "degradar":  FP detectado → "No relevante" (score → 0.0).
+            - "revisar":   Sin patrón claro → "Media" (revisión humana).
+
+          Para "Media":
+            - "confirmar": VP confirmado, mantiene "Media".
+            - "degradar":  FP detectado → "No relevante" (score → 0.0).
+            - "revisar":   Sin patrón claro → "No relevante" (score insuficiente
+              sin evidencia fáctica; descarte conservador para reducir FP).
+        """
+        clasificacion = resultado.get("clasificacion", "")
+
+        # Solo aplicar a Alta y Media; ignorar No relevante
+        if clasificacion not in ("Alta", "Media"):
+            resultado["postfiltro"] = {
+                "validado": None,
+                "accion": "skip",
+                "razon": f"PostFiltro no aplicado (clasificacion={clasificacion})",
+                "patron": "",
+            }
+            return resultado
+
+        postfiltro = self._post_filtro_validacion(texto)
+        resultado["postfiltro"] = postfiltro
+
+        if postfiltro["accion"] == "degradar":
+            # FP confirmado por post-filtro → bloquear siempre (Alta o Media)
+            logger.info(
+                "[PostFiltro] DEGRADAR %s→No relevante: %s",
+                clasificacion, postfiltro["razon"],
+            )
+            resultado["score_semantico"] = 0.0
+            resultado["es_relevante"] = False
+            resultado["clasificacion"] = "No relevante"
+            resultado["confianza"] = "alta"
+            resultado["modo"] = resultado.get("modo", "") + "+postfiltro_degradado"
+
+        elif postfiltro["accion"] == "revisar":
+            if clasificacion == "Alta":
+                # Ambiguo en Alta → degradar a Media para revisión humana
+                logger.info(
+                    "[PostFiltro] REVISAR Alta→Media: %s",
+                    postfiltro["razon"],
+                )
+                resultado["clasificacion"] = "Media"
+                resultado["confianza"] = "media"
+                resultado["modo"] = resultado.get("modo", "") + "+postfiltro_revision"
+                # Mantiene es_relevante=True para que no se pierda
+            else:
+                # Ambiguo en Media (0.50-0.84) sin evidencia VP → descartar
+                # Sin patrón fáctico claro, el score medio no es suficiente.
+                logger.info(
+                    "[PostFiltro] REVISAR Media→No relevante (sin evidencia VP): %s",
+                    postfiltro["razon"],
+                )
+                resultado["score_semantico"] = 0.0
+                resultado["es_relevante"] = False
+                resultado["clasificacion"] = "No relevante"
+                resultado["confianza"] = "alta"
+                resultado["modo"] = resultado.get("modo", "") + "+postfiltro_media_descartada"
+
+        else:
+            # VP confirmado → mantener clasificación
+            logger.info(
+                "[PostFiltro] CONFIRMADO %s: %s",
+                clasificacion, postfiltro["razon"],
+            )
+
         return resultado
 
     def _predict_zero_shot(self, text: str) -> dict:
@@ -587,10 +1001,13 @@ class SemanticDetector:
         exp_norel = np.exp(sim_no_relevante * 5)
         score = exp_rel / (exp_rel + exp_norel)
 
+        s = float(score)
+        clasificacion = self._classify_score(s)
         return {
-            "score_semantico": round(float(score), 4),
-            "es_relevante": score >= 0.5,
-            "confianza": self._confidence_level(score),
+            "score_semantico": round(s, 4),
+            "es_relevante": clasificacion in ("Alta", "Media"),
+            "clasificacion": clasificacion,
+            "confianza": self._confidence_level(s),
             "modo": "zero_shot",
             "sim_relevante": round(float(sim_relevante), 4),
             "sim_no_relevante": round(float(sim_no_relevante), 4),
@@ -621,9 +1038,11 @@ class SemanticDetector:
         probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
         score = float(probs[1])  # Probabilidad de clase "relevante"
 
+        clasificacion = self._classify_score(score)
         return {
             "score_semantico": round(score, 4),
-            "es_relevante": score >= 0.5,
+            "es_relevante": clasificacion in ("Alta", "Media"),
+            "clasificacion": clasificacion,
             "confianza": self._confidence_level(score),
             "modo": "finetuned",
         }
@@ -667,6 +1086,11 @@ class SemanticDetector:
                 indices_beto.append(idx)
                 texts_beto.append(f"{title} [SEP] {content[:1500]}")
 
+        # Guardar textos completos para el post-filtro
+        textos_completos_beto = [
+            f"{titles[i]} {contents[i][:1500]}" for i in indices_beto
+        ]
+
         # ── Batch BETO solo con las noticias no bloqueadas ───────────
         if texts_beto:
             if self.mode == "finetuned":
@@ -691,14 +1115,23 @@ class SemanticDetector:
 
                         for score in scores:
                             s = float(score)
+                            clasificacion = self._classify_score(s)
                             beto_results.append({
                                 "score_semantico": round(s, 4),
-                                "es_relevante": s >= 0.5,
+                                "es_relevante": clasificacion in ("Alta", "Media"),
+                                "clasificacion": clasificacion,
                                 "confianza": self._confidence_level(s),
                                 "modo": "finetuned",
                             })
             else:
                 beto_results = self._predict_zero_shot_batch(texts_beto)
+
+            # Aplicar post-filtro v6.0 a cada resultado BETO
+            for local_idx in range(len(beto_results)):
+                beto_results[local_idx] = self._aplicar_post_filtro(
+                    beto_results[local_idx],
+                    textos_completos_beto[local_idx],
+                )
 
             # Reinsertar en posiciones originales
             for local_idx, orig_idx in enumerate(indices_beto):
@@ -758,9 +1191,11 @@ class SemanticDetector:
         results = []
         for i in range(len(texts)):
             s = float(scores[i])
+            clasificacion = self._classify_score(s)
             results.append({
                 "score_semantico": round(s, 4),
-                "es_relevante": s >= 0.5,
+                "es_relevante": clasificacion in ("Alta", "Media"),
+                "clasificacion": clasificacion,
                 "confianza": self._confidence_level(s),
                 "modo": "zero_shot",
                 "sim_relevante": round(float(sim_relevante[i]), 4),
@@ -769,14 +1204,44 @@ class SemanticDetector:
         return results
 
     @staticmethod
+    def _classify_score(score: float) -> str:
+        """
+        Clasifica el score en tres niveles con umbrales estrictos (v5.3).
+
+        Umbrales:
+          score >= 0.85  → "Alta"         (certeza alta, caso genuino)
+          0.50 <= s < 0.85 → "Media"      (posible, requiere revisión humana)
+          score < 0.50   → "No relevante" (descartado)
+
+        Nota: tanto "Alta" como "Media" producen es_relevante=True para
+        no perder casos reales en la fase de captura; la distinción sirve
+        para priorizar la revisión humana en el dashboard.
+        """
+        if score >= 0.85:
+            return "Alta"
+        elif score >= 0.50:
+            return "Media"
+        return "No relevante"
+
+    @staticmethod
     def _confidence_level(score: float) -> str:
-        """Determina el nivel de confianza basado en la distancia al umbral."""
-        distance = abs(score - 0.5)
-        if distance > 0.3:
+        """
+        Nivel de confianza alineado con los umbrales v5.3.
+
+        Bandas:
+          score >= 0.85          → "alta"   (zona Alta confirmada)
+          0.65 <= score < 0.85   → "media"  (zona Media con buena señal)
+          0.50 <= score < 0.65   → "baja"   (zona Media limítrofe)
+          score < 0.50           → "alta"   (descarte con alta certeza)
+        """
+        if score >= 0.85:
             return "alta"
-        elif distance > 0.15:
+        elif score >= 0.65:
             return "media"
-        return "baja"
+        elif score >= 0.50:
+            return "baja"
+        # score < 0.50: el descarte también es confiable
+        return "alta"
 
     # ── Fine-tuning ─────────────────────────────────────────
 

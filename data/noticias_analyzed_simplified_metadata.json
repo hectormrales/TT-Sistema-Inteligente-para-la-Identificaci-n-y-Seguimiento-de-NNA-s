@@ -1,8 +1,8 @@
 {
-  "total_noticias": 619,
-  "noticias_con_nna": 207,
-  "alta_relevancia": 195,
-  "media_relevancia": 1,
+  "total_noticias": 787,
+  "noticias_con_nna": 225,
+  "alta_relevancia": 162,
+  "media_relevancia": 3,
   "columnas_disponibles": [
     "titulo",
     "contenido",

@@ -1,0 +1,54 @@
+{
+  "best_f1": 0.6087,
+  "epochs_run": 10,
+  "accum_steps": 8,
+  "history": {
+    "train_loss": [
+      1.02333,
+      0.9946,
+      0.96763
+    ],
+    "val_precision": [
+      0.4565,
+      0.4468,
+      0.4468
+    ],
+    "val_recall": [
+      0.913,
+      0.913,
+      0.913
+    ],
+    "val_f1": [
+      0.6087,
+      0.6,
+      0.6
+    ]
+  },
+  "classification_report": {
+    "No relevante (FP)": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 26.0
+    },
+    "Relevante (VP)": {
+      "precision": 0.44680851063829785,
+      "recall": 0.9130434782608695,
+      "f1-score": 0.6,
+      "support": 23.0
+    },
+    "accuracy": 0.42857142857142855,
+    "macro avg": {
+      "precision": 0.22340425531914893,
+      "recall": 0.45652173913043476,
+      "f1-score": 0.3,
+      "support": 49.0
+    },
+    "weighted avg": {
+      "precision": 0.20972644376899696,
+      "recall": 0.42857142857142855,
+      "f1-score": 0.2816326530612245,
+      "support": 49.0
+    }
+  }
+}

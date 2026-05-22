@@ -1,0 +1,666 @@
+nna-webapp    |   PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO
+nna-webapp    | ============================================================                                                                     
+nna-webapp    |   Batch ID de ejecución: 20260521_214648
+nna-webapp    | === PASO 1: RECOLECCIÓN + SCORING DE RELEVANCIA ===                                                                              
+nna-webapp    |   ── Búsqueda General en Google News ──                                                                                          
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+M%C3%A9xico+location%…
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+…                                           
+nna-webapp    | 2026-05-21 21:46:51,271 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:51,274 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:46:51,299 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:51,335 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+ni%C3%B1os+ni%C3%B1as…
+nna-webapp    | 2026-05-21 21:46:57,501 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:57,504 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:46:57,514 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:46:57,521 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:57,548 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:57,575 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:57,580 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:46:57,607 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:57,647 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:46:57,682 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=orfandad+feminicidio+menores+M%C3…
+nna-webapp    | 2026-05-21 21:47:12,670 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:47:12,675 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,678 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,682 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,688 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,692 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,696 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,700 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,706 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,712 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,719 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:12,732 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+fe…
+nna-webapp    | 2026-05-21 21:47:16,049 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:47:16,061 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:16,075 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:47:16,079 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:16,097 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:47:16,105 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:16,115 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+menores+hu%C3%A9rfano…
+nna-webapp    | 2026-05-21 21:47:28,771 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:47:28,777 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:28,791 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+hijos+menores+M%C3%A9…
+nna-webapp    | 2026-05-21 21:47:35,501 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:47:35,505 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:35,592 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:47:35,615 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=%22violencia+feminicida%22+ni%C3%…
+nna-webapp    | 2026-05-21 21:47:46,428 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:47:46,435 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:46,450 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:47:46,462 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%…
+nna-webapp    | 2026-05-21 21:48:10,108 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:48:10,118 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:48:10,156 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:48:10,173 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:48:10,212 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+nna-webapp    | 2026-05-21 21:48:10,215 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:48:10,235 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+nna-webapp    | 2026-05-21 21:48:10,257 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:48:10,280 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:48:10,285 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:48:10,292 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:48:10,298 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:48:10,317 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=%22alerta+de+g%C3%A9nero%22+menor…
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=orfandad+violencia+genero+M%C3%A9…
+nna-webapp    | 2026-05-21 21:49:01,793 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:49:01,795 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:49:01,798 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:49:01,801 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:49:01,803 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:49:01,809 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:49:01,817 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:49:01,835 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:49:01,856 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%…
+nna-postgres  | 2026-05-22 03:49:35.853 UTC [28] LOG:  checkpoint starting: time
+nna-postgres  | 2026-05-22 03:49:46.191 UTC [28] LOG:  checkpoint complete: wrote 106 buffers (0.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=10.319 s, sync=0.010 s, total=10.338 s; sync files=42, longest=0.002 s, average=0.001 s; distance=1932 kB, estimate=1932 kB; lsn=0/8F48DA8, redo lsn=0/8F48D70
+nna-webapp    | 2026-05-21 21:50:07,239 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=%22violencia+contra+la+mujer%22+m…
+nna-webapp    | 2026-05-21 21:50:13,981 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+NNA+victimas+indirect…
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+CDMX+hijos+menores+af…
+nna-webapp    | 2026-05-21 21:50:48,048 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:50:48,056 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:50:48,108 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+nna-webapp    | 2026-05-21 21:50:48,113 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:50:48,175 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:50:48,198 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Jalisco+NNA+hu%C3%A9r…
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico…
+nna-webapp    | 2026-05-21 21:51:14,604 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:51:14,631 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:51:14,689 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:51:14,695 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:51:14,700 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:51:14,749 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:51:14,759 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:51:14,771 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Veracruz+hijos+after%…
+nna-webapp    | 2026-05-21 21:52:03,382 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Chihuahua+menores+aft…
+nna-webapp    | 2026-05-21 21:52:26,275 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:52:26,280 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:52:26,372 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Nuevo+Le%C3%B3n+ni%C3…
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Guerrero+NNA+hu%C3%A9…
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+Puebla+menores+hijos+…
+nna-webapp    | 2026-05-21 21:53:48,197 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:53:48,214 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:53:48,297 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+mexico+deja+ni%C3%B1o…
+nna-webapp    | 2026-05-21 21:54:10,951 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:54:10,992 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=feminicidio+orfandad+facebook+mex…
+nna-webapp    | 2026-05-21 21:54:26,918 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:54:26,921 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:54:26,924 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:54:26,934 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:54:26,938 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   Google News: https://news.google.com/rss/search?q=%22feminicidio%22+%22redes+social…
+nna-webapp    | 2026-05-21 21:54:45,886 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |   ── Búsqueda en Redes Sociales (DuckDuckGo) ──
+nna-webapp    |   Buscando: feminicidio mexico deja niño facebook
+nna-webapp    |   Buscando: feminicidio orfandad facebook mexico                                                                                 
+nna-webapp    |   Buscando: feminicidio "redes sociales" hijos mexico
+nna-webapp    |   ── Búsqueda en Google Search (Fallback Histórico HTML) ──
+nna-webapp    |   Buscando en Google HTML: feminicidio "víctimas indirectas" niños méxico
+nna-webapp    | 2026-05-21 21:55:31,853 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX                    
+nna-webapp    |   Buscando en Google HTML: huérfanos feminicidio méxico
+nna-webapp    | 2026-05-21 21:55:32,226 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX                                               
+nna-webapp    |   Buscando en Google HTML: niños "hijos" asesinan mujer méxico
+nna-webapp    | 2026-05-21 21:55:46,572 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-21&tbm=nws&hl=es-419&gl=MX                                    
+nna-webapp    |   ── 46 fuentes personalizadas desde DB ──
+nna-webapp    |   [RSS] Contralínea (rss)
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 21:56:07,147 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+nna-webapp    | 2026-05-21 21:56:07,147 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])                                                                                                                       
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] El Sol de México (rss)                                                                                                   
+nna-webapp    | /app/src/collection/collector.py:1074: MarkupResemblesLocatorWarning: The input looks more like a filename than markup. You may want to open this file and pass the filehandle into Beautiful Soup.
+nna-webapp    |   desc_text = BeautifulSoup(desc_html, 'html.parser').get_text(' ', strip=True)
+nna-webapp    |     → 4 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio hijos menores México (rss)
+nna-webapp    | 2026-05-21 21:56:07,971 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |     → 14 artículos
+nna-webapp    |   [RSS] Google News: "violencia feminicida" niños México (rss)                                                                   
+nna-webapp    | 2026-05-21 21:56:15,932 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:56:15,939 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:56:15,958 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |     → 10 artículos
+nna-webapp    |   [RSS] Google News: asesinato mujer hijos quedaron México (rss)
+nna-webapp    | 2026-05-21 21:56:31,517 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:56:31,524 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:56:31,526 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    |     → 8 artículos
+nna-webapp    |   [RSS] La Razón (rss)
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 21:56:39,075 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://www.razon.com.mx/…
+nna-webapp    | 2026-05-21 21:56:53,087 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/05/21/para-el-sistema-d… → activando stealth + intentando Google Cache
+nna-webapp    | 2026-05-21 21:57:31,038 - trafilatura.utils - ERROR - parsed tree length: 0, wrong data type or not valid HTML
+nna-webapp    | 2026-05-21 21:57:31,038 - trafilatura.core - ERROR - empty HTML tree: None
+nna-webapp    | 2026-05-21 21:57:31,039 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/ciudad/2026/05/21/para-el-sistema-de-justicia-eso-vale-la-vida-de-una-mujer-trans-50-mil/                                                                                        
+nna-webapp    | 2026-05-21 21:58:05,559 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/estados/2026/05/21/con-ataques-rebr… → activando stealth + intentando Google Cache
+nna-webapp    | 2026-05-21 21:58:22,122 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+nna-webapp    | 2026-05-21 21:58:22,122 - trafilatura.core - ERROR - empty HTML tree: None
+nna-webapp    | 2026-05-21 21:58:22,123 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/estados/2026/05/21/con-ataques-rebrota-la-violencia-en-zacatecas/                                                                                                                
+nna-webapp    | 2026-05-21 21:58:22,124 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])                                                                                                                             
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Google News: orfandad violencia genero México (rss)                                                                      
+nna-webapp    | 2026-05-21 21:58:22,517 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:58:22,520 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:58:22,523 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:58:22,526 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:58:22,533 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:58:22,538 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:58:22,543 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |     → 6 artículos
+nna-webapp    |   [RSS] Google News: DIF custodia feminicidio hijos México (rss)
+nna-webapp    | 2026-05-21 21:58:57,297 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:58:57,327 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |     → 9 artículos
+nna-webapp    |   [RSS] Luchadoras (rss)
+nna-webapp    | 2026-05-21 21:58:58,773 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |     → 6 artículos
+nna-webapp    |   [RSS] Google News: feminicidio Puebla menores hijos (rss)
+nna-webapp    | 2026-05-21 21:59:08,232 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 21:59:08,243 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:59:08,288 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+nna-webapp    |     → 12 artículos
+nna-webapp    |   [RSS] Google News: feminicidio CDMX hijos menores (rss)
+nna-webapp    | 2026-05-21 21:59:22,291 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+nna-webapp    | 2026-05-21 21:59:22,355 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |     → 14 artículos
+nna-webapp    |   [RSS] Diario de Xalapa (rss)
+nna-webapp    |     → 2 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio Estado de México menores (rss)
+nna-webapp    | 2026-05-21 21:59:38,637 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 21:59:38,649 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 21:59:38,689 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |     → 12 artículos
+nna-webapp    |   [RSS] Google News: feminicidio Veracruz hijos (rss)
+nna-webapp    |     → 31 artículos                                                                                                               
+nna-webapp    |   [RSS] Google News: feminicidio Chihuahua menores (rss)
+nna-webapp    | 2026-05-21 22:00:05,887 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |     → 16 artículos
+nna-webapp    |   [RSS] El Sol de Puebla (rss)
+nna-webapp    |     → 2 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio Guerrero NNA huérfanos (rss)
+nna-webapp    |     → 1 artículos                                                                                                                
+nna-webapp    |   [RSS] La Jornada (Política) (rss)
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 22:00:28,428 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+nna-webapp    | 2026-05-21 22:00:28,428 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])                                                                                                                           
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] La Jornada (Estados) (rss)                                                                                               
+nna-postgres  | 2026-05-22 04:00:29.838 UTC [28] LOG:  checkpoint starting: time                                                                 
+nna-postgres  | 2026-05-22 04:00:29.956 UTC [28] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.103 s, sync=0.003 s, total=0.118 s; sync files=2, longest=0.003 s, average=0.002 s; distance=11 kB, estimate=1740 kB; lsn=0/8F4BCE8, redo lsn=0/8F4BCB0
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...
+nna-webapp    | 2026-05-21 22:00:40,724 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+nna-webapp    | 2026-05-21 22:00:40,725 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])                                                                                                                           
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Google News: orfandad feminicidio menores México (rss)                                                                   
+nna-webapp    | 2026-05-21 22:00:45,747 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:00:45,753 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,756 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,760 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,762 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,765 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,769 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,775 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:00:45,779 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,788 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,798 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:00:45,819 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:00:45,830 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |     → 11 artículos
+nna-webapp    |   [RSS] Proceso (rss)                                                                                                            
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 22:00:45,990 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+nna-webapp    | 2026-05-21 22:00:45,991 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])                                                                                                                           
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Google News: "alerta de género" menores México (rss)                                                                     
+nna-webapp    |     → 6 artículos
+nna-webapp    |   [RSS] Google News: "víctimas indirectas" feminicidio México (rss)
+nna-webapp    |     → 6 artículos                                                                                                                
+nna-webapp    |   [RSS] Pie de Página (rss)
+nna-webapp    |     → 9 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio menores huérfanos México (rss)
+nna-webapp    | 2026-05-21 22:01:11,868 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:01:11,876 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |     → 7 artículos
+nna-webapp    |   [RSS] Google News: feminicidio Jalisco NNA huérfanos (rss)
+nna-webapp    |     → 1 artículos                                                                                                                
+nna-webapp    |   [RSS] La Jornada (Sociedad) (rss)
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 22:01:47,248 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+nna-webapp    | 2026-05-21 22:01:47,249 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])                                                                                                                           
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] El Informador (rss)                                                                                                      
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 22:01:47,424 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+nna-webapp    | 2026-05-21 22:01:47,424 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])                                                                                                                            
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Cimacnoticias (rss)                                                                                                      
+nna-webapp    |     → 5 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio hijos huérfanos México (rss)
+nna-webapp    | 2026-05-21 22:02:00,807 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:02:00,812 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:02:00,819 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |     → 6 artículos
+nna-webapp    |   [RSS] Google News: feminicidio Nuevo León niños (rss)
+nna-webapp    | 2026-05-21 22:02:15,438 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |     → 18 artículos
+nna-webapp    |   [RSS] feeds.elpais.com (rss)
+nna-webapp    |     → 7 artículos                                                                                                                
+nna-webapp    |   [RSS] feeds.bbci.co.uk (rss)
+nna-webapp    | 2026-05-21 22:02:16,845 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    |     → 3 artículos
+nna-webapp    |   [RSS] El Sol de Toluca (rss)
+nna-webapp    |     → 2 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: "violencia contra la mujer" menores huérfanos México (rss)
+nna-webapp    |     → 1 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio NNA victimas indirectas México (rss)
+nna-webapp    | 2026-05-21 22:02:33,599 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    |     → 4 artículos
+nna-webapp    |   [RSS] La Jornada de Oriente (rss)
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 22:02:34,006 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.lajornadadeoriente.com.mx/…
+nna-webapp    | 2026-05-21 22:02:34,007 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])                                                                                                                
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Noroeste (rss)                                                                                                           
+nna-webapp    |     → 19 artículos                                                                                                               
+nna-webapp    |   [RSS] Excélsior (Nacional) (rss)
+nna-webapp    |     → 20 artículos                                                                                                               
+nna-webapp    |   [RSS] Google News: feminicidio niños niñas México (rss)
+nna-webapp    | 2026-05-21 22:03:20,119 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:03:20,127 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:03:20,134 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:03:20,142 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:03:20,147 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:03:20,166 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:03:20,171 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |     → 14 artículos
+nna-webapp    |   [RSS] El Financiero (rss)
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...                                                                
+nna-webapp    | 2026-05-21 22:03:20,998 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.elfinanciero.com.mx/…
+nna-webapp    | 2026-05-21 22:03:20,998 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elfinanciero.com.mx/… (métodos intentados: ['html'])                                                                                                                      
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Google News: feminicidio México location:México (rss)                                                                    
+nna-webapp    |     → 7 artículos                                                                                                                
+nna-webapp    |   [RSS] Google News: feminicidio mexico deja niño facebook (rss)
+nna-webapp    | 2026-05-21 22:03:57,533 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+nna-webapp    | 2026-05-21 22:03:57,544 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)                                                                                                                                        
+nna-webapp    |     → 30 artículos
+nna-webapp    |   [RSS] Google News: feminicidio orfandad facebook mexico (rss)
+nna-webapp    | 2026-05-21 22:04:23,472 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:04:23,478 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:04:23,480 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:04:23,485 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:04:23,496 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+nna-webapp    | 2026-05-21 22:04:23,500 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    | 2026-05-21 22:04:23,505 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)                                                                                                                                        
+nna-webapp    |     → 10 artículos
+nna-webapp    |   [RSS] El Economista (rss)
+nna-webapp    | 2026-05-21 22:04:23,760 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 3s  
+nna-webapp    | 2026-05-21 22:04:30,113 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 5s
+nna-webapp    | 2026-05-21 22:04:35,946 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 9s
+nna-webapp    | 2026-05-21 22:04:35,946 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s                                                                                                                          
+nna-webapp    | 2026-05-21 22:04:44,837 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+nna-webapp    | 2026-05-21 22:04:44,838 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)                                                                                                  
+nna-webapp    |     [!] RSS falló o vacío. Intentando fallback HTML automático...
+nna-webapp    | 2026-05-21 22:04:44,973 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+nna-webapp    | 2026-05-21 22:05:07,566 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/mercados/precio-dolar-hoy-21… → activando stealth + intentando Google Cache
+nna-webapp    | 2026-05-21 22:05:46,039 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+nna-webapp    | 2026-05-21 22:05:46,039 - trafilatura.core - ERROR - empty HTML tree: None
+nna-webapp    | 2026-05-21 22:05:46,040 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/mercados/precio-dolar-hoy-21-mayo-2026-cuanto-cotiza-20260521-814694.html                                                                                                 
+nna-webapp    | 2026-05-21 22:05:46,044 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])                                                                                                                      
+nna-webapp    |     → 0 artículos
+nna-webapp    |   [RSS] Google News: "feminicidio" "redes sociales" hijos mexico (rss)
+nna-webapp    |     → 6 artículos                                                                                                                
+nna-webapp    |   ⚠ Circuit breaker — dominios en cooldown: ['www.eleconomista.com.mx']
+nna-webapp    | 2026-05-21 22:05:46,624 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos                                                                                                                                           
+nna-webapp    |   URLs: 0 previas + 603 nuevas = 603 total
+nna-webapp    |   ── Deduplicación avanzada ──                                                                                                   
+nna-webapp    | 2026-05-21 22:05:46,646 - src.analysis.dedup - INFO - Deduplicación: 1045 noticias de entrada                                    
+nna-webapp    | 2026-05-21 22:05:46,678 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 444 duplicados
+nna-webapp    | 2026-05-21 22:05:46,815 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 2 duplicados
+nna-webapp    | 2026-05-21 22:05:47,243 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 18 duplicados
+nna-webapp    | 2026-05-21 22:05:47,387 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 3 duplicados
+nna-webapp    | 2026-05-21 22:05:47,392 - src.analysis.dedup - INFO -   Resultado: 1045 → 578 únicos (467 duplicados eliminados)
+nna-webapp    |   Duplicados eliminados: 467 (1045 → 578)                                                                                        
+nna-webapp    |   Total recolectadas: 578
+nna-webapp    |   Relevantes (score >= 0.25): 578
+nna-webapp    |   Con mención a NNA: 202                                                                                                         
+nna-webapp    |   578 noticias relevantes recolectadas                                                                                           
+nna-webapp    |    ├── Alta relevancia:  74                                                                                                      
+nna-webapp    |    ├── Media relevancia: 14
+nna-webapp    |    ├── Baja relevancia:  1                                                                                                       
+nna-webapp    |    └── Mencionan NNA:    202                                                                                                     
+nna-webapp    | === PASO 3: TF-IDF (domain-boosted) ===                                                                                          
+nna-webapp    |   Matriz TF-IDF: (578, 5000)
+nna-webapp    |   Vocabulario: 5000 términos
+nna-webapp    | === PASO 6: SIMILITUD COSENO + DEDUPLICACIÓN ===                                                                                 
+nna-webapp    |   Similitud promedio: 0.325 | Pares > 0.5: 76                                                                                    
+nna-webapp    | 2026-05-21 22:05:47,601 - src.analysis.dedup - INFO - Deduplicación: 578 noticias de entrada
+nna-webapp    | 2026-05-21 22:05:47,625 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados                                
+nna-webapp    | 2026-05-21 22:05:47,730 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+nna-webapp    | 2026-05-21 22:05:48,011 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+nna-webapp    | 2026-05-21 22:05:48,134 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 1 duplicados
+nna-webapp    | 2026-05-21 22:05:48,142 - src.analysis.dedup - INFO -   Resultado: 578 → 577 únicos (1 duplicados eliminados)
+nna-webapp    |   Duplicados semánticos eliminados: 1                                                                                            
+nna-webapp    | === PASO 8: BÚSQUEDA MEJORADA ===
+nna-webapp    |   Diccionario guardado (170 términos)                                                                                            
+nna-webapp    | === PASO 9: DETECCIÓN SEMÁNTICA BETO (OE-1) ===                                                                                  
+nna-postgres  | 2026-05-22 04:05:57.338 UTC [28] LOG:  checkpoint starting: time                                                                 
+nna-postgres  | 2026-05-22 04:05:57.562 UTC [28] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.207 s, sync=0.004 s, total=0.225 s; sync files=2, longest=0.003 s, average=0.002 s; distance=15 kB, estimate=1568 kB; lsn=0/8F4FA38, redo lsn=0/8F4FA00
+nna-webapp    | 2026-05-21 22:05:58,483 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+nna-webapp    | 2026-05-21 22:05:58,484 - src.analysis.semantic_detector - INFO - [SemanticDetector] Modo resuelto desde DETECTOR_MODE='fine-tuned' → 'finetuned'                                                                                                                                 
+nna-webapp    | 2026-05-21 22:05:58,486 - src.analysis.semantic_detector - INFO - [SemanticDetector] Modelo fine-tuned encontrado en: /app/models/finetuned/model.pt                                                                                                                              
+nna-webapp    | 2026-05-21 22:05:58,486 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: finetuned
+nna-webapp    | 2026-05-21 22:05:58,614 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:05:58,627 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:05:58,714 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.                                                                                                                                         
+nna-webapp    | 2026-05-21 22:05:58,715 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.                                                                       
+nna-webapp    | 2026-05-21 22:05:58,726 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:05:58,809 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:05:58,894 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:05:59,040 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:05:59,052 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"                                                          
+nna-webapp    | 2026-05-21 22:05:59,210 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:05:59,298 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:05:59,423 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+Loading weights: 100%|██████████| 197/197 [00:00<00:00, 8279.34it/s]
+nna-webapp    | [transformers] BertModel LOAD REPORT from: dccuchile/bert-base-spanish-wwm-cased
+nna-webapp    | Key                                        | Status     | 
+nna-webapp    | -------------------------------------------+------------+-                                                                       
+nna-webapp    | cls.predictions.transform.LayerNorm.weight | UNEXPECTED |                                                                        
+nna-webapp    | cls.predictions.transform.LayerNorm.bias   | UNEXPECTED |                                                                        
+nna-webapp    | cls.predictions.transform.dense.bias       | UNEXPECTED | 
+nna-webapp    | cls.predictions.bias                       | UNEXPECTED |                                                                        
+nna-webapp    | cls.predictions.decoder.bias               | UNEXPECTED |                                                                        
+nna-webapp    | cls.predictions.decoder.weight             | UNEXPECTED |                                                                        
+nna-webapp    | cls.predictions.transform.dense.weight     | UNEXPECTED |                                                                        
+nna-webapp    | pooler.dense.bias                          | MISSING    | 
+nna-webapp    | pooler.dense.weight                        | MISSING    |                                                                        
+nna-webapp    |                                                                                                                                  
+nna-webapp    | Notes:                                                                                                                           
+nna-webapp    | - UNEXPECTED:   can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+nna-webapp    | - MISSING:      those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.                                                                                                                                               
+nna-webapp    | 2026-05-21 22:05:59,522 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:05:59,652 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:05:59,739 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:05:59,824 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+nna-webapp    | 2026-05-21 22:06:04,752 - src.analysis.semantic_detector - INFO - [INFO] Modelo fine-tuned cargado exitosamente.
+nna-webapp    | 2026-05-21 22:06:04,754 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:04,755 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'netflix'                   
+nna-webapp    | 2026-05-21 22:06:04,755 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:04,756 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'elección'
+nna-webapp    | 2026-05-21 22:06:04,756 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'dólar'                     
+nna-webapp    | 2026-05-21 22:06:04,757 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:04,757 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'encuesta '                 
+nna-webapp    | 2026-05-21 22:06:04,757 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'                       
+nna-webapp    | 2026-05-21 22:06:11,223 - src.analysis.semantic_detector - INFO - [PreFiltro] Modelo spaCy es_core_news_lg cargado.
+nna-webapp    | 2026-05-21 22:06:11,275 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+nna-webapp    | 2026-05-21 22:06:11,330 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'tasa de homicidio'
+nna-webapp    | 2026-05-21 22:06:11,332 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,344 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,361 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+nna-webapp    | 2026-05-21 22:06:11,397 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+nna-webapp    | 2026-05-21 22:06:11,398 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,398 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,432 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,445 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'fútbol'
+nna-webapp    | 2026-05-21 22:06:11,462 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'                    
+nna-webapp    | 2026-05-21 22:06:11,499 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'huracán'                   
+nna-webapp    | 2026-05-21 22:06:11,510 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+nna-webapp    | 2026-05-21 22:06:11,537 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '                      
+nna-webapp    | 2026-05-21 22:06:11,552 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+nna-webapp    | 2026-05-21 22:06:11,553 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,554 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,554 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+nna-webapp    | 2026-05-21 22:06:11,556 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,613 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'redim'                     
+nna-webapp    | 2026-05-21 22:06:11,624 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'imss'
+nna-webapp    | 2026-05-21 22:06:11,624 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,624 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,642 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,642 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,643 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'impuestos'
+nna-webapp    | 2026-05-21 22:06:11,656 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'buenos aires'              
+nna-webapp    | 2026-05-21 22:06:11,656 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,657 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,657 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,658 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,658 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,659 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,659 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley monzón'                
+nna-webapp    | 2026-05-21 22:06:11,707 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley monzón'                
+nna-webapp    | 2026-05-21 22:06:11,708 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '
+nna-webapp    | 2026-05-21 22:06:11,723 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'carretera'                 
+nna-webapp    | 2026-05-21 22:06:11,755 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'en guatemala'
+nna-webapp    | 2026-05-21 22:06:11,756 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,756 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,756 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,792 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '                      
+nna-webapp    | 2026-05-21 22:06:11,812 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,892 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+nna-webapp    | 2026-05-21 22:06:11,907 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,907 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley general'
+nna-webapp    | 2026-05-21 22:06:11,908 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:11,935 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:11,966 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+nna-webapp    | 2026-05-21 22:06:12,018 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,020 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'presupuesto'
+nna-webapp    | 2026-05-21 22:06:12,090 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:12,100 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'influencer'
+nna-webapp    | 2026-05-21 22:06:12,270 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+nna-webapp    | 2026-05-21 22:06:12,270 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'reforma constitucional'
+nna-webapp    | 2026-05-21 22:06:12,289 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'diputados'                 
+nna-webapp    | 2026-05-21 22:06:12,335 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'diputados'
+nna-webapp    | 2026-05-21 22:06:12,357 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan']
+nna-webapp    | 2026-05-21 22:06:12,404 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'carretera'
+nna-webapp    | 2026-05-21 22:06:12,473 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'peso'
+nna-webapp    | 2026-05-21 22:06:12,484 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,492 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'cfe'                       
+nna-webapp    | 2026-05-21 22:06:12,493 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '                  
+nna-webapp    | 2026-05-21 22:06:12,493 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley general'               
+nna-webapp    | 2026-05-21 22:06:12,508 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley general'               
+nna-webapp    | 2026-05-21 22:06:12,514 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'imss'
+nna-webapp    | 2026-05-21 22:06:12,637 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['matar', 'matar']
+nna-webapp    | 2026-05-21 22:06:12,645 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,737 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:12,738 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'proponen '
+nna-webapp    | 2026-05-21 22:06:12,738 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'proponen '                 
+nna-webapp    | 2026-05-21 22:06:12,758 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:12,765 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,766 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'bitcoin'                   
+nna-webapp    | 2026-05-21 22:06:12,778 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,834 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley monzón'                
+nna-webapp    | 2026-05-21 22:06:12,857 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'proponen '
+nna-webapp    | 2026-05-21 22:06:12,858 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+nna-webapp    | 2026-05-21 22:06:12,866 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '                  
+nna-webapp    | 2026-05-21 22:06:12,877 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '                      
+nna-webapp    | 2026-05-21 22:06:12,888 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,888 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley general'
+nna-webapp    | 2026-05-21 22:06:12,896 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '                  
+nna-webapp    | 2026-05-21 22:06:12,904 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:12,905 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'                       
+nna-webapp    | 2026-05-21 22:06:12,905 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley general'               
+nna-webapp    | 2026-05-21 22:06:12,906 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ley general'
+nna-webapp    | 2026-05-21 22:06:12,975 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:13,012 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'alerta de género'
+nna-webapp    | 2026-05-21 22:06:13,092 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+nna-webapp    | 2026-05-21 22:06:13,101 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nfl'
+nna-webapp    | 2026-05-21 22:06:13,136 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'alerta de género'          
+nna-webapp    | 2026-05-21 22:06:13,250 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'redim'
+nna-webapp    | 2026-05-21 22:06:13,286 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:13,391 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'alerta de género'
+nna-webapp    | 2026-05-21 22:06:13,399 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+nna-webapp    | 2026-05-21 22:06:13,419 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+nna-webapp    | 2026-05-21 22:06:13,455 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:13,463 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+nna-webapp    | 2026-05-21 22:06:13,464 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:13,504 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '                      
+nna-webapp    | 2026-05-21 22:06:13,512 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:13,524 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:13,536 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']                                                                                                
+nna-webapp    | 2026-05-21 22:06:13,597 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'peso'
+nna-webapp    | 2026-05-21 22:06:13,649 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+nna-webapp    | 2026-05-21 22:06:13,662 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'carretera'
+nna-webapp    | 2026-05-21 22:06:13,663 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:13,663 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'inteligencia artificial'
+nna-webapp    | 2026-05-21 22:06:13,692 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+nna-webapp    | 2026-05-21 22:06:13,727 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['matan', 'matan']
+nna-webapp    | 2026-05-21 22:06:13,775 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'hacienda'
+nna-webapp    | 2026-05-21 22:06:13,789 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'autopista'
+nna-webapp    | 2026-05-21 22:06:13,877 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesinada', 'asesinada']
+nna-webapp    | 2026-05-21 22:06:13,903 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'peso'
+nna-webapp    | 2026-05-21 22:06:13,911 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'redim'
+nna-webapp    | 2026-05-21 22:06:13,912 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:13,928 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesina', 'asesina']
+nna-webapp    | 2026-05-21 22:06:13,953 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:13,971 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:13,980 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+nna-webapp    | 2026-05-21 22:06:14,013 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:14,021 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:14,042 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+nna-webapp    | 2026-05-21 22:06:14,068 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:14,082 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:14,297 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'aeropuerto'
+nna-webapp    | 2026-05-21 22:06:14,298 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'redim'
+nna-webapp    | 2026-05-21 22:06:14,306 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:14,319 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'alerta de género'
+nna-webapp    | 2026-05-21 22:06:14,325 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+nna-webapp    | 2026-05-21 22:06:14,388 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'                   
+nna-webapp    | 2026-05-21 22:06:14,388 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'redim'
+nna-webapp    | 2026-05-21 22:06:14,389 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'alerta de violencia de género'                                                                                                                                              
+nna-webapp    | 2026-05-21 22:06:14,492 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+nna-webapp    | 2026-05-21 22:06:14,505 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'candidato'
+nna-webapp    | 2026-05-21 22:06:14,514 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'sat'
+nna-webapp    | 2026-05-21 22:06:14,608 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'                     
+nna-webapp    | 2026-05-21 22:06:14,615 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '
+nna-webapp    | 2026-05-21 22:06:14,615 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'                       
+nna-webapp    | 2026-05-21 22:06:14,627 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '
+nna-webapp    | 2026-05-21 22:06:14,628 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '                  
+nna-webapp    | 2026-05-21 22:06:14,628 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '
+nna-webapp    | 2026-05-21 22:06:14,696 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'propone '                  
+nna-webapp    |   Score semántico promedio: 0.2494
+nna-webapp    |   577 noticias procesadas | Alta: 157 | Media: 0
+nna-webapp    | === PASO 10: CLUSTERING BERTOPIC (OE-4, post-filtro) ===                                                                         
+nna-webapp    |   Corpus para BERTopic: 157 noticias (Alta/Media)
+nna-webapp    |   min_cluster_size ajustado a: 8                                                                                                 
+nna-webapp    | 2026-05-21 22:08:55,018 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 157 documentos                       
+nna-webapp    | 2026-05-21 22:09:14,042 - sentence_transformers.base.model - INFO - No device provided, using cpu                                
+nna-webapp    | 2026-05-21 22:09:14,161 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,180 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"                                   
+nna-webapp    | 2026-05-21 22:09:14,261 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,273 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"              
+nna-webapp    | 2026-05-21 22:09:14,275 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.                                                                                                           
+nna-webapp    | 2026-05-21 22:09:14,361 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,373 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"              
+nna-webapp    | 2026-05-21 22:09:14,452 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,463 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"                                      
+nna-webapp    | 2026-05-21 22:09:14,541 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,551 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"                                   
+nna-webapp    | 2026-05-21 22:09:14,631 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,643 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"                      
+nna-webapp    | 2026-05-21 22:09:14,727 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:09:14,822 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:14,834 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"                                    
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 986.08it/s] 
+nna-webapp    | 2026-05-21 22:09:15,254 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:09:15,361 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:09:15,447 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:09:15,532 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:09:15,630 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:15,643 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"                          
+nna-webapp    | 2026-05-21 22:09:15,720 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:15,736 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:15,816 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:15,838 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:15,929 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:15,943 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:16,030 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:16,043 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:16,127 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+nna-webapp    | 2026-05-21 22:09:16,220 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:18,792 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:19,068 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+nna-webapp    | 2026-05-21 22:09:19,079 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"                        
+nna-webapp    | 2026-05-21 22:09:19,165 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+nna-webapp    | 2026-05-21 22:09:19,168 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+nna-webapp    | 2026-05-21 22:09:19,170 - BERTopic - Embedding - Transforming documents to embeddings.                                           
+Batches: 100%|██████████| 5/5 [00:04<00:00,  1.19it/s]                                                                                           
+nna-webapp    | 2026-05-21 22:09:23,363 - BERTopic - Embedding - Completed ✓
+nna-webapp    | 2026-05-21 22:09:23,363 - BERTopic - Dimensionality - Fitting the dimensionality reduction algorithm                             
+nna-webapp    | 2026-05-21 22:09:29,641 - BERTopic - Dimensionality - Completed ✓                                                                
+nna-webapp    | 2026-05-21 22:09:29,642 - BERTopic - Cluster - Start clustering the reduced embeddings
+nna-webapp    | 2026-05-21 22:09:29,663 - BERTopic - Cluster - Completed ✓                                                                       
+nna-webapp    | 2026-05-21 22:09:29,667 - BERTopic - Representation - Fine-tuning topics using representation models.
+nna-webapp    | 2026-05-21 22:09:30,228 - BERTopic - Representation - Completed ✓                                                                
+nna-webapp    | 2026-05-21 22:09:30,254 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 35/157 (22.3%)
+nna-webapp    | 2026-05-21 22:09:30,255 - BERTopic - WARNING: Using a custom list of topic assignments may lead to errors if topic reduction techniques are used afterwards. Make sure that manually assigning topics is the last step in the pipeline.Note that topic embeddings will also be created through weightedc-TF-IDF embeddings instead of centroid embeddings.
+nna-webapp    | 2026-05-21 22:09:30,273 - src.analysis.bertopic_clustering - INFO - Clustering completado: 8 temas, outliers finales: 35/157 (22.3%)
+nna-webapp    | 2026-05-21 22:09:30,285 - BERTopic - WARNING: When you use `pickle` to save/load a BERTopic model,please make sure that the environments in which you saveand load the model are **exactly** the same. The version of BERTopic,its dependencies, and python need to remain the same.
+nna-webapp    | 2026-05-21 22:09:34,636 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+nna-webapp    |   Visualizaciones generadas: ['topic_map', 'barchart', 'hierarchy']
+nna-webapp    |   Topics encontrados: 8
+nna-webapp    |   Outliers: 22.3% → 22.3%                                                                                                        
+nna-webapp    | === GUARDANDO RESULTADOS ===                                                                                                     
+nna-webapp    |   CSV: /app/data/noticias_analyzed_simplified.csv                                                                                
+nna-webapp    |   Metadatos: /app/data/noticias_analyzed_simplified_metadata.json
+nna-webapp    |   Total: 577 | NNA: 201 | Alta: 157 | Media: 0                                                                                   
+nna-webapp    | === PASO 11: PERSISTENCIA POSTGRESQL (OE-3) ===
+nna-webapp    | 2026-05-21 22:09:35,542 - src.database.repository - INFO - Esquema FTS inicializado correctamente                                
+nna-webapp    |   577 noticias persistidas en PostgreSQL
+nna-webapp    | 2026-05-21 22:09:36,866 - src.database.repository - INFO - Batch insert: 577 noticias insertadas
+Batches: 100%|██████████| 1/1 [00:00<00:00, 48.87it/s]                                                                                           
+Batches: 100%|██████████| 1/1 [00:00<00:00, 32.44it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 61.41it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 46.47it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 56.03it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 35.82it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 20.35it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 63.11it/s]
+Batches: 100%|██████████| 1/1 [00:00<00:00, 20.23it/s]
+nna-webapp    | 2026-05-21 22:09:37,178 - src.analysis.bertopic_clustering - INFO - Guardados 9 clusters en PostgreSQL
+nna-webapp    | ============================================================
+nna-webapp    |   COMPLETADO — 577 noticias analizadas                                                                                           
+nna-webapp    | ============================================================                                                                     
+nna-webapp    | 2026-05-21 22:09:37,210 - root - INFO - Datos cargados: 577 noticias desde análisis                                              
+nna-webapp    | 2026-05-21 22:09:37,211 - root - INFO - Análisis background completado exitosamente
+nna-postgres  | 2026-05-22 04:11:24.932 UTC [28] LOG:  checkpoint starting: time                                                                 
+nna-postgres  | 2026-05-22 04:12:09.368 UTC [28] LOG:  checkpoint complete: wrote 418 buffers (2.6%); 0 WAL file(s) added, 0 removed, 1 recycled; write=44.419 s, sync=0.008 s, total=44.437 s; sync files=42, longest=0.002 s, average=0.001 s; distance=3446 kB, estimate=3446 kB; lsn=0/92AD5D0, redo lsn=0/92AD598
+
+
+v View in Docker Desktop   o View Config   w Enable Watch   d Detach
