@@ -316,17 +316,338 @@ eliminó \textbf{213 duplicados} (25.1\% del total), con la siguiente distribuci
 634 noticias únicas fue usado para la evaluación del Prototipo 4.
 
 
-\section{Prototipo 4 Arquitectura neuro-simbólica}
+\section{Prototipo 4: Arquitectura Híbrida de Clasificación Semántica Escalonada}
 \label{sec:tt2_prototipo4}
 
- 
-El prototipo 4 integra las capacidades del P3 con dos nuevas capacidades
-que aumentan la eficiencia del sistema como colocar el agrupamiento semántico global ahora 
-con BERTopic como etapa previa a la clasificación ademas de la lógica de decisión
-neuro-simbólica que combina el razonamiento probabilístico de BETO con 
-reglas deterministas. La motivación central de este diseño es una conclusión
-técnica que durante el desarrollo del TT2 se pudo validar y es que
-\textbf{la IA sola no es suficiente}.
+El Prototipo~4 constituye la respuesta ingenieril a las deficiencias empíricas
+documentadas durante la validación del Prototipo~3. A pesar de que la integración de
+BETO y BERTopic representó un avance sustancial en la capacidad semántica del sistema,
+la evaluación sobre el corpus de 787~noticias reveló un fenómeno crítico que se
+denominó \textbf{Efecto Péndulo}: el pipeline oscilaba entre dos estados degenerados
+--- producir un exceso masivo de falsos positivos (60\% del corpus clasificado como
+``Alta'') o, tras aplicar filtros correctivos, destruir la totalidad de los resultados
+válidos (0~noticias ``Alta'', 100\% descartado). Ambos extremos eran inaceptables para
+un sistema de alerta temprana.
+
+El diagnóstico técnico identificó seis cuellos de botella causales:
+\begin{enumerate}
+    \item El post-filtro de validación semántica aplicaba vetos binarios absolutos:
+          una noticia clasificada como ``Media'' sin coincidencia exacta con un
+          patrón regex VP (Verdadero Positivo) era degradada automáticamente a
+          ``No relevante'', destruyendo casos genuinos cuya redacción periodística
+          no coincidía con las frases esperadas.
+
+    \item El Escudo Léxico contenía términos de dominios legislativos y estadísticos
+          (ej.\ \textit{``iniciativa de ley''}, \textit{``REDIM''}) que bloqueaban
+          completamente noticias con contenido \textit{dual}: un caso fáctico de
+          feminicidio que también mencionaba una iniciativa de ley relacionada era
+          eliminado por la presencia del término legislativo.
+
+    \item Los patrones de Falso Positivo incluían expresiones presentes en
+          \textit{toda} noticia policiaca genuina (\textit{``carpeta de
+          investigación''}, \textit{``vinculado a proceso''}), lo que
+          descartaba reportes factuales legítimos.
+
+    \item Los umbrales de clasificación ($\text{Alta} \geq 0.85$) estaban
+          calibrados para un modelo \textit{finetuned} con distribución de scores
+          dispersa en $[0, 1]$, pero el modo \textit{zero-shot} de BETO
+          (similitud coseno) produce scores concentrados en $[0.40, 0.70]$ incluso
+          para los casos más genuinos, haciendo matemáticamente imposible alcanzar
+          ``Alta''.
+
+    \item El módulo BERTopic generaba un error
+          \texttt{ValueError: max\_df corresponds to < documents than min\_df}
+          cuando el corpus post-filtrado resultaba demasiado pequeño para
+          el \texttt{CountVectorizer(min\_df=2)} interno.
+
+    \item El modo \textit{zero-shot} es intrínsecamente incapaz de distinguir
+          entre ``mujer asesinada que deja hijos'' y ``ley que protege a hijos de
+          mujeres asesinadas'' porque ambas oraciones comparten el mismo campo
+          semántico en el espacio de embeddings de BETO.
+\end{enumerate}
+
+La solución adoptada fue el abandono completo del paradigma de \textbf{vetos binarios
+absolutos} en favor de un \textbf{sistema de puntuación ponderada y difusa} estructurado
+en cuatro capas autónomas con penalizaciones y bonificaciones acumulativas.
+
+\subsection{Diseño del Pipeline de Inferencia Semántica Escalonada (\textit{Tiered Scoring})}
+\label{subsec:tt2_tiered_scoring}
+
+La arquitectura v7.1 implementa un pipeline donde cada capa opera sobre el
+\textit{score acumulado} de las capas anteriores, aplicando ajustes aditivos en lugar
+de decisiones terminales. El principio rector es que \textbf{ninguna capa individual
+tiene poder de veto} sobre el resultado final, excepto la Capa~0 para dominios
+completamente ajenos al feminicidio. Formalmente, el score final se computa como:
+
+\begin{equation}
+    s_{\text{final}} = \max\Big(0,\; s_{\text{BETO}} + \delta_{\text{suave}} + \sum_{k} b_k\Big)
+    \label{eq:score_final}
+\end{equation}
+
+\noindent donde $s_{\text{BETO}}$ es el score base de la Capa~2, $\delta_{\text{suave}}$
+es la penalización de la Capa~1 ($-0.35$ o $0$), y $\{b_k\}$ son las bonificaciones
+de la Capa~3 ($+0.10$ a $+0.25$ por señal fáctica detectada).
+
+\subsubsection{Capa 0: Escudo Léxico Estricto}
+\label{subsubsec:capa0}
+
+La primera capa constituye un filtro heurístico de rechazo temprano con complejidad
+$O(|K| \times |T|)$ donde $|K|$ es el número de \textit{stop-keywords} y $|T|$ la
+longitud del texto. Su propósito es descartar dominios \textbf{completamente ajenos}
+al feminicidio y la violencia de género: deportes, espectáculos, criptomonedas,
+meteorología, economía macro y tecnología. La implementación utiliza un
+\texttt{frozenset} de Python que garantiza búsqueda $O(1)$ por keyword.
+
+Esta capa es la \textbf{única} que produce un bloqueo absoluto
+(\texttt{score = 0.0}). Su existencia ahorra el cómputo de las capas posteriores
+(spaCy + BETO, que requieren entre 200 y 800~ms por noticia) al eliminar en
+milisegundos el ruido temático evidente.
+
+\begin{lstlisting}[language=Python,
+    caption={Escudo L\'exico: bloqueo heur\'istico O(1) de dominios ajenos},
+    label={lst:escudo_lexico}]
+_ESCUDO_LEXICO = frozenset({
+    # Deportes (futbol, beisbol, box, olimpicos...)
+    "futbol", "beisbol", "box", "nfl", "seleccion mexicana",
+    # Finanzas / Macroeconomia
+    "inflacion", "tipo de cambio", "pib", "dolar",
+    # Espectaculos / Entretenimiento
+    "netflix", "concierto", "grammy", "oscar",
+    # Totalmente ajeno: criptomonedas, clima, tecnologia
+    "bitcoin", "ethereum", "huracan", "erupcion",
+    # ... ~160 terminos en total
+})
+\end{lstlisting}
+
+\subsubsection{Capa 1: Escudo Temático No-Fáctico (Penalización Suave)}
+\label{subsubsec:capa1}
+
+La innovación central del Prototipo~4 reside en esta capa. Los términos que en la
+versión anterior producían bloqueo absoluto (legislación, estadísticas, opinión,
+casos internacionales) fueron migrados a un nuevo conjunto denominado
+\texttt{\_ESCUDO\_SUAVE}. Cuando se detecta una coincidencia en este conjunto, el
+sistema aplica una \textbf{penalización aditiva} de $\delta = -0.35$ al score de
+BETO, pero \textit{no bloquea} la noticia.
+
+La racionalidad de esta decisión es la siguiente: una noticia genuina con score
+BETO de 0.72 que también menciona \textit{``según datos del REDIM''} obtendrá un
+score ajustado de $0.72 - 0.35 = 0.37$, clasificándola como ``Media'' en lugar de
+destruirla completamente. Si el score BETO es alto ($\geq 0.95$, típico del modo
+\textit{finetuned}), la noticia sobrevive como ``Alta'' ($0.95 - 0.35 = 0.60$).
+Este comportamiento resuelve directamente el problema de contenido dual que el
+Prototipo~3 no podía manejar.
+
+\begin{lstlisting}[language=Python,
+    caption={Escudo Suave: penalizaci\'on aditiva en lugar de veto absoluto},
+    label={lst:escudo_suave}]
+_ESCUDO_SUAVE = frozenset({
+    "iniciativa de ley", "ley monzon", "ley general",
+    "redim", "unicef", "onu mujeres", "inmujeres",
+    "estadistica", "tasa de feminicidio",
+    "columna de opinion", "editorial",
+    "en colombia", "en argentina", "en espana",
+    # ... ~80 terminos legislativos/estadisticos/internacionales
+})
+
+# En predict():
+penalizar, kw = self._escudo_suave(texto)
+if penalizar:
+    penalizacion_suave = -0.35
+    # Se aplica DESPUES de BETO, no antes
+\end{lstlisting}
+
+\subsubsection{Capa 2: Inferencia del Modelo de Lenguaje BETO}
+\label{subsubsec:capa2}
+
+La Capa~2 ejecuta la inferencia del clasificador Transformer y produce el score
+base $s_{\text{BETO}} \in [0, 1]$. El sistema opera en dos modos con prioridad
+estricta:
+
+\begin{description}
+    \item[\textit{Finetuned} (prioritario):] Un clasificador binario
+          \texttt{Linear(768 $\rightarrow$ 256 $\rightarrow$ 1) + Sigmoid}
+          entrenado con datos etiquetados del pipeline heurístico. Produce
+          scores dispersos en todo el rango $[0, 1]$.
+
+    \item[\textit{Zero-shot} (fallback):] Similitud coseno entre el embedding
+          \texttt{[CLS]} del texto y embeddings de referencia de categorías
+          (``relevante'' vs.\ ``no relevante''). Produce scores concentrados
+          en $[0.40, 0.70]$. Se activa automáticamente cuando no existe
+          modelo \textit{finetuned}, con advertencia explícita en el logger.
+\end{description}
+
+\subsubsection{Capa 3: Post-Filtro Heurístico de Validación}
+\label{subsubsec:capa3}
+
+La capa final antes de la clasificación aplica patrones regex avanzados y roles
+sintácticos para inyectar \textbf{bonificaciones} al detectar evidencia explícita
+de orfandad real, y \textbf{penalizaciones} al detectar señales de falso positivo.
+La diferencia fundamental respecto al Prototipo~3 es que esta capa \textit{nunca
+produce vetos absolutos para noticias ``Media''}: si no encuentra ningún patrón
+(ni VP ni FP), la clasificación se \textbf{conserva} intacta.
+
+Los patrones VP (\textit{Verdadero Positivo}) que generan bonificaciones incluyen:
+
+\begin{itemize}
+    \item \texttt{qued[oó] al cuidado} --- el menor sobrevive bajo tutela.
+    \item \texttt{menores? (bajo|en) resguardo} --- intervención institucional (DIF).
+    \item \texttt{(niño|menor|hija?) que presenció} --- menor testigo del crimen.
+    \item \texttt{hijo[s]? quedar?on} --- menores que sobrevivieron.
+\end{itemize}
+
+Los patrones FP que generan penalizaciones incluyen exclusivamente roles
+\textit{invertidos} (menor como agresor o víctima directa) y contenido
+temático-genérico (podcasts, editoriales, estadísticas sin caso concreto).
+Se eliminaron del conjunto FP las expresiones de contexto judicial legítimo
+(\textit{``carpeta de investigación''}, \textit{``vinculado a proceso''}) que
+estaban presentes en toda noticia policiaca genuina y constituían la causa
+principal del Efecto Péndulo.
+
+\subsubsection{Capa 4: Clasificación por Umbrales Calibrados}
+\label{subsubsec:capa4}
+
+Los umbrales de decisión fueron re-calibrados empíricamente contra la distribución
+real de scores del modo \textit{zero-shot}, donde el percentil 95 del score para
+casos genuinos se sitúa en $\approx 0.697$:
+
+\begin{table}[H]
+\centering
+\caption{Umbrales de clasificación v7.1 vs.\ v5.3}
+\label{tab:umbrales_v71}
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Clasificación} & \textbf{v5.3} & \textbf{v7.1} & \textbf{Justificación} \\
+\hline
+Alta      & $\geq 0.85$ & $\geq 0.60$ & Zero-shot máx.\ $\approx 0.70$ \\
+Media     & $\geq 0.50$ & $\geq 0.35$ & Captura zona de incertidumbre \\
+No relev. & $< 0.50$    & $< 0.35$    & Descarte con alta certeza \\
+\hline
+\end{tabular}
+\end{table}
+
+El \textbf{Bypass de Oro} se mantiene como mecanismo de confirmación subordinado
+al post-filtro: cuando los scores heurísticos del \textit{collector} confirman
+presencia explícita de vocabulario de orfandad
+($s_{v\_ind} \geq 0.60$ y $s_{fem} > 0.10$) y la clasificación post-filtro
+no es ``No relevante'', el sistema impone ``Alta'' con $s = \max(s, 0.75)$.
+
+\subsection{Optimización del Entrenamiento bajo Limitaciones de Hardware}
+\label{subsec:tt2_linear_probing}
+
+El entrenamiento del clasificador \textit{finetuned} debía ejecutarse en un entorno
+con \textbf{8~GB de RAM} y sin GPU dedicada, lo que imponía restricciones severas
+sobre el tamaño del grafo computacional. La estrategia adoptada fue
+\textbf{Linear Probing}: congelar completamente los 110~millones de parámetros del
+encoder de BETO y entrenar únicamente la capa de clasificación final.
+
+\begin{lstlisting}[language=Python,
+    caption={Congelamiento del encoder BETO para Linear Probing en CPU con 8 GB de RAM},
+    label={lst:linear_probing}]
+# Congelar TODAS las capas del encoder (capas 0-11)
+for param in self.model.bert.parameters():
+    param.requires_grad = False
+
+# Solo la capa classifier se entrena
+# Parametros entrenables: 768*256 + 256 + 256*1 + 1 = ~197K
+# vs. 110M del encoder completo
+\end{lstlisting}
+
+Esta decisión reduce los parámetros entrenables de 110~millones a aproximadamente
+197~mil, disminuyendo el consumo de memoria del grafo de gradientes en un factor
+de $\sim$560$\times$. Complementariamente, se implementaron dos técnicas de
+estabilización:
+
+\begin{description}
+    \item[Acumulación de gradientes:] Con \texttt{gradient\_accumulation\_steps=8}
+          y \texttt{batch\_size=4}, el modelo acumula gradientes sobre 8~mini-lotes
+          antes de ejecutar un paso de optimización, simulando un lote efectivo de
+          32~muestras sin requerir la memoria correspondiente. Esto estabiliza el
+          entrenamiento evitando oscilaciones del \textit{loss} por varianza
+          en lotes pequeños.
+
+    \item[Early Stopping con paciencia balanceada:] El entrenamiento se detiene
+          automáticamente cuando el F1-score sobre el conjunto de validación no
+          mejora durante 3~épocas consecutivas. Esta paciencia, calibrada
+          empíricamente, evita tanto el sobreajuste (\textit{overfitting}) como
+          el colapso del aprendizaje al entrenar con \textit{Hard Negatives}
+          (notas legislativas que comparten vocabulario con casos genuinos).
+          En las pruebas de validación, el \textit{loss} de entrenamiento se
+          estabilizó descendiendo de $4.57$ (época~1) a $1.94$ (época~4).
+\end{description}
+
+\subsection{Resiliencia Matemática de la Capa de Clustering (BERTopic)}
+\label{subsec:tt2_bertopic_resiliencia}
+
+El error \texttt{ValueError: max\_df corresponds to < documents than min\_df} se
+producía cuando el corpus post-filtrado resultaba insuficiente para el parámetro
+\texttt{min\_df=2} del \texttt{CountVectorizer} interno de BERTopic. La solución
+implementada opera en tres niveles de defensa:
+
+\begin{enumerate}
+    \item \textbf{min\_df dinámico:} El vectorizador ajusta automáticamente
+          \texttt{min\_df = 1} cuando \texttt{min\_cluster\_size $\leq$ 5},
+          garantizando que todo término presente en al menos un documento
+          sea considerado por c-TF-IDF.
+
+    \item \textbf{min\_cluster\_size adaptativo:} El tamaño mínimo de
+          cluster se calcula en función del corpus disponible:
+          $\text{min\_cs} = \{8\ \text{si}\ n \geq 100;\; 5\ \text{si}\ n \geq 50;\; 3\ \text{si}\ n \geq 20;\; 2\ \text{si}\ n < 20\}$.
+
+    \item \textbf{Retry con parámetros ultra-conservadores:} Si BERTopic
+          falla con los parámetros iniciales, el sistema reintenta
+          automáticamente con \texttt{min\_cluster\_size=2},
+          \texttt{min\_samples=1} y reducción de outliers deshabilitada.
+          Si el segundo intento también falla, el paso de clustering
+          se omite sin detener el pipeline.
+\end{enumerate}
+
+\begin{lstlisting}[language=Python,
+    caption={Retry defensivo de BERTopic ante corpus reducidos},
+    label={lst:bertopic_retry}]
+try:
+    results = clustering.fit_transform(docs=docs, titles=titles)
+except ValueError as e:
+    # Reintentar con parametros ultra-conservadores
+    clustering_retry = SemanticClustering(
+        min_cluster_size=2, min_samples=1,
+        reduce_outliers=False,
+    )
+    results = clustering_retry.fit_transform(docs=docs, titles=titles)
+\end{lstlisting}
+
+\subsection{Resultados de Validación del Pipeline v7.1}
+\label{subsec:tt2_resultados_v71}
+
+La validación del Prototipo~4 se ejecutó sobre el corpus de 787~noticias
+previamente deduplicado por el Prototipo~3. La siguiente tabla compara los
+resultados de la arquitectura v5.3 (Prototipo~3) con la v7.1 (Prototipo~4):
+
+\begin{table}[H]
+\centering
+\caption{Comparación de resultados: Prototipo~3 (v5.3) vs.\ Prototipo~4 (v7.1)}
+\label{tab:resultados_v71}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Métrica} & \textbf{P3 (v5.3)} & \textbf{P4 (v7.1)} \\
+\hline
+Noticias ``Alta''            & 0         & \textbf{21} \\
+Noticias ``Media''           & 0 / 132   & 111 \\
+Noticias ``No relevante''    & 787 / 655 & 655 \\
+BERTopic                     & \texttt{ValueError} & 14 tópicos, 29.5\% outliers \\
+Falsos positivos en ``Alta'' & N/A       & \textbf{0 de 21} \\
+\hline
+\end{tabular}
+\end{table}
+
+Las 21~noticias clasificadas como ``Alta'' fueron verificadas manualmente y
+todas corresponden a \textbf{casos fácticos de feminicidio con NNA afectados
+en territorio mexicano}. Entre los titulares capturados se encuentran:
+\textit{``José discutió con su pareja y luego la decapitó con un hacha frente
+a su hijo''}, \textit{``Sujeto mata a su esposa y suegra y sustrae a su hija
+en Cuautitlán''}, y \textit{``Mi papá es malo: revelan testimonio de niño que
+presenció feminicidio de su madre''}. Ninguna noticia legislativa, estadística
+o de opinión fue clasificada como ``Alta'', lo que confirma la eficacia del
+Escudo Suave como mecanismo anti-péndulo.
 
 \subsection{Por qué la IA sola no basta}
 \label{subsec:tt2_limitaciones_ia}
@@ -338,14 +659,14 @@ en modo \textit{zero-shot} producía clasificaciones erróneas con alta confianz
 \begin{itemize}
     \item \textbf{Notas estadísticas con narrativa emocional.} Artículos de opinión
           que describían la crisis de orfandad por feminicidio en términos generales
-          y empáticos como por ejemplo (\textit{"miles de niños que perdieron a su madre"}) obtenían
+          y empáticos como por ejemplo (\textit{``miles de niños que perdieron a su madre''}) obtenían
           scores BETO de hasta 0.81 a pesar de que no reportaban ningún caso concreto
           ni identificable.
 
     \item \textbf{Notas donde el menor es el agresor.} Ante titulares como
-          \textit{"Hijo adolescente mata a su madre en Ecatepec"} BETO asignaba
+          \textit{``Hijo adolescente mata a su madre en Ecatepec''} BETO asignaba
           scores de relevancia moderados (entre 0.55 y 0.65) porque el embedding semántico
-          capturaba la correlación superficial entre "hijo", "madre" y "asesinato" sin
+          capturaba la correlación superficial entre ``hijo'', ``madre'' y ``asesinato'' sin
           identificar que el rol del menor era el de agresor.
 
     \item \textbf{Reportes de políticas públicas con vocabulario de dominio.}
@@ -361,177 +682,7 @@ si la nota relata un hecho o un análisis) requiere conocimiento estructurado de
 dominio que BETO no puede inferir exclusivamente de la distribución de tokens.
 La solución es la arquitectura neuro-simbólica donde las reglas simbólicas ( que estan
 basadas en el conocimiento explícito sobre el dominio) \textbf{corrigen
-las alucinaciones} del componente neuronal. 
-
-\subsection{BERTopic como filtro de contexto global}
-\label{subsec:tt2_bertopic}
-
-Una implementación fundamental en este prototipo es la inversión del orden
-de ejecución respecto al TT1 donde el agrupamiento semántico (DBSCAN en eso entonces) 
-se ejecutaba después de la clasificación individual. Esta decisión de diseño responde
-a una necesidad de contexto donde clasificar una noticia de forma aislada es mucho más
-impreciso que clasificarla sabiendo cómo se relaciona con el corpus completo del periodo.
-
-BERTopic implementa una cadena de tres algoritmos: (1)~BETO embeddings para
-representar cada documento en el espacio vectorial de 768~dimensiones; (2)~UMAP
-para reducción de dimensionalidad no-lineal hacia 5~dimensiones preservando
-estructura topológica local; y (3)~HDBSCAN para detección de clusters de densidad
-variable, que asigna \texttt{topic\_id = -1} a los documentos que no pertenecen a
-ningún clúster significativo (\textit{outliers}). Esta etiqueta de \textit{outlier}
-es la señal clave que utiliza la lógica simbólica posterior.
-
-El criterio de umbral adaptativo basado en contexto de clúster opera así:
-una noticia en un \textbf{clúster válido} (\texttt{topic\_id $\geq$ 0}) pertenece
-a un grupo temático identificado en el corpus; si BETO la considera relevante
-($s_{sem} \geq 0.50$), la clasificación procede normalmente. Una noticia
-\textbf{outlier} (\texttt{topic\_id = -1}) no comparte semántica con ningún grupo
-conocido: puede ser un caso genuinamente nuevo y urgente, o un falso positivo de
-BETO. Ante esta ambigüedad, el sistema simbólico \textit{eleva el umbral de exigencia}
-de BETO a 0.65 para clasificarla como ``Alta'', requiriendo mayor certeza del modelo
-neuronal antes de emitir una alerta:
-
-\begin{lstlisting}[language=Python,
-    caption={Umbral adaptativo de BETO seg\'un contexto de cl\'uster BERTopic},
-    label={lst:cluster_threshold}]
-es_outlier_cluster = (topic_id_int == -1)
-
-# Outlier: BETO debe ser mas seguro (0.65 vs. 0.50 en cluster valido)
-umbral_beto_alta   = 0.65 if es_outlier_cluster else 0.50
-umbral_beto_rapida = 0.50 if es_outlier_cluster else 0.35
-\end{lstlisting}
-
-\subsection{El Bypass de Oro: Decisión Simbólica Absoluta}
-\label{subsec:tt2_bypass_oro}
-
-El mecanismo de mayor prioridad en la arquitectura neuro-simbólica es el denominado
-\textbf{Bypass de Oro}. Su premisa es que, cuando el módulo de recolección
-(\texttt{collector}) detecta la presencia explícita de \textit{keywords de oro}
-(expresiones que denotan inequívocamente orfandad por feminicidio, tales como
-\textit{``sus hijos quedaron huérfanos''}, \textit{``resguardados por el DIF''},
-\textit{``bajo custodia del Sistema Nacional DIF''}) y asigna un
-\texttt{score\_victima\_indirecta $\geq$ 0.80}, no existe justificación técnica
-para someter esa noticia al juicio probabilístico de BETO. Una coincidencia de texto
-exacto con vocabulario de dominio es una verdad analítica más confiable que cualquier
-correlación vectorial en el espacio de embeddings.
-
-El Bypass de Oro impone una clasificación de ``Alta'' relevancia de forma
-\textbf{incondicional}, ignorando completamente el score semántico:
-
-\begin{lstlisting}[language=Python,
-    caption={Bypass de Oro: la regla simb\'olica anula la decisi\'on de BETO},
-    label={lst:bypass_oro}]
-# Nivel 0: BYPASS DE ORO (independiente de BETO)
-# score_v_ind >= 0.80 implica que _check_keywords_de_oro() fue True
-# en el collector: presencia de vocabulario de orfandad explicita.
-# BETO no tiene jurisdiccion en este caso.
-es_bypass_oro = (
-    score_v_ind >= 0.80 and   # Keywords de oro confirmadas
-    score_fem   >  0.10       # Contexto de feminicidio presente
-)
-
-if es_bypass_oro:
-    clasificacion = "Alta"
-    score_final   = max(h_score, 0.85)
-    logger.info(
-        f"Bypass de Oro: v_ind={score_v_ind:.2f}, "
-        f"fem={score_fem:.2f} -> Alta (BETO ignorado)"
-    )
-\end{lstlisting}
-
-El Bypass de Oro resuelve directamente el escenario de falla más costoso:
-una noticia donde la redacción periodística es atípica o ambigua puede obtener
-un score BETO bajo (por ejemplo, 0.40), pero si el collector confirmó textualmente
-la orfandad, el sistema debe clasificarla como ``Alta'' de todas formas. La regla
-simbólica protege al sistema de rechazar casos reales por limitaciones del modelo
-neuronal ante estilos de escritura no canónicos.
-
-\subsection{El Bozal de Penalización: El Contexto de Clúster como Corrector}
-\label{subsec:tt2_bozal}
-
-El mecanismo complementario al Bypass de Oro actúa en la dirección opuesta:
-el \textbf{Bozal de Penalización} suprime clasificaciones elevadas de BETO cuando
-el contexto semántico global (provisto por BERTopic) y los scores heurísticos
-del collector indican que la noticia es probablemente un falso positivo. Este
-mecanismo se activa cuando una nota es \textit{outlier} de BERTopic
-(\texttt{topic\_id = -1}) y el score heurístico de víctima indirecta es bajo
-($s_{v\_ind} \leq 0.25$), pero BETO asigna un score moderado (por ejemplo, 0.55).
-En ese caso, la lógica simbólica interpreta la señal combinada como ruido y
-eleva el umbral de BETO de 0.50 a 0.65 para clasificar como ``Alta'',
-efectivamente \textit{amordazando} la tendencia de BETO a sobre-clasificar.
-
-La siguiente tabla resume los niveles de la lógica neuro-simbólica y sus condiciones
-de activación:
-
-\begin{table}[H]
-\centering
-\begin{threeparttable}
-\caption{Árbol de decisión neuro-simbólico del Prototipo~4}
-\label{tab:arbol_decision}
-\begin{tabular}{|c|p{4.5cm}|p{4.5cm}|c|}
-\hline
-\textbf{Nivel} & \textbf{Condición de activación} & \textbf{Acción} & \textbf{Tipo} \\
-\hline
-0 & $s_{v\_ind} \geq 0.80$ \textbf{y} $s_{fem} > 0.10$ &
-    Clasificar ``Alta'' incondicionalmente & Simbólico \\
-\hline
-0.5 & $h_{score} \geq 0.70$ \textbf{y} $s_{fem} > 0.15$ \textbf{y}
-      ($s_{v\_ind} > 0.25$ \textbf{o} $s_{nna} > 0.25$) &
-    Respetar clasificación ``Alta'' del collector & Simbólico \\
-\hline
-1 & $s_{fem} > 0.15$ \textbf{y} $s_{v\_ind} > 0.25$ \textbf{y}
-    $s_{caso} > 0.15$ \textbf{y} $s_{sem} > \theta_{alta}$ &
-    Clasificar ``Alta'' (ruta principal) & Híbrido \\
-\hline
-2 & $s_{v\_ind} > 0.40$ \textbf{y} $s_{fem} > 0.15$ \textbf{y}
-    $s_{sem} > \theta_{rapida}$ &
-    Clasificar ``Alta'' (vía rápida) & Híbrido \\
-\hline
-3 & Resto de casos & Clasificar por $score\_final$ ponderado ($\alpha$) & Neuronal \\
-\hline
-\end{tabular}
-\begin{tablenotes}
-    \small
-    \item Donde $\theta_{alta} = 0.65$ si \texttt{topic\_id = -1}, $0.50$ en caso contrario.
-    \item Donde $\theta_{rapida} = 0.50$ si \texttt{topic\_id = -1}, $0.35$ en caso contrario.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
-
-\subsection{El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}
-\label{subsec:tt2_alpha}
-
-Para la mayoría estadística de noticias que no activan ninguno de los niveles
-simbólicos anteriores (casos genuinamente ambiguos), el sistema computa un
-\textbf{score final ponderado} que combina el veredicto probabilístico de BETO
-($s_{sem}$) con el score heurístico del collector ($h_{score}$) mediante un
-coeficiente $\alpha$ determinado dinámicamente por la \textit{distancia de BETO
-a la frontera de incertidumbre máxima} (0.50):
-
-\begin{lstlisting}[language=Python,
-    caption={Factor $\alpha$ din\'amico: BETO cede peso a la heur\'istica cuando titubea},
-    label={lst:alpha_dinamico}]
-# Distancia a la frontera de maxima incertidumbre (0.5)
-distance = abs(s_score - 0.5)
-
-if distance > 0.3:
-    alpha = 0.7   # BETO muy seguro (score<0.2 o >0.8): mayor peso semantico
-elif distance > 0.15:
-    alpha = 0.5   # Confianza moderada: ponderacion equitativa
-else:
-    alpha = 0.3   # BETO indeciso (score en 0.35-0.65): delegar a heuristica
-
-# Fusion ponderada
-score_final = (alpha * s_score) + ((1 - alpha) * h_score)
-\end{lstlisting}
-
-La racionalidad de este diseño es la siguiente: cuando BETO produce un score de 0.90
-(distance=0.40), el modelo tiene alta confianza en la clasificación positiva y se
-le asigna peso mayoritario ($\alpha=0.7$). Cuando produce 0.52 (distance=0.02), BETO
-está esencialmente lanzando una moneda; en ese caso, el sistema otorga el peso
-mayoritario ($1-\alpha=0.7$) al score heurístico, que aunque menos sofisticado, es
-determinista y auditablemente correcto para los patrones de dominio conocidos. Esta
-transición suave entre ``confiar en la IA'' y ``confiar en las reglas'' es la esencia
-del paradigma neuro-simbólico.
+las alucinaciones} del componente neuronal.
 
 \subsection{Investigador Profundo: DuckDuckGo y Gemini Flash}
 \label{subsec:tt2_investigador}
@@ -728,25 +879,27 @@ a un archivo CSV enriquecido.\\
 \end{table}
 
 %----------------------------------------------------------------------------------------
-\section{Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}
+\section{Síntesis: El Pipeline v7.1 como Sistema de Clasificación Escalonada}
 \label{sec:tt2_sintesis}
 %----------------------------------------------------------------------------------------
 
 La arquitectura final del Prototipo~4 puede describirse como un \textbf{sistema de
-doble árbol}: un árbol neuronal (BETO + BERTopic) que provee razonamiento
-probabilístico sobre el lenguaje natural, y un árbol simbólico (Bypass de Oro +
-Bozal + umbrales adaptativos) que corrige las alucinaciones del árbol neuronal
-utilizando conocimiento estructurado del dominio. Ninguno de los dos árboles opera
-en aislamiento; su interacción es el mecanismo que permite al sistema superar las
-limitaciones individuales de cada paradigma.
+clasificación semántica escalonada} (\textit{Tiered Scoring}): cuatro capas autónomas
+--- Escudo Léxico, Escudo Suave, Inferencia BETO y Post-filtro Heurístico ---
+operan secuencialmente sobre un score acumulativo, donde las reglas simbólicas
+(basadas en conocimiento explícito del dominio) \textbf{modulan} la salida del
+componente neuronal mediante penalizaciones y bonificaciones aditivas en lugar de
+vetos binarios absolutos. Este diseño eliminó el Efecto Péndulo documentado en el
+Prototipo~3 y produjo 21~noticias ``Alta'' con cero falsos positivos sobre el
+corpus de 787~documentos.
 
-La siguiente tabla sintetiza los once pasos del Pipeline v5.0 con su objetivo
+La siguiente tabla sintetiza los once pasos del Pipeline v7.1 con su objetivo
 específico, componente implementado y tipo de operación:
 
 \begin{table}[H]
 \centering
 \begin{threeparttable}
-\caption{Pipeline v5.0: síntesis de los once pasos de análisis}
+\caption{Pipeline v7.1: síntesis de los once pasos de análisis}
 \label{tab:pipeline_resumen}
 \begin{tabular}{|c|p{3.5cm}|p{4cm}|c|}
 \hline
@@ -761,7 +914,7 @@ específico, componente implementado y tipo de operación:
 7  & (Eliminado)                & TF-IDF rescore — destruía clasificaciones ``Alta'' & P2$^\dagger$ \\
 8  & Búsqueda con sinónimos     & \texttt{SynonymDictionary}                        & P2    \\
 10 & Contexto global BERTopic   & BETO embeds + UMAP + HDBSCAN + c-TF-IDF         & P4    \\
-9  & Clasificación semántica    & \texttt{SemanticDetector} + lógica neuro-simbólica & P3/P4 \\
+9  & Clasificación escalonada    & \texttt{SemanticDetector} v7.1 + Tiered Scoring & P3/P4 \\
 11 & Persistencia relacional    & \texttt{NoticiasRepository} (PostgreSQL + FTS GIN) & P3   \\
 \hline
 \end{tabular}
@@ -791,7 +944,7 @@ preservada deliberadamente como evidencia del proceso evolutivo del sistema.
 \label{sec:tt2_diagrama}
 %----------------------------------------------------------------------------------------
 
-La arquitectura completa del Pipeline v5.0 puede representarse mediante el siguiente
+La arquitectura completa del Pipeline v7.1 puede representarse mediante el siguiente
 flujo de datos, descrito para su posterior implementación en TikZ o Mermaid:
 
 \begin{description}
@@ -808,10 +961,12 @@ flujo de datos, descrito para su posterior implementación en TikZ o Mermaid:
           y asigna \texttt{topic\_id} a cada noticia. Las noticias sin clúster
           (\texttt{topic\_id = -1}) reciben la etiqueta \textit{outlier}.
 
-    \item[Nivel 4 — Clasificación Neuro-Simbólica (P3/P4):] El árbol de decisión
-          evalúa cada noticia en secuencia: (1)~Bypass de Oro $\rightarrow$
-          (2)~Collector Alta $\rightarrow$ (3)~Condición estricta con BETO+clúster
-          $\rightarrow$ (4)~Vía Rápida $\rightarrow$ (5)~Fusión $\alpha$ dinámica.
+    \item[Nivel 4 --- Clasificación Escalonada (P3/P4):] El pipeline de 4~capas
+          evalúa cada noticia en secuencia: (1)~Escudo Léxico (bloqueo de dominios
+          ajenos) $\rightarrow$ (2)~Escudo Suave (penalización $-0.35$ para contenido
+          legislativo/estadístico) $\rightarrow$ (3)~Inferencia BETO $\rightarrow$
+          (4)~Post-filtro heurístico con bonificaciones y clasificación por umbrales
+          calibrados ($\text{Alta} \geq 0.60$, $\text{Media} \geq 0.35$).
 
     \item[Nivel 5 — Persistencia (P3):] Los resultados se almacenan simultáneamente
           en CSV (compatibilidad) y PostgreSQL (FTS, integridad referencial,
