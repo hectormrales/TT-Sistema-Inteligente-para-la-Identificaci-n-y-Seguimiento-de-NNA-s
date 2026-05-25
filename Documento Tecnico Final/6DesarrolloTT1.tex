@@ -2,7 +2,7 @@
 
 % CAPÍTULO 6: DESARROLLO DE TRABAJO TERMINAL I
 
-\chapter{Desarrollo del Trabajo Terminal I}
+\chapter{Desarrollo de Trabajo Terminal I}
 \label{cap:desarrollo_tt1}
 
 En este capitulo se presenta una síntesis de los tres prototipos desarrollados durante
@@ -14,24 +14,24 @@ experimento pues su valor radica tanto en lo que logró como en lo que
 demostró no ser viable. 
 
 
-\section{Prototipo 0: Scraping directo sobre HTML}
+\section{Prototipo 0 Scraping directo sobre HTML}
 \label{sec:p0_fracaso}
 
 
-\subsection{Premisa y Enfoque}
+\subsection{Premisa y enfoque}
 \label{subsec:p0_premisa}
 
-El Prototipo~0 se planteó como una prueba de concepto que fue verificar si era posible
+El prototipo0 se planteó como una prueba de concepto que fue verificar si era posible
 extraer noticias directamente del HTML de los sitios de noticias mexicanas, utilizando
 \texttt{BeautifulSoup} y la librería \texttt{requests}. El supuesto inicial era
 que los sitios de noticias de acceso público serían accesibles de forma programática
 sin fricción alguna.
 
-\subsection{Resultado: Inviabilidad por seguridad perimetral}
+\subsection{Resultado}
 \label{subsec:p0_resultado}
 
 La premisa fue invalidada en su totalidad pues el sistema se encontró con dos barreras
-técnicas alarmantes:
+técnicas.
 
 \begin{enumerate}
     \item \textbf{WAF y Cloudflare (HTTP 403/503).} Cerca del 78\% de los medios objetivo
@@ -54,16 +54,16 @@ El fallo del prototipo 0 hizo evidente que el scraping al HTML directo no era un
 para el monitoreo de medios de noticias modernos. Por lo que se decidió abandonar el scraping directo
 y migrar hacia fuentes diseñadas para la ingestión automatizada, como lo son los feeds RSS y las APIs.
 
-\section{Prototipo 1: RSS + K-Means}
+\section{Prototipo 1 RSS + K-Means}
 \label{sec:p1_baseline}
 
 \subsection{Arquitectura implementada}
 \label{subsec:p1_arquitectura}
 
-El Prototipo~1 estableció la primera iteración funcional del sistema. La migración hacia
+El prototipo 1 estableció la primera iteración funcional del sistema. La migración hacia
 feeds RSS eliminó la fricción de acceso, pues los feeds son recursos XML diseñados
 explícitamente para el consumo automatizado y no están sujetos a los mecanismos WAF
-que bloquearon el P0.
+que bloquearon el prototipo 0.
 
 El flujo implementado consistió en las siguientes etapas:
 
@@ -82,10 +82,10 @@ El flujo implementado consistió en las siguientes etapas:
     \item \textbf{Persistencia.} Exportación a CSV mediante \texttt{Pandas}.
 \end{enumerate}
 
-\textbf{Volumen de datos:} 96 noticias únicas por ejecución; persistencia en
+\textbf{Volumen de datos:} 96 noticias únicas por ejecución con persistencia en
 archivos planos CSV.
 
-\subsection{Limitaciones Identificadas}
+\subsection{Limitaciones identificadas}
 \label{subsec:p1_limitaciones}
 
 Las limitaciones del P1 fueron de tres órdenes:
