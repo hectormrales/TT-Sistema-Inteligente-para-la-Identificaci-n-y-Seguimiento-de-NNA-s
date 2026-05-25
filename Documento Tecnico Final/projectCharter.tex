@@ -14,57 +14,49 @@
 	\ESCOMPchItem{Proyecto:}{2026-A135: Sistema Inteligente para la Identificación y Seguimiento de NNA}
 	\ESCOMPchItem{Responsable:}{Héctor Alberto Morales Martínez, desarrollador principal}
 	\ESCOMPchItem{Autoriza:}{Comisión de Trabajos Terminales (CATT)}
-	\ESCOMPchItem{Background/Contexto:}{Miles de NNA quedan en orfandad por feminicidios anualmente; actualmente no existe un sistema centralizado de seguimiento para apoyarlos.}
-	\ESCOMPchItem{Beneficios esperados:}{Visibilidad del fenómeno, reducción de trabajo manual para ONGs y generación de base de datos histórica mediante NLP.}
-	\ESCOMPchItem{Costo estimado:}{Proyecto Académico (TT1/TT2)}
+	\ESCOMPchItem{Background/Contexto:}{Miles de NNA quedan en orfandad por feminicidios anualmente; actualmente no existe un sistema centralizado de seguimiento para apoyarlos y visibilizar su situación.}
+	\ESCOMPchItem{Beneficios esperados:}{Visibilidad del fenómeno, reducción radical del trabajo manual de monitoreo para ONGs y estructuración de una base de datos histórica mediante PNL.}
+	\ESCOMPchItem{Costo estimado:}{Proyecto Académico de Investigación (TT1/TT2)}
 	\ESCOMPchSubSubItem{Fecha de inicio:}{Septiembre 2025}{\bf Fecha de término:}{Junio 2026}
-	\ESCOMPchItem{Objetivo:}{Sistema automatizado de recolección, análisis NLP y visualización de noticias sobre NNA afectados por feminicidios.}
+	\ESCOMPchItem{Objetivo:}{Desarrollar un sistema automatizado e inteligente de recolección, análisis PNL y visualización de eventos de orfandad por feminicidio en México.}
 	\ESCOMPchSec{Entregables Principales}
-	\ESCOMPchSubItem{}{SIST-01}{Sistema web y flujo de NLP funcional (contenedores Docker)}
+	\ESCOMPchSubItem{}{SIST-01}{Sistema web orquestado en microservicios contenerizados (Docker Compose)}
 	\ESCOMPchSubItem{}{DOC-01}{Documentación Técnica (este documento)}
-	\ESCOMPchSubItem{}{COD-01}{Código fuente completo en repositorio}
+	\ESCOMPchSubItem{}{COD-01}{Código fuente modular en repositorio}
 	\ESCOMPchSec{Alcance del proyecto}
 	\ESCOMPchItem{Incluye:}{
 		\begin{Titemize}
-			\Titem Recolección automatizada multi-fuente (RSS, Google Search).
-			\Titem Web scraping dinámico y evasión de bloqueos.
-			\Titem Clasificación semántica con modelo BETO.
-			\Titem Agrupación de noticias (clustering) mediante BERTopic.
-			\Titem Deduplicación cross-site avanzada.
-			\Titem Base de datos PostgreSQL y dashboard interactivo.
+			\Titem Recolección multi-fuente con mas de 50 feeds RSS y Google News API.
+			\Titem Clasificación semántica con el modelo \textbf{BETO Fine-tuned} localmente.
+			\Titem Eliminación de ruido con clasificación escalonada.
+			\Titem Modelado automático de tópicos con \textbf{BERTopic}.
+			\Titem Persistencia con PostgreSQL y dashboard web con modulo de investigación profunda.
 		\end{Titemize}
 	}
 	\ESCOMPchItem{Excluye:}{
 		\begin{Titemize}
-			\Titem Identificación de datos personales completos de NNA.
-			\Titem Intervención social directa o canalización oficial a las autoridades.
-			\Titem Validación pericial de la veracidad de los hechos periodísticos. 
+			\Titem Identificación, almacenamiento o filtrado de datos personales completos y sensibles de NNA.
+			\Titem Intervención social, apoyo psicológico directo o canalización jurídica oficial ante autoridades.
+			\Titem Validación pericial o legal de la veracidad jurídica de los hechos publicados por los medios.
 		\end{Titemize}
 	}
-	\ESCOMPchItem{Metodología:}{Desarrollo evolutivo (Iteraciones de Prototipo P0 a P4)}
+	\ESCOMPchItem{Metodología:}{Desarrollo evolutivo por prototipos (P0 a P4).}
 	\ESCOMPchSec{Datos de contacto}
 	\ESCOMPchItem{Desarrollador:}{Héctor Alberto Morales Martínez}
 	\ESCOMPchItem{Directores:}{M. en C. Ulises Saldaña Velez, M. en C. Gabriel Hurtado Avilés}
 	\ESCOMPchItem{Organización de Apoyo:}{ }
 	\ESCOMPchItem{Riesgos y peligros:}{
 		\begin{Titemize}
-			\Titem Bloqueos anti-scraping progresivos por parte de los medios periodísticos.
-			\Titem Lentitud en la inferencia del modelo neuronal por falta de hardware GPU.
+			\Titem Bloqueos anti-scraping progresivos y cambios en la estructura de los portales web.
 		\end{Titemize}
 	}
 	\ESCOMPchItem{Supuestos:}{
 		\begin{Titemize}
-			\Titem Los medios mantienen un estándar semántico en su redacción de crímenes.
-			\Titem Los servicios de búsqueda como Google News permanecen públicamente consultables.
-		\end{Titemize}
-	}
-	\ESCOMPchItem{Restricciones y dependencias:}{
-		\begin{Titemize}
-			\Titem El sistema no puede operar en tiempo real exacto; opera por lotes (cron-jobs).
-			\Titem Restricción absoluta de protección de identidad del menor por normativas vigentes.
+			\Titem Las fuentes periodísticas locales mantienen un marco de narrativa policiaca para crímenes de género.
+			\Titem Los servicios y APIs de agregación semántica de Google News permanecen accesibles.
 		\end{Titemize}
 	}
 \end{tabular}
-	\caption{Información general del proyecto}
+	\caption{Información general y acta de constitución del proyecto}
 	\label{tbl:projectCharter}
 \end{table}

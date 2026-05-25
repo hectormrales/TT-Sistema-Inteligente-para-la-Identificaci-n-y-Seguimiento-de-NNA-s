@@ -1,5 +1,5 @@
 \babel@toc {spanish}{}\relax 
-\contentsline {section}{\numberline {0.1}Términos del Negocio}{1}{section.0.1}%
+\contentsline {section}{\numberline {0.1}Glosario y Conceptos Técnicos del Sistema}{1}{section.0.1}%
 \contentsline {chapter}{\numberline {1}Introducción}{3}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Presentación del proyecto}{3}{section.1.1}%
 \contentsline {section}{\numberline {1.2}Planteamiento del problema}{4}{section.1.2}%
@@ -88,39 +88,36 @@
 \contentsline {subsubsection}{c-TF-IDF: Representación Léxica de Tópicos}{39}{section*.6}%
 \contentsline {subsection}{\numberline {5.8.4}Evolución Comparativa TT1 $\rightarrow $ TT2: de Léxico a Semántica}{40}{subsection.5.8.4}%
 \contentsline {section}{\numberline {5.9}Conclusión del Capítulo: La Convergencia Tecnológica al Servicio de los Derechos de la Infancia}{41}{section.5.9}%
-\contentsline {chapter}{\numberline {6}Metodología de Desarrollo}{42}{chapter.6}%
+\contentsline {chapter}{\numberline {6}Metodología de desarrollo}{42}{chapter.6}%
 \contentsline {section}{\numberline {6.1}Metodología de desarrollo evolutivo}{42}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Cronograma General del Proyecto}{43}{subsection.6.1.1}%
-\contentsline {section}{\numberline {6.2}Evolución de los Prototipos (P0 al P4)}{43}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}Fase TT-1: Prototipos Exploratorios (P0--P2)}{43}{subsection.6.2.1}%
-\contentsline {subsection}{\numberline {6.2.2}Fase TT-2: Arquitectura Neuro-Simbólica (P3--P4)}{43}{subsection.6.2.2}%
-\contentsline {section}{\numberline {6.3}Stack Tecnológico: Evolución TT-1 $\rightarrow $ TT-2}{44}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Arquitectura de Microservicios y Contenerización}{44}{section.6.4}%
-\contentsline {subsection}{\numberline {6.4.1}Contenedor de Base de Datos: \texttt {nna-postgres}}{45}{subsection.6.4.1}%
-\contentsline {subsection}{\numberline {6.4.2}Contenedor del Motor de Análisis: \texttt {nna-analyzer}}{45}{subsection.6.4.2}%
-\contentsline {subsection}{\numberline {6.4.3}Contenedor de la Aplicación Web: \texttt {nna-webapp}}{45}{subsection.6.4.3}%
-\contentsline {section}{\numberline {6.5}Matriz de Trazabilidad: Requerimientos por Prototipo}{46}{section.6.5}%
-\contentsline {chapter}{\numberline {7}Desarrollo del Trabajo Terminal I}{47}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Prototipo 0: Scraping directo sobre HTML}{47}{section.7.1}%
-\contentsline {subsection}{\numberline {7.1.1}Premisa y Enfoque}{47}{subsection.7.1.1}%
-\contentsline {subsection}{\numberline {7.1.2}Resultado: Inviabilidad por seguridad perimetral}{47}{subsection.7.1.2}%
-\contentsline {subsection}{\numberline {7.1.3}Decisión Técnica}{48}{subsection.7.1.3}%
-\contentsline {section}{\numberline {7.2}Prototipo 1: RSS + K-Means}{48}{section.7.2}%
-\contentsline {subsection}{\numberline {7.2.1}Arquitectura implementada}{48}{subsection.7.2.1}%
-\contentsline {subsection}{\numberline {7.2.2}Limitaciones Identificadas}{48}{subsection.7.2.2}%
-\contentsline {section}{\numberline {7.3}Prototipo 2: Triple Fuente + DBSCAN + FeminicideDetector}{49}{section.7.3}%
-\contentsline {subsection}{\numberline {7.3.1}Evolución del sistema}{49}{subsection.7.3.1}%
-\contentsline {section}{\numberline {7.4}Limitaciones identificadas}{49}{section.7.4}%
-\contentsline {subsection}{\numberline {7.4.1}Falsos positivos: Insuficiencia de la Sintaxis}{49}{subsection.7.4.1}%
-\contentsline {subsection}{\numberline {7.4.2}Clustering Léxico: DBSCAN sobre TF-IDF}{50}{subsection.7.4.2}%
-\contentsline {subsection}{\numberline {7.4.3}La poca escalabilidad del almacenamiento en CSV}{50}{subsection.7.4.3}%
-\contentsline {subsection}{\numberline {7.4.4}Síntesis: La necesidad de comprensión semántica}{50}{subsection.7.4.4}%
-\contentsline {section}{\numberline {7.5}Arquitectura del Sistema}{51}{section.7.5}%
-\contentsline {subsection}{\numberline {7.5.1}Diagrama de Componentes (Arquitectura en Capas)}{51}{subsection.7.5.1}%
-\contentsline {subsection}{\numberline {7.5.2}Diagrama de Secuencia (Ciclo de Vida de la Noticia)}{51}{subsection.7.5.2}%
-\contentsline {section}{\numberline {7.6}Diseño de Datos}{54}{section.7.6}%
-\contentsline {subsection}{\numberline {7.6.1}Modelo de Dominio}{54}{subsection.7.6.1}%
-\contentsline {subsection}{\numberline {7.6.2}Diccionario de Datos Extendido}{54}{subsection.7.6.2}%
+\contentsline {subsection}{\numberline {6.1.1}Cronograma general de evolución del proyecto}{42}{subsection.6.1.1}%
+\contentsline {section}{\numberline {6.2}Evolución metodológica de los prototipos}{43}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Fase TT-1 Prototipos exploratorios e ingesta sintáctica (P0-P2)}{43}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Fase TT-2 Arquitectura de aprendizaje profundo y clasificador escalonado (P3-P4)}{44}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Evolución del Stack Tecnológico (TT-1 $\rightarrow $ TT-2)}{44}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Arquitectura de Microservicios, Contenerización y Gestión de Recursos}{46}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Contenedor de Base de Datos y Persistencia Relacional: \texttt {nna-postgres}}{46}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Contenedor del Motor de Ingesta e Inferencia Machine Learning: \texttt {nna-analyzer}}{46}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}Contenedor de Interfaz Analítica y Dashboard Web: \texttt {nna-webapp}}{47}{subsection.6.4.3}%
+\contentsline {section}{\numberline {6.5}Especificación de Requerimientos y Matriz de Trazabilidad Evolutiva}{47}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Desarrollo del Trabajo Terminal I}{50}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Prototipo 0: Scraping directo sobre HTML}{50}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Premisa y Enfoque}{50}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}Resultado: Inviabilidad por seguridad perimetral}{50}{subsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.1.3}Decisión Técnica}{51}{subsection.7.1.3}%
+\contentsline {section}{\numberline {7.2}Prototipo 1: RSS + K-Means}{51}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Arquitectura implementada}{51}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Limitaciones Identificadas}{51}{subsection.7.2.2}%
+\contentsline {section}{\numberline {7.3}Prototipo 2: Triple Fuente + DBSCAN + FeminicideDetector}{52}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Evolución del sistema}{52}{subsection.7.3.1}%
+\contentsline {section}{\numberline {7.4}Limitaciones identificadas}{52}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Falsos positivos: Insuficiencia de la Sintaxis}{52}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Clustering Léxico: DBSCAN sobre TF-IDF}{53}{subsection.7.4.2}%
+\contentsline {subsection}{\numberline {7.4.3}La poca escalabilidad del almacenamiento en CSV}{53}{subsection.7.4.3}%
+\contentsline {subsection}{\numberline {7.4.4}Síntesis: La necesidad de comprensión semántica}{53}{subsection.7.4.4}%
+\contentsline {section}{\numberline {7.5}Diseño de Datos}{54}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Modelo de Dominio}{54}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Diccionario de Datos Extendido}{54}{subsection.7.5.2}%
 \contentsline {chapter}{\numberline {8}Desarrollo de Trabajo Terminal II}{58}{chapter.8}%
 \contentsline {section}{\numberline {8.1}Contexto: Limitaciones del Prototipo 2}{58}{section.8.1}%
 \contentsline {section}{\numberline {8.2}Patrones arquitectónicos del flujo analítico}{59}{section.8.2}%
@@ -132,28 +129,31 @@
 \contentsline {subsection}{\numberline {8.3.3}Clasificación \textit {Zero-Shot} y \textit {Temperature Scaling}}{61}{subsection.8.3.3}%
 \contentsline {subsection}{\numberline {8.3.4}Evolución del recolector}{61}{subsection.8.3.4}%
 \contentsline {subsection}{\numberline {8.3.5}Deduplicación en cascada de cuatro fases}{63}{subsection.8.3.5}%
-\contentsline {section}{\numberline {8.4}Prototipo 4 Arquitectura neuro-simbólica}{63}{section.8.4}%
-\contentsline {subsection}{\numberline {8.4.1}Por qué la IA Sola No Basta: Alucinaciones de BETO}{64}{subsection.8.4.1}%
-\contentsline {subsection}{\numberline {8.4.2}BERTopic como Filtro de Contexto Global (OE-4)}{64}{subsection.8.4.2}%
-\contentsline {subsection}{\numberline {8.4.3}El Bypass de Oro: Decisión Simbólica Absoluta}{65}{subsection.8.4.3}%
-\contentsline {subsection}{\numberline {8.4.4}El Bozal de Penalización: El Contexto de Clúster como Corrector}{65}{subsection.8.4.4}%
-\contentsline {subsection}{\numberline {8.4.5}El Factor Alpha Dinámico: Fusión Neuro-Simbólica para Casos Ambiguos}{66}{subsection.8.4.5}%
-\contentsline {subsection}{\numberline {8.4.6}Investigador Profundo: DuckDuckGo y Gemini Flash}{66}{subsection.8.4.6}%
-\contentsline {section}{\numberline {8.5}Síntesis: El Pipeline v5.0 como Sistema de Doble Árbol}{69}{section.8.5}%
-\contentsline {section}{\numberline {8.6}Diagrama Conceptual del Sistema}{70}{section.8.6}%
-\contentsline {section}{\numberline {8.7}Verificación, Validación y Pruebas (QA)}{72}{section.8.7}%
-\contentsline {subsection}{\numberline {8.7.1}Pruebas Unitarias y Aislamiento de Componentes}{72}{subsection.8.7.1}%
-\contentsline {subsection}{\numberline {8.7.2}Pruebas de Caja Negra: Validación del Bozal de Penalización}{72}{subsection.8.7.2}%
-\contentsline {subsection}{\numberline {8.7.3}Matriz de Casos de Prueba}{72}{subsection.8.7.3}%
-\contentsline {chapter}{\numberline {9}Resultados y Evaluación}{74}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Evaluación de la Recolección (Volumen de Ingesta)}{74}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{74}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Evaluación del Agrupamiento (BERTopic)}{75}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{75}{section.9.4}%
-\contentsline {chapter}{\numberline {10}Conclusiones}{77}{chapter.10}%
-\contentsline {chapter}{\numberline {11}Trabajo Futuro}{79}{chapter.11}%
-\contentsline {section}{\numberline {11.1}Extracción de Entidades Nombradas (NER) bajo Principios Éticos}{79}{section.11.1}%
-\contentsline {section}{\numberline {11.2}Generación Automática de Reportes (Exportación)}{79}{section.11.2}%
-\contentsline {section}{\numberline {11.3}API Pública e Interoperabilidad para Organizaciones Civiles}{80}{section.11.3}%
-\contentsline {section}{\numberline {11.4}Despliegue en la Nube (Cloud Architecture) y Escalabilidad}{80}{section.11.4}%
-\contentsline {section}{\numberline {11.5}Validación Piloto en Campo y Refinamiento UX/UI}{80}{section.11.5}%
+\contentsline {section}{\numberline {8.4}Prototipo 4 Arquitectura híbrida de clasificación}{63}{section.8.4}%
+\contentsline {subsubsection}{Capa 0 Escudo Léxico}{64}{section*.7}%
+\contentsline {subsubsection}{Capa 1 Escudo temático}{64}{section*.8}%
+\contentsline {subsubsection}{Capa 2 Inferencia con BETO}{64}{section*.9}%
+\contentsline {subsubsection}{Capa 3 Post-filtro de validación}{64}{section*.10}%
+\contentsline {subsection}{\numberline {8.4.1}Por qué la IA sola no basta}{65}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}Investigador profundo}{65}{subsection.8.4.2}%
+\contentsline {section}{\numberline {8.5}Sistema de clasificación escalonada}{68}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Verificación, Validación y Pruebas (QA)}{70}{section.8.6}%
+\contentsline {subsection}{\numberline {8.6.1}Pruebas Unitarias y Aislamiento de Componentes}{70}{subsection.8.6.1}%
+\contentsline {subsection}{\numberline {8.6.2}Pruebas de Caja Negra: Validación del Bozal de Penalización}{70}{subsection.8.6.2}%
+\contentsline {subsection}{\numberline {8.6.3}Matriz de Casos de Prueba}{70}{subsection.8.6.3}%
+\contentsline {chapter}{\numberline {9}Resultados y Evaluación}{72}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Evaluación de la Recolección (Volumen de Ingesta)}{72}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Evaluación de la Detección Semántica (Filtro del Embudo)}{72}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Evaluación del Agrupamiento (BERTopic)}{73}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Análisis de la Interfaz (UI/UX) e Impacto Operativo}{73}{section.9.4}%
+\contentsline {chapter}{\numberline {10}Conclusiones y trabajo a futuro}{75}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Conclusión general y cumplimiento de objetivos}{75}{section.10.1}%
+\contentsline {subsection}{\numberline {10.1.1}Cumplimiento del OE-1 Identificación de Fuentes}{75}{subsection.10.1.1}%
+\contentsline {subsection}{\numberline {10.1.2}Cumplimiento del OE-2 Módulo de Web Scraping}{75}{subsection.10.1.2}%
+\contentsline {subsection}{\numberline {10.1.3}Cumplimiento del OE-3 Procesamiento de Lenguaje Natural (NLP)}{76}{subsection.10.1.3}%
+\contentsline {subsection}{\numberline {10.1.4}Cumplimiento del OE-4 Base de Datos y Dashboard Web}{76}{subsection.10.1.4}%
+\contentsline {section}{\numberline {10.2}Evolución del Prototipo 0 al Prototipo 4}{76}{section.10.2}%
+\contentsline {section}{\numberline {10.3}Aportaciones Técnicas y Superación de Retos Críticos (Logros de TT2)}{77}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Mitigación del ``Efecto Péndulo'' mediante Arquitectura Híbrida Escalonada}{77}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}Optimización bajo Restricciones Severas de Hardware Local (8GB RAM)}{77}{subsection.10.3.2}%
+\contentsline {section}{\numberline {10.4}Trabajo Futuro (Líneas de Investigación Abiertas)}{78}{section.10.4}%

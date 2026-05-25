@@ -1,0 +1,64 @@
+---
+config:
+  layout: elk
+---
+graph TD
+    subgraph N1["Nivel 1 Recolección"]
+        A1["Feeds RSS (45 fuentes)"]
+        A2["Google News (20 queries)"]
+        A3["HTML Scraping (StealthSession )"]
+        A4["Deduplicación (4 fases)"]
+        A1 --> A4
+        A2 --> A4
+        A3 --> A4
+    end
+
+    subgraph N2["Nivel 3 Contexto global"]
+        C1["BERTopic"]
+        C2["topic_id asignado"]
+        C3["Outliers (topic_id = -1)"]
+        C1 --> C2
+        C1 --> C3
+    end
+
+    subgraph N3["Nivel 4 Clasificación escalonada"]
+        D1["Escudo Léxico"]
+        D2["Escudo Suave"]
+        D3["Inferencia BETO"]
+    end
+
+    subgraph N4["Nivel 5 Persistencia"]
+        E1["CSV (compatibilidad)"]
+        E2["PostgreSQL (FTS, concurrencia)"]
+        E1 --> E2
+    end
+
+    subgraph N5["Nivel 6 Dashboard e investigación profunda"]
+        F1["Flask Dashboard"]
+        F2["DeepInvestigator:
+        - Gemini Flash (query)
+        - DuckDuckGo (URLs)
+        - StealthSession (extracción)
+        - Gemini Flash (síntesis JSON)"]
+        F3["Módulo por Enlace Externo"]
+        F4["Lista Monitoreo Continuo (CSV)"]
+        F1 --> F2 --> F4
+        F1 --> F3 --> F4
+    end
+
+    %% Conexiones entre niveles
+    N1 --> N2 --> N3 --> N4 --> N5
+
+    classDef level1 stroke:#818cf8,fill:#eef2ff
+    classDef level2 stroke:#2dd4bf,fill:#f0fdfa
+    classDef level3 stroke:#a78bfa,fill:#f5f3ff
+    classDef level4 stroke:#fb923c,fill:#fff7ed
+    classDef level5 stroke:#e879f9,fill:#fdf4ff
+    classDef level6 stroke:#22d3ee,fill:#ecfeff
+
+    class N1 level1
+    class N2 level2
+    class N3 level3
+    class N4 level4
+    class N5 level5
+    class N6 level6

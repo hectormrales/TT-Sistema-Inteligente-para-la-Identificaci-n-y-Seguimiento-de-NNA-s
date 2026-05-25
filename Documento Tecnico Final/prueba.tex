@@ -1,0 +1,69 @@
+% CAPÍTULO 5: METODOLOGÍA DE DESARROLLO
+
+
+\chapter{Metodología de Desarrollo}
+\label{cap:metodologia}
+
+En este capítulo se detalla el marco metodológico utilizado para el desarrollo y
+despliegue del Sistema Inteligente para la Identificación y Seguimiento
+de NNAs por feminicidios. Debido a la alta complejidad algorítmica asi como la alta
+incertidumbre tecnológica del proyecto (particularmente en las fases de validación
+de modelos de lenguaje) se adoptó un enfoque \textbf{Evolutivo} que garantizaba
+la dirección hacia una solución correcta y de calidad de producción mediante
+retroalimentación empírica continua.
+
+%----------------------------------------------------------------------------------------
+\section{Metodología de desarrollo evolutivo}
+\label{sec:met_evolutivo}
+%----------------------------------------------------------------------------------------
+
+La selección del modelo evolutivo basado en prototipos responde a la necesidad de gestionar la incertidumbre técnica
+crítica del proyecto, inabordable mediante metodologías lineales o en cascada:
+
+\begin{enumerate}
+    \item \textbf{Incertidumbre topológica en la ingesta de datos.} El ecosistema 
+    digital periodístico contemporáneo es intrínsecamente hostil y asimétrico. El 
+    despliegue de mecanismos de \textit{Web Scraping} enfrentó infraestructuras de
+    seguridad perimetral dinámicas (Cortafuegos de Aplicaciones Web, análisis 
+    heurístico de huellas TLS y sistemas anti-bot). Resultaba inviable predecir 
+    \textit{a priori} la eficacia de las estrategias de evasión y extracción sin 
+    someterlas al rigor de entornos de producción iterativos, midiendo y ajustando
+    constantemente las tasas de éxito de la recolección.
+    
+\end{enumerate}
+
+Esta metodología mitigó los riesgos inherentes al desarrollo al parcelar el proyecto en ciclos iterativos, donde cada prototipo representó un incremento funcional y una plataforma de diagnóstico para refinar la versión subsecuente. Cada fase se rigió por un ciclo de análisis cuantitativo, rediseño arquitectónico, codificación e integración defensiva, seguido de una evaluación exhaustiva de métricas predictivas y computacionales.
+
+
+
+%----------------------------------------------------------------------------------------
+\section{Evolución de los Prototipos: Mapeo Tecnológico Real (P0 al P4)}
+\label{sec:met_evolucion_prototipos}
+%----------------------------------------------------------------------------------------
+
+La progresión del desarrollo se estructuró a través de una serie de prototipos metodológicamente definidos. Lejos de ser iteraciones aleatorias, cada prototipo atacó un conjunto específico de cuellos de botella algorítmicos e ingenieriles, forjando secuencialmente la arquitectura definitiva del sistema.
+
+\subsection{Prototipos Iniciales (P0 - P2): Validación de Ingesta y Heurística Base}
+El objetivo medular de las primeras iteraciones radicó en asentar la infraestructura de extracción asíncrona y establecer una línea base (\textit{baseline}) metodológica para la depuración y clasificación inicial de textos.
+
+El esfuerzo inicial se centró en la validación técnica del \textit{Web Scraping} sobre medios digitales locales y secciones de nota roja, sorteando las penalizaciones de red y las inconsistencias del Document Object Model (DOM). Paralelamente, la lógica de negocio operó bajo sistemas de filtrado por reglas heurísticas duras, empleando densos árboles de expresiones regulares y diccionarios léxicos parametrizados. Aunque esta etapa consolidó un flujo de recolección de datos masiva con latencias aceptables, el análisis forense subsecuente demostró de manera contundente la ineficacia matemática de los clasificadores sintácticos. Las reglas estáticas eran vulnerables a la polisemia y a las complejas estructuras pasivas del periodismo fáctico, arrojando una inaceptable dispersión en las métricas de clasificación y confirmando la necesidad ineludible de migrar hacia el análisis semántico.
+
+\subsection{Prototipo 3 (P3): Inferencia Semántica y Diagnóstico del ``Efecto Péndulo''}
+El \textbf{Prototipo 3} representó un salto arquitectónico disruptivo al introducir formalmente la capa semántica profunda en el \textit{pipeline}. Se suplantó la arquitectura de reglas rígidas por un clasificador de lenguaje masivo (el modelo BETO pre-entrenado) acoplado a un motor de agrupamiento latente no supervisado (BERTopic). Esta iteración logró por primera vez interpretar la proximidad contextual de las entidades narradas.
+
+No obstante, la validación empírica en esta fase aisló y diagnosticó una severa vulnerabilidad predictiva denominada técnicamente como el ``Efecto Péndulo''. Se comprobó que el clasificador Transformer detonaba ráfagas de falsos positivos provocados por el solapamiento semántico de tokens léxicos compartidos. El modelo no lograba discriminar estadísticamente entre narrativas de nota roja fáctica y artículos de opinión legislativa o estadística (por ejemplo, piezas referenciales a la Ley Monzón), en los cuales confluían las mismas entidades semánticas de interés, corrompiendo severamente la confiabilidad predictiva.
+
+\subsection{Prototipo 4 (P4): Consolidación de la Arquitectura Híbrida Escalonada (v7.1)}
+El \textbf{Prototipo 4} constituye el estado del arte y la versión definitiva de grado de producción del sistema. Su desarrollo metodológico se enfocó en neutralizar las deficiencias detectadas en P3, cristalizando la Arquitectura Híbrida de Clasificación Semántica Escalonada (v7.1). Esta iteración integró un sofisticado árbol de decisión heurístico compuesto por 4 capas concurrentes, incorporando un mecanismo de penalizaciones aritméticas suaves ($-0.35$) para mitigar la polarización temática del modelo sin recurrir a descartes absolutos.
+
+De forma crítica, para alcanzar la precisión exigida bajo severas restricciones topológicas de hardware de nivel doméstico (con un límite máximo de 8 GB de memoria RAM compartida), la metodología exigió instrumentar la técnica de \textit{Fine-Tuning} local para el modelo BETO. Para evitar de forma determinista la saturación del asignador de memoria y los subsecuentes errores catastróficos por desbordamiento (\textit{Out Of Memory} - OOM), se codificó una estrategia de \textit{Transfer Learning} anclada en la técnica de \textit{Linear Probing} (congelamiento estricto de propagación en las capas 0 a 11 del codificador) sinergizada con un algoritmo de acumulación de gradientes (\textit{Gradient Accumulation}). Esta proeza de ingeniería viabilizó el entrenamiento local avanzado del modelo masivo en un entorno adverso, consolidando un \textit{pipeline} analítico resiliente, parametrizado dinámicamente y capaz de tolerar corpus de validación reducidos sin experimentar colapso matemático.
+
+%----------------------------------------------------------------------------------------
+\section{Stack Tecnológico y Arquitectura de Microservicios}
+\label{sec:met_stack_docker}
+%----------------------------------------------------------------------------------------
+
+La maduración hacia el Prototipo 4 orquestó la refactorización de los componentes lógicos en un ecosistema de microservicios distribuido, definido mediante \texttt{docker-compose.yml} y sustentado en el principio de separación de responsabilidades (\textit{Separation of Concerns}). 
+
+El sistema contenedorizado se dividió en componentes autónomos que garantizan aislamiento de fallos: un contenedor de base de datos (\texttt{nna-postgres}) ejecutando PostgreSQL 16 con índices GIN optimizados para texto y conectividad ACID; un contenedor de motor de análisis (\texttt{nna-analyzer}) orquestando el bucle de recolección, deduplicación y el motor semántico híbrido con volúmenes persistentes para la gestión del modelo Transformer; y finalmente, un contenedor de presentación (\texttt{nna-webapp}) desplegando el \textit{Dashboard} Flask asistido por Gunicorn, asegurando transacciones HTTP asíncronas para proveer telemetría limpia y analítica de datos geolocalizados a los usuarios finales.
+

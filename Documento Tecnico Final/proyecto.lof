@@ -5,15 +5,15 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Cronograma metodológico de evolución y transición de los prototipos del sistema.}}{43}{figure.6.1}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Diagrama de Componentes de la Arquitectura del Sistema.}}{52}{figure.7.1}%
-\contentsline {figure}{\numberline {7.2}{\ignorespaces Diagrama de Secuencia ilustrando el ciclo de vida de una noticia.}}{53}{figure.7.2}%
-\contentsline {figure}{\numberline {7.3}{\ignorespaces Diagrama de Clases / Dominio detallando Tipos de Datos y Relaciones.}}{55}{figure.7.3}%
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Diagrama de Clases / Dominio detallando Tipos de Datos y Relaciones.}}{55}{figure.7.1}%
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {8.1}{\ignorespaces Arquitectura del motor BETO y clasificación \textit {Zero-Shot} con \textit {Temperature Scaling}.}}{62}{figure.8.1}%
 \contentsline {figure}{\numberline {8.2}{\ignorespaces Flujo de deduplicación en cascada.}}{63}{figure.8.2}%
+\contentsline {figure}{\numberline {8.3}{\ignorespaces Flujo de investigación profunda}}{67}{figure.8.3}%
+\contentsline {figure}{\numberline {8.4}{\ignorespaces Arquitectura del Sistema de Clasificación Escalonada}}{69}{figure.8.4}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {9.1}{\ignorespaces Métricas de filtrado preliminar en el Dashboard Web.}}{75}{figure.9.1}%
-\contentsline {figure}{\numberline {9.2}{\ignorespaces Visualización jerárquica de noticias de Alta Relevancia en el Dashboard.}}{76}{figure.9.2}%
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {9.1}{\ignorespaces Métricas de filtrado preliminar en el Dashboard Web.}}{73}{figure.9.1}%
+\contentsline {figure}{\numberline {9.2}{\ignorespaces Visualización jerárquica de noticias de Alta Relevancia en el Dashboard.}}{74}{figure.9.2}%
 \addvspace {10\p@ }

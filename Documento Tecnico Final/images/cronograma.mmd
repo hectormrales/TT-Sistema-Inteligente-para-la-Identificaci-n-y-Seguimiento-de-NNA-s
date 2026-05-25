@@ -1,0 +1,32 @@
+---
+config:
+  layout: fixed
+---
+flowchart LR
+ subgraph TT1["TT‑1"]
+        A1["P0: BeautifulSoup / Caída por WAF"]
+        A2["P1: RSS + CSV"]
+        A3["P2: RegEx + K-Means"]
+  end
+ subgraph TT2["TT‑2"]
+        B1["P3: BETO Base + BERTopic + PostgreSQL + Cascada Deduplicación"]
+        B2["P4: BETO Fine‑Tuning + Clasificación escalonada + Investigacion profunda"]
+  end
+    A1 --> A2
+    A2 --> A3
+    B1 --> B2
+    TT1 --> H["Diagnóstico de insuficiencia sintáctica"]
+    H --> TT2
+
+    H@{ shape: dbl-circ}
+     A1:::tt1
+     A2:::tt1
+     A3:::tt1
+     B1:::tt2
+     B2:::tt2
+     TT1:::tt1
+     H:::hito
+     TT2:::tt2
+    classDef tt1 stroke:#818cf8,fill:#eef2ff
+    classDef tt2 stroke:#a78bfa,fill:#f5f3ff
+    classDef hito stroke:#facc15,fill:#fefce8

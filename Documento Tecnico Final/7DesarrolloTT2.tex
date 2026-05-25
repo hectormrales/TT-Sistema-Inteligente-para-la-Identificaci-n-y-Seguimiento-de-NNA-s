@@ -1,6 +1,5 @@
 % CAPÍTULO 7 DESARROLLO DEL TT2, PROTOTIPOS 3 Y 4
 
-
 \chapter{Desarrollo de Trabajo Terminal II}
 \label{cap:desarrolloTT2}
 
@@ -316,357 +315,130 @@ eliminó \textbf{213 duplicados} (25.1\% del total), con la siguiente distribuci
 634 noticias únicas fue usado para la evaluación del Prototipo 4.
 
 
-\section{Prototipo 4: Arquitectura Híbrida de Clasificación Semántica Escalonada}
+\section{Prototipo 4 Arquitectura híbrida de clasificación}
 \label{sec:tt2_prototipo4}
 
-El Prototipo~4 constituye la respuesta ingenieril a las deficiencias empíricas
-documentadas durante la validación del Prototipo~3. A pesar de que la integración de
-BETO y BERTopic representó un avance sustancial en la capacidad semántica del sistema,
-la evaluación sobre el corpus de 787~noticias reveló un fenómeno crítico que se
-denominó \textbf{Efecto Péndulo}: el pipeline oscilaba entre dos estados degenerados
---- producir un exceso masivo de falsos positivos (60\% del corpus clasificado como
-``Alta'') o, tras aplicar filtros correctivos, destruir la totalidad de los resultados
-válidos (0~noticias ``Alta'', 100\% descartado). Ambos extremos eran inaceptables para
-un sistema de alerta temprana.
+El prototipo 4 es una respuesta a las limitaciones encontradas durante la validación 
+del prototipo 3. A pesar de la integración de BETO y BERTopic que representó un avance
+notable en la capacidad semántica del sistema en la evaluación sobre un corpus de 
+aproximadamente 800 noticias se pudo observar un fenómeno crítico denominado
+\textbf{Efecto Péndulo} en el que el sistema oscilaba entre dos estados indeseados
+que era un exceso masivo de falsos positivos y un exceso masivo de falsos negativos.
 
-El diagnóstico técnico identificó seis cuellos de botella causales:
-\begin{enumerate}
-    \item El post-filtro de validación semántica aplicaba vetos binarios absolutos:
-          una noticia clasificada como ``Media'' sin coincidencia exacta con un
-          patrón regex VP (Verdadero Positivo) era degradada automáticamente a
-          ``No relevante'', destruyendo casos genuinos cuya redacción periodística
-          no coincidía con las frases esperadas.
+Ambos casos eran inaceptables para un sistema de alerta temprana a lo que el diagnóstico técnico 
+identificó algunos cuellos de botella que explicaban este comportamiento.
+ \begin{enumerate}
+    \item El post-filtro de validación semántica aplicaba aplicaba reglas binarias absolutas
+          como que una noticia clasificada como "Media" sin coincidencia exacta con un
+          patrón regex era degradada automáticamente a "No relevante" lo que provocaba la
+          eliminación de casos genuinos pero que su redacción periodística no coincidía con
+          las frases esperadas.
 
-    \item El Escudo Léxico contenía términos de dominios legislativos y estadísticos
-          (ej.\ \textit{``iniciativa de ley''}, \textit{``REDIM''}) que bloqueaban
-          completamente noticias con contenido \textit{dual}: un caso fáctico de
-          feminicidio que también mencionaba una iniciativa de ley relacionada era
-          eliminado por la presencia del término legislativo.
+    \item El filtro léxico contenía términos legislativos y estadísticos
+          (por ejemplo "iniciativa de ley" o "REDIM") que bloqueaban
+          completamente noticias con contenido variado como el caso de un
+          hecho de violencia que también mencionaba una iniciativa de ley
+          relacionada era eliminado por la presencia del término legislativo.
 
-    \item Los patrones de Falso Positivo incluían expresiones presentes en
-          \textit{toda} noticia policiaca genuina (\textit{``carpeta de
-          investigación''}, \textit{``vinculado a proceso''}), lo que
-          descartaba reportes factuales legítimos.
-
-    \item Los umbrales de clasificación ($\text{Alta} \geq 0.85$) estaban
-          calibrados para un modelo \textit{finetuned} con distribución de scores
-          dispersa en $[0, 1]$, pero el modo \textit{zero-shot} de BETO
-          (similitud coseno) produce scores concentrados en $[0.40, 0.70]$ incluso
-          para los casos más genuinos, haciendo matemáticamente imposible alcanzar
-          ``Alta''.
-
-    \item El módulo BERTopic generaba un error
-          \texttt{ValueError: max\_df corresponds to < documents than min\_df}
-          cuando el corpus post-filtrado resultaba demasiado pequeño para
-          el \texttt{CountVectorizer(min\_df=2)} interno.
-
-    \item El modo \textit{zero-shot} es intrínsecamente incapaz de distinguir
-          entre ``mujer asesinada que deja hijos'' y ``ley que protege a hijos de
-          mujeres asesinadas'' porque ambas oraciones comparten el mismo campo
+    \item El modo \textit{zero-shot} era incapaz de distinguir
+          entre "mujer asesinada que deja hijos" y "ley que protege a hijos de
+          mujeres asesinadas" porque ambas oraciones comparten el mismo campo
           semántico en el espacio de embeddings de BETO.
 \end{enumerate}
 
-La solución adoptada fue el abandono completo del paradigma de \textbf{vetos binarios
-absolutos} en favor de un \textbf{sistema de puntuación ponderada y difusa} estructurado
-en cuatro capas autónomas con penalizaciones y bonificaciones acumulativas.
+La solución adoptada fue un sistema de puntuación ponderada y difusa estructurada
+en tres capas autónomas con penalizaciones y bonificaciones acumulativas.
 
-\subsection{Diseño del Pipeline de Inferencia Semántica Escalonada (\textit{Tiered Scoring})}
-\label{subsec:tt2_tiered_scoring}
-
-La arquitectura v7.1 implementa un pipeline donde cada capa opera sobre el
-\textit{score acumulado} de las capas anteriores, aplicando ajustes aditivos en lugar
-de decisiones terminales. El principio rector es que \textbf{ninguna capa individual
-tiene poder de veto} sobre el resultado final, excepto la Capa~0 para dominios
-completamente ajenos al feminicidio. Formalmente, el score final se computa como:
-
-\begin{equation}
-    s_{\text{final}} = \max\Big(0,\; s_{\text{BETO}} + \delta_{\text{suave}} + \sum_{k} b_k\Big)
-    \label{eq:score_final}
-\end{equation}
-
-\noindent donde $s_{\text{BETO}}$ es el score base de la Capa~2, $\delta_{\text{suave}}$
-es la penalización de la Capa~1 ($-0.35$ o $0$), y $\{b_k\}$ son las bonificaciones
-de la Capa~3 ($+0.10$ a $+0.25$ por señal fáctica detectada).
-
-\subsubsection{Capa 0: Escudo Léxico Estricto}
+\subsubsection{Capa 0 Escudo Léxico}
 \label{subsubsec:capa0}
 
-La primera capa constituye un filtro heurístico de rechazo temprano con complejidad
-$O(|K| \times |T|)$ donde $|K|$ es el número de \textit{stop-keywords} y $|T|$ la
-longitud del texto. Su propósito es descartar dominios \textbf{completamente ajenos}
-al feminicidio y la violencia de género: deportes, espectáculos, criptomonedas,
-meteorología, economía macro y tecnología. La implementación utiliza un
-\texttt{frozenset} de Python que garantiza búsqueda $O(1)$ por keyword.
+La primera capa es un filtro de rechazo temprano cuyo propósito es descartar
+dominios \textbf{completamente ajenos} al feminicidio y la violencia de género
+como deportes, espectáculos, criptomonedas, meteorología, economía macro y tecnología.
+La implementación utiliza un \texttt{frozenset} de Python que garantiza búsqueda
+$O(1)$ por keyword.
 
 Esta capa es la \textbf{única} que produce un bloqueo absoluto
 (\texttt{score = 0.0}). Su existencia ahorra el cómputo de las capas posteriores
-(spaCy + BETO, que requieren entre 200 y 800~ms por noticia) al eliminar en
-milisegundos el ruido temático evidente.
+por lo que es capaz de eliminar el ruido.
 
-\begin{lstlisting}[language=Python,
-    caption={Escudo L\'exico: bloqueo heur\'istico O(1) de dominios ajenos},
-    label={lst:escudo_lexico}]
-_ESCUDO_LEXICO = frozenset({
-    # Deportes (futbol, beisbol, box, olimpicos...)
-    "futbol", "beisbol", "box", "nfl", "seleccion mexicana",
-    # Finanzas / Macroeconomia
-    "inflacion", "tipo de cambio", "pib", "dolar",
-    # Espectaculos / Entretenimiento
-    "netflix", "concierto", "grammy", "oscar",
-    # Totalmente ajeno: criptomonedas, clima, tecnologia
-    "bitcoin", "ethereum", "huracan", "erupcion",
-    # ... ~160 terminos en total
-})
-\end{lstlisting}
-
-\subsubsection{Capa 1: Escudo Temático No-Fáctico (Penalización Suave)}
+\subsubsection{Capa 1 Escudo temático}
 \label{subsubsec:capa1}
 
-La innovación central del Prototipo~4 reside en esta capa. Los términos que en la
-versión anterior producían bloqueo absoluto (legislación, estadísticas, opinión,
-casos internacionales) fueron migrados a un nuevo conjunto denominado
-\texttt{\_ESCUDO\_SUAVE}. Cuando se detecta una coincidencia en este conjunto, el
-sistema aplica una \textbf{penalización aditiva} de $\delta = -0.35$ al score de
-BETO, pero \textit{no bloquea} la noticia.
+Los términos que en la versión anterior producían bloqueo absoluto (legislación,
+estadísticas, opinión, casos internacionales) fueron migrados a un nuevo conjunto
+como "escudo suave" que cuando detecta una coincidencia en este conjunto el sistema
+aplica una penalización aditiva de $\delta = -0.35$ al score de BETO, pero no
+bloquea la noticia.
 
-La racionalidad de esta decisión es la siguiente: una noticia genuina con score
-BETO de 0.72 que también menciona \textit{``según datos del REDIM''} obtendrá un
-score ajustado de $0.72 - 0.35 = 0.37$, clasificándola como ``Media'' en lugar de
-destruirla completamente. Si el score BETO es alto ($\geq 0.95$, típico del modo
-\textit{finetuned}), la noticia sobrevive como ``Alta'' ($0.95 - 0.35 = 0.60$).
-Este comportamiento resuelve directamente el problema de contenido dual que el
-Prototipo~3 no podía manejar.
+La lógica detrás de esta decisión es que una noticia genuina con score BETO
+de 0.72 que también menciona "según datos del REDIM" obtendrá un score ajustado
+de $0.72 - 0.35 = 0.37$ que clasificara como "Media" en lugar de excluirse
+completamente. Si el score BETO es alto ($\geq 0.95$) la noticia sobrevive como
+"Alta" ($0.95 - 0.35 = 0.60$). Este comportamiento resuelve directamente
+el problema de contenido que el prototipo 3 no podía manejar.
 
-\begin{lstlisting}[language=Python,
-    caption={Escudo Suave: penalizaci\'on aditiva en lugar de veto absoluto},
-    label={lst:escudo_suave}]
-_ESCUDO_SUAVE = frozenset({
-    "iniciativa de ley", "ley monzon", "ley general",
-    "redim", "unicef", "onu mujeres", "inmujeres",
-    "estadistica", "tasa de feminicidio",
-    "columna de opinion", "editorial",
-    "en colombia", "en argentina", "en espana",
-    # ... ~80 terminos legislativos/estadisticos/internacionales
-})
-
-# En predict():
-penalizar, kw = self._escudo_suave(texto)
-if penalizar:
-    penalizacion_suave = -0.35
-    # Se aplica DESPUES de BETO, no antes
-\end{lstlisting}
-
-\subsubsection{Capa 2: Inferencia del Modelo de Lenguaje BETO}
+\subsubsection{Capa 2 Inferencia con BETO}
 \label{subsubsec:capa2}
 
-La Capa~2 ejecuta la inferencia del clasificador Transformer y produce el score
-base $s_{\text{BETO}} \in [0, 1]$. El sistema opera en dos modos con prioridad
-estricta:
+El sistema opera en dos modos con prioridad estricta.
 
 \begin{description}
-    \item[\textit{Finetuned} (prioritario):] Un clasificador binario
-          \texttt{Linear(768 $\rightarrow$ 256 $\rightarrow$ 1) + Sigmoid}
-          entrenado con datos etiquetados del pipeline heurístico. Produce
-          scores dispersos en todo el rango $[0, 1]$.
+    \item[\textit{Finetuned} (prioritario):] Un clasificador binario entrenado
+    con datos etiquetados del recolector de noticias y produce scores dispersos
+    en todo el rango $[0, 1]$.
 
     \item[\textit{Zero-shot} (fallback):] Similitud coseno entre el embedding
-          \texttt{[CLS]} del texto y embeddings de referencia de categorías
-          (``relevante'' vs.\ ``no relevante''). Produce scores concentrados
-          en $[0.40, 0.70]$. Se activa automáticamente cuando no existe
-          modelo \textit{finetuned}, con advertencia explícita en el logger.
+    \texttt{[CLS]} del texto y embeddings de referencia de categorías
+    ("relevante" y "no relevante") lo que produce scores concentrados
+    en $[0.40, 0.70]$ y se activa automáticamente cuando no esta disponible el modelo finetuned.
 \end{description}
 
-\subsubsection{Capa 3: Post-Filtro Heurístico de Validación}
+\subsubsection{Capa 3 Post-filtro de validación}
 \label{subsubsec:capa3}
 
-La capa final antes de la clasificación aplica patrones regex avanzados y roles
-sintácticos para inyectar \textbf{bonificaciones} al detectar evidencia explícita
-de orfandad real, y \textbf{penalizaciones} al detectar señales de falso positivo.
-La diferencia fundamental respecto al Prototipo~3 es que esta capa \textit{nunca
-produce vetos absolutos para noticias ``Media''}: si no encuentra ningún patrón
-(ni VP ni FP), la clasificación se \textbf{conserva} intacta.
+La capa final antes de la clasificación aplica patrones regex y roles
+sintácticos para inyectar bonificaciones al detectar evidencia explícita
+de orfandad real y penalizaciones al detectar señales de falso positivo.
+La diferencia respecto al prototipo 3 es que esta capa nunca produce exclusiones
+absolutas para noticias "Media" y si no encuentra ningún patrón la clasificación
+se conserva intacta.
 
-Los patrones VP (\textit{Verdadero Positivo}) que generan bonificaciones incluyen:
+Los patrones de "verdadero positivo" que generan bonificaciones incluyen:
 
 \begin{itemize}
-    \item \texttt{qued[oó] al cuidado} --- el menor sobrevive bajo tutela.
-    \item \texttt{menores? (bajo|en) resguardo} --- intervención institucional (DIF).
-    \item \texttt{(niño|menor|hija?) que presenció} --- menor testigo del crimen.
-    \item \texttt{hijo[s]? quedar?on} --- menores que sobrevivieron.
+    \item \texttt{qued[oó] al cuidado} $\rightarrow$ el menor sobrevive bajo tutela.
+    \item \texttt{menores? (bajo|en) resguardo} $\rightarrow$ intervención institucional (DIF).
+    \item \texttt{(niño|menor|hija?) que presenció} $\rightarrow$ menor testigo del crimen.
+    \item \texttt{hijo[s]? quedar?on} $\rightarrow$ menores que sobrevivieron.
 \end{itemize}
 
-Los patrones FP que generan penalizaciones incluyen exclusivamente roles
-\textit{invertidos} (menor como agresor o víctima directa) y contenido
-temático-genérico (podcasts, editoriales, estadísticas sin caso concreto).
-Se eliminaron del conjunto FP las expresiones de contexto judicial legítimo
-(\textit{``carpeta de investigación''}, \textit{``vinculado a proceso''}) que
-estaban presentes en toda noticia policiaca genuina y constituían la causa
-principal del Efecto Péndulo.
+Los patrones de "falso positivo" que generan penalizaciones incluyen exclusivamente roles
+invertidos (menor como agresor o víctima directa) y contenido temático (podcasts,
+editoriales, estadísticas sin caso concreto).
+Se eliminaron del conjunto de "falsos positivos" los patrones de contexto judicial
+"carpeta de investigación" o "vinculado a proceso" que estaban presentes en casi toda
+noticia policiaca por lo que constituían la causa principal del efecto péndulo.
 
-\subsubsection{Capa 4: Clasificación por Umbrales Calibrados}
-\label{subsubsec:capa4}
-
-Los umbrales de decisión fueron re-calibrados empíricamente contra la distribución
-real de scores del modo \textit{zero-shot}, donde el percentil 95 del score para
-casos genuinos se sitúa en $\approx 0.697$:
-
-\begin{table}[H]
-\centering
-\caption{Umbrales de clasificación v7.1 vs.\ v5.3}
-\label{tab:umbrales_v71}
-\begin{tabular}{|l|c|c|l|}
-\hline
-\textbf{Clasificación} & \textbf{v5.3} & \textbf{v7.1} & \textbf{Justificación} \\
-\hline
-Alta      & $\geq 0.85$ & $\geq 0.60$ & Zero-shot máx.\ $\approx 0.70$ \\
-Media     & $\geq 0.50$ & $\geq 0.35$ & Captura zona de incertidumbre \\
-No relev. & $< 0.50$    & $< 0.35$    & Descarte con alta certeza \\
-\hline
-\end{tabular}
-\end{table}
-
-El \textbf{Bypass de Oro} se mantiene como mecanismo de confirmación subordinado
-al post-filtro: cuando los scores heurísticos del \textit{collector} confirman
-presencia explícita de vocabulario de orfandad
-($s_{v\_ind} \geq 0.60$ y $s_{fem} > 0.10$) y la clasificación post-filtro
-no es ``No relevante'', el sistema impone ``Alta'' con $s = \max(s, 0.75)$.
-
-\subsection{Optimización del Entrenamiento bajo Limitaciones de Hardware}
-\label{subsec:tt2_linear_probing}
-
-El entrenamiento del clasificador \textit{finetuned} debía ejecutarse en un entorno
-con \textbf{8~GB de RAM} y sin GPU dedicada, lo que imponía restricciones severas
-sobre el tamaño del grafo computacional. La estrategia adoptada fue
-\textbf{Linear Probing}: congelar completamente los 110~millones de parámetros del
-encoder de BETO y entrenar únicamente la capa de clasificación final.
-
-\begin{lstlisting}[language=Python,
-    caption={Congelamiento del encoder BETO para Linear Probing en CPU con 8 GB de RAM},
-    label={lst:linear_probing}]
-# Congelar TODAS las capas del encoder (capas 0-11)
-for param in self.model.bert.parameters():
-    param.requires_grad = False
-
-# Solo la capa classifier se entrena
-# Parametros entrenables: 768*256 + 256 + 256*1 + 1 = ~197K
-# vs. 110M del encoder completo
-\end{lstlisting}
-
-Esta decisión reduce los parámetros entrenables de 110~millones a aproximadamente
-197~mil, disminuyendo el consumo de memoria del grafo de gradientes en un factor
-de $\sim$560$\times$. Complementariamente, se implementaron dos técnicas de
-estabilización:
-
-\begin{description}
-    \item[Acumulación de gradientes:] Con \texttt{gradient\_accumulation\_steps=8}
-          y \texttt{batch\_size=4}, el modelo acumula gradientes sobre 8~mini-lotes
-          antes de ejecutar un paso de optimización, simulando un lote efectivo de
-          32~muestras sin requerir la memoria correspondiente. Esto estabiliza el
-          entrenamiento evitando oscilaciones del \textit{loss} por varianza
-          en lotes pequeños.
-
-    \item[Early Stopping con paciencia balanceada:] El entrenamiento se detiene
-          automáticamente cuando el F1-score sobre el conjunto de validación no
-          mejora durante 3~épocas consecutivas. Esta paciencia, calibrada
-          empíricamente, evita tanto el sobreajuste (\textit{overfitting}) como
-          el colapso del aprendizaje al entrenar con \textit{Hard Negatives}
-          (notas legislativas que comparten vocabulario con casos genuinos).
-          En las pruebas de validación, el \textit{loss} de entrenamiento se
-          estabilizó descendiendo de $4.57$ (época~1) a $1.94$ (época~4).
-\end{description}
-
-\subsection{Resiliencia Matemática de la Capa de Clustering (BERTopic)}
-\label{subsec:tt2_bertopic_resiliencia}
-
-El error \texttt{ValueError: max\_df corresponds to < documents than min\_df} se
-producía cuando el corpus post-filtrado resultaba insuficiente para el parámetro
-\texttt{min\_df=2} del \texttt{CountVectorizer} interno de BERTopic. La solución
-implementada opera en tres niveles de defensa:
-
-\begin{enumerate}
-    \item \textbf{min\_df dinámico:} El vectorizador ajusta automáticamente
-          \texttt{min\_df = 1} cuando \texttt{min\_cluster\_size $\leq$ 5},
-          garantizando que todo término presente en al menos un documento
-          sea considerado por c-TF-IDF.
-
-    \item \textbf{min\_cluster\_size adaptativo:} El tamaño mínimo de
-          cluster se calcula en función del corpus disponible:
-          $\text{min\_cs} = \{8\ \text{si}\ n \geq 100;\; 5\ \text{si}\ n \geq 50;\; 3\ \text{si}\ n \geq 20;\; 2\ \text{si}\ n < 20\}$.
-
-    \item \textbf{Retry con parámetros ultra-conservadores:} Si BERTopic
-          falla con los parámetros iniciales, el sistema reintenta
-          automáticamente con \texttt{min\_cluster\_size=2},
-          \texttt{min\_samples=1} y reducción de outliers deshabilitada.
-          Si el segundo intento también falla, el paso de clustering
-          se omite sin detener el pipeline.
-\end{enumerate}
-
-\begin{lstlisting}[language=Python,
-    caption={Retry defensivo de BERTopic ante corpus reducidos},
-    label={lst:bertopic_retry}]
-try:
-    results = clustering.fit_transform(docs=docs, titles=titles)
-except ValueError as e:
-    # Reintentar con parametros ultra-conservadores
-    clustering_retry = SemanticClustering(
-        min_cluster_size=2, min_samples=1,
-        reduce_outliers=False,
-    )
-    results = clustering_retry.fit_transform(docs=docs, titles=titles)
-\end{lstlisting}
-
-\subsection{Resultados de Validación del Pipeline v7.1}
-\label{subsec:tt2_resultados_v71}
-
-La validación del Prototipo~4 se ejecutó sobre el corpus de 787~noticias
-previamente deduplicado por el Prototipo~3. La siguiente tabla compara los
-resultados de la arquitectura v5.3 (Prototipo~3) con la v7.1 (Prototipo~4):
-
-\begin{table}[H]
-\centering
-\caption{Comparación de resultados: Prototipo~3 (v5.3) vs.\ Prototipo~4 (v7.1)}
-\label{tab:resultados_v71}
-\begin{tabular}{|l|c|c|}
-\hline
-\textbf{Métrica} & \textbf{P3 (v5.3)} & \textbf{P4 (v7.1)} \\
-\hline
-Noticias ``Alta''            & 0         & \textbf{21} \\
-Noticias ``Media''           & 0 / 132   & 111 \\
-Noticias ``No relevante''    & 787 / 655 & 655 \\
-BERTopic                     & \texttt{ValueError} & 14 tópicos, 29.5\% outliers \\
-Falsos positivos en ``Alta'' & N/A       & \textbf{0 de 21} \\
-\hline
-\end{tabular}
-\end{table}
-
-Las 21~noticias clasificadas como ``Alta'' fueron verificadas manualmente y
-todas corresponden a \textbf{casos fácticos de feminicidio con NNA afectados
-en territorio mexicano}. Entre los titulares capturados se encuentran:
-\textit{``José discutió con su pareja y luego la decapitó con un hacha frente
-a su hijo''}, \textit{``Sujeto mata a su esposa y suegra y sustrae a su hija
-en Cuautitlán''}, y \textit{``Mi papá es malo: revelan testimonio de niño que
-presenció feminicidio de su madre''}. Ninguna noticia legislativa, estadística
-o de opinión fue clasificada como ``Alta'', lo que confirma la eficacia del
-Escudo Suave como mecanismo anti-péndulo.
 
 \subsection{Por qué la IA sola no basta}
 \label{subsec:tt2_limitaciones_ia}
 
-Durante las pruebas del Prototipo 3 se pudo identificar escenarios donde BETO
-en modo \textit{zero-shot} producía clasificaciones erróneas con alta confianza
-(score arriba del 0.70) en algunos de los casos más críticos para el sistema.
+Durante las pruebas del prototipo 3 se pudo identificar escenarios donde BETO
+producía clasificaciones erróneas con alta confianza (score arriba del 0.70)
+en algunos de los casos más críticos para el sistema.
 
 \begin{itemize}
     \item \textbf{Notas estadísticas con narrativa emocional.} Artículos de opinión
           que describían la crisis de orfandad por feminicidio en términos generales
-          y empáticos como por ejemplo (\textit{``miles de niños que perdieron a su madre''}) obtenían
-          scores BETO de hasta 0.81 a pesar de que no reportaban ningún caso concreto
+          y empáticos como por ejemplo "miles de niños que perdieron a su madre"
+          obtenían scores BETO de hasta 0.81 a pesar de que no reportaban ningún caso concreto
           ni identificable.
 
     \item \textbf{Notas donde el menor es el agresor.} Ante titulares como
-          \textit{``Hijo adolescente mata a su madre en Ecatepec''} BETO asignaba
+          "Hijo adolescente mata a su madre en Ecatepec" BETO asignaba
           scores de relevancia moderados (entre 0.55 y 0.65) porque el embedding semántico
-          capturaba la correlación superficial entre ``hijo'', ``madre'' y ``asesinato'' sin
+          capturaba la correlación superficial entre "hijo", "madre" y "asesinato" sin
           identificar que el rol del menor era el de agresor.
 
     \item \textbf{Reportes de políticas públicas con vocabulario de dominio.}
@@ -675,98 +447,72 @@ en modo \textit{zero-shot} producía clasificaciones erróneas con alta confianz
           tokens de dominio más relevantes y esto sin relatar ningún caso específico.
 \end{itemize}
 
-Estos escenarios mostraron que los modelos de lenguaje por mas sofisticados que sean
+Estos casos mostraron que los modelos de lenguaje por mas sofisticados que sean
 operan principalmente sobre correlaciones estadísticas en el espacio de embeddings.
 La comprensión del rol semántico (de quién es víctima, quién es agresor,
 si la nota relata un hecho o un análisis) requiere conocimiento estructurado del
 dominio que BETO no puede inferir exclusivamente de la distribución de tokens.
-La solución es la arquitectura neuro-simbólica donde las reglas simbólicas ( que estan
+La solución es la arquitectura neuro-simbólica donde las reglas simbólicas (que estan
 basadas en el conocimiento explícito sobre el dominio) \textbf{corrigen
 las alucinaciones} del componente neuronal.
 
-\subsection{Investigador Profundo: DuckDuckGo y Gemini Flash}
+\subsection{Investigador profundo}
 \label{subsec:tt2_investigador}
 
-Una de las decisiones de diseño más importantes del Prototipo~4 fue la de
-\textbf{no integrar la investigación profunda dentro del flujo recolector-analítico
-automático}. Esta decisión, que en un principio parecía una limitación, resultó
-ser la solución arquitectónicamente correcta después de intentar lo contrario.
+Una de las decisiones de diseño más importantes de este prototipo fue la de
+\textbf{no integrar la investigación profunda dentro del flujo recolector-analítico}.
+Esta decisión que en un principio parecía una limitación resultó
+ser la solución mas eficiente y correcta para el sistema.
 
-\subsubsection*{El problema de integrar la investigación en el pipeline automático}
+\subsubsection*{El problema de integrar la investigación en el flujo automático}
 
-Durante el desarrollo inicial del P4, la primera propuesta consistía en ejecutar
+Durante el desarrollo inicial de este prototipo la primera idea fue la de ejecutar
 una investigación profunda automáticamente sobre cada noticia clasificada como
-``Alta'' al finalizar el paso~9. El módulo \texttt{DeepInvestigator} realizaría
+"Alta" al finalizar el análisis automático. El módulo \texttt{DeepInvestigator} realizaría
 búsquedas web y sintetizaría la ficha de caso sin intervención del usuario.
-Sin embargo, al implementar un prototipo de esta integración se encontraron
-très problemas inmediatos:
+El problema fue que al implementar esta integración se encontraron
+dos problemas principales.
 
 \begin{enumerate}
     \item \textbf{Latencia no tolerable.} Cada investigación implica al menos
           dos llamadas a DuckDuckGo (búsqueda + extracción de contenido de las
-          URLs retornadas), seguidas de dos llamadas a la API de Gemini Flash
-          (generación de query y síntesis del JSON final). En pruebas con un
-          corpus de 80~noticias de ``Alta'' relevancia, el pipeline tardaba
-          entre 45 y 90~minutos adicionales, lo que hacía el ciclo de análisis
-          inviable para uso cotidiano.
+          URLs retornadas) y después dos llamadas a la API de Gemini flash
+          (generación de query y síntesis del JSON final). En pruebas la ejecución del
+          flujo completo tardaba entre 45 y 90 minutos mas, lo que hacía poco práctico
+          su uso cotidiano.
 
     \item \textbf{Costo de API desproporcionado.} La API de Google Gemini
           tiene límites de cuota en el plan gratuito (por minuto y por día).
-          Investigar automáticamente todas las noticias ``Alta'' saturaba la
-          cuota en el primer tercio del corpus, dejando el resto sin
-          investigación y generando errores silenciosos que corrompían los
-          registros de la base de datos.
-
-    \item \textbf{Irrelevancia del 40\% de los casos.} Al revisar manualmente
-          los resultados de la investigación automática, se determinó que
-          aproximadamente el 40\% de las noticias clasificadas como ``Alta''
-          eran casos que el investigador ya conocía o que no requerían
-          seguimiento activo. Investigar esos casos automáticamente era
-          desperdicio de cómputo y cuota.
+          Investigar automáticamente todas las noticias "Alta" saturaba la
+          cuota en el primer tercio del corpus lo que dejaba el resto sin
+          investigación y generando errores que afectaban el orden de los
+          registros en la base de datos.
 \end{enumerate}
 
-\subsubsection*{La solución: investigación interactiva bajo demanda}
+\subsubsection*{La solución fue una investigación bajo demanda}
 
-Ante estos problemas, se adoptó un diseño \textbf{reactivo e interactivo}:
+Ante estos problemas se optó por un diseño \textbf{reactivo e interactivo} donde
 el \texttt{DeepInvestigator} se convierte en una herramienta que el investigador
-activa manualmente sobre una noticia específica desde el dashboard, una vez
+activa manualmente sobre una noticia específica desde el dashboard una vez
 que ha revisado su score y decidido que merece profundización. Esta decisión
-corrige los tres problemas anteriores de forma directa:
-(a)~la latencia pasa de ser un problema de pipeline a una operación asincrónica
-en segundo plano \texttt{(background thread)} que no bloquea la interfaz;
-(b)~el costo de API queda acotado a los casos que el investigador considera
-prioritarios;
-(c)~se elimina el desperdicio computacional de investigar casos ya conocidos.
+corrige los dos problemas anteriores de forma directa.
 
-El flujo de interacción implementado en el endpoint
-\texttt{POST /api/investigate/\{noticia\_id\}} y su par de consulta de estado
-\texttt{GET /api/investigate/status/\{noticia\_id\}} funciona así:
-
-\begin{lstlisting}[language=Python,
-    caption={Flujo as\'{\i}ncrono del \texttt{DeepInvestigator} desde el dashboard},
-    label={lst:investigador_async}]
-# El usuario hace clic en "Investigar" desde la ficha de la noticia
-# El endpoint lanza el investigador en un hilo daemon
-thread = threading.Thread(
-    target=_run_investigation_bg,
-    args=(noticia_id, noticia.titulo, noticia.contenido, app),
-    daemon=True,
-)
-thread.start()
-# Respuesta inmediata: {"status": "started"}
-# El frontend consulta /api/investigate/status/{id}
-# hasta recibir {"status": "done", "result": {...}}
-\end{lstlisting}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/DDGemini.png}
+    \caption{Flujo de investigación profunda}
+    \label{fig:imagen_investigador}
+\end{figure}      
 
 \subsubsection*{Modulo de investigación profunda}
 
 Una vez activado el módulo \texttt{DeepInvestigator} (\texttt{src/analysis/investigator.py})
-ejecutará cuatro pasos secuenciales:
+ejecutará cuatro pasos secuenciales.
  
 \begin{enumerate}
     \item \textbf{Generación de query (Gemini Flash).} El modelo recibe el
           título y los primeros párrafos de la noticia y genera una \textit{frase
-          de búsqueda de alta especificidad} (máximo 6~palabras) que incluya
+          de búsqueda de alta especificidad} (con máximo 6 palabras) que incluye
           el nombre de la víctima y detalles únicos del caso. Esta query es
           preferible al título literal porque filtra resultados genéricos
           sobre la misma temática pero de distinto evento.
@@ -774,9 +520,9 @@ ejecutará cuatro pasos secuenciales:
     \item \textbf{Búsqueda en DuckDuckGo.} La query se envía tanto a la
           versión HTML de DuckDuckGo (\texttt{html.duckduckgo.com}) como a
           la versión Lite (\texttt{lite.duckduckgo.com}) para maximizar la
-          cobertura ante bloqueos intermitentes. Las URLs retornadas se
-          limpian para eliminar redirecciones internas de DDG
-          (\texttt{uddg=} en los query strings).
+          cobertura ante bloqueos intermitentes. Las URLs obtenidas se
+          limpian para eliminar redirecciones internas de forma que la
+          búsqueda resulte exitosa.
 
     \item \textbf{Scraping de contenido complementario.}
           Para cada URL retornada por DDG, \texttt{StealthSession} extrae
@@ -786,57 +532,29 @@ ejecutará cuatro pasos secuenciales:
           15{,}000~caracteres) que funciona como contexto enriquecido.
 
     \item \textbf{Síntesis estructurada (Gemini Flash).} El bloque de texto
-          multi-fuente se envía a Gemini con un prompt de analista criminal
-          especializado en derechos de la infancia. La respuesta es un
-          JSON estricto con siete campos:
+          obtenido de las múltiples fuentes se envía a Gemini con un prompt
+          de analista criminal especializado en derechos de la infancia.
+          La respuesta es un JSON estricto\cite{gemini2023report} con siete campos que son
           \texttt{ubicacion}, \texttt{victimas}, \texttt{ninos\_afectados},
           \texttt{edades}, \texttt{situacion\_actual}, \texttt{medios\_contacto}
-          y \texttt{resumen}. El campo \texttt{medios\_contacto} es
-          especialmente relevante pues Gemini infiere el DIF municipal
-          o la Fiscalía del estado según la ubicación del caso, incluso
-          cuando el texto no los menciona explícitamente.
+          y \texttt{resumen}. En el campo \texttt{medios\_contacto} es
+          especialmente relevante pues Gemini retorna el DIF municipal,
+          la Fiscalía o cualquier otro organismo competente según la ubicación
+          del caso, incluso cuando el texto no los menciona explícitamente.
 \end{enumerate}
-
-Cuando DuckDuckGo no retorna URLs utilizables (por bloqueo o ausencia de resultados),
-el módulo activa un \textbf{fallback de búsqueda nativa de Gemini}: la API
-utiliza el herramienta \texttt{GoogleSearch} nativa del modelo (disponible en
-\texttt{gemini-2.5-flash}) para realizar la búsqueda internamente sin necesidad
-de scraping externo, representando el último recurso antes de retornar un error.
 
 \subsubsection*{El módulo de identificación por enlace externo}
 
 El segundo caso de uso del \texttt{DeepInvestigator} resuelve una necesidad
-práctica identificada durante las pruebas de campo: ¿qué ocurre cuando el
+práctica que se identificó y es que ¿qué ocurre cuando el
 investigador encuentra una noticia relevante navegando en la web que el
-pipeline \textit{no detectó}?
+flujo principal \textit{no detectó}? Para resolver esto se
+hizo un endpoint que recibe una URL externa y reutiliza el modulo de
+investigacion profunda.
 
-El endpoint \texttt{POST /api/identify-link} recibe una URL externa y ejecuta
-el siguiente flujo:
-
-\begin{enumerate}
-    \item \textbf{Extracción de contenido.} \texttt{StealthSession} accede
-          a la URL y extrae el texto del artículo con las mismas técnicas
-          de limpieza que el scraper principal.
-
-    \item \textbf{Validación del contenido (Gemini Flash).} Antes de
-          continuar, se le pide a Gemini que genere un título corto
-          del artículo. Si Gemini devuelve \texttt{NOTICIA\_INVALIDA}
-          (porque la URL apunta a un aviso de cookies, un error 403 o
-          una página de inicio sin contenido), el endpoint retorna
-          un error descriptivo sin continuar. Este paso ahorra llamadas
-          API innecesarias.
-
-    \item \textbf{Investigación completa.} Si el contenido es válido,
-          se reutiliza directamente el método \texttt{investigate(title,
-          content)}, ejecutando los cuatro pasos de generación de query,
-          búsqueda DDG, scraping multi-fuente y síntesis Gemini.
-\end{enumerate}
-
-Este módulo es técnicamente una \textbf{reutilización completa del pipeline de
-investigación} con un preprocesamiento adicional de validación. Su existencia
-resuelve la limitación~4 identificada en la sección anterior: el investigador
-puede incorporar al sistema cualquier noticia que el flujo automático no haya
-capturado, aprovechando la misma infraestructura de extracción estructurada.
+Su existencia permite al analista incorporar al sistema cualquier noticia
+que el flujo automático no haya capturado, aprovechando la misma
+extracción estructurada de contenido.
 
 La siguiente tabla resume los dos casos de uso del módulo y sus endpoints
 correspondientes:
@@ -844,145 +562,58 @@ correspondientes:
 \begin{table}[H]
 \centering
 \begin{threeparttable}
-\caption{Casos de uso del módulo \texttt{DeepInvestigator}}
+\caption{Casos de uso del módulo de investigación profunda}
 \label{tab:investigador_casos}
 \begin{tabular}{|p{3.5cm}|p{4cm}|p{4.5cm}|}
 \hline
 \textbf{Caso de uso} & \textbf{Endpoint} & \textbf{Descripción} \\
 \hline
 Investigación bajo demanda &
-\texttt{POST /api/investigate/\{id\}} &
-El investigador selecciona una noticia del dashboard con score ``Alta'' y
+\texttt{POST /api/investigate/} &
+El analista selecciona una noticia del dashboard con score \textbf{Alta} y
 activa la ficha de caso estructurada. \\
 \hline
 Consulta de estado &
-\texttt{GET /api/investigate/status/\{id\}} &
+\texttt{GET /api/investigate/status/} &
 El frontend consulta el estado del hilo de investigación
 (\texttt{running}, \texttt{done}, \texttt{error}). \\
 \hline
 Identificación de enlace externo &
 \texttt{POST /api/identify-link} &
-El investigador pega la URL de una noticia no detectada por el
-pipeline; el sistema la investiga y devuelve la ficha estructurada.\\
+El analista pega la URL de una noticia no detectada por el
+flujo principal a lo que el sistema la investiga y devuelve
+la ficha estructurada.\\
 \hline
 Seguimiento de casos &
-\texttt{POST /api/seguimiento/add/\{id\}} &
+\texttt{POST /api/seguimiento/add/} &
 Agrega una noticia investigada a la lista de seguimiento activo.\\
 \hline
 Exportación de seguimiento &
-\texttt{GET /api/seguimiento/export/csv} &
+\texttt{GET /api/seguimiento/export/} &
 Exporta todos los casos en seguimiento con sus fichas de investigación
-a un archivo CSV enriquecido.\\
+a un archivo CSV.\\
 \hline
 \end{tabular}
 \end{threeparttable}
 \end{table}
 
-%----------------------------------------------------------------------------------------
-\section{Síntesis: El Pipeline v7.1 como Sistema de Clasificación Escalonada}
+
+\section{Sistema de clasificación escalonada}
 \label{sec:tt2_sintesis}
-%----------------------------------------------------------------------------------------
 
-La arquitectura final del Prototipo~4 puede describirse como un \textbf{sistema de
-clasificación semántica escalonada} (\textit{Tiered Scoring}): cuatro capas autónomas
---- Escudo Léxico, Escudo Suave, Inferencia BETO y Post-filtro Heurístico ---
-operan secuencialmente sobre un score acumulativo, donde las reglas simbólicas
-(basadas en conocimiento explícito del dominio) \textbf{modulan} la salida del
-componente neuronal mediante penalizaciones y bonificaciones aditivas en lugar de
-vetos binarios absolutos. Este diseño eliminó el Efecto Péndulo documentado en el
-Prototipo~3 y produjo 21~noticias ``Alta'' con cero falsos positivos sobre el
-corpus de 787~documentos.
 
-La siguiente tabla sintetiza los once pasos del Pipeline v7.1 con su objetivo
-específico, componente implementado y tipo de operación:
+La arquitectura final del prototipo puede describirse como un \textbf{sistema de
+clasificación escalonada} con tres capas autónomas (escudo léxico, escudo suave e
+inferencia BETO) que operan secuencialmente sobre un score acumulativo y en donde
+las reglas simbólicas modulan la salida del componente neuronal mediante penalizaciones
+y bonificaciones aditivas en lugar de rechazos binarios absolutos. Este diseño eliminó
+el efecto péndulo obteniendo noticias \textbf{Alta} que realmente lo fueran.
 
-\begin{table}[H]
-\centering
-\begin{threeparttable}
-\caption{Pipeline v7.1: síntesis de los once pasos de análisis}
-\label{tab:pipeline_resumen}
-\begin{tabular}{|c|p{3.5cm}|p{4cm}|c|}
-\hline
-\textbf{Paso} & \textbf{Objetivo} & \textbf{Componente} & \textbf{Prototipo} \\
-\hline
-1  & Recolección multi-fuente   & \texttt{collect\_all\_news()} (RSS+GNews+HTML)   & P2/P3 \\
-2  & Persistencia inicial       & CSV intermedio \texttt{noticias\_raw.csv}         & P1    \\
-3  & Vectorización TF-IDF       & \texttt{TfidfVectorizer} (domain-boosted, n-grams) & P1   \\
-4  & (Desactivado)              & LDA — reemplazado por BERTopic                   & P1$^*$ \\
-5  & (Desactivado)              & K-Means — reemplazado por BERTopic               & P1$^*$ \\
-6  & Similitud + Deduplicación  & \texttt{NewsDeduplicator} (4 fases en cascada)   & P3    \\
-7  & (Eliminado)                & TF-IDF rescore — destruía clasificaciones ``Alta'' & P2$^\dagger$ \\
-8  & Búsqueda con sinónimos     & \texttt{SynonymDictionary}                        & P2    \\
-10 & Contexto global BERTopic   & BETO embeds + UMAP + HDBSCAN + c-TF-IDF         & P4    \\
-9  & Clasificación escalonada    & \texttt{SemanticDetector} v7.1 + Tiered Scoring & P3/P4 \\
-11 & Persistencia relacional    & \texttt{NoticiasRepository} (PostgreSQL + FTS GIN) & P3   \\
-\hline
-\end{tabular}
-\begin{tablenotes}
-    \small
-    \item[$^*$] LDA y K-Means desactivados por redundancia con BERTopic (OE-4).
-    \item[$^\dagger$] El \textit{TF-IDF rescore} del paso~7 fue eliminado durante el TT2
-          tras identificar que el blend 60/40 con el score heurístico sobreescribía
-          las clasificaciones ``Alta'' genuinas con valores artificialmente atenuados,
-          constituyendo un bug de precisión crítico documentado en los registros de
-          depuración del batch \texttt{20260505\_141233}.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
+La arquitectura completa puede representarse mediante el siguiente flujo de trabajo.
 
-\textbf{Nota sobre el orden de ejecución.} El lector observará que el paso~10
-(BERTopic) se ejecuta \textit{antes} del paso~9 (BETO), a pesar de su numeración
-inversa. Este aparente desorden es intencional y documentado en el código fuente:
-la numeración original del pipeline reservaba el paso~9 para BETO y el paso~10
-para clustering, pero la inversión de orden fue introducida en el P4 sin renumerar
-los pasos para preservar la compatibilidad con pruebas y logs previos. Esta decisión
-de ingeniería, aunque genera confusión inicial en la lectura del código, fue
-preservada deliberadamente como evidencia del proceso evolutivo del sistema.
-
-%----------------------------------------------------------------------------------------
-\section{Diagrama Conceptual del Sistema}
-\label{sec:tt2_diagrama}
-%----------------------------------------------------------------------------------------
-
-La arquitectura completa del Pipeline v7.1 puede representarse mediante el siguiente
-flujo de datos, descrito para su posterior implementación en TikZ o Mermaid:
-
-\begin{description}
-    \item[Nivel 1 — Recolección (P2/P3):] Tres canales de entrada convergen en el
-          \texttt{collector}: feeds RSS (45 fuentes), Google News API (14 queries),
-          y scraping HTML con \texttt{StealthSession} v7.0. El módulo de deduplicación
-          (4 fases) filtra el corpus antes de cualquier análisis.
-
-    \item[Nivel 2 — Vectorización Clásica (P1):] TF-IDF domain-boosted genera la
-          matriz dispersa utilizada por la similitud coseno para detección de
-          documentos relacionados.
-
-    \item[Nivel 3 — Contexto Global (P4):] BERTopic procesa \textbf{todo el corpus}
-          y asigna \texttt{topic\_id} a cada noticia. Las noticias sin clúster
-          (\texttt{topic\_id = -1}) reciben la etiqueta \textit{outlier}.
-
-    \item[Nivel 4 --- Clasificación Escalonada (P3/P4):] El pipeline de 4~capas
-          evalúa cada noticia en secuencia: (1)~Escudo Léxico (bloqueo de dominios
-          ajenos) $\rightarrow$ (2)~Escudo Suave (penalización $-0.35$ para contenido
-          legislativo/estadístico) $\rightarrow$ (3)~Inferencia BETO $\rightarrow$
-          (4)~Post-filtro heurístico con bonificaciones y clasificación por umbrales
-          calibrados ($\text{Alta} \geq 0.60$, $\text{Media} \geq 0.35$).
-
-    \item[Nivel 5 — Persistencia (P3):] Los resultados se almacenan simultáneamente
-          en CSV (compatibilidad) y PostgreSQL (FTS, integridad referencial,
-          acceso concurrente desde el dashboard Flask).
-
-    \item[Nivel 6 — Dashboard e Investigación Profunda (P4):] El investigador
-          accede al dashboard Flask que expone los resultados del pipeline.
-          Sobre cualquier noticia clasificada como ``Alta'', puede activar
-          el \texttt{DeepInvestigator} que ejecuta en paralelo: (1)~Gemini Flash
-          genera una query específica del caso; (2)~DuckDuckGo retorna URLs
-          de fuentes complementarias; (3)~\texttt{StealthSession} extrae
-          el contenido de cada fuente; y (4)~Gemini Flash sintetiza una
-          ficha JSON estructurada. Adicionalmente, si el investigador
-          detecta una noticia relevante no capturada por el pipeline,
-          puede proporcionar su URL directamente al módulo de identificación
-          por enlace externo, reutilizando el mismo pipeline de investigación.
-          Los casos que requieren monitoreo continuo se agregan a la lista
-          de seguimiento activo, exportable como CSV enriquecido.
-\end{description}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth,height=0.85\textheight,keepaspectratio]{images/estructura.png}
+    \caption{Arquitectura del Sistema de Clasificación Escalonada}
+    \label{fig:imagen_arquitectura}
+\end{figure}   
