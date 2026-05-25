@@ -115,11 +115,12 @@ semánticas medidas en las fases tempranas impulsaron directamente el diseño y 
 \section{Evolución del Stack Tecnológico (TT-1 \texorpdfstring{$\rightarrow$}{->} TT-2)} 
 \label{sec:met_stack}
 
-La maduración iterativa del sistema forzó una refactorización integral de las dependencias de software y los paradigmas algorítmicos: cada limitación de exactitud o desbordamiento de memoria medido en TT-1 motivó directamente una decisión arquitectónica en TT-2. La Tabla~\ref{tab:stack_evolucion} sistematiza esta evolución por capa arquitectónica, documentando formalmente el cuello de botella superado y la transición hacia un pipeline de grado producción con aprendizaje profundo optimizado.
+Las constantes iteraciones del sistema forzó una refactorización en distintos niveles de las dependencias de
+software y los paradigmas algorítmicos pues cada limitación hacia replantear directamente una decisión.
 
 \begin{table}[H]
 \centering
-\caption{Evolución del Stack Tecnológico e Ingeniería de Optimización (TT-1 vs TT-2)}
+\caption{Evolución del stack tecnológico}
 \label{tab:stack_evolucion}
 \begin{tabular}{|p{2.8cm}|p{5.0cm}|p{5.2cm}|}
 \hline
@@ -128,97 +129,105 @@ La maduración iterativa del sistema forzó una refactorización integral de las
 \textbf{TT-2 (Prototipo 4 Consolidado)} \\
 \hline
 \textbf{Lenguaje base} &
-Python 3.10, scripts secuenciales en CLI sin abstracción de datos. &
-Python 3.11, pipeline asíncrono y modular estructurado bajo el patrón de diseño \textit{Repository Pattern}. \\
+Python 3.10, scripts secuenciales sin abstracción de datos. &
+Python 3.11, flujo de datos estructurado con modularización formal. \\
 \hline
 \textbf{Recolección} &
 10 fuentes RSS mediante la biblioteca \texttt{requests} (vulnerable a bloqueos por estructura HTML). &
-45 fuentes RSS automatizadas + Google News API + \texttt{StealthSession} v7.0 con emulación de \textit{JA3 fingerprinting} y evasión perimetral. \\
+45 fuentes RSS automatizadas + Google News + \texttt{StealthSession} con emulación de \textit{JA3 fingerprinting} y evasión perimetral. \\
 \hline
 \textbf{Persistencia} &
-Archivos planos CSV manejados con Pandas; carencia de acceso concurrente e integridad referencial. &
-PostgreSQL 16 + SQLAlchemy ORM; soporte ACID/MVCC e indexación GIN especializada para Búsqueda de Texto Completo (\textit{FTS}) en español. \\
+Archivos planos CSV manejados con Pandas con carencia de acceso concurrente e integridad referencial. &
+PostgreSQL + SQLAlchemy con soporte de transaccionalidad e indexación GIN especializada para búsqueda de texto completo
+(\textit{FTS}) en español. \\
 \hline
-\textbf{Clasificación NLP y Machine Learning} &
-RegEx rígido (47 patrones sintácticos) y similitud estadística TF-IDF; alta tasa de falsos positivos ($>18.6\%$). &
-\textbf{BETO Fine-tuned} mediante \textit{Active Learning} con inyección de \textit{Hard Negatives}. Arquitectura Transformer discriminativa para sintaxis relacional profunda. \\
-\hline
-\textbf{Optimización de Cómputo (Hardware)} &
-No requerida; los scripts heurísticos operaban con bajo consumo de memoria volátil. &
-\textbf{Linear Probing} estricto (congelamiento de las capas 0-11 del encoder de BETO, $\text{parámetros entrenables} = 0.2\%$) y \textbf{Acumulación de Gradientes} (\texttt{accum=8}, \texttt{batch=4}) para entrenamiento local en 8 GB de RAM sin fallos \textit{OOM}. \\
+\textbf{Clasificación PLN y Machine Learning} &
+RegEx rígido (47 patrones sintácticos) y similitud estadística TF-IDF con una alta tasa de falsos positivos. &
+\textbf{BETO Fine-tuned} con inyección de datos sintéticos y reglas heurísticas para una mejor sintaxis relacional. \\
 \hline
 \textbf{Agrupamiento (Clustering)} &
-Algoritmo K-Means ($k$ estático) sobre vectores dispersos TF-IDF; clústeres semánticamente incoherentes. &
-BERTopic con \textbf{resiliencia matemática defensiva}: ajuste dinámico de \texttt{CountVectorizer(min\_df=1)} ante corpus reducidos para neutralizar colapsos por \textit{ValueError}. \\
+Algoritmo K-Means ($k$ estático) sobre vectores dispersos TF-IDF lo que daba clústeres semánticamente incoherentes. &
+BERTopic con ajuste dinámico ante corpus reducidos para neutralizar colapsos. \\
 \hline
 \textbf{Deduplicación} &
 Validación binaria simple mediante comparación de URLs exactas. &
-Cascada estocástica de 4 fases correlativas: hashing MD5 $\rightarrow$ SimHash de contenido $\rightarrow$ distancia Jaccard $\rightarrow$ coseno TF-IDF. \\
+Cascada de 4 fases correlativas: hashing MD5, SimHash de contenido, distancia Jaccard y coseno TF-IDF. \\
 \hline
-\textbf{Lógica de Decisión (Inference)} &
-Lógica binaria determinista basada puramente en coincidencias de expresiones regulares. &
-\textbf{Sistema de Scoring Escalonado (Tiered Scoring v7.1)} en 4 capas concurrentes: Escudo Léxico, Filtro Temático No-Fáctico (penalización suave de $-0.35$), Inferencia BETO y Bonificaciones Heurísticas Sintácticas ($+0.10$ a $+0.25$). \\
-\hline
-\textbf{Despliegue} &
-Scripts CLI locales; dependencia absoluta de las variables del entorno del desarrollador. &
-Orquestación multifase mediante Docker Compose (3 contenedores independientes); servidor WSGI Gunicorn; red aislada tipo \textit{bridge}. \\
-\hline
-\textbf{Interfaz y Consumo} &
-Inexistente; persistencia y depuración directa sobre la consola estándar y archivos intermedios. &
-Dashboard web interactivo en Flask + API REST integrada; visualización analítica de fichas de caso extraídas y gestión CRUD de fuentes de información. \\
+\textbf{Lógica de Decisión} &
+Lógica binaria determinista basada meramente en coincidencias de expresiones regulares. &
+\textbf{Sistema de clasificación escalonado} en 4 capas: Escudo léxico, Filtro temático, inferencia BETO y bonificaciones heurísticas sintácticas ($+0.10$ a $+0.25$). \\
 \hline
 \end{tabular}
 \end{table}
 
-%----------------------------------------------------------------------------------------
 \section{Arquitectura de Microservicios, Contenerización y Gestión de Recursos}
 \label{sec:met_arquitectura_docker}
-%----------------------------------------------------------------------------------------
 
-La culminación del Prototipo 4 consolidó un ecosistema distribuido definido mediante una orquestación en \texttt{docker-compose.yml} y regido por el principio de aislamiento arquitectónico y separación de responsabilidades (\textit{Separation of Concerns}). Debido a la severa restricción de hardware local del entorno de operación (límite estricto de 8 GB de RAM), la arquitectura se diseñó no solo para asegurar el aislamiento de fallos, sino para actuar como un regulador estricto del consumo de memoria volátil. El sistema se organiza en tres contenedores independientes que se comunican de forma exclusiva sobre una red virtual \textit{bridge} privada (\texttt{nna-network}), garantizando que los picos de cómputo durante la inferencia y el minado de datos no desestabilicen el sistema operativo anfitrión.
+La culminación del prototipo 4 se materializó en una arquitectura distribuida definida mediante una orquestación en
+\texttt{docker} y regido por el principio de aislamiento y separación de responsabilidades. El sistema
+se organiza en tres contenedores independientes que se comunican de forma exclusiva sobre una red virtual
+privada (\texttt{nna-network}) lo que garantiza que los picos de cómputo durante el procesamiento de los datos
+no desestabilicen el sistema operativo anfitrión.
 
-\subsection{Contenedor de Base de Datos y Persistencia Relacional: \texttt{nna-postgres}}
+\subsection{Contenedor de base de datos \texttt{nna-postgres}}
 \label{subsec:met_contenedor_postgres}
 
-El contenedor \texttt{nna-postgres} ejecuta el motor relacional \textbf{PostgreSQL 16 Alpine} (\texttt{postgres:16-alpine}), seleccionando una imagen minimizada de 78~MB para maximizar la disponibilidad de RAM para las capas de Aprendizaje Profundo. Su configuración y políticas de persistencia incluyen:
+El contenedor \texttt{nna-postgres} ejecuta el motor relacional \textbf{PostgreSQL} (\texttt{postgres:16-alpine})
+seleccionando una imagen minimizada de 78 MB para maximizar la disponibilidad de RAM para las capas de aprendizaje profundo.
+Su configuración y políticas de persistencia incluyen:
 
 \begin{itemize}
-    \item \textbf{Volumen persistente de grado producción:} El volumen lógico \texttt{pgdata} se monta directamente en la ruta nativa \texttt{/var/lib/postgresql/data}, garantizando la persistencia, atomicidad y supervivencia de los registros estructurados de las víctimas y las tablas analíticas ante reinicios o reconstrucciones del contenedor.
-    \item \textbf{Sincronización jerárquica de servicios (Healthcheck):} Implementa una directiva de verificación de estado mediante el comando \texttt{pg\_isready -U postgres}. Los contenedores dependientes de la lógica de negocio (\texttt{nna-analyzer} y \texttt{nna-webapp}) tienen bloqueado su despliegue hasta que este sub-sistema declare un estado saludable, erradicando por completo las condiciones de carrera (\textit{race conditions}) en la inicialización de sockets de red.
-    \item \textbf{Seguridad perimetral interna:} El puerto nativo 5432 se expone de manera exclusiva hacia la red interna aislada \texttt{nna-network}. Al no mapear este puerto hacia la interfaz pública del host de producción, se reduce a cero la superficie de ataque por inyección o escaneo de puertos externo.
+    \item \textbf{Volumen persistente:} El volumen lógico \texttt{pgdata} se monta directamente en la ruta nativa
+    lo que garantiza la persistencia, atomicidad y supervivencia de los registros estructurados de las víctimas y
+    las tablas analíticas ante reinicios o reconstrucciones del contenedor.
+    \item \textbf{Sincronización jerárquica de servicios:} Implementa una verificación de estado. Los contenedores
+    dependientes de la lógica de negocio (\texttt{nna-analyzer} y \texttt{nna-webapp}) tienen bloqueado su despliegue
+    hasta que este sub-sistema declare un estado saludable lo que erradica las condiciones de carrera en la inicialización de sockets de red.
+    \item \textbf{Seguridad perimetral interna:} El puerto nativo 5432 se expone de manera exclusiva hacia la red interna
+    aislada \texttt{nna-network}. Al no mapear este puerto hacia la interfaz pública del host de producción se reduce a cero
+    la superficie de ataque por inyección o escaneo de puertos externo.
 \end{itemize}
 
-\subsection{Contenedor del Motor de Ingesta e Inferencia Machine Learning: \texttt{nna-analyzer}}
+\subsection{Contenedor del Backend \texttt{nna-analyzer}}
 \label{subsec:met_contenedor_analyzer}
 
-El contenedor \texttt{nna-analyzer} encapsula la inteligencia del backend, ejecutando el pipeline periódico estructurado mediante un planificador modular. Este módulo gestiona de forma nativa los procesos críticos del ciclo de vida del dato: recolección (Web Scraping masivo), preprocesamiento, deduplicación multidimensional e inferencia Transformer. Sus características de diseño metodológico son:
+El contenedor \texttt{nna-analyzer} encapsula la inteligencia del backend ejecutando el flujo de datos mediante un planificador modular.
+Este módulo gestiona de forma nativa los procesos críticos del ciclo de vida del dato: recolección (Web Scraping masivo),
+preprocesamiento, deduplicación de noticias y análisis con modelos Transformer. Sus características de diseño metodológico son:
 
 \begin{itemize}
-    \item \textbf{Persistencia y persistencia de pesos (Caché de Modelos):} Incorpora un volumen compartido denominado \texttt{models\_cache} montado en \texttt{/app/models/cache}. Los pesos del modelo encoder \textbf{BETO Fine-tuned} ($\approx$440~MB) se almacenan de manera local y determinista. Las variables de entorno de la biblioteca Hugging Face (\texttt{TRANSFORMERS\_CACHE} y \texttt{HF\_HOME}) se redirigen hacia este volumen, neutralizando la latencia de red y evitando descargas redundantes en cada ciclo de vida del contenedor.
-    \item \textbf{Acoplamiento y mitigación de fallos de red:} Posee una dependencia condicional estricta configurada mediante \texttt{depends\_on} asociada al estado \texttt{service\_healthy} de \texttt{nna-postgres}. Esto garantiza la resiliencia del pipeline de datos, impidiendo que los hilos de raspado web inicien si el pool de conexiones de la base de datos no está disponible para la persistencia inmediata.
-    \item \textbf{Programación Defensiva y Ajuste Dinámico:} Aloja las configuraciones del pipeline híbrido, incluyendo los parámetros de resiliencia del módulo de clustering \texttt{BERTopic}. Al parametrizar de forma dinámica el tokenizador del sub-modelo de representación léxica (\texttt{CountVectorizer(min\_df=1)}), el contenedor previene de manera proactiva colapsos de ejecución (\textit{ValueError}) cuando los lotes periódicos de noticias recolectadas sufren una contracción crítica de volumen.
+    \item \textbf{Persistencia de pesos:} Incorpora un volumen compartido montado en \texttt{/app/models/cache}. Los pesos del
+    modelo \textbf{BETO Fine-tuned} ($\approx$440~MB) se almacenan de manera local. Para optimizar el tiempo de ejecución
+    las variables de entorno se redirigen hacia este volumen, lo que neutraliza la latencia de red y evita descargas redundantes
+    en cada ciclo de vida del contenedor.
+    \item \textbf{Acoplamiento y mitigación de fallos de red:} Posee una dependencia condicional estricta lo que garantiza la
+    resiliencia del flujo de datos e impide que los hilos de procesamiento inicien si el pool de conexiones de la base de datos
+    no está disponible para la persistencia inmediata.
+    \item \textbf{Programación defensiva y ajuste dinámico:} Aloja las configuraciones del flujo de datos híbrido que incluye
+    los parámetros de resiliencia del módulo de clustering \texttt{BERTopic}. Al parametrizar de forma dinámica el tokenizador
+    del sub-modelo de representación léxica el contenedor previene de manera autónoma colapsos de ejecución.
 \end{itemize}
 
-\subsection{Contenedor de Interfaz Analítica y Dashboard Web: \texttt{nna-webapp}}
+\subsection{Contenedor de interfaz analítica y dashboard web \texttt{nna-webapp}}
 \label{subsec:met_contenedor_webapp}
 
-El contenedor \texttt{nna-webapp} sirve el Dashboard interactivo y la interfaz de control mediante el micro-framework Flask, orquestado bajo el servidor de aplicaciones WSGI de grado producción \textbf{Gunicorn}. Debido a las restricciones físicas de memoria (8 GB de RAM del equipo anfitrión), la parametrización de este contenedor se calibró minuciosamente para evitar colisiones con las fases de entrenamiento local:
-
+El contenedor \texttt{nna-webapp} sirve el dashboard interactivo y la interfaz de control mediante Flask.
 \begin{itemize}
-    \item \textbf{Modelado de Concurrencia Restringido:} Se configuró la ejecución estricta de \textbf{2 workers} Gunicorn basados en un modelo de subprocesos \textit{pre-forked} (\texttt{--workers 2}). Esta decisión arquitectónica limita deliberadamente la concurrencia a un máximo de dos solicitudes HTTP pesadas simultáneas. Aunque esto limita el rendimiento de red a gran escala, garantiza que el consumo base de RAM del contenedor se estabilice en un umbral mínimo, reservando el espacio libre de la memoria para que el script de re-entrenamiento local (\textit{Active Learning}) basado en \textit{Linear Probing} y acumulación de gradientes se ejecute en el host de forma segura y sin desbordamientos de memoria (\textit{Out Of Memory}).
-    \item \textbf{Calibración de Timeouts para Inferencia en CPU:} Se determinó un límite de tiempo de respuesta extendido de 300 segundos (\texttt{--timeout 300}). Esta holgura está metodológicamente justificada debido a que la evaluación semántica y las consultas de investigación profunda \textit{on-demand} (\texttt{DeepInvestigator}) se procesan exclusivamente utilizando la CPU del host, lo que puede elevar los tiempos de cómputo en lotes densos; un timeout estándar (30 s) provocaría la terminación prematura y destructiva del hilo de análisis por parte de Gunicorn.
-    \item \textbf{Consumo Descentralizado y API REST:} Expone de forma exclusiva el puerto 5000 hacia el host. Este diseño permite que la interfaz web y la API REST pública actúen como la capa de abstracción final, aislando al usuario investigador de la complejidad algorítmica del backend y asegurando un canal limpio para la auditoría de los datos estructurados.
+    \item \textbf{Consumo descentralizado y API REST:} Expone de forma exclusiva el puerto 5000 hacia el host. Este diseño permite
+    que la interfaz web y la API REST pública actúen como la capa de abstracción final que aisla al usuario analista de la complejidad
+    algorítmica del backend y asegurando un canal limpio para la consulta y visualización de los datos estructurados.
 \end{itemize}
-%----------------------------------------------------------------------------------------
-\section{Especificación de Requerimientos y Matriz de Trazabilidad Evolutiva}
-\label{sec:met_trazabilidad_prototipos}
-%----------------------------------------------------------------------------------------
 
-La formalización y el diseño de la arquitectura distribuida fueron gobernados por un conjunto estricto de requerimientos funcionales (RF) y no funcionales (RNF), cuyos criterios de aceptación e hitos de ingeniería se validaron empíricamente bajo el paradigma de prototipado incremental. Con la finalidad de garantizar el rigor metodológico del proyecto, la Tabla~\ref{tab:trazabilidad_prototipos} sistematiza la matriz de trazabilidad general. Este instrumento documenta la cobertura incremental y la evolución de cada directiva de software a lo largo del ciclo de vida, demostrando analíticamente cómo el sistema convergió hacia una cobertura del 100\% en el Prototipo 4 consolidado.
+\section{Especificación de requerimientos}
+\label{sec:met_trazabilidad_prototipos}
+
+La formalización y el diseño de la arquitectura distribuida fueron guiados por un conjunto de requerimientos funcionales (RF) y no
+funcionales (RNF) a los que sus criterios de aceptación se validaron bajo el paradigma de prototipado incremental. Con la finalidad
+de garantizar el seguimiento del avance, la siguiente tabla muestra la matriz de trazabilidad general.
 
 \begin{table}[H]
 \centering
-\caption{Matriz de Trazabilidad General: Requerimientos de Software vs. Prototipos Evolutivos}
+\caption{Matriz de trazabilidad general}
 \label{tab:trazabilidad_prototipos}
 \begin{tabular}{|p{1.4cm}|p{6.4cm}|c|c|c|c|c|}
 \hline
@@ -231,11 +240,11 @@ La formalización y el diseño de la arquitectura distribuida fueron gobernados 
 \textbf{P4} \\
 \hline
 \textbf{RF-01} &
-Extracción multi-fuente enfocada mediante técnicas de \textit{web scraping} asíncrono con evasión perimetral anti-bot. &
+Extracción multi-fuente mediante técnicas de \textit{web scraping}. &
 $\sim$ & \checkmark & \checkmark & \checkmark & \checkmark \\
 \hline
 \textbf{RF-02} &
-Deduplicación estocástica y lógica en cascada multidimensional (MD5 $\rightarrow$ SimHash $\rightarrow$ Jaccard $\rightarrow$ coseno TF-IDF). &
+Deduplicación y lógica en cascada (MD5 $\rightarrow$ SimHash $\rightarrow$ Jaccard $\rightarrow$ coseno TF-IDF). &
 --- & --- & $\sim$ & \checkmark & \checkmark \\
 \hline
 \textbf{RF-03} &
@@ -243,38 +252,34 @@ Clasificación semántica binaria profunda mediante el modelo Transformer \textb
 --- & --- & --- & $\sim$ & \checkmark \\
 \hline
 \textbf{RF-04} &
-Mitigación de colisiones léxicas (\textit{Efecto Péndulo}) mediante un algoritmo híbrido de Puntuación Escalonada (\textit{Tiered Scoring v7.1}). &
+Mitigación de colisiones léxicas (\textit{efecto péndulo}) mediante un algoritmo híbrido de puntuación escalonada. &
 --- & --- & --- & --- & \checkmark \\
 \hline
 \textbf{RF-05} &
-Agrupamiento semántico latente y modelado automático de tópicos interactivos mediante la integración de \texttt{BERTopic}. &
+Agrupamiento semántico latente mediante la integración de \texttt{BERTopic}. &
 --- & --- & --- & \checkmark & \checkmark \\
 \hline
 \textbf{RF-06} &
-Persistencia híbrida distribuida (PostgreSQL relacional con indexación GIN + CSV intermedio) para auditoría e integridad referencial. &
+Persistencia híbrida distribuida (PostgreSQL relacional con indexación GIN + CSV) para la recuperación de datos. &
 --- & $\sim$ & $\sim$ & \checkmark & \checkmark \\
 \hline
 \textbf{RF-07} &
-Dashboard administrativo web interactivo con el módulo \texttt{DeepInvestigator} para validación, exportación masiva y gestión CRUD de fuentes. &
+Dashboard administrativo web interactivo con el módulo \texttt{DeepInvestigator} para validación, exportación masiva y gestión de fuentes. &
 --- & --- & --- & --- & \checkmark \\
 \hline\hline
 \textbf{RNF-01} &
-\textbf{Eficiencia en Cómputo Local:} Ejecución del pipeline y re-entrenamiento mediante \textit{Linear Probing} y acumulación de gradientes en $\le$ 8 GB de RAM sin fallos \textit{OOM}. &
---- & --- & --- & --- & \checkmark \\
-\hline
-\textbf{RNF-02} &
-\textbf{Resiliencia Matemática:} Tolerancia a fallos defensiva y parametrización dinámica en la capa de clustering ante contracciones críticas del corpus. &
---- & --- & --- & --- & \checkmark \\
-\hline
-\textbf{RNF-03} &
-\textbf{Seguridad y Privacidad Ética:} Anonimización programática de infancias (cumplimiento LGDNNA) e integridad transaccional ACID de extremo a extremo. &
+\textbf{Seguridad y privacidad etica:} Anonimización programática de infancias (cumplimiento LGDNNA) e integridad transaccional ACID de extremo a extremo. &
 --- & --- & $\sim$ & \checkmark & \checkmark \\
 \hline
 \end{tabular}
-\\
-{\small \textit{Leyenda:} \checkmark = Requerimiento completamente satisfecho y validado; $\sim$ = Implementación parcial o en fase de pruebas unitarias; --- = No abordado / Fuera de la frontera de especificación de la fase.}
 \end{table}
 
-El análisis analítico de la matriz de trazabilidad evidencia la naturaleza evolutiva del proceso de desarrollo de software. Los prototipos iniciales (\texttt{P0} a \texttt{P2}) se concentraron exclusivamente en resolver la frontera de especificación sintáctica, garantizando la ingesta masiva de flujos web y la manipulación estructurada de datos planos. 
 
-El salto cualitativo hacia el procesamiento profundo en el Prototipo 3 introdujo requerimientos semánticos de alta densidad neural, aislando las primeras colisiones lógicas provocadas por el solapamiento léxico de los discursos informativos. Finalmente, el Prototipo 4 resolvió categóricamente las exigencias más complejas de eficiencia computacional extrema en hardware restringido y resiliencia matemática algorítmica. Este hito cerró con éxito la cobertura total de la matriz, consolidando un ecosistema tecnológico maduro, auditable y robusto, listo para someterse a la validación científica y metodológica frente al sínodo académico.
+El análisis de la matriz de trazabilidad demuestra la naturaleza evolutiva del proceso de desarrollo de software.
+Los prototipos iniciales (\texttt{P0} a \texttt{P2}) se concentraron exclusivamente en resolver la frontera de especificación sintáctica,
+garantizando recolección masiva de noticias y manipulación estructurada de datos planos. 
+
+El salto significativo hacia el procesamiento profundo en el prototipo 3 introdujo requerimientos semánticos de alta densidad neural,
+resolviendo las primeras colisiones lógicas provocadas por el solapamiento léxico de los discursos informativos. Y finalmente
+el prototipo 4 resolvió categóricamente la arquitectura híbrida escalonada y el clustering semántico. Este ultimo consoludo un sistema
+tecnológico robusto y escalable, listo para someterse a la validación profesional y metodológica. 
