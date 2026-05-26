@@ -48,12 +48,12 @@ que continúan una palabra se prefijan con \texttt{\#\#} para distinguirlos de t
 por ejemplo: \textit{``feminicidio''} se tokeniza como \texttt{fem\#\#ini\#\#cid\#\#io}.
 
 Este esquema tiene dos consecuencias técnicas que son fundamentales para el dominio del
-sistema. Primero, las palabras desconocidas como neologismos o nombres propios se
+sistema. Primero las palabras desconocidas como tecnicismos o nombres propios se
 descomponen en sub-tokens conocidos en lugar de ser descartadas, para así preservar
 parcialmente su información. Segundo, el entrenamiento con \textit{Whole Word Masking}
 (WWM) garantiza que todos los sub-tokens de una misma palabra se enmascaren conjuntamente,
 forzando al modelo a aprender representaciones semánticamente coherentes de términos
-especializados de múltiples sub-unidades.
+especializados de múltiples sub-unidades. 
 
 Además BETO utiliza dos tokens especiales de estructura: \texttt{[CLS]} (primer
 token de toda secuencia, cuyo vector de salida representa a la secuencia completa
@@ -66,22 +66,22 @@ dos segmentos de texto distintos).
 
 
 La lematización es el proceso de reducir una forma flexionada de una palabra a su
-lema canónico (forma base del diccionario), considerando el contexto morfosintáctico.
-Se distingue de la \textit{stemming} en que produce formas lingüísticamente válidas:
+lema canónico (forma base del diccionario), considerando el contexto sintáctico.
+Se distingue de la \textit{stemming} en que produce formas lingüísticamente válidas como
 \textit{"feminicidios"} $\rightarrow$ \textit{"feminicidio"} (lematización),
 no \textit{"feminicid"} (stemming).
 
 En el sistema, la lematización se emplea en la capa de preprocesamiento del módulo
 de búsqueda por sinónimos (\texttt{SynonymDictionary}) y en el vectorizador TF-IDF
-de deduplicación, donde la normalización morfológica reduce la dispersión léxica
+de deduplicación, donde la normalización sintáctica reduce la dispersión léxica
 del vocabulario y mejora la robustez de las métricas de similitud ante variaciones
-de tiempo verbal, número y género gramaticales comunes en el periodismo mexicano.
-PostgreSQL aplica su propio proceso de lematización para español (diccionario
-Snowball) al momento de construir el \texttt{tsvector} para la búsqueda de texto
-completo, cubriendo el caso de recuperación de información en el dashboard.
+de género y número gramaticales comunes en el periodismo mexicano.
+PostgreSQL aplica su propio proceso de lematización para español al momento de
+construir el \texttt{tsvector} para la búsqueda de texto completo, cubriendo el caso
+de recuperación de información en el dashboard.
 
 
-\subsection{Modelo de espacio vectorial: TF-IDF}
+\subsection{Modelo de espacio vectorial TF-IDF}
 \label{subsec:mt_tfidf}
 
 
@@ -103,21 +103,19 @@ del término en el documento:
 
 Y la frecuencia inversa de documento $\text{IDF}(t, D)$ penaliza los términos
 ubicuos en la colección (que aportan poca información discriminativa) y premia
-los términos raros:
+los términos raros.
 
 \begin{equation}
     \text{IDF}(t, D) = \log\frac{|D|}{|\{d \in D : t \in d\}| + 1}
 \end{equation}
 
-Este sistema implementa una variante de TF-IDF que multiplca
+Este sistema implementa una variante de TF-IDF que multiplica
 el peso de términos del glosario de dominio (por ejemplo: \textit{"orfandad"},
-\textit{"DIF"}, \textit{"resguardo"}) por un factor amplificador $\beta > 1$ que incremente
+\textit{"DIF"}, \textit{"resguardo"}) por un factor amplificador $\beta > 1$ que incrementa
 artificialmente su IDF efectivo. Esta modificación operacionaliza el
 conocimiento experto del dominio en el espacio vectorial sin requerir reentrenamiento.
-TF-IDF se emplea en el sistema exclusivamente para las fases de deduplicación y
-el módulo de sinónimos; la clasificación de relevancia utiliza exclusivamente
-los embeddings BETO.
-
+TF-IDF se emplea exclusivamente para las fases de deduplicación y el módulo de sinónimos;
+la clasificación de relevancia utiliza exclusivamente los embeddings BETO.
 
 \subsection{Arquitectura Transformer y mecanismo de auto-atención}
 \label{subsec:mt_transformer}
@@ -127,25 +125,25 @@ La arquitectura \textit{Transformer} \cite{vaswani2017attention} constituye el
 fundamento de todos los modelos de lenguaje de última generación. A diferencia de
 las Redes Neuronales Recurrentes (RNN) y las LSTM, que procesan la secuencia de
 tokens de forma estrictamente lineal, generando un estado oculto $h_t$ en función
-del estado $h_{t-1}$ y el token actual, el Transformer prescinde de la recurrencia.
-Todas las posiciones de la secuencia se procesan en paralelo mediante el
-mecanismo de auto-atención multi-cabeza (\textit{Multi-Head Self-Attention}).
+del estado $h_{t-1}$ y el token actual, el Transformer viene de la recurrencia.
+Todas las posiciones de la secuencia se procesan en paralelo mediante el mecanismo
+de auto-atención multi-cabeza.
 
 Para cada token $x_i$ de la secuencia, el mecanismo de atención computa tres
 vectores: una consulta $Q_i = x_i W^Q$, una clave $K_i = x_i W^K$ y un valor
 $V_i = x_i W^V$, donde $W^Q, W^K, W^V \in \mathbb{R}^{d_{model} \times d_k}$ son
 matrices de proyección aprendidas. La relevancia del token $j$ para el token $i$
 se calcula como el producto punto de sus vectores de consulta y clave, escalado
-para evitar saturación del gradiente en la función softmax:
+para evitar saturación del gradiente en la función softmax.
 
 \begin{equation}
     \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V
 \end{equation}
 
 Donde $d_k$ es la dimensión de las claves. La salida para el token $i$ es una
-suma ponderada de todos los vectores $V_j$ de la secuencia, con pesos determinados
-por la similitud de atención. Esto permite que "menor" en la posición $i$ reciba
-contribuciones directas de "resguardo del DIF" en la posición $j$, sin importar
+suma ponderada de todos los vectores $V_j$ de la secuencia y que poseen pesos determinados
+por la similitud de atención. Esto permite que ''menor'' en la posición $i$ reciba
+contribuciones directas de ''resguardo del DIF'' en la posición $j$, sin importar
 la distancia lineal entre ambas posiciones.
 
 La auto-atención multi-cabeza ejecuta $h$ instancias paralelas del mecanismo
@@ -160,13 +158,13 @@ Donde cada cabeza captura un tipo diferente de relación semántica o sintáctic
 BERT-base emplea $h=12$ cabezas en cada una de sus 12 capas de transformación.
 
 
-\subsection{BETO: representaciones bidireccionales para el español}
+\subsection{BETO representaciones bidireccionales para el español}
 \label{subsec:mt_beto}
 
 
 BERT (\textit{Bidirectional Encoder Representations from Transformers})
 \cite{devlin2019bert} extiende la arquitectura Transformer original mediante el
-preentrenamiento bidireccional: en lugar de predecir el siguiente token (modelado
+preentrenamiento bidireccional y en lugar de predecir el siguiente token (modelado
 de lenguaje causal como GPT) BERT se entrena con el objetivo de
 \textbf{Modelado de Lenguaje Enmascarado} (MLM). En cada secuencia de entrenamiento
 el 15\% de los tokens se enmascara aleatoriamente y el modelo debe predecir el token
@@ -186,9 +184,9 @@ siguiente arquitectura base:
     \item Vocabulario WordPiece de 30{,}000 tokens en español
 \end{itemize}
 
-El corpus de preentrenamiento incluye wikipedia en español (aproximadamente 3 GB),
+El corpus de preentrenamiento incluye wikipedia en español,
 OpenSubtitles, ParaCrawl, MultiUN (corpus OPUS) y fuentes de prensa latinoamericana.
-Esta composición es crítica para el dominio del sistema pues el periodismo latinoamericano
+Esta composición es importante para el dominio del sistema pues el periodismo latinoamericano
 posee un estilo de redacción y un léxico que difieren del español peninsular. Los
 corpus de prensa incluidos en el preentrenamiento de BETO sesgan sus representaciones
 hacia el vocabulario y las construcciones sintácticas empleadas por los medios de
@@ -212,15 +210,15 @@ $\hat{e}$ es su versión normalizada empleada en la clasificación zero-shot.
 \label{sec:mt_inferencia}
 
 
-\subsection{Clasificación zero-shot por similitud coseno (modo fallback)}
+\subsection{Clasificación zero-shot por similitud coseno}
 \label{subsec:mt_zeroshot}
 
 El paradigma de \textbf{clasificación zero-shot} \cite{yin2019benchmarking} permite
 categorizar documentos en clases definidas en lenguaje natural sin requerir
 ejemplos etiquetados de entrenamiento para dichas clases. En el sistema, este
-paradigma opera como \textbf{modo de fallback}: se activa automáticamente cuando
-el clasificador ajustado (Fine-Tuned) no está disponible, garantizando así la
-continuidad operativa del pipeline en su fase inicial o ante la ausencia del
+paradigma opera como \textbf{modo de fallback} y se activa automáticamente cuando
+el clasificador ajustado (Fine-Tuned) no está disponible lo que garantiza la
+continuidad operativa del flujo en su fase inicial o ante la ausencia del
 archivo de modelo guardado.
 
 La implementación adoptada es la clasificación por similitud coseno entre embeddings.
@@ -231,41 +229,40 @@ la víctima quedaron en orfandad o bajo resguardo institucional''} para la clase
 el menor es el agresor''} para la clase \textit{no relevante}). En tiempo de
 inferencia, el embedding del texto $\hat{e}_{texto}$ se compara contra los
 embeddings de cada categoría $\hat{e}_{c}$ mediante el producto punto (equivalente
-a similitud coseno, dado que los vectores están normalizados en $\ell_2$):
+a similitud coseno dado que los vectores están normalizados en $\ell_2$):
 
 \begin{equation}
     s_c = \hat{e}_{texto} \cdot \hat{e}_c = \cos(\hat{e}_{texto}, \hat{e}_c)
 \end{equation}
 
 La ventaja principal de este paradigma es que el conocimiento experto del dominio
-se codifica en lenguaje natural auditable y modificable sin reentrenamiento. Su
-limitación, identificada empíricamente durante el Prototipo~3 como el
-\textit{Efecto Péndulo}, es que los scores tienden a concentrarse en el rango
-$[0.40, 0.70]$, reduciendo la discriminabilidad del clasificador entre noticias
-legislativas y casos fácticos de orfandad con vocabulario solapado.
+se codifica en lenguaje natural obserbable y modificable sin reentrenamiento. Su
+limitación, identificada durante el prototipo 3 como el \textit{efecto pendulo}
+es que los scores tienden a concentrarse en el rango $[0.40, 0.70]$ lo que reduce
+la discriminabilidad del clasificador entre noticias
+legislativas y casos verdaderos de orfandad con vocabulario solapado.
 
 
-%----------------------------------------------------------------------------------------
+
 \subsection{Ajuste fino supervisado (\textit{Fine-Tuning}) con \textit{Linear Probing}}
 \label{subsec:mt_finetuning}
-%----------------------------------------------------------------------------------------
+
 
 El \textbf{ajuste fino} (\textit{Fine-Tuning}) \cite{devlin2019bert} de un modelo
 preentrenado consiste en continuar el proceso de entrenamiento sobre un corpus
 etiquetado del dominio objetivo, actualizando los pesos del modelo para especializar
 sus representaciones hacia las características semánticas específicas de la tarea.
-En el sistema, esta es la modalidad de inferencia \textbf{prioritaria}: el módulo
+En este sistema esta es la modalidad de inferencia \textbf{prioritaria} en la cual el módulo
 \texttt{semantic\_detector.py} verifica al inicializarse si existe un clasificador
-guardado y, de haberlo, lo carga como motor principal; en caso contrario, activa
+guardado y de haberlo lo carga como motor principal si no en caso contrario activa
 el modo zero-shot como fallback.
 
 Dado que el reentrenamiento completo de los 110~millones de parámetros de BETO
 exige capacidades de cómputo (GPU de alto rendimiento, memoria de video de
-al menos 16~GB) incompatibles con el entorno de desarrollo del proyecto (CPU
-con 8~GB de RAM), el sistema implementa la estrategia de \textbf{\textit{Linear
-Probing}}: se congelan (\texttt{requires\_grad = False}) todos los bloques
-Transformer del encoder BETO y únicamente se entrena la capa lineal de clasificación
-superpuesta (la \textit{cabeza de clasificación}):
+al menos 16 GB) incompatibles con el entorno de desarrollo del proyecto (CPU
+con 8 GB de RAM) el sistema implementa la estrategia de \textbf{\textit{Linear
+Probing}} en el que se congelan todos los bloques Transformer del encoder BETO y
+únicamente se entrena la capa lineal de clasificación superpuesta (la \textit{cabeza de clasificación}):
 
 \begin{equation}
     \hat{y} = \text{softmax}\!\left(W_{clf} \cdot \hat{e}_{\texttt{[CLS]}} + b_{clf}\right)
@@ -273,43 +270,11 @@ superpuesta (la \textit{cabeza de clasificación}):
 
 Donde $W_{clf} \in \mathbb{R}^{C \times 768}$ es la matriz de pesos de la cabeza
 de clasificación, $b_{clf} \in \mathbb{R}^{C}$ es el vector de sesgo, $C$ es el
-número de clases (Alta, Media, No~relevante) y $\hat{e}_{\texttt{[CLS]}} \in
+número de clases (Alta, Media, No relevante) y $\hat{e}_{\texttt{[CLS]}} \in
 \mathbb{R}^{768}$ es el embedding del token \texttt{[CLS]} extraído de la última
 capa del encoder congelado. El número de parámetros entrenables se reduce de
-110~millones a aproximadamente $768 \times C + C \approx 2{,}307$ parámetros,
-reduciendo el consumo de memoria de gradientes en $\sim$99.99\%.
-
-
-%----------------------------------------------------------------------------------------
-\subsection{Acumulación de Gradientes (\textit{Gradient Accumulation})}
-\label{subsec:mt_gradacc}
-%----------------------------------------------------------------------------------------
-
-El \textbf{\textit{Gradient Accumulation}} \cite{ott2018scaling} es una técnica
-que permite simular el entrenamiento con lotes de tamaño grande (necesario para
-estabilidad del descenso del gradiente) en equipos con memoria RAM limitada, sin
-realizar el paso de actualización de pesos (\texttt{optimizer.step()}) en cada
-lote individual. El algoritmo acumula los gradientes de $k$ lotes consecutivos
-antes de aplicar una sola actualización de pesos:
-
-\begin{equation}
-    \nabla_{\theta}^{\text{acum}} = \frac{1}{k} \sum_{i=1}^{k} \nabla_{\theta} \mathcal{L}(x_i, y_i)
-\end{equation}
-
-Donde $\nabla_{\theta} \mathcal{L}(x_i, y_i)$ es el gradiente de la función de
-pérdida para el $i$-ésimo mini-lote y $k$ es el factor de acumulación. El efecto
-es matemáticamente equivalente a entrenar con un lote de tamaño efectivo
-$k \times \texttt{batch\_size}$, usando solo la memoria de un lote de tamaño
-$\texttt{batch\_size}$ en cada paso.
-
-En el sistema, se emplea \texttt{batch\_size = 4} con un factor de acumulación
-$k = 8$, dando un lote efectivo de 32~muestras por actualización, valor estándar
-para el Fine-Tuning estable de modelos BERT. El proceso de entrenamiento incorpora
-adicional una estrategia de detención temprana (\textit{Early Stopping}) basada
-en el F1-score macro sobre el conjunto de validación: si el F1 no mejora en 3
-epocas consecutivas (\texttt{patience = 3}), el entrenamiento se detiene y se
-recuperan los pesos del mejor epoch, previniendo el sobreajuste ante el tamaño
-reducido del corpus etiquetado.
+110 millones a aproximadamente $768 \times C + C \approx 2{,}307$ parámetros,
+reduciendo el consumo de memoria.
 
 
 \section{Agrupamiento semántico y reducción de dimensionalidad}
@@ -320,30 +285,29 @@ El agrupamiento semántico de documentos periodísticos tiene como objetivo iden
 grupos de noticias que pertenecen al mismo tema independientemente del vocabulario
 empleado por cada medio. El sistema adopta \textbf{BERTopic} \cite{grootendorst2022bertopic}
 como motor de agrupamiento, el cual su arquitectura modular encadena tres algoritmos
-independientes: UMAP para reducción de dimensionalidad, HDBSCAN para detección de
+independientes como UMAP para reducción de dimensionalidad, HDBSCAN para detección de
 clústeres de densidad variable y c-TF-IDF para la representación léxica de cada
 tópico descubierto.
 
-\subsection{UMAP: Proyección Topológica Preservadora de Estructura}
+\subsection{UMAP Proyección topológica preservadora de estructura}
 \label{subsec:mt_umap}
 
 Los \textit{embeddings} generados por BETO estan en $\mathbb{R}^{768}$. Si se aplica
-directamente algoritmos de agrupamiento sobre espacios de esta dimensionalidad, se
-produce resultados de baja calidad debido a la \textbf{maldición de la dimensionalidad} \cite{beyer1999nearest}: 
-en espacios de
-alta dimensión, la razón entre la distancia al vecino más lejano y al vecino más
-cercano tiende a 1 asintóticamente, haciendo que las distancias euclidianas pierdan
-poder discriminatorio. En el límite, todos los puntos son aproximadamente equidistantes
+directamente algoritmos de agrupamiento sobre espacios de esta dimensionalidad se
+producirian resultados de baja calidad debido a la \textbf{maldición de la dimensionalidad} \cite{beyer1999nearest}: 
+en espacios de alta dimensión, la razón entre la distancia al vecino más lejano y al vecino más
+cercano tiende a 1 asintóticamente lo que hace que las distancias euclidianas pierdan
+poder discriminatorio. En el límite todos los puntos son aproximadamente equidistantes
 entre sí, privando a los algoritmos de agrupamiento de la señal de proximidad.
 
 UMAP (\textit{Uniform Manifold Approximation and Projection}) \cite{mcinnes2018umap}
 proyecta los datos de alta dimensión a un espacio de dimensión reducida ($\mathbb{R}^5$
 en el sistema) conservando la estructura topológica local y global. El algoritmo se
-fundamenta en tres principios de geometría Riemanniana y topología algebraica:
+fundamenta en tres principios de geometría Riemanniana y topología algebraica.
 
 \begin{enumerate}
     \item \textbf{Construcción del grafo topológico en alta dimensión.} Para cada
-          punto $x_i$, se construye un grafo de vecindad ponderado $G^{HD}$ donde
+          punto $x_i$ se construye un grafo de vecindad ponderado $G^{HD}$ donde
           el peso de la arista $(x_i, x_j)$ representa la probabilidad de que
           $x_j$ sea un vecino de $x_i$ bajo una métrica Riemanniana local calibrada
           por la distancia al $k$-ésimo vecino más cercano de $x_i$. El parámetro
@@ -360,21 +324,21 @@ fundamenta en tres principios de geometría Riemanniana y topología algebraica:
               \mathcal{L} = \sum_{(i,j)} \left[ w_{ij}^{HD} \log\frac{w_{ij}^{HD}}{w_{ij}^{LD}}
               + (1 - w_{ij}^{HD}) \log\frac{1 - w_{ij}^{HD}}{1 - w_{ij}^{LD}} \right]
           \end{equation}
-          La minimización de $\mathcal{L}$ mediante descenso de gradiente estocástico
+          La minimización de $\mathcal{L}$ mediante descenso de gradiente
           garantiza que la disposición en el espacio reducido preserve las relaciones
           de vecindad del espacio original.
 \end{enumerate}
 
-La configuración \texttt{metric='cosine'} es crítica para el dominio de texto: los
+La configuración \texttt{metric='cosine'} es crítica para el dominio de texto pues los
 embeddings de lenguaje tienen magnitudes variables, y la similitud semántica se
 mide por el ángulo entre vectores, no por su distancia euclidiana. El parámetro
-\texttt{min\_dist=0.0} comprime al máximo los clústeres, aumentando la densidad
-local y facilitando la separación de fronteras por HDBSCAN.
+\texttt{min\_dist=0.0} comprime al máximo los clústeres y aumenta la densidad
+local lo que facilita la separación de fronteras por HDBSCAN.
 
-%----------------------------------------------------------------------------------------
-\subsection{HDBSCAN: Agrupamiento Jerárquico por Densidad Variable}
+
+\subsection{HDBSCAN Agrupamiento jerárquico por densidad variable}
 \label{subsec:mt_hdbscan}
-%----------------------------------------------------------------------------------------
+
 
 HDBSCAN (\textit{Hierarchical Density-Based Spatial Clustering of Applications
 with Noise}) \cite{campello2013hdbscan} extiende DBSCAN mediante la construcción
@@ -401,7 +365,7 @@ global de densidad $\varepsilon$. El algoritmo opera en cuatro etapas:
           a reducir el umbral de densidad progresivamente). El dendrograma resultante
           codifica la estructura de clústeres a todas las escalas de densidad.
 
-    \item \textbf{Selección por Exceso de Masa (EoM).} El método \textit{Excess
+    \item \textbf{Selección por exceso de masa (EoM).} El método \textit{Excess
           of Mass} selecciona el subconjunto de clústeres en la jerarquía que
           maximiza la ``persistencia'' (estabilidad topológica medida como la
           diferencia entre el nivel de densidad de aparición y desaparición del
@@ -409,20 +373,20 @@ global de densidad $\varepsilon$. El algoritmo opera en cuatro etapas:
           reciben la etiqueta de ruido: \texttt{topic\_id = -1}.
 \end{enumerate}
 
-La etiqueta de ruido es semánticamente valiosa para el sistema: las noticias
+La etiqueta de ruido es semánticamente valiosa para el sistema pues las noticias
 \textit{outlier} que no comparten coherencia temática con ningún clúster del corpus
-son tratadas con mayor escepticismo en la lógica de decisión neuro-simbólica,
-elevando su umbral de clasificación en BETO de 0.50 a 0.65.
+son tratadas con mayor escepticismo en la lógica de decisión, elevando su umbral de
+clasificación en BETO de 0.50 a 0.65.
 
-%----------------------------------------------------------------------------------------
-\subsection{c-TF-IDF: Relevancia de Términos por Clúster}
+
+\subsection{c-TF-IDF Relevancia de términos por clúster}
 \label{subsec:mt_ctfidf}
-%----------------------------------------------------------------------------------------
+
 
 Una vez agrupados los documentos, BERTopic extrae la representación léxica de cada
 tópico mediante \textit{Class-based TF-IDF} (c-TF-IDF) \cite{grootendorst2022bertopic}.
 El algoritmo trata cada clúster como un ``mega-documento de clase'' formado por la
-concatenación de todos sus documentos miembro, y calcula la importancia de cada
+concatenación de todos sus documentos miembro y calcula la importancia de cada
 término $t$ en la clase $c$ frente al corpus completo:
 
 \begin{equation}
@@ -433,49 +397,47 @@ Donde $\text{TF}_{t,c}$ es la frecuencia del término $t$ en el mega-documento d
 clúster $c$, $\text{TF}_t$ es la frecuencia total del término en todos los clústeres,
 y $A$ es el número promedio de palabras por clúster (factor de normalización de
 escala). Los términos con $W_{t,c}$ más alto son frecuentes en el clúster pero
-infrecuentes en el resto del corpus: son los que mejor caracterizan semánticamente
+infrecuentes en el resto del corpus y son los que mejor caracterizan semánticamente
 ese tópico.
-
+ 
 El vectorizador configurado con \texttt{ngram\_range=(1, 3)} permite que las
-representaciones incluyan bigramas y trigramas, capturando expresiones compuestas
+representaciones incluyan bigramas y trigramas, capturando asi expresiones compuestas
 de alta especificidad como \textit{``hijos resguardados DIF''} o
 \textit{``víctima de feminicidio''} que los unigramas individuales no pueden
 representar. La representación final por tópico mediante \texttt{KeyBERTInspired}
 refina los términos seleccionados usando similitud coseno entre el embedding del
-n-grama y el embedding promedio del clúster, garantizando representatividad
+n-grama y el embedding promedio del clúster que garantiza representatividad
 semántica en lugar de meramente estadística.
 
-%========================================================================================
-\section{Técnicas de Deduplicación \textit{Cross-Site}}
+
+\section{Técnicas de deduplicación}
 \label{sec:mt_deduplicacion}
-%========================================================================================
+
 
 La arquitectura multi-fuente del sistema (45 RSS + Google News + scraping HTML)
-genera redundancia mediática: distintos medios cubren el mismo evento con
-redacciones parcialmente distintas. Sin deduplicación, el corpus infla
+genera redundancia puesto que distintos medios cubren el mismo evento con
+redacciones parcialmente distintas. Sin la deduplicación el corpus infla
 artificialmente las estadísticas y puede generar alertas duplicadas en el dashboard.
 El sistema implementa una cascada de cuatro algoritmos de complejidad creciente,
 donde los casos más obvios se resuelven con el método más barato.
 
-%----------------------------------------------------------------------------------------
-\subsection{Hash Exacto MD5}
+\subsection{Hash exacto MD5}
 \label{subsec:mt_md5}
-%----------------------------------------------------------------------------------------
 
 La primera barrera es la detección de copias exactas. Se emplea MD5
-(\textit{Message-Digest Algorithm 5}) \cite{rivest1992md5}, una función de hash
+(\textit{Message-Digest Algorithm 5}) \cite{rivest1992md5} que es una función de hash
 criptográfico que proyecta una cadena de longitud arbitraria a un valor de 128~bits.
 El efecto avalancha garantiza que cualquier diferencia mínima en el texto de entrada
 altera completamente el hash resultante. La comparación de hashes tiene complejidad
 $O(1)$ por par, haciendo de esta fase la más eficiente de la cascada.
 
-%----------------------------------------------------------------------------------------
-\subsection{Similitud de Jaccard sobre Conjuntos de Tokens}
+
+\subsection{Similitud de Jaccard sobre conjuntos de tokens}
 \label{subsec:mt_jaccard}
-%----------------------------------------------------------------------------------------
+
 
 Para detectar reescrituras con sustituciones léxicas simples (\textit{``fue
-asesinada''} $\leftrightarrow$ \textit{``perdió la vida''}), se emplea el
+asesinada''} $\leftrightarrow$ \textit{``perdió la vida''}) se emplea el
 coeficiente de Jaccard \cite{jaccard1912distribution}. Dado que los títulos de
 las noticias se tokenizan en conjuntos de palabras $A$ y $B$, la similitud se
 define como:
@@ -487,15 +449,15 @@ define como:
 Un umbral $J \geq 0.70$ marca a los pares como cuasi-duplicados. La complejidad
 por par es $O(|A| + |B|)$, lineal en el tamaño del vocabulario de los títulos.
 
-%----------------------------------------------------------------------------------------
-\subsection{SimHash: Huellas Digitales Localmente Sensibles}
+
+\subsection{SimHash huellas digitales localmente sensibles}
 \label{subsec:mt_simhash}
-%----------------------------------------------------------------------------------------
+
 
 SimHash \cite{charikar2002similarity} es un \textit{Locality-Sensitive Hash} (LSH)
-que genera una huella digital de 64~bits por documento tal que documentos similares
-producen hashes con \textbf{distancia de Hamming} baja (número de bits diferentes).
-El algoritmo proyecta los pesos TF-IDF de los tokens del documento en $\{+1, -1\}^{64}$
+que genera una huella digital de 64 bits por documento tal que documentos similares
+producen hashes con distancia de Hamming baja (número de bits diferentes). El
+algoritmo proyecta los pesos TF-IDF de los tokens del documento en $\{+1, -1\}^{64}$
 mediante 64 funciones de hash independientes, y el bit $b_k$ del SimHash se determina
 por el signo del promedio ponderado de las proyecciones:
 
@@ -504,18 +466,16 @@ por el signo del promedio ponderado de las proyecciones:
 \end{equation}
 
 Dos documentos con distancia de Hamming $\leq 6$ bits se consideran cuasi-duplicados.
-SimHash escala a millones de documentos en $O(n)$ sin comparaciones par-a-par,
-siendo el algoritmo adecuado para la fase de detección de paráfrasis en corpora
+SimHash escala a millones de documentos en $O(n)$ sin comparaciones pares a pares,
+siendo el algoritmo adecuado para la fase de detección de paráfrasis en vista de un
 de gran volumen.
 
-%----------------------------------------------------------------------------------------
-\subsection{Similitud Coseno sobre Vectores TF-IDF}
+\subsection{Similitud coseno sobre vectores TF-IDF}
 \label{subsec:mt_coseno}
-%----------------------------------------------------------------------------------------
 
 La fase final de la cascada aplica similitud coseno sobre los vectores TF-IDF
-completos del contenido de las noticias, capturando casos donde la redacción difiere
-sustancialmente pero el contenido fáctico es el mismo. Dado que los vectores TF-IDF
+completos del contenido de las noticias, lo que captura los casos donde la redacción difiere
+sustancialmente pero el contenido es el mismo. Dado que los vectores TF-IDF
 $\mathbf{A}, \mathbf{B} \in \mathbb{R}^{|V|}$ son inherentemente normalizados
 en $\ell_2$, la similitud coseno se reduce al producto punto:
 

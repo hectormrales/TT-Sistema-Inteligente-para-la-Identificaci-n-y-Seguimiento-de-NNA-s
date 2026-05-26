@@ -223,7 +223,8 @@ La Tabla~\ref{tab:comparativa_scraping} sintetiza la evaluación cuantitativa y
 cualitativa de las tres vertientes analizadas en función de los criterios
 operativos críticos para el sistema desarrollado.
 
-\begin{table}[H]
+\vspace{0.5cm}
+\begin{table}[htbp]
 \centering
 \caption{Comparativa de técnicas de extracción de datos para monitoreo de medios}
 \label{tab:comparativa_scraping}
@@ -271,6 +272,7 @@ Media (solo fuentes con RSS o stealth-compatible) \\
 \hline
 \end{tabular}
 \end{table}
+\vspace{0.4cm}
 
 %----------------------------------------------------------------------------------------
 \section{Evolución del Almacenamiento: de Archivos Planos a PostgreSQL}
@@ -404,6 +406,7 @@ aunque ofrece FTS de calidad comparable, requiere un stack de infraestructura
 adicional (JVM, configuración de cluster) incompatible con las restricciones
 de recursos del entorno de despliegue universitario.
 
+\clearpage
 %----------------------------------------------------------------------------------------
 \section{Evolución de los Modelos de Representación Lingüística para NLP}
 \label{sec:ea_modelos_nlp}
@@ -508,7 +511,8 @@ coherentes.
 La Tabla~\ref{tab:comparativa_modelos_nlp} presenta la evaluación comparativa
 de los modelos considerados.
 
-\begin{table}[H]
+\vspace{0.5cm}
+\begin{table}[htbp]
 \centering
 \caption{Comparativa de modelos de representación lingüística para clasificación semántica}
 \label{tab:comparativa_modelos_nlp}
@@ -558,6 +562,7 @@ API externa / sin GPU local &
 \hline
 \end{tabular}
 \end{table}
+\vspace{0.4cm}
 
 \subsection{El Límite del \textit{Zero-Shot} y la Transición al Sistema de Clasificación Escalonada}
 \label{subsec:ea_zeroshot_vs_finetune}
@@ -698,6 +703,7 @@ el criterio experto del analista y la potencia de cómputo del pipeline se compl
 
 % ─── FIN SECCIÓN NLP MODELS ────────────────────────────────────────────────────
 
+\clearpage
 %----------------------------------------------------------------------------------------
 \section{Técnicas de Agrupamiento Semántico y Organización Temática}
 \label{sec:ea_clustering}
@@ -891,7 +897,8 @@ estadísticamente frecuentes.
 La Tabla~\ref{tab:comparativa_clustering} sintetiza la evaluación de los tres
 algoritmos de agrupamiento en función de los criterios operativos del sistema.
 
-\begin{table}[H]
+\vspace{0.5cm}
+\begin{table}[htbp]
 \centering
 \caption{Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}
 \label{tab:comparativa_clustering}
@@ -934,6 +941,7 @@ Alta (UMAP reduce a 5D preservando topología) \\
 \hline
 \end{tabular}
 \end{table}
+\vspace{0.4cm}
 
 La diferencia conceptual más significativa entre el TT1 y el TT2 en materia de
 agrupamiento no es algorítmica sino epistemológica: en el TT1, el agrupamiento

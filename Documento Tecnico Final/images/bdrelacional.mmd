@@ -1,0 +1,38 @@
+erDiagram
+    NOTICIAS {
+        Integer id PK
+        String titulo "Título de la noticia"
+        String fuente "Medio (RSS/Scraping)"
+        String clasificacion_final "Alta / Media / Baja"
+        tsvector search_vector "Índice de Búsqueda FTS"
+        JSON investigacion_json "Ficha generada por Gemini"
+        Integer cluster_id FK
+    }
+
+    DETECCIONES {
+        Integer id PK
+        Integer noticia_id FK "Relación 1:1"
+        Float score_heuristico "RegEx y reglas duras"
+        Float score_semantico "Salida neuronal (BETO)"
+        Float score_hibrido "Cálculo escalonado"
+        Boolean menores_identificados "Flag de orfandad"
+    }
+
+    CLUSTERS_SEMANTICOS {
+        Integer id PK
+        String etiqueta "Generada por BERTopic"
+        JSON terminos_principales "Palabras clave del tópico"
+        Integer num_documentos "Densidad del evento"
+    }
+
+    ENTIDADES_NER {
+        Integer id PK
+        Integer noticia_id FK "Relación 1:N"
+        String texto "Ej: 'Ecatepec' o 'DIF'"
+        String tipo "LOC, PER, ORG, MISC"
+    }
+
+    %% Relaciones Clave del Sistema
+    CLUSTERS_SEMANTICOS ||--o{ NOTICIAS : "Agrupa temáticamente"
+    NOTICIAS ||--|| DETECCIONES : "Tiene análisis profundo"
+    NOTICIAS ||--o{ ENTIDADES_NER : "Extrae nombres/lugares"

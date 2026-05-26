@@ -1,0 +1,29 @@
+flowchart TD
+    subgraph FUENTES["Fuentes de ingesta (Triple Fuente)"]
+        A1["10 Feeds RSS\nNacionales y de género\nCIMAC, Milenio..."]
+        A2["Google News\n5 queries de dominio\nfeminicidio México..."]
+        A3["Historical Scraper\nPaginación mensual\nMay–Nov 2025"]
+    end
+
+    subgraph DETECCION["Detección Heurística — FeminicideDetector"]
+        B["RegEx con 3 categorías\n• 40 patrones feminicidio\n• 15 patrones NNA\n• 17 patrones de exclusión\n→ Score de confianza"]
+    end
+
+    subgraph CLUSTERING["Agrupamiento — DBSCAN"]
+        C["Vectorización TF-IDF\n→ DBSCAN\nIdentifica densidades de eventos\nOutliers = casos únicos valiosos"]
+    end
+
+    subgraph PERSISTENCIA["Persistencia plana"]
+        D["📄 noticias.csv\n(Pandas — escritura atómica)\n Sin integridad referencial\n Sin acceso concurrente"]
+    end
+
+    A1 --> B
+    A2 --> B
+    A3 --> B
+    B -->|"Clasificación\nAlta / Media / Baja"| C
+    C --> D
+
+    style FUENTES fill:#f0f0f0,stroke:#888
+    style DETECCION fill:#e8e8e8,stroke:#666
+    style CLUSTERING fill:#e8e8e8,stroke:#666
+    style PERSISTENCIA fill:#d4d4d4,stroke:#444

@@ -150,6 +150,15 @@ El esquema de la tabla principal \texttt{noticias} almacena campos como
 \texttt{y} \texttt{search\_vector tsvector}. Este último campo se actualiza automáticamente por
 un \textit{trigger} PostgreSQL que concatena título y contenido al momento de la inserción.
 
+\vspace{0.5cm}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth,height=0.85\textheight,keepaspectratio]{images/bdrelacional.png}
+    \caption{Modelo entidad-relación de la base de datos en PostgreSQL.}
+    \label{fig:bdrelacional}
+\end{figure}
+\vspace{0.4cm}
+
 \subsection{Arquitectura del motor BETO}
 \label{subsec:tt2_beto}
 
@@ -217,12 +226,14 @@ en dirección inversa pues en lugar de suavizar distribuciones sobre-confiadas,
 se \textit{agudiza} una distribución cruda sub-confiada para forzar una toma de
 decisión clara.
 
+\vspace{0.5cm}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{images/BETO.png}
     \caption{Arquitectura del motor BETO y clasificación \textit{Zero-Shot} con \textit{Temperature Scaling}.}
     \label{fig:arquitectura_beto_zeroshot}
 \end{figure}
+\vspace{0.4cm}
 
 \subsection{Evolución del recolector}
 \label{subsec:tt2_stealth}
@@ -302,12 +313,14 @@ casos ambiguos escalan al siguiente nivel.
           las fases anteriores solo se aplica a un subconjunto pequeño de pares.
 \end{enumerate}
 
+\vspace{0.5cm}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{images/dedup.png}
     \caption{Flujo de deduplicación en cascada.}
     \label{fig:flujo_deduplicacion}
 \end{figure}
+\vspace{0.4cm}
 
 En las pruebas de validación (corpus de 847 noticias recolectadas en un ciclo de 90 días), la cascada
 eliminó \textbf{213 duplicados} (25.1\% del total), con la siguiente distribución por fase: 89 por MD5
@@ -315,6 +328,7 @@ eliminó \textbf{213 duplicados} (25.1\% del total), con la siguiente distribuci
 634 noticias únicas fue usado para la evaluación del Prototipo 4.
 
 
+\clearpage
 \section{Prototipo 4 Arquitectura híbrida de clasificación}
 \label{sec:tt2_prototipo4}
 
@@ -497,12 +511,14 @@ activa manualmente sobre una noticia específica desde el dashboard una vez
 que ha revisado su score y decidido que merece profundización. Esta decisión
 corrige los dos problemas anteriores de forma directa.
 
+\vspace{0.5cm}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{images/DDGemini.png}
-    \caption{Flujo de investigación profunda}
+    \caption{Flujo de investigación profunda.}
     \label{fig:imagen_investigador}
-\end{figure}      
+\end{figure}
+\vspace{0.4cm}
 
 \subsubsection*{Modulo de investigación profunda}
 
@@ -559,15 +575,14 @@ extracción estructurada de contenido.
 La siguiente tabla resume los dos casos de uso del módulo y sus endpoints
 correspondientes:
 
+\vspace{0.5cm}
 \begin{table}[H]
 \centering
 \begin{threeparttable}
 \caption{Casos de uso del módulo de investigación profunda}
 \label{tab:investigador_casos}
-\begin{tabular}{|p{3.5cm}|p{4cm}|p{4.5cm}|}
-\hline
-\textbf{Caso de uso} & \textbf{Endpoint} & \textbf{Descripción} \\
-\hline
+\begin{tabular}{|p{3.5cm}|p{4cm}|p{4.5cm}|}\hline
+\textbf{Caso de uso} & \textbf{Endpoint} & \textbf{Descripción} \\\hline
 Investigación bajo demanda &
 \texttt{POST /api/investigate/} &
 El analista selecciona una noticia del dashboard con score \textbf{Alta} y
@@ -597,7 +612,9 @@ a un archivo CSV.\\
 \end{threeparttable}
 \end{table}
 
+\vspace{0.4cm}
 
+\clearpage
 \section{Sistema de clasificación escalonada}
 \label{sec:tt2_sintesis}
 
@@ -611,9 +628,10 @@ el efecto péndulo obteniendo noticias \textbf{Alta} que realmente lo fueran.
 
 La arquitectura completa puede representarse mediante el siguiente flujo de trabajo.
 
+\vspace{0.5cm}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth,height=0.85\textheight,keepaspectratio]{images/estructura.png}
-    \caption{Arquitectura del Sistema de Clasificación Escalonada}
+    \caption{Arquitectura del Sistema de Clasificación Escalonada.}
     \label{fig:imagen_arquitectura}
-\end{figure}   
+\end{figure}

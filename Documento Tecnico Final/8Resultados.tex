@@ -30,7 +30,8 @@ para análisis semántico.
 La deduplicación en cascada de cuatro fases eliminó \textbf{213 duplicados} (25\% del
 corpus bruto) distribuidos por etapa de la siguiente forma:
 
-\begin{table}[H]
+\vspace{0.5cm}
+\begin{table}[htbp]
 \centering
 \caption{Distribución de duplicados eliminados por fase de la cascada de deduplicación}
 \label{tab:res_dedup}
@@ -55,13 +56,46 @@ corpus bruto) distribuidos por etapa de la siguiente forma:
 \hline
 \end{tabular}
 \end{table}
+\vspace{0.4cm}
 
 Este resultado confirma la hipótesis de diseño pues la mayor parte de la redundancia periodística
 (un 10.5\%) corresponde a re-publicaciones literales identificables mediante hash MD5, mientras
 que un 14.6\% adicional corresponde a reescrituras con vocabulario diferente que solo pueden
 detectarse mediante métricas graduales de similitud textual (Jaccard, SimHash, coseno TF-IDF).
 
-\section{Resultados de la clasificación semantica escalonada} 
+\vspace{0.5cm}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    title={Duplicados eliminados por fase de la cascada},
+    xbar,
+    width=0.82\textwidth,
+    height=5.5cm,
+    bar width=0.45cm,
+    xlabel={Número de artículos eliminados},
+    symbolic y coords={Coseno TF-IDF,SimHash,Jaccard,MD5},
+    ytick=data,
+    xmin=0, xmax=110,
+    nodes near coords,
+    nodes near coords align={horizontal},
+    enlarge y limits=0.25,
+    every axis plot/.style={fill=black!55, draw=black},
+]
+\addplot coordinates {
+    (20,Coseno TF-IDF)
+    (43,SimHash)
+    (61,Jaccard)
+    (89,MD5)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Distribución de duplicados eliminados por fase de la cascada de deduplicación (Total: 213 artículos, 25\% del corpus bruto).}
+\label{fig:grafica_dedup}
+\end{figure}
+\vspace{0.4cm}
+
+\section{Resultados de la clasificación semántica escalonada}
 \label{sec:res_deteccion}
 
 \subsection{Distribución del embudo analítico}
@@ -71,7 +105,8 @@ El corpus de 634 noticias únicas fue procesado secuencialmente por las cuatro c
 sistema de clasificación escalonada. La siguiente tabla muestra el volumen
 de noticias en cada etapa del embudo.
 
-\begin{table}[H]
+\vspace{0.5cm}
+\begin{table}[htbp]
 \centering
 \caption{Distribución de noticia por etapa en la clasificación escalonada}
 \label{tab:res_embudo}
@@ -100,7 +135,52 @@ Capa 3 & Post-filtro de validación aplicado & 128 & 20.2\% \\
 \hline
 \end{tabular}
 \end{table}
+\vspace{0.4cm}
 
+\vspace{0.5cm}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    title={Embudo analítico de clasificación escalonada},
+    xbar,
+    width=0.82\textwidth,
+    height=7.5cm,
+    bar width=0.50cm,
+    xlabel={Número de noticias},
+    symbolic y coords={
+        {Alta (orfandad)},
+        {Media (vulnerab.)},
+        {Post-filtro (Capa 3)},
+        {Inferencia BETO (Capa 2)},
+        {Escudo suave (Capa 1)},
+        {Escudo léxico (Capa 0)},
+        {Corpus deduplicado}
+    },
+    ytick=data,
+    xmin=0, xmax=700,
+    nodes near coords,
+    nodes near coords align={horizontal},
+    enlarge y limits=0.10,
+    every node near coord/.append style={font=\footnotesize},
+]
+\addplot[
+    fill=black!20, draw=black
+] coordinates {
+    (634,{Corpus deduplicado})
+    (409,{Escudo léxico (Capa 0)})
+    (225,{Escudo suave (Capa 1)})
+    (128,{Inferencia BETO (Capa 2)})
+    (128,{Post-filtro (Capa 3)})
+    (101,{Media (vulnerab.)})
+    (27,{Alta (orfandad)})
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Embudo analítico del sistema de clasificación escalonada: reducción del corpus desde 634 noticias únicas hasta 27 casos de alta relevancia (4.4\%).}
+\label{fig:grafica_embudo}
+\end{figure}
+\vspace{0.4cm}
 
 \subsection{Comportamiento por modo de inferencia}
 \label{subsec:res_inferencia}
@@ -121,6 +201,7 @@ una vez disponible el clasificador ajustado en el prototipo 4. La diferencia ope
           correspondian a casos de orfandad verificables manualmente.
 \end{itemize}
 
+\clearpage
 \section{Resultados del Agrupamiento Semántico (BERTopic)}
 \label{sec:res_agrupamiento}
 
@@ -157,6 +238,7 @@ con el campo \texttt{medios\_contacto} siendo el de mayor valor operativo pues
 Gemini retorna el DIF municipal y la Fiscalía competente según la ubicación
 del caso aun incluso cuando el texto de la noticia no los menciona explícitamente.
 
+\clearpage
 \section{Evaluación comparativa TT1/TT2 y cumplimiento de metas}
 \label{sec:res_comparativa}
 
@@ -164,7 +246,8 @@ La siguiente tabla consolida el cumplimiento de los objetivos cuantitativos
 definidos al inicio del TT2 frente a las métricas del TT1 (prototipo 2) y los
 resultados finales del prototipo 4.
 
-\begin{table}[H]
+\vspace{0.5cm}
+\begin{table}[htbp]
 \centering
 \caption{Evaluación comparativa de métricas}
 \label{tab:res_comparativa}
@@ -192,14 +275,17 @@ resultados finales del prototipo 4.
 \hline
 \end{tabular}
 \end{table}
+\vspace{0.4cm}
 
+\vspace{0.5cm}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.90\textwidth]{images/dashboard_principal.png}
     \caption{Visualización jerárquica de noticias de Alta relevancia en el dashboard con etiquetas
-    de clasificación}
+    de clasificación.}
     \label{fig:dashboard_principal}
 \end{figure}
+\vspace{0.4cm}
 
 La interfaz del Dashboard con etiquetas visuales (clasificación Alta/Media/Baja
 y score semántico) permiten al analista realizar un barrido visual inmediato sobre
