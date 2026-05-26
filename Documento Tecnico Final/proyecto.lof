@@ -4,14 +4,19 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Cronograma metodológico de evolución y transición de los prototipos del sistema.}}{35}{figure.5.1}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Cronograma metodológico de evolución y transición de los prototipos del sistema.}}{40}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Arquitectura del sistema.}}{44}{figure.5.2}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces IU-01~{}Dashboard principal de noticias.}}{67}{figure.6.1}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces IU-02~{}Pantalla de Gestión de Fuentes.}}{69}{figure.6.2}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces IU-03~{}Modal de Resultados del DeepInvestigator.}}{70}{figure.6.3}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces IU-04~{}Pantalla de Seguimiento de Casos Activos.}}{72}{figure.6.4}%
+\contentsline {figure}{\numberline {6.5}{\ignorespaces IU-05~{}Pantalla de Inicio de Sesión.}}{73}{figure.6.5}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Arquitectura del motor BETO y clasificación \textit {Zero-Shot} con \textit {Temperature Scaling}.}}{48}{figure.7.1}%
-\contentsline {figure}{\numberline {7.2}{\ignorespaces Flujo de deduplicación en cascada.}}{49}{figure.7.2}%
-\contentsline {figure}{\numberline {7.3}{\ignorespaces Flujo de investigación profunda}}{53}{figure.7.3}%
-\contentsline {figure}{\numberline {7.4}{\ignorespaces Arquitectura del Sistema de Clasificación Escalonada}}{55}{figure.7.4}%
+\contentsline {figure}{\numberline {8.1}{\ignorespaces Arquitectura del motor BETO y clasificación \textit {Zero-Shot} con \textit {Temperature Scaling}.}}{82}{figure.8.1}%
+\contentsline {figure}{\numberline {8.2}{\ignorespaces Flujo de deduplicación en cascada.}}{83}{figure.8.2}%
+\contentsline {figure}{\numberline {8.3}{\ignorespaces Flujo de investigación profunda}}{87}{figure.8.3}%
+\contentsline {figure}{\numberline {8.4}{\ignorespaces Arquitectura del Sistema de Clasificación Escalonada}}{89}{figure.8.4}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {8.1}{\ignorespaces Métricas de filtrado preliminar en el Dashboard Web.}}{57}{figure.8.1}%
-\contentsline {figure}{\numberline {8.2}{\ignorespaces Visualización jerárquica de noticias de Alta Relevancia en el Dashboard.}}{58}{figure.8.2}%
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {9.1}{\ignorespaces Visualización jerárquica de noticias de Alta relevancia en el Dashboard, con etiquetas de clasificación y porcentaje de score BETO por registro.}}{93}{figure.9.1}%

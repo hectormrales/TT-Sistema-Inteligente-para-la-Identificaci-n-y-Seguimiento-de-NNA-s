@@ -1,31 +1,31 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-04}{Identificación por Enlace Externo}{
+\begin{UseCase}{CU-04}{Identificación por enlace externo}{
 	Permite al analista someter una URL periodística arbitraria que no fue capturada por el sistema automático, extraer su contenido, validar su relevancia e investigarla profundamente reutilizando el pipeline del módulo DeepInvestigator.
 }
 	\UCitem{Versión}{\color{Gray}
 		1.0
 	}\UCitem{Autor}{\color{Gray}
-		Tesista de Ingeniería
+		Héctor Alberto Morales Martínez
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Analista de Datos / Trabajador Social
+		Analista de datos / Trabajador social
 	}\UCitem{Propósito}{\begin{Titemize}
-		\Titem Incorporar al sistema casos relevantes descubiertos manualmente por el usuario navegando en la web, mitigando los falsos negativos del pipeline automatizado.
+		\Titem Incorporar al sistema casos relevantes descubiertos manualmente por el usuario navegando en la web, mitigando los falsos negativos del recolector automatizado.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
 		\Titem URL externa del artículo periodístico.
 	\end{Titemize}
 	}\UCitem{Origen}{\begin{Titemize}
-		\Titem Formulario de "Identificar Enlace Externo" en el Dashboard.
+		\Titem Formulario de ''Identificar caso'' en el Dashboard.
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
 		\Titem Ficha estructurada en formato JSON (Ubicación, Víctimas, NNA Afectados, etc.) del nuevo caso.
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
-		\Titem Interfaz del Dashboard (Modal de resultados).
-		\Titem Base de Datos.
+		\Titem Interfaz del dashboard (Identificación de caso).
+		\Titem Base de datos.
 	\end{Titemize}
 	}\UCitem{Precondiciones}{\begin{Titemize}
 		\Titem La URL debe ser accesible de forma pública.
@@ -35,7 +35,7 @@
 		\Titem Se incorpora una nueva noticia validada e investigada a la base de datos del sistema.
 	\end{Titemize}
 	}\UCitem{Errores}{\begin{Titemize}
-		\Titem {\bf \hypertarget{CU-04.E1}{E1}}: La URL apunta a contenido no válido (Avisos de cookies, Error 403, etc) \Trayref{CU-04}{A}.
+		\Titem {\bf \hypertarget{CU-04.E1}{E1}}: La URL apunta a contenido no válido (cookies, Error 403, etc) \Trayref{CU-04}{A}.
 	\end{Titemize}
 	}\UCitem{Tipo}{
 		Caso de uso primario
@@ -46,11 +46,11 @@
 
 %--------------------------------------
 \begin{UCtrayectoria}
-	\UCpaso[\UCActor] Ingresa al apartado de "Identificar Enlace Externo" en el Dashboard.
-	\UCpaso[\UCActor] Pega la URL de la noticia en el campo de texto y hace clic en \IUbutton{Investigar URL}.
+	\UCpaso[\UCActor] Ingresa al apartado de ''Identificar caso'' en el dashboard.
+	\UCpaso[\UCActor] Pega la URL de la noticia en el campo de texto y hace clic en \IUbutton{Analizar caso}.
 	\UCpaso[\UCsist] Accede a la URL proporcionada mediante \texttt{StealthSession} y extrae el texto del artículo aplicando rutinas de limpieza.
 	\UCpaso[\UCsist] Envía el texto extraído a Gemini Flash solicitando la generación de un título corto o la validación del contenido \ErrorRef{CU-04}{E1}{Contenido Inválido}.
-	\UCpaso[\UCsist] Invoca el pipeline interno de \texttt{DeepInvestigator} utilizando el texto validado y el nuevo título.
+	\UCpaso[\UCsist] Invoca al módulo interno \texttt{DeepInvestigator} utilizando el texto validado y el nuevo título.
 	\UCpaso[\UCsist] Genera una consulta específica, busca en DuckDuckGo, hace scraping multi-fuente y sintetiza la ficha (mismos pasos que CU-03).
 	\UCpaso[\UCsist] Almacena la noticia y su ficha de investigación en la base de datos.
 	\UCpaso[\UCsist] Muestra los resultados estructurados en la interfaz del usuario.

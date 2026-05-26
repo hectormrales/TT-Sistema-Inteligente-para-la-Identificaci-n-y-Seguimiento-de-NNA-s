@@ -11,26 +11,24 @@ seguridad y operación legal que fundamentan la arquitectura del sistema.
     \item[\hypertarget{tActiveLearning}{Active Learning (Aprendizaje Activo):}]
     Estrategia de entrenamiento iterativo donde el modelo de \textit{machine learning}
     selecciona y solicita el etiquetado de los ejemplos más informativos o confusos
-    (\textit{hard negatives}), acelerando la convergencia y mejorando la precisión
-    con un volumen reducido de datos etiquetados. Se identifica como línea de trabajo
-    futuro para reducir la tasa de falsos positivos del clasificador BETO por debajo
-    del 10\%.
+    lo que acelera la convergencia y mejora la precisión con un volumen reducido de
+    datos etiquetados. Se identifica como línea de trabajo futuro para reducir la tasa
+    de falsos positivos del clasificador BETO por debajo del 10\%.
 
-    \item[\hypertarget{tBatchID}{Batch ID (Identificador de Lote):}]
+    \item[\hypertarget{tBatchID}{Batch ID (Identificador de lote):}]
     Cadena de caracteres única (formato \texttt{YYYYMMDD\_HHMMSS}) generada al inicio
-    de cada ejecución del pipeline de recolección y análisis. Todos los registros
+    de cada ejecución del flujo de recolección y análisis. Todos los registros
     insertados en esa corrida reciben el mismo \texttt{batch\_id}, permitiendo al
-    analista filtrar el Dashboard por lote específico, comparar corridas históricas
-    y calcular métricas de evolución del corpus entre ejecuciones.
+    analista filtrar el dashboard por lote específico para comparar corridas históricas
+    y calcular métricas de evolución entre corridas.
 
     \item[\hypertarget{tBETO}{BETO:}]
     Modelo de lenguaje masivo preentrenado basado en la arquitectura
-    \textit{BERT} bidireccional (\texttt{bert-base-spanish-wwm-cased}),
-    especializado en la sintaxis y semántica del idioma español. Cuenta con
-    12 capas Transformer, 12 cabezas de atención, dimensión oculta de 768 y
-    110 millones de parámetros. En el sistema actúa como motor de la Capa~2
-    de la arquitectura de Scoring Escalonado v7.1, en modo Fine-Tuned
-    como prioridad y Zero-Shot como fallback.
+    \textit{BERT} bidireccional, especializado en la sintaxis y semántica del
+    idioma español. Cuenta con 12 capas Transformer, 12 cabezas de atención,
+    dimensión oculta de 768 y 110 millones de parámetros. En el sistema actúa
+    como motor de la capa 2 de la arquitectura de clasificación escalonada
+    en modo Fine-Tuned como prioridad.
 
     \item[\hypertarget{tBERTopic}{BERTopic:}]
     Algoritmo neuro-estadístico para el modelado dinámico de tópicos. Encadena
@@ -41,129 +39,108 @@ seguridad y operación legal que fundamentan la arquitectura del sistema.
     al 55\% mediante estrategias progresivas de reincorporación.
 
     \item[\hypertarget{tCircuitBreaker}{Circuit Breaker (Disyuntor de Dominio):}]
-    Patrón de resiliencia implementado en \texttt{StealthSession}: tras 3~fallos
-    consecutivos de scraping sobre el mismo dominio web, el disyuntor se ``abre''
-    y bloquea todas las peticiones hacia ese dominio durante 300~segundos
-    (extensible a 600~s en reincidencia), evitando el ban permanente de IP por
-    presión repetida sobre un WAF activo. El estado del disyuntor se mantiene
-    en memoria por instancia de sesión.
+    Patrón de resiliencia implementado en \texttt{StealthSession} que tras 3 fallos
+    consecutivos de scraping sobre el mismo dominio web este se ``abre'' y bloquea
+    todas las peticiones hacia ese dominio durante 300 segundos (extensible a 600
+    en reincidencia) evitando un baneo permanente de IP por presión repetida sobre 
+    un WAF activo.
 
     \item[\hypertarget{tDeduplicacion}{Deduplicación en Cascada:}]
-    Pipeline de limpieza de datos en cuatro fases secuenciales de complejidad
-    creciente: (1)~Hash MD5 exacto en $O(1)$, (2)~Similitud de Jaccard sobre
-    tokens del título ($J \geq 0.70$), (3)~SimHash con distancia de Hamming
-    $\leq 6$~bits, y (4)~Similitud coseno TF-IDF $\geq 0.85$ sobre el cuerpo
-    completo. El diseño en cascada garantiza que los casos obvios (copia exacta)
-    se resuelvan con el método más barato, reservando los algoritmos costosos
-    solo para los candidatos que superan los filtros anteriores. En la corrida
-    de producción final eliminó el 25.1\% del corpus bruto como redundancia
-    periodística \textit{cross-site}.
+    Flujo de limpieza de datos en cuatro fases secuenciales de complejidad
+    creciente: (1)~Hash MD5 exacto, (2)~Similitud de Jaccard sobre
+    tokens del título, (3)~SimHash con distancia de Hamming y
+    (4)~Similitud coseno TF-IDF sobre el cuerpo completo. El diseño en cascada
+    garantiza que los casos obvios (copia exacta) se resuelvan con el método más
+    barato lo que reserva los algoritmos más costosos solo para los candidatos que
+    superan los filtros anteriores. 
 
     \item[\hypertarget{tDeepInvestigator}{DeepInvestigator (Investigador Profundo):}]
     Módulo de inteligencia artificial generativa activado bajo demanda explícita
-    del analista sobre noticias de Alta relevancia. Ejecuta un pipeline asíncrono
+    del analista sobre noticias de Alta relevancia. Ejecuta un flujo asíncrono
     de tres etapas: (1)~generación de consulta de búsqueda optimizada mediante
     Gemini Flash, (2)~búsqueda web multi-fuente con DuckDuckGo HTML/Lite y scraping
     de resultados mediante \texttt{StealthSession}, y (3)~síntesis estructurada en
     JSON con siete campos (\texttt{ubicacion}, \texttt{victimas},
     \texttt{ninos\_afectados}, \texttt{edades}, \texttt{situacion\_actual},
     \texttt{medios\_contacto}, \texttt{resumen}) mediante Gemini Flash.
-    La latencia media del pipeline completo es de $\sim$47~segundos por caso.
+    La latencia media del flujo completo es de aproximadamente 47 segundos por caso.
 
-    \item[\hypertarget{tEfectoPendulo}{Efecto Péndulo:}]
-    Fenómeno de colisión semántica diagnosticado en el Prototipo~3, donde el
+    \item[\hypertarget{tEfectoPendulo}{Efecto péndulo:}]
+    Fenómeno de colisión semántica diagnosticado en el prototipo 3 donde el
     clasificador Zero-Shot de BETO exhibía falsos positivos al confundir textos
-    legislativos (ej. Ley Monzón, iniciativas de tipificación del feminicidio)
-    o informes estadísticos nacionales con casos fácticos de orfandad, debido al
-    alto solapamiento de tokens léxicos comunes (\textit{``víctima''},
+    legislativos (por ejemplo Ley Monzón, iniciativas de tipificación del feminicidio)
+    o informes estadísticos nacionales con casos de NNA en situación de orfandad,
+    debido al alto solapamiento de tokens léxicos comunes (\textit{``víctima''},
     \textit{``menor''}, \textit{``homicidio''}). El fenómeno se caracterizaba
-    por scores concentrados en el rango $[0.40, 0.70]$, sin capacidad
-    discriminatoria suficiente entre las clases. Fue resuelto en el Prototipo~4
-    mediante la Capa~1 (Escudo Suave) y el Fine-Tuning de la cabeza de clasificación.
+    por scores concentrados en el rango $[0.40, 0.70]$ lo que resultaba en una
+    capacidad de discriminación insuficiente entre las clases. Fue resuelto en el prototipo 4
+    mediante la capa 1 (escudo suave) y el fine-tuning de la cabeza de clasificación.
 
     \item[\hypertarget{tFallback}{Fallback (Modo de Respaldo):}]
     Mecanismo de degradación controlada que activa automáticamente un subsistema
     alternativo ante el fallo del subsistema primario, garantizando la continuidad
     operativa. En el sistema se implementan dos niveles de fallback: (a)~el
-    clasificador Zero-Shot se activa si no existe un modelo Fine-Tuned guardado;
+    clasificador Zero-Shot se activa si no existe un modelo fine-tuned guardado;
     y (b)~la herramienta \texttt{GoogleSearch} nativa de Gemini se activa si
     DuckDuckGo bloquea las peticiones del \texttt{DeepInvestigator}.
 
     \item[\hypertarget{tFeminicidio}{Feminicidio:}]
     Muerte violenta de las mujeres por razones de género, tipificada en el artículo
     325 del Código Penal Federal de México. Constituye el evento desencadenante
-    principal que el pipeline de recolección rastrea de forma automatizada en medios
+    principal que el flujo de recolección rastrea de forma automatizada en medios
     periodísticos nacionales y regionales.
 
-    \item[\hypertarget{tFineTuning}{Fine-Tuning (Ajuste Fino Supervisado):}]
+    \item[\hypertarget{tFineTuning}{Fine-Tuning (Ajuste fino supervisado):}]
     Proceso mediante el cual los pesos de un modelo preentrenado masivo se actualizan
     sobre un corpus etiquetado del dominio objetivo, especializando sus predicciones.
-    En el sistema se implementa mediante \textit{Linear Probing}: se congelan los
+    En el sistema se implementa mediante \textit{Linear Probing} donde se congelan los
     pesos del encoder BETO y únicamente se entrena la cabeza de clasificación lineal
-    ($\sim$2{,}307 parámetros de $\sim$110~millones), reduciendo el consumo de
-    memoria de gradientes en $\sim$99.99\%. El entrenamiento utiliza
-    \textit{Gradient Accumulation} ($k=8$) para operar en CPU con 8~GB de RAM.
+    (solo 2{,}307 parámetros de $\sim$110~millones) lo que reduce el consumo de
+    memoria de gradientes.
 
-    \item[\hypertarget{tFTS}{FTS / Full-Text Search (Búsqueda de Texto Completo):}]
-    Motor de recuperación de información implementado en PostgreSQL~16 mediante
+    \item[\hypertarget{tFTS}{FTS / Full-Text Search (Búsqueda de texto completo):}]
+    Motor de recuperación de información implementado en PostgreSQL mediante
     los tipos de datos \texttt{tsvector} (representación preprocesada del documento)
     y \texttt{tsquery} (representación de la consulta), con índices GIN. Aplica
-    lematización Snowball para español: reduce \textit{``feminicidios''},
+    lematización Snowball para español lo que reduce \textit{``feminicidios''},
     \textit{``feminicida''} y \textit{``feminicidio''} a la misma raíz léxica.
-    Permite búsquedas sobre el corpus en $O(\log n)$ frente al $O(n)$ de un
-    \texttt{LIKE} con comodines.
 
     \item[\hypertarget{tGIN}{GIN (Generalized Inverted Index):}]
     Estructura de indexación de PostgreSQL que almacena un índice invertido de
-    lexemas: para cada lexema único en el corpus, el índice GIN mantiene una lista
+    lexemas para cada lexema único en el corpus, el índice GIN mantiene una lista
     de punteros directos a todas las filas que lo contienen. Resuelve consultas
     FTS en $O(\log n)$ (búsqueda en el árbol B del índice) en lugar del $O(n)$
     de un escaneo secuencial. Se crea automáticamente sobre las columnas
     \texttt{tsvector} mediante un trigger SQL en cada \texttt{INSERT}/\texttt{UPDATE}.
 
-    \item[\hypertarget{tGradientAccumulation}{Gradient Accumulation (Acumulación de Gradientes):}]
-    Técnica de entrenamiento en aprendizaje profundo que simula lotes de tamaño
-    grande en hardware con memoria RAM limitada. El algoritmo acumula los gradientes
-    de $k$ lotes consecutivos antes de aplicar una actualización de pesos, con
-    efecto matemáticamente equivalente a un lote de tamaño $k \times \texttt{batch\_size}$.
-    En el sistema se emplea con \texttt{batch\_size=4} y $k=8$, logrando un lote
-    efectivo de 32~muestras sobre CPU con 8~GB de RAM.
-
     \item[\hypertarget{tHDBSCAN}{HDBSCAN:}]
-    Algoritmo de agrupamiento jerárquico por densidad variable que elimina la
+    Algoritmo de agrupamiento por densidad variable que elimina la
     dependencia de un umbral de densidad global $\varepsilon$ mediante la
     construcción de una jerarquía completa de clústeres seleccionada por el
     criterio de Exceso de Masa (EoM). Las noticias no asignables a ningún
-    clúster persistente reciben la etiqueta de outlier (\texttt{topic\_id = -1}),
+    clúster reciben la etiqueta de outlier (\texttt{topic\_id = -1}),
     elevando su umbral de clasificación en BETO de 0.50 a 0.65.
 
     \item[\hypertarget{tJA3}{JA3 Fingerprinting:}]
     Método de identificación criptográfica basado en la secuencia de parámetros
-    anunciados por un cliente durante el saludo TLS (\textit{handshake}): suite
+    anunciados por un cliente durante el saludo TLS (\textit{handshake}) que son el suite
     de cifrado, extensiones TLS y curvas elípticas. El hash JA3 resultante identifica
     unívocamente la librería SSL del cliente (Python/\texttt{requests} vs.
-    Chrome/Windows), permitiendo a los WAF de grado empresarial bloquear scrapers
+    Chrome/Windows) lo que permite a los WAF de grado empresarial bloquear scrapers
     aunque declaren un User-Agent legítimo. \texttt{StealthSession} neutraliza
     este mecanismo mediante \texttt{cloudscraper}.
 
-    \item[\hypertarget{tLinearProbing}{Linear Probing (Sondeo Lineal):}]
-    Estrategia de especialización de modelos Transformer que consiste en congelar
-    (\texttt{requires\_grad = False}) todos los bloques del encoder preentrenado
-    y entrenar exclusivamente la capa densa de clasificación superpuesta. Reduce
-    los parámetros entrenables de BETO de 110~millones a $\sim$2{,}307, haciendo
-    viable el Fine-Tuning en hardware de cómputo limitado sin GPU.
-
     \item[\hypertarget{tLLM}{LLM (Large Language Model):}]
     Modelo de lenguaje de gran escala basado en arquitectura Transformer de muy alta
-    capacidad (miles de millones a billones de parámetros), entrenado sobre corpus
-    masivos de texto. A diferencia de BETO (\textit{encoder-only}), los LLM son
+    capacidad (miles de millones a billones de parámetros) que es entrenado sobre corpus
+    masivos de texto. A diferencia de BETO (\textit{encoder-only}) los LLM son
     modelos \textit{decoder} capaces de generar texto libre condicionado a una
-    instrucción (\textit{prompt}). En el sistema, Gemini Flash (Google DeepMind)
+    instrucción (\textit{prompt}). En el sistema Gemini Flash (Google DeepMind)
     actúa como LLM del módulo \texttt{DeepInvestigator}.
 
     \item[\hypertarget{tNNA}{NNA:}]
     Acrónimo de \textbf{Niñas, Niños y Adolescentes}. Sujeto focal de la extracción
-    semántica del sistema: la arquitectura neuro-simbólica está diseñada específicamente
+    semántica del sistema pues la arquitectura está diseñada específicamente
     para detectar noticias donde los NNA son víctimas indirectas del feminicidio de
     su madre, quedando en situación de orfandad.
 
@@ -171,44 +148,42 @@ seguridad y operación legal que fundamentan la arquitectura del sistema.
     Metodología de inteligencia basada en la recopilación y síntesis sistemática de
     información públicamente disponible en fuentes abiertas (prensa, registros públicos,
     redes sociales, bases de datos abiertas) para producir inteligencia accionable
-    sobre un sujeto o evento. El \texttt{DeepInvestigator} sigue este patrón: agrega
+    sobre un sujeto o evento. El \texttt{DeepInvestigator} sigue este patrón que agrega
     información de múltiples fuentes periodísticas abiertas para construir la ficha
-    de caso de un NNA en situación de orfandad, incluyendo datos de contacto
+    de caso de un NNA en situación de orfandad incluyendo datos de contacto
     institucional (DIF municipal, Fiscalía).
 
-    \item[\hypertarget{tScoringEscalonado}{Scoring Escalonado v7.1 (Tiered Scoring):}]
-    Arquitectura neuro-simbólica híbrida que evalúa la relevancia de una noticia
-    mediante cuatro capas \textbf{secuenciales} que operan sobre un score acumulativo
-    $S \in \mathbb{R}$: Capa~0 (Escudo Léxico: bloqueo determinista en $O(1)$ por
-    dominio ajeno), Capa~1 (Escudo Suave: penalización aditiva $\delta=-0.35$ por
-    contenido legislativo o estadístico), Capa~2 (Inferencia BETO Fine-Tuned:
-    $S \leftarrow S + P(\text{relevante})$, umbral $S > 0.50$) y Capa~3
-    (Post-filtro: bonificaciones heurísticas por frases de orfandad fáctica
-    explícita). El score final determina la clasificación: Alta ($S \geq 0.80$),
-    Media ($0.50 \leq S < 0.80$) o No relevante ($S < 0.50$). Resolvió el
-    Efecto Péndulo del Prototipo~3.
+    \item[\hypertarget{tClasificacionEscalonada}{Clasificación Escalonada:}]
+    Arquitectura híbrida que evalúa la relevancia de una noticia
+    mediante cuatro capas \textbf{secuenciales} que operan sobre un score acumulativo.
+    La capa 0 (escudo léxico que aplica bloqueo determinista en $O(1)$ por
+    dominio ajeno), la capa 1 (escudo suave que aplica penalización aditiva $\delta=-0.35$ por
+    contenido legislativo o estadístico), la capa 2 (inferencia BETO Fine-Tuned) y la capa 3
+    (post-filtro de bonificaciones heurísticas por frases de orfandad explícita).
+    El score final determina si la clasificación es Alta ($S \geq 0.80$), Media
+    ($0.50 \leq S < 0.80$) o No relevante ($S < 0.50$). Resolvió el Efecto Péndulo
+    del prototipo 3.
 
-    \item[\hypertarget{tStealthSession}{StealthSession v7.0:}]
-    Clase de sesión HTTP que elude las contramedidas anti-bot de los Web Application
-    Firewalls empresariales (Cloudflare, Akamai) mediante: emulación de fingerprint
+    \item[\hypertarget{tStealthSession}{StealthSession}]
+    Clase de sesión HTTP que elude las medidas anti-bot de los Web Application
+    Firewalls empresariales (Cloudflare, Akamai) mediante la emulación de fingerprint
     TLS/JA3 idéntico a Chrome/Windows usando \texttt{cloudscraper}; delays entre
-    peticiones con distribución log-normal $\mathcal{LN}(\mu=2.5, \sigma=0.7)$
-    (mediana $\approx 12.2$~s) para imitar lectura humana; y Circuit Breaker por
-    dominio (3 fallos $\to$ cooldown 300~s). Respeta las directivas del protocolo
-    \texttt{robots.txt} en cada dominio nuevo.
+    peticiones con distribución log-normal (mediana $\approx 12.2$~s) para imitar
+    lectura humana; y circuit breaker por dominio (3 fallos $\to$ cooldown 300 segundos).
+    Respeta las directivas del protocolo \texttt{robots.txt} en cada dominio nuevo.
 
     \item[\hypertarget{tUMAP}{UMAP (Uniform Manifold Approximation and Projection):}]
     Algoritmo de reducción de dimensionalidad que proyecta los embeddings BETO de
-    $\mathbb{R}^{768}$ a $\mathbb{R}^5$, preservando la estructura topológica local
-    y global mediante optimización de entropía cruzada sobre grafos de vecindad.
+    $\mathbb{R}^{768}$ a $\mathbb{R}^5$, preservando así la estructura topológica local
+    y global mediante optimización sobre grafos de vecindad.
     La configuración \texttt{metric='cosine'} y \texttt{min\_dist=0.0} maximiza la
     densidad de los clústeres para facilitar la separación posterior por HDBSCAN.
 
     \item[\hypertarget{tVictimaIndirecta}{Víctima Indirecta:}]
     Persona dependiente económicamente o con lazos de primer grado de consanguinidad
-    respecto a la víctima directa de un feminicidio. En el contexto del sistema, los
+    respecto a la víctima directa de un feminicidio. En el contexto del sistema los
     NNA hijos de la víctima constituyen las víctimas indirectas cuya detección
-    e identificación es el objetivo central del pipeline semántico.
+    e identificación es el objetivo central del flujo de análisis semántico.
 
     \item[\hypertarget{tWAF}{WAF (Web Application Firewall):}]
     Sistema de seguridad perimetral que filtra y monitorea el tráfico HTTP/HTTPS entre

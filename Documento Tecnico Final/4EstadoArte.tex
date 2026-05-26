@@ -4,55 +4,54 @@
 \chapter{Estado del Arte}
 \label{cap:estadoarte}
 
-En este capítulo se exponen las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección,
+En este capítulo se muestran las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección,
 sistematización y análisis de datos en el contexto de la violencia de género y sus consecuencias. Su analisispermite identificar la
 brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura propuesta en este Trabajo Terminal.
  
 \section{Sistemas de monitoreo de medios tradicionales}
 \label{sec:ea_monitoreo_tradicional}
 
-En el ámbito de la inteligencia de fuentes abiertas (OSINT) y el monitoreo mediático comercial,
+En el ámbito de la inteligencia de fuentes abiertas y el monitoreo mediático comercial,
 existen plataformas con infraestructuras para la ingestión de datos en tiempo real (por ejemplo
 Google Alerts, Meltwater, Mention). Estas herramientas funcionan principalmente sobre arquitecturas
-de agregación RSS y rastreadores web de propósito general \cite{weisser2020media}.
+de agregación RSS y rastreadores web de propósito general.
 
-No obstante, la debilidad fundamental de estos sistemas radica en su dependencia de cadenas de texto
-y expresiones regulares (RegEx). Al carecer de capacidades de inferencia semántica, la búsqueda de
+No obstante la principal debilidad de estos sistemas radica en su dependencia de cadenas de texto
+y expresiones regulares. Al carecer de capacidades de inferencia semántica, la búsqueda de
 heurísticas combinadas como \textit{``feminicidio''} y \textit{``NNA''} o \textit{``menores''} produce un volumen
 estadísticamente inmanejable de ruido informativo y falsos positivos. Esta limitación fue empíricamente
-validada durante el TT1: el Prototipo~1, basado en 15 palabras clave aisladas con vectorización TF-IDF
-y agrupamiento K-Means, registró una tasa de falsos positivos del \textbf{80\%}. El Prototipo~2, que
-enriqueció el detector a 72 patrones regex distribuidos en tres categorías (40 de feminicidio, 15 de NNA
-y 17 de exclusión), redujo los falsos positivos a un \textbf{60\%}, evidenciando el techo estructural del
-paradigma léxico. Estos sistemas son incapaces de discernir sintácticamente entre un reporte donde el
-agresor resultó ser menor de edad, una noticia puramente estadística o un caso donde un menor quedó en
-orfandad como víctima indirecta, pues la co-ocurrencia de tokens no implica la co-ocurrencia de los
-roles semánticos que esos tokens desempeñan en la oración. Esta incapacidad de inferencia contextual
-hace que las herramientas tradicionales resulten operativamente ineficaces para el dominio específico
-de este proyecto.
+el prototipo 1 que fue basado en 15 palabras clave aisladas con vectorización TF-IDF
+y agrupamiento K-Means y que registró una tasa de falsos positivos del \textbf{80\%}. El prototipo 2 que
+basó su detector en 72 patrones regex distribuidos en tres categorías (40 de feminicidio, 15 de NNA
+y 17 de exclusión) obtuvo una reducción de los falsos positivos a un \textbf{60\%}, evidenciando
+el techo estructural del paradigma léxico. Estos sistemas son incapaces de discernir sintácticamente
+entre un reporte donde el agresor resultó ser menor de edad, una noticia puramente estadística o un
+caso donde un menor quedó en orfandad como víctima indirecta, pues la co-ocurrencia de tokens no
+implica la co-ocurrencia de los roles semánticos que esos tokens desempeñan en la oración. Esta
+incapacidad de inferencia contextual hace que las herramientas tradicionales resulten operativamente
+ineficaces para el dominio específico de este proyecto.
 
 \section{NLP Aplicado a la Detección de Violencia de Género}
 \label{sec:ea_nlp_violencia}
 
-Desde la perspectiva académica, la intersección entre el Procesamiento de Lenguaje Natural (PLN) y
-la sociología forense ha ganado tracción empírica en los ultimos años. La literatura documenta la
+Desde la perspectiva académica la intersección entre el Procesamiento de Lenguaje Natural (PLN) y
+la sociología forense ha ganado interés en los ultimos años. La literatura documenta la
 transición de modelos de aprendizaje automático superficial (como \textit{Support Vector Machines}
-o \textit{Random Forests}) hacia arquitecturas de aprendizaje profundo (Deep Learning) para la
+o \textit{Random Forests}) hacia arquitecturas de aprendizaje profundo para la
 clasificación de discursos de odio, misoginia en redes sociales y categorización automática de reportes
-policiales por violencia doméstica \cite{bada2021nlp, garcia2022hate}.
+policiales por violencia doméstica.
 
 Recientemente se han implementado modelos basados en Transformers (como RoBERTa y BERT) para extraer
-relaciones de causalidad en narrativas de violencia armada y feminicidios documentados en la prensa
-\cite{mendoza2023transformers}. Sin embargo al realizar una revisión bibliográfica exhaustiva se
-nota una carencia de investigación computacional enfocada en las víctimas indirectas. La inmensa
-mayoría de los clasificadores binarios se detienen en la categorización del evento fáctico (feminicidio
-vs. homicidio culposo) lo que omite por completo la extracción de entidades relacionadas con los NNA
-afectados.
+relaciones de causalidad en narrativas de violencia armada y feminicidios documentados en la prensa.
+Sin embargo al realizar una revisión bibliográfica exhaustiva se nota una carencia de investigación
+computacional enfocada en las víctimas indirectas. La inmensa mayoría de los clasificadores binarios
+se detienen en la categorización del evento violento (feminicidio vs. homicidio culposo) lo que omite
+por completo la extracción de entidades relacionadas con los NNA afectados.
 
-\section{Herramientas y Esfuerzos Existentes en México}
+\section{Herramientas y esfuerzos existentes en México}
 \label{sec:ea_esfuerzos_mexico}
 
-En México ante la insuficiencia de datos gubernamentales en tiempo real, la sociedad civil ha
+En México ante la insuficiencia de datos gubernamentales en tiempo real la sociedad civil ha
 asumido tareas de investigación en la documentación de la violencia feminicida, desarrollando
 iniciativas fundamentales que si bien son invaluables, presentan limitaciones de escalabilidad
 computacional.
@@ -82,60 +81,35 @@ Organizaciones civiles dedicadas a la intervención directa como la Fundación F
 Derechos, ilustran el problema operativo mas claramente. En su intento por identificar casos
 emergentes de orfandad para ofrecer resguardo institucional o asesoría legal expedita, el personal de
 estas organizaciones invierte rutinariamente decenas de horas-hombre semanales realizando búsquedas
-manuales exhaustivas en portales de noticias \cite{futuro2023reporte}. Este proceso es no determinista,
+manuales exhaustivas en portales de noticias. Este proceso es no determinista,
 propenso a sesgos de fatiga y económicamente insostenible para asociaciones sin fines de lucro.
 
 \section{Análisis comparativo y brecha identificada}
 \label{sec:ea_brecha}
 
-El análisis del estado actual del arte revela una brecha tecnológica interesante bajo los paradigmas
-vigentes que es \textbf{la desconexión entre la recolección masiva de datos no estructurados y la
-comprensión semántica profunda de las víctimas colaterales.} Las herramientas comerciales recolectan sin
+El análisis del estado actual del arte revela una brecha tecnológica bajo los paradigmas actuales
+que es la desconexión entre la recolección masiva de datos no estructurados y la
+comprensión semántica profunda de las víctimas colaterales. Las herramientas comerciales recolectan sin
 comprender, mientras que los esfuerzos civiles comprenden profundamente pero no logran recolectar ni
 escalar la información de forma automatizada.
 
 La aportación fundamental de este Trabajo Terminal yace precisamente en la solución de esta brecha.
 El sistema propuesto no es un simple buscador de palabras clave ni un mapa de captura manual. Su
 innovación radica en la orquestación integral de un flujo de trabajo automatizado que suprime la
-intervención humana en las etapas de descubrimiento y filtrado:
+intervención humana en las etapas de descubrimiento y filtrado.
 
-\begin{enumerate}
-    \item \textbf{Recolección:} Ingesta concurrente y evasiva de fuentes RSS y motores de búsqueda
-          mediante \texttt{StealthSession} v7.0 con emulación de fingerprint TLS.
-    \item \textbf{Deduplicación Cross-Site:} Colapso de redundancia mediática mediante una cascada
-          de cuatro algoritmos de complejidad creciente (MD5, Jaccard, SimHash y similitud coseno
-          TF-IDF), que eliminó el 25.1\% de duplicados en el corpus de validación.
-    \item \textbf{Agrupación Temática:} Modelado latente no supervisado mediante reducción
-          topológica de dimensionalidad (UMAP) y clústering de densidad variable (HDBSCAN)
-          encapsulados en el pipeline BERTopic.
-    \item \textbf{Clasificación Escalonada:} Arquitectura neuro-simbólica v7.1 con tres capas
-          (Escudo Léxico, Escudo Suave e inferencia BETO Fine-Tuned) que operan sobre un score
-          acumulativo con penalizaciones y bonificaciones aditivas.
-    \item \textbf{Investigación Profunda Bajo Demanda:} Módulo \texttt{DeepInvestigator} que
-          sintetiza fichas de caso estructuradas a partir de búsqueda web (DuckDuckGo) e
-          inferencia de lenguaje natural (Gemini Flash), activado manualmente por el analista.
-\end{enumerate}
-
-En suma, no existe en el ecosistema civil mexicano una herramienta de software que ejecute este ciclo
-completo ---recolección evasiva, deduplicación en cascada, clasificación escalonada neuro-simbólica
-e investigación profunda bajo demanda--- de forma unificada y específicamente calibrada para el
-problema social de los NNA víctimas indirectas de feminicidio. Este proyecto trasciende la
-estadística descriptiva para instaurar una plataforma de inteligencia operativa y de respuesta rápida.
-
-%----------------------------------------------------------------------------------------
 \section{Técnicas de extracción de datos}
 \label{sec:ea_tecnicas_extraccion}
-%----------------------------------------------------------------------------------------
 
 La recolección de datos periodísticos en fuentes abiertas es un problema
 técnico pues los medios de comunicación digitales han desplegado capas de
-defensa perimetral cuyo objetivo primario es la protección contra el scraping
+defensa perimetral cuyo objetivo es la protección contra el scraping
 masivo. La selección de la técnica de extracción adecuada determina directamente
 la cobertura alcanzable del sistema, su tasa de éxito sostenida y su consumo
-de recursos computacionales. En la literatura de recuperación de información y
-OSINT se identifican tres vertientes metodológicas principales, que se evaluaron
+de recursos computacionales. En la literatura de recuperación de información se identifican
+tres vertientes metodológicas principales y que se evaluaron
 en función de su efectividad y eficiencia para la recolección de datos
-periodísticos en México.
+periodísticos en México. 
 
 \subsection{Extracción Estática (HTML Parsing con BeautifulSoup)}
 \label{subsec:ea_beautifulsoup}

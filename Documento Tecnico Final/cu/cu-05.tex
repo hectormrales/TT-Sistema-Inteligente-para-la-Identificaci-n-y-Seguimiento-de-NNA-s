@@ -1,28 +1,28 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-05}{Gestión y Exportación de Seguimiento}{
-	Describe el proceso mediante el cual el analista agrega una noticia investigada a la lista de "Seguimiento Activo" y posteriormente exporta dicho listado en un archivo CSV enriquecido para su uso en otras herramientas o reportes.
+\begin{UseCase}{CU-05}{Gestión y exportación de seguimiento}{
+	Describe el proceso mediante el cual el analista agrega una noticia investigada a la lista de ''Seguimiento activo'' y posteriormente exporta dicho listado en un archivo CSV enriquecido para su uso en otras herramientas o reportes.
 }
 	\UCitem{Versión}{\color{Gray}
 		1.0
 	}\UCitem{Autor}{\color{Gray}
-		Tesista de Ingeniería
+		Héctor Alberto Morales Martínez
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Analista de Datos / Trabajador Social
+		Analista de datos / Trabajador social
 	}\UCitem{Propósito}{\begin{Titemize}
-		\Titem Facilitar el monitoreo continuo de los casos más críticos identificados por el sistema y proporcionar interoperabilidad mediante la exportación de datos tabulares.
+		\Titem Facilitar el monitoreo continuo de los casos más críticos identificados por el sistema y proporcionar datos para su análisis mediante la exportación de datos tabulares.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
 		\Titem ID de la noticia (para agregar a seguimiento).
 		\Titem Petición de exportación (clic en botón).
 	\end{Titemize}
 	}\UCitem{Origen}{\begin{Titemize}
-		\Titem Interfaz de resultados de investigación y sección de "Seguimiento" en el Dashboard.
+		\Titem Interfaz de resultados de investigación y sección de ''Seguimiento de casos'' en el Dashboard.
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
-		\Titem Confirmación visual en el Dashboard.
+		\Titem Confirmación visual en el dashboard.
 		\Titem Archivo descargable en formato \texttt{.csv} con los casos enriquecidos.
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
@@ -32,7 +32,7 @@
 		\Titem La noticia debe tener una investigación estructurada (\texttt{DeepInvestigator}) completada exitosamente.
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
-		\Titem La noticia cambia su estado lógico en la base de datos a "En Seguimiento".
+		\Titem La noticia cambia su estado lógico en la base de datos a ''En Seguimiento''.
 	\end{Titemize}
 	}\UCitem{Errores}{\begin{Titemize}
 		\Titem {\bf \hypertarget{CU-05.E1}{E1}}: Intento de exportación cuando la lista de seguimiento está vacía \Trayref{CU-05}{A}.
@@ -47,10 +47,10 @@
 %--------------------------------------
 \begin{UCtrayectoria}
 	\UCpaso[\UCActor] Analiza los resultados generados por el módulo \texttt{DeepInvestigator} para un caso específico.
-	\UCpaso[\UCActor] Determina que el caso requiere monitoreo a largo plazo y hace clic en el botón \IUbutton{Agregar a Seguimiento}.
+	\UCpaso[\UCActor] Determina que el caso requiere monitoreo a largo plazo y hace clic en el botón \IUbutton{Dar seguimiento a caso}.
 	\UCpaso[\UCsist] Actualiza la bandera de seguimiento (\texttt{is\_tracked = True}) para el registro en la base de datos.
 	\UCpaso[\UCsist] Confirma la acción mediante un mensaje en la interfaz.
-	\UCpaso[\UCActor] Navega hacia la vista de "Casos en Seguimiento" del Dashboard.
+	\UCpaso[\UCActor] Navega hacia la vista de ''Casos en Seguimiento'' del Dashboard.
 	\UCpaso[\UCActor] Hace clic en el botón \IUbutton{Exportar a CSV}.
 	\UCpaso[\UCsist] Consulta la base de datos extrayendo todos los casos marcados en seguimiento \ErrorRef{CU-05}{E1}{Lista Vacía}.
 	\UCpaso[\UCsist] Serializa los datos, desempacando el JSON de la ficha investigativa en columnas planas.

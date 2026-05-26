@@ -1,16 +1,17 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-02}{Gestión del Catálogo de Fuentes de Información}{%
-	Permite al administrador gestionar el catálogo de fuentes periodísticas (RSS, HTML, sitemap) que alimentan el pipeline de recolección. Contempla el alta, edición, eliminación lógica, activación/desactivación y sondeo previo de URLs.
+\begin{UseCase}{CU-02}{Gestión del catálogo de fuentes de información}{%
+	Permite al administrador gestionar el catálogo de fuentes periodísticas
+	(RSS, HTML, sitemap) que alimentan el flujo de recolección. Gestiona el alta, edición, eliminación, activación/desactivación y sondeo previo de URLs.
 }
 	\UCitem{Versión}{\color{Gray}
 		2.0
 	}\UCitem{Autor}{\color{Gray}
-		Tesista de Ingeniería
+		Héctor Alberto Morales Martínez
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Administrador del Sistema
+		Administrador
 	}\UCitem{Propósito}{\begin{Titemize}
 		\Titem Mantener actualizado el catálogo de orígenes periodísticos accesibles por el recolector, garantizando cobertura geográfica y temática del corpus.
 	\end{Titemize}
@@ -37,7 +38,7 @@
 		\Titem La base de datos PostgreSQL debe estar operativa.
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
-		\Titem Las fuentes activas quedan disponibles para el recolector en la próxima ejecución del pipeline (CU-01).
+		\Titem Las fuentes activas quedan disponibles para el recolector en la próxima ejecución del recolector (CU-01).
 		\Titem Las fuentes predeterminadas del sistema solo pueden desactivarse; no pueden eliminarse.
 	\end{Titemize}
 	}\UCitem{Errores}{\begin{Titemize}
@@ -54,12 +55,12 @@
 
 %--------------------------------------
 \begin{UCtrayectoria}
-	\UCpaso[\UCActor] Ingresa a la pantalla de \IUref{IU-02}{Gestión de Fuentes} desde el menú lateral.
+	\UCpaso[\UCActor] Ingresa a la pantalla de \IUref{IU-02}{Gestión de Fuentes} desde el menú superior.
 	\UCpaso[\UCActor] Introduce la URL de la nueva fuente en el formulario de alta.
 	\UCpaso[\UCActor] Hace clic en \IUbutton{Sondear URL} para obtener una vista previa técnica antes de registrar.
 	\UCpaso[\UCsist] Invoca \texttt{DynamicScraper.probe\_url()} que detecta el tipo de contenido (RSS, sitemap, HTML), verifica el archivo \texttt{robots.txt} y determina si requiere modo stealth \ErrorRef{CU-02}{E3}{URL inválida}.
 	\UCpaso[\UCsist] Devuelve el resultado del sondeo al formulario (tipo detectado, feeds RSS encontrados, crawl-delay recomendado, accesibilidad WAF).
-	\UCpaso[\UCActor] Revisa los resultados, ajusta el nombre y tipo si fuera necesario, y hace clic en \IUbutton{Guardar Fuente}.
+	\UCpaso[\UCActor] Revisa los resultados, ajusta el nombre y tipo si fuera necesario, y hace clic en \IUbutton{Agregar}.
 	\UCpaso[\UCsist] Verifica que la URL no esté ya registrada \ErrorRef{CU-02}{E1}{URL duplicada}.
 	\UCpaso[\UCsist] Crea el registro en la tabla \texttt{news\_sources} con \texttt{is\_active = True} y \texttt{last\_status = 'pending'}.
 	\UCpaso[\UCsist] Muestra mensaje de confirmación y actualiza la tabla de fuentes en pantalla.

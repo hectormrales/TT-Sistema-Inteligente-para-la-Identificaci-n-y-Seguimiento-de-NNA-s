@@ -41,7 +41,6 @@
 	\arrayrulecolor{black} %
 }
 
-\newcommand{\FootnotePrioridad}{\footnote{La prioridad en la tabla está indicada como: MB - Muy Baja, B - Baja, M - Media, A - Alta, MA - Muy Alta.}}
 %-----------------------------------------------------
 % Definir un problema (se usa con el environment problemas
 % Usar: \problema{id}{Nombre}{Descripción}{Prioridad}
@@ -88,18 +87,18 @@
 \newenvironment{requerimientos}[1][tblReqColor]
 {%
 	\arrayrulecolor{tblReqColor}%
-	\par\noindent\begin{longtable}{| p{.03\textwidth} | p{.2\textwidth} | p{.6\textwidth} |p{.03\textwidth} | p{.03\textwidth} |}
+	\par\noindent\begin{longtable}[c]{| p{.06\textwidth} | p{.18\textwidth} | p{.45\textwidth} |p{.07\textwidth} | p{.07\textwidth} |}
 		\arrayrulecolor{#1}%
 		\hline%
 		\rowcolor{#1}%
 		\multicolumn{5}{|c|}{\bf\color{white}Requerimientos funcionales}\\%
 		\arrayrulecolor{white}%
 		\rowcolor{#1}%
-		\FRitem{\color{white}Id}{\color{white} Nombre}{\color{white} Descripción}{\color{white} Prio.}{\color{white} Ref.}\endhead%
+		\FRitem{\color{white}Id}{\color{white} Nombre}{\color{white} Descripción}{\color{white} Prioridad}{\color{white} Ref.}\endhead%
 		\arrayrulecolor{tblReqColor}%
 }{%
 	\end{longtable} %
-	\arrayrulecolor{black} %
+	\arrayrulecolor{black} % 
 }
 
 
@@ -113,7 +112,7 @@
 \newenvironment{requerimientosU}[1][tblReqColor]
 {%
 	\arrayrulecolor{tblReqColor}%
-	\par\noindent\begin{longtable}{| p{.07\textwidth} | p{.18\textwidth} | p{.55\textwidth} |p{.02\textwidth} | p{.05\textwidth} |}
+	\par\noindent\begin{longtable}[c]{| p{.06\textwidth} | p{.18\textwidth} | p{.48\textwidth} |p{.05\textwidth} | p{.08\textwidth} |}
 		\arrayrulecolor{#1}%
 		\hline%
 		\rowcolor{#1}%
@@ -132,7 +131,6 @@
 \newcommand{\TOCHK}{\color{Orange}\bf TOCHK}
 \newcommand{\ISSUE}{\color{Red}\bf ISSUE}
 
-
 \newcommand{\FootnoteStatus}{\footnote{El valor de Status en la tabla está indicada como: {\TODO} - Pendiente, {\DOING} - En proceso, {\DONE} - Terminado, {\TOCHK} - Listo para revisión, {\ISSUE} - Presenta problemas.}}
 
 
@@ -143,12 +141,18 @@
 %    \NFRitem{id}{Atributo}{Necesidad}{Estrategia}{Compromiso}
 %    ...
 % \end{NFRequerimientos}
-\newcommand{\NFRitem}[5]{\multirow{2}{*}{#1} & \multirow{2}{*}{#2} & {$\mathfrak{Necesidad}$}~{}-{#3} &\multirow{2}{*}{#5} \\* & & {$\mathfrak{Estrategia}$}~{}-{#4} & \\ \hline}
+\newcommand{\NFRitem}[5]{%
+	\multirow{2}{0.06\textwidth}{\parbox{0.06\textwidth}{\centering #1}} & %
+	\multirow{2}{0.18\textwidth}{\parbox{0.18\textwidth}{\raggedright #2}} & %
+	{$\mathfrak{Necesidad}$}~{}-{#3} & %
+	\multirow{2}{0.08\textwidth}{\parbox{0.08\textwidth}{\centering #5}} \\* %
+	& & {$\mathfrak{Estrategia}$}~{}-{#4} & \\ \hline%
+}
 
 \newenvironment{NFRequerimientos}[1][tblReqColor]
 {%
 	\arrayrulecolor{#1}%
-	\par\begin{longtable}{| p{.03\textwidth} | p{.17\textwidth} | p{.67\textwidth} | p{.03\textwidth} |}
+	\par\begin{longtable}[c]{| p{.06\textwidth} | p{.18\textwidth} | p{.48\textwidth} | p{.08\textwidth} |}
 		\arrayrulecolor{#1}%
 		\hline%
 		\rowcolor{#1}%

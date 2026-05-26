@@ -6,16 +6,16 @@
 	\UCitem{Versión}{\color{Gray}
 		1.0
 	}\UCitem{Autor}{\color{Gray}
-		Tesista de Ingeniería
+		Héctor Alberto Morales Martínez
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Analista de Datos / Trabajador Social
+		Analista de datos / Trabajador social
 	}\UCitem{Propósito}{\begin{Titemize}
 		\Titem Localizar rápidamente noticias específicas dentro del corpus clasificado usando términos de búsqueda, filtros de relevancia y restricciones por detección de NNA.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
-		\Titem Término de búsqueda (\texttt{q}).
+		\Titem Término de búsqueda.
 		\Titem Filtro de clasificación (Alta / Media / Baja / No relevante), opcional.
 		\Titem Filtro ``Solo NNA'' (booleano), opcional.
 		\Titem Límite de resultados (\texttt{limit}), por defecto 20.
@@ -25,7 +25,7 @@
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
 		\Titem Lista de noticias relevantes ordenadas por score de relevancia FTS.
-		\Titem Indicador de la fuente de datos utilizada (\texttt{postgresql\_fts} o \texttt{csv\_synonyms}).
+		\Titem Indicador de la fuente de datos utilizada.
 		\Titem Número total de resultados encontrados.
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
@@ -33,7 +33,7 @@
 	\end{Titemize}
 	}\UCitem{Precondiciones}{\begin{Titemize}
 		\Titem El actor debe tener una sesión activa (CU-06).
-		\Titem El corpus debe haber sido procesado por al menos un ciclo del pipeline (CU-01).
+		\Titem El corpus debe haber sido procesado por al menos un ciclo del flujo de recolección y análisis (CU-01).
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
 		\Titem Se despliegan los resultados filtrados en la interfaz sin modificar la base de datos.
@@ -52,12 +52,12 @@
 %--------------------------------------
 \begin{UCtrayectoria}
 	\UCpaso[\UCActor] Escribe un término de búsqueda en la barra de búsqueda del Dashboard y presiona \IUbutton{Buscar} o la tecla Enter.
-	\UCpaso[\UCsist] Valida que el parámetro \texttt{q} no esté vacío \ErrorRef{CU-07}{E1}{Query vacío}.
+	\UCpaso[\UCsist] Valida que el parámetro  no esté vacío \ErrorRef{CU-07}{E1}{Query vacío}.
 	\UCpaso[\UCsist] Verifica si hay datos en PostgreSQL (\texttt{\_check\_postgres()}).
 	\UCpaso[\UCsist] Si PostgreSQL está disponible, invoca \texttt{NoticiasRepository.buscar\_fts()} con índices GIN sobre columnas \texttt{tsvector} en $O(\log n)$.
 	\UCpaso[\UCsist] Si no hay datos en PostgreSQL, aplica búsqueda textual sobre el CSV en memoria, expandiendo el término con el \texttt{SynonymDictionary} \ErrorRef{CU-07}{E2}{Sin datos}.
 	\UCpaso[\UCsist] Retorna la lista de resultados con el campo \texttt{data\_source} indicando el motor utilizado.
-	\UCpaso[\UCActor] Revisa los resultados y puede activar el módulo \texttt{DeepInvestigator} sobre cualquier resultado (CU-03).
+	\UCpaso[\UCActor] Revisa los resultados y puede activar el módulo \texttt{DeepInvestigator} sobre cualquier resultado con prioridad Alta(CU-03).
 \end{UCtrayectoria}
 
 %--------------------------------------
@@ -71,6 +71,6 @@
 \begin{UCtrayectoriaA}{CU-07}{B}{No hay datos disponibles en ninguna fuente}
 	\UCpaso[\UCsist] Detecta que PostgreSQL no tiene registros y el CSV no existe en disco.
 	\UCpaso[\UCsist] Retorna HTTP 404 con el mensaje ``No hay datos disponibles''.
-	\UCpaso[\UCActor] Ejecuta primero el pipeline de recolección y análisis (CU-01) para generar datos.
+	\UCpaso[\UCActor] Ejecuta primero el flujo de recolección y análisis (CU-01) para generar datos.
 	\UCpaso[] El Caso de Uso termina.
 \end{UCtrayectoriaA}

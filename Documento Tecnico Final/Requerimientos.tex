@@ -1,0 +1,40 @@
+% !TeX root = proyecto.tex
+
+\chapter{Requerimientos del sistema}
+\label{ch:requerimientos}
+
+En este capítulo se detalla la especificación de requerimientos para el \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA en Situación de Orfandad por Feminicidio en México}. La documentación sigue la metodología y los estándares definidos por la Coordinación de Trabajo Terminal (CDT) de la Escuela Superior de Cómputo (ESCOM).
+
+Se describen primero los actores del sistema y los requerimientos tanto funcionales como no funcionales. Posteriormente, se presenta el modelado dinámico mediante la especificación completa de los casos de uso del sistema. Finalmente, se ilustran y describen las interfaces de usuario (IU) diseñadas para la interacción entre los analistas y la plataforma.
+
+%======================================================================
+\input{req/usuarios}
+
+%======================================================================
+\input{req/rf}
+
+%======================================================================
+\input{req/rnf}
+
+%======================================================================
+\section{Modelado de Casos de Uso}
+A continuación se definen los casos de uso del sistema, describiendo de forma detallada las trayectorias principales, las trayectorias alternativas y el flujo de control para cada una de las interacciones críticas identificadas en el sistema inteligente.
+
+\input{cu/cu-01}
+\input{cu/cu-02}
+\input{cu/cu-03}
+\input{cu/cu-04}
+\input{cu/cu-05}
+\input{cu/cu-06}
+\input{cu/cu-07}
+
+%======================================================================
+\newpage
+\section{Interfaces de Usuario}
+En esta sección se describen los diseños visuales de las pantallas de la aplicación web correspondientes al panel de control y administración del sistema. Cada interfaz de usuario se detalla con su objetivo, sus campos de entrada, datos de salida, y comandos disponibles (botones y acciones interactivas) vinculados a sus respectivos casos de uso.
+
+\input{iu/iu-01}
+\input{iu/iu-02}
+\input{iu/iu-03}
+\input{iu/iu-04}
+\input{iu/iu-05}

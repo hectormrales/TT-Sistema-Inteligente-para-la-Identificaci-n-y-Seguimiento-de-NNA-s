@@ -14380,3 +14380,753 @@ WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido
 2026-05-22 14:39:53,949 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
 2026-05-22 14:40:11,190 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
 2026-05-22 14:40:11,196 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-25 21:14:44,446 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-25 21:14:44,517 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-25 21:14:44,518 - app - INFO - Esquema FTS inicializado
+2026-05-25 21:14:44,523 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-25 21:14:44,523 - app - INFO - Esquema FTS inicializado
+2026-05-25 21:14:44,623 - root - INFO - Datos cargados: 657 noticias desde análisis
+2026-05-25 21:14:44,624 - root - INFO - Datos cargados: 657 noticias desde análisis
+2026-05-25 21:16:53,843 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-25 21:16:53,912 - app - INFO - Logout: hector
+2026-05-25 21:17:04,868 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-25 21:18:34,779 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:34,788 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:34,809 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:34,969 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:18:34,980 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-25 21:18:40,069 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:40,074 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:40,081 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:40,089 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:40,113 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:40,164 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:40,263 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,208 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,216 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,220 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,228 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:18:59,232 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,238 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,244 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,247 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,251 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:18:59,254 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:18:59,268 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:18:59,313 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:19:08,653 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:08,667 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:08,671 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:08,687 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:08,716 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:10,846 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:10,852 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:10,856 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:10,879 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:10,893 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:24,381 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:24,417 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:24,458 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:24,518 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:24,657 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:24,664 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:19:24,702 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:30,397 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:30,405 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:30,418 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:30,421 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:52,307 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:19:52,320 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:52,360 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:52,392 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-25 21:19:52,419 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:19:52,452 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:52,456 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:19:52,461 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:19:52,477 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:19:52,480 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-25 21:19:52,516 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:20:09,022 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:20:14,641 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:14,644 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:14,647 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:14,652 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:20:14,667 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:14,670 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:14,687 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:14,737 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:20:14,757 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:20:18,008 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:20:18,014 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:20:18,017 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:20:51,556 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:21:10,275 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:10,289 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:10,432 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:21:10,435 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:10,458 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:37,542 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:37,577 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:21:39,539 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:39,548 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:21:39,559 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:21:39,596 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:39,620 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:21:39,635 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:21:39,650 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:22:10,555 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:22:10,563 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:22:10,686 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:22:46,175 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:22:46,186 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:22:46,289 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-25 21:22:46,301 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:23:13,250 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:23:13,289 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:23:13,497 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:23:47,915 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:23:47,924 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:23:47,926 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:23:47,938 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:24:08,131 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-25&tbm=nws&hl=es-419&gl=MX
+2026-05-25 21:24:08,334 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-25&tbm=nws&hl=es-419&gl=MX
+2026-05-25 21:24:16,659 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-12-01+before%3A2026-05-25&tbm=nws&hl=es-419&gl=MX
+2026-05-25 21:24:25,015 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:24:34,021 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:24:34,028 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:24:34,060 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:24:43,835 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:24:43,838 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:24:43,857 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:24:43,927 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.91)
+2026-05-25 21:24:46,616 - src.collection.scraper - INFO - HTML listing: 3 enlaces (después del filtrado) en https://www.razon.com.mx/…
+2026-05-25 21:24:52,024 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/ciudad/2026/05/25/policia-capitalin… → activando stealth + intentando Google Cache
+2026-05-25 21:25:30,919 - src.collection.scraper - WARNING - Error conexión https://www.razon.com.mx/ciudad/2026/05/25/policia-capitalin…: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-05-25 21:25:58,381 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-25 21:25:58,386 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-25 21:25:58,392 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/ciudad/2026/05/25/policia-capitalina-no-utilizo-ningun-tipo-de-gas-contra-maestros-que-intentaron-ingresar-al-zocalo-ssc/
+2026-05-25 21:26:22,286 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/entretenimiento/2026/05/25/la-mujer… → activando stealth + intentando Google Cache
+2026-05-25 21:26:53,083 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-25 21:26:53,083 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-25 21:26:53,089 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/entretenimiento/2026/05/25/la-mujer-que-se-marcho-donde-ver-el-drama-chino-completo/
+2026-05-25 21:27:19,314 - src.collection.scraper - INFO - Bloqueo detectado en https://www.razon.com.mx/virales/2026/05/12/nace-lady-pastel… → activando stealth + intentando Google Cache
+2026-05-25 21:27:49,560 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-25 21:27:49,561 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-25 21:27:49,562 - trafilatura.core - WARNING - discarding data: https://www.razon.com.mx/virales/2026/05/12/nace-lady-pastel-captan-a-mujer-robando-un-postre-en-acapulco-video/
+2026-05-25 21:27:49,570 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.razon.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:27:49,955 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:27:49,958 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:27:49,963 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:27:49,967 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:27:49,971 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:27:49,982 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:27:49,990 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:27:50,046 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:28:00,053 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:28:00,068 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:28:00,081 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:28:00,096 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:28:02,688 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:28:29,343 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:28:29,399 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:29:10,775 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:29:10,792 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:13,975 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:32,710 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-25 21:30:32,710 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:30:47,661 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-25 21:30:47,662 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:30:47,973 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:47,979 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:47,982 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:47,985 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:47,993 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:30:48,000 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:48,003 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:48,013 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:48,017 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:30:48,020 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:48,026 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:30:48,035 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:30:48,056 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:30:48,261 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.proceso.com.mx/…
+2026-05-25 21:30:48,262 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.proceso.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:31:19,059 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:32:26,434 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.jornada.com.mx/…
+2026-05-25 21:32:26,434 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.jornada.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:32:26,655 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.informador.mx/…
+2026-05-25 21:32:26,660 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.informador.mx/… (métodos intentados: ['html'])
+2026-05-25 21:32:53,643 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:06,871 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:33:08,905 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:33:27,612 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:28,396 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.lajornadadeoriente.com.mx/…
+2026-05-25 21:33:28,397 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.lajornadadeoriente.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:33:49,643 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:49,654 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:49,657 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:49,667 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:49,683 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:49,726 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:33:50,499 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.elfinanciero.com.mx/…
+2026-05-25 21:33:50,499 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elfinanciero.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:33:54,176 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.contralinea.com.mx/…
+2026-05-25 21:33:54,177 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.contralinea.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:34:11,388 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:34:11,395 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
+2026-05-25 21:34:25,457 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)
+2026-05-25 21:34:25,465 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)
+2026-05-25 21:34:25,634 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 4s
+2026-05-25 21:34:39,807 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 8s
+2026-05-25 21:35:10,223 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 16s
+2026-05-25 21:35:10,223 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
+2026-05-25 21:35:25,771 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
+2026-05-25 21:35:25,772 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
+2026-05-25 21:35:25,939 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
+2026-05-25 21:35:34,976 - src.collection.scraper - INFO - Bloqueo detectado en https://www.eleconomista.com.mx/empresas/mexico-enfrenta-ret… → activando stealth + intentando Google Cache
+2026-05-25 21:35:56,427 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
+2026-05-25 21:35:56,428 - trafilatura.core - ERROR - empty HTML tree: None
+2026-05-25 21:35:56,428 - trafilatura.core - WARNING - discarding data: https://www.eleconomista.com.mx/empresas/mexico-enfrenta-reto-estructural-formar-talento-stem-cerrar-brechas-genero-20260525-815325.html
+2026-05-25 21:35:56,433 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.eleconomista.com.mx/… (métodos intentados: ['html'])
+2026-05-25 21:35:57,024 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos
+2026-05-25 21:35:57,085 - src.analysis.dedup - INFO - Deduplicación: 1167 noticias de entrada
+2026-05-25 21:35:57,128 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 551 duplicados
+2026-05-25 21:35:57,327 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 3 duplicados
+2026-05-25 21:35:57,806 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 14 duplicados
+2026-05-25 21:35:58,016 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 3 duplicados
+2026-05-25 21:35:58,034 - src.analysis.dedup - INFO -   Resultado: 1167 → 596 únicos (571 duplicados eliminados)
+2026-05-25 21:35:58,388 - src.analysis.dedup - INFO - Deduplicación: 596 noticias de entrada
+2026-05-25 21:35:58,413 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-05-25 21:35:58,624 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-05-25 21:35:58,965 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-05-25 21:35:59,084 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-05-25 21:35:59,086 - src.analysis.dedup - INFO -   Resultado: 596 → 596 únicos (0 duplicados eliminados)
+2026-05-25 21:36:09,341 - src.analysis.semantic_detector - INFO - SemanticDetector usando dispositivo: cpu
+2026-05-25 21:36:09,341 - src.analysis.semantic_detector - INFO - [SemanticDetector] Modo resuelto desde DETECTOR_MODE='fine-tuned' → 'finetuned'
+2026-05-25 21:36:09,344 - src.analysis.semantic_detector - INFO - [SemanticDetector] Modelo fine-tuned encontrado en: /app/models/finetuned/model.pt
+2026-05-25 21:36:09,344 - src.analysis.semantic_detector - INFO - Inicializando SemanticDetector en modo: finetuned
+2026-05-25 21:36:09,481 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:36:09,482 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-25 21:36:09,497 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-25 21:36:09,591 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:36:09,606 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-25 21:36:09,690 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-25 21:36:09,779 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-25 21:36:09,960 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:36:09,973 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-cased/c4d86612f51b4f46759c8390d1798c2febe71b93/config.json "HTTP/1.1 200 OK"
+2026-05-25 21:36:10,091 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-25 21:36:10,182 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased "HTTP/1.1 200 OK"
+2026-05-25 21:36:10,323 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/main "HTTP/1.1 200 OK"
+2026-05-25 21:36:10,434 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/discussions?p=0 "HTTP/1.1 200 OK"
+2026-05-25 21:36:10,605 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/dccuchile/bert-base-spanish-wwm-cased/commits/refs%2Fpr%2F3 "HTTP/1.1 200 OK"
+2026-05-25 21:36:10,692 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors.index.json "HTTP/1.1 404 Not Found"
+2026-05-25 21:36:10,782 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-cased/resolve/refs%2Fpr%2F3/model.safetensors "HTTP/1.1 302 Found"
+2026-05-25 21:36:24,776 - src.analysis.semantic_detector - INFO - [INFO] Modelo fine-tuned cargado exitosamente.
+2026-05-25 21:36:35,515 - src.analysis.semantic_detector - INFO - [PreFiltro] Modelo spaCy es_core_news_lg cargado.
+2026-05-25 21:36:35,601 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:35,601 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:35,602 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:35,602 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nfl'
+2026-05-25 21:36:35,620 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'diputados'
+2026-05-25 21:36:35,660 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'futbol'
+2026-05-25 21:36:35,660 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+2026-05-25 21:36:35,661 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'sat'
+2026-05-25 21:36:35,662 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'electricidad'
+2026-05-25 21:36:35,684 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'hacienda'
+2026-05-25 21:36:35,685 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'candidato'
+2026-05-25 21:36:35,706 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:35,754 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'box'
+2026-05-25 21:36:35,755 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+2026-05-25 21:36:35,756 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:35,847 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:35,848 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nfl'
+2026-05-25 21:36:35,849 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:35,870 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'futbol'
+2026-05-25 21:36:35,883 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:35,924 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:35,972 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,029 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,052 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,053 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,134 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+2026-05-25 21:36:36,134 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,135 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:36,136 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,137 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'isr'
+2026-05-25 21:36:36,137 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+2026-05-25 21:36:36,137 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'box'
+2026-05-25 21:36:36,138 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:36,138 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'alerta de género'
+2026-05-25 21:36:36,165 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'editorial '
+2026-05-25 21:36:36,183 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,184 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+2026-05-25 21:36:36,224 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,225 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:36,227 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'alerta de género'
+2026-05-25 21:36:36,300 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'futbol'
+2026-05-25 21:36:36,328 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'huracán'
+2026-05-25 21:36:36,329 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+2026-05-25 21:36:36,358 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+2026-05-25 21:36:36,372 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+2026-05-25 21:36:36,373 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+2026-05-25 21:36:36,373 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'dólar'
+2026-05-25 21:36:36,374 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+2026-05-25 21:36:36,374 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,417 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'redim'
+2026-05-25 21:36:36,448 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'lluvia'
+2026-05-25 21:36:36,465 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+2026-05-25 21:36:36,465 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'ley monzón'
+2026-05-25 21:36:36,487 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,508 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'ley monzón'
+2026-05-25 21:36:36,532 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propone '
+2026-05-25 21:36:36,559 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'carretera'
+2026-05-25 21:36:36,586 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'en guatemala'
+2026-05-25 21:36:36,665 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+2026-05-25 21:36:36,666 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:36,689 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,753 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:36,776 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,782 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,835 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'ley general'
+2026-05-25 21:36:36,842 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,856 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'presupuesto'
+2026-05-25 21:36:36,856 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:36,857 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:36,987 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:37,052 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'estudio revela'
+2026-05-25 21:36:37,117 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'reforma constitucional'
+2026-05-25 21:36:37,194 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,274 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'proponen '
+2026-05-25 21:36:37,361 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:37,369 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:37,381 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+2026-05-25 21:36:37,398 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'cfe'
+2026-05-25 21:36:37,399 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'reforma constitucional'
+2026-05-25 21:36:37,406 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,432 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'ley general'
+2026-05-25 21:36:37,520 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:37,640 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'proponen '
+2026-05-25 21:36:37,653 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'bitcoin'
+2026-05-25 21:36:37,653 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,654 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:37,689 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'alerta de violencia de género'
+2026-05-25 21:36:37,737 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'ley monzón'
+2026-05-25 21:36:37,751 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+2026-05-25 21:36:37,752 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'proponen '
+2026-05-25 21:36:37,764 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propone '
+2026-05-25 21:36:37,776 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propuesta de ley'
+2026-05-25 21:36:37,782 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,783 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'proponen '
+2026-05-25 21:36:37,798 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propuesta de ley'
+2026-05-25 21:36:37,804 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,816 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ine '
+2026-05-25 21:36:37,817 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,817 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,834 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:37,861 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:37,909 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:37,910 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'carretera'
+2026-05-25 21:36:37,976 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:38,036 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:38,036 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:38,037 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nfl'
+2026-05-25 21:36:38,067 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'alerta de género'
+2026-05-25 21:36:38,155 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:38,156 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:38,292 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:38,299 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:38,307 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:38,338 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+2026-05-25 21:36:38,357 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'ducto'
+2026-05-25 21:36:38,358 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:38,370 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:38,397 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:38,422 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:38,429 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['Asesinan', 'Asesinan']
+2026-05-25 21:36:38,562 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'sat'
+2026-05-25 21:36:38,582 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+2026-05-25 21:36:38,611 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'carretera'
+2026-05-25 21:36:38,615 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:38,617 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'inteligencia artificial'
+2026-05-25 21:36:38,673 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'alerta de género'
+2026-05-25 21:36:38,695 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['mató', 'mató']
+2026-05-25 21:36:38,735 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'hacienda'
+2026-05-25 21:36:38,773 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'autopista'
+2026-05-25 21:36:38,813 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:38,845 - src.analysis.semantic_detector - INFO - [PreFiltro] BLOQUEO → FP bloqueado: menor como víctima directa de violencia — verbo(s): ['asesina', 'asesina']
+2026-05-25 21:36:38,864 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:38,886 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+2026-05-25 21:36:38,995 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:39,003 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:39,004 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:39,052 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:39,067 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'morena'
+2026-05-25 21:36:39,083 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:39,115 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:39,168 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'sismo'
+2026-05-25 21:36:39,173 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pan '
+2026-05-25 21:36:39,414 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'redim'
+2026-05-25 21:36:39,422 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'aeropuerto'
+2026-05-25 21:36:39,475 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'nba'
+2026-05-25 21:36:39,536 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'mundial'
+2026-05-25 21:36:39,552 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'alerta de violencia de género'
+2026-05-25 21:36:39,582 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'pri '
+2026-05-25 21:36:39,716 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'proponen '
+2026-05-25 21:36:39,724 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:39,906 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoLexico] BLOQUEO → 'iva'
+2026-05-25 21:36:39,921 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propone '
+2026-05-25 21:36:39,938 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propone '
+2026-05-25 21:36:40,020 - src.analysis.semantic_detector - INFO - [PreFiltro/EscudoSuave] PENALIZACIÓN -0.35 → 'propone '
+2026-05-25 21:39:47,796 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,798 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,799 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,800 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,800 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,801 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,802 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'beca rita'
+2026-05-25 21:39:47,802 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'asesinan a mesero'
+2026-05-25 21:39:47,803 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,803 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'menor presenció'
+2026-05-25 21:39:47,804 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,804 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,804 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'muerte de su hijo'
+2026-05-25 21:39:47,805 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'homicidio de su hijo'
+2026-05-25 21:39:47,805 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'séptimo lugar'
+2026-05-25 21:39:47,806 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,806 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'muerte de su hijo'
+2026-05-25 21:39:47,807 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,808 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,808 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,809 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,810 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,810 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'tercer lugar'
+2026-05-25 21:39:47,810 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'tercer lugar'
+2026-05-25 21:39:47,811 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,812 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'era madre de 4'
+2026-05-25 21:39:47,813 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,814 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,814 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,815 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,815 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,816 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,816 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,817 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'hijos estaban presentes'
+2026-05-25 21:39:47,817 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,818 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,818 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'mujer asesina a su hija'
+2026-05-25 21:39:47,819 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,819 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,820 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,821 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'frente a su hijo'
+2026-05-25 21:39:47,821 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'feminicidio de una menor'
+2026-05-25 21:39:47,822 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'madre de dos'
+2026-05-25 21:39:47,823 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,823 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'adolescente es vinculado'
+2026-05-25 21:39:47,824 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,825 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,825 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,825 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,826 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'menor de 15 años por asesinato'
+2026-05-25 21:39:47,826 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,827 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,827 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,828 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,828 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,829 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,829 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,830 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,830 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,831 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,831 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'feminicidio de menor'
+2026-05-25 21:39:47,832 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,832 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'quedan en orfandad'
+2026-05-25 21:39:47,833 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,833 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,833 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,834 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,835 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,835 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'octavo lugar'
+2026-05-25 21:39:47,835 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,836 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,838 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,839 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,839 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,840 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,841 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,841 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'incrementa recursos para'
+2026-05-25 21:39:47,842 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,842 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,842 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'menor asesinada'
+2026-05-25 21:39:47,843 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,843 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'quedan en orfandad'
+2026-05-25 21:39:47,844 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,844 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,845 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'asesinan a pareja'
+2026-05-25 21:39:47,845 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,846 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,846 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,847 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'visibilizar la orfandad'
+2026-05-25 21:39:47,848 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,849 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,850 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'feminicidio de una menor'
+2026-05-25 21:39:47,850 - src.analysis.semantic_detector - INFO - [PostFiltro] MANTENER Media (sin patrón VP/FP): PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,851 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,851 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,852 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,852 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,853 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,853 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'formulan imputación a adolescente'
+2026-05-25 21:39:47,854 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'formulan imputación a adolescente'
+2026-05-25 21:39:47,854 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'sustraer a su hijo'
+2026-05-25 21:39:47,855 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,855 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,856 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,856 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,857 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,857 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'homicidio de su hijo'
+2026-05-25 21:39:47,858 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,858 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,859 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,859 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,860 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'doble feminicidio en cuautitlán, eric antonio 'n' las mató a pisadas dijo el hijo de cindy - eje central cronología del doble feminicidio en cuautitlán, eric antonio 'n' las mató a pisadas dijo el hijo'
+2026-05-25 21:39:47,860 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'niño que presenció'
+2026-05-25 21:39:47,861 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,862 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'doble feminicidio en cuautitlán, edomex; fue detenido junto a alejandro 'n' quien cuenta con una orden de aprehensión por abuso s*xual en contra de una menor 📺 los detalles con carlos zúñiga e - facebook.com milenio. . ▶️ detienen a eric antonio 'n' en acapulco por doble feminicidio en cuautitlán, edomex; fue detenido junto a alejandro 'n' quien cuenta con una orden de aprehensión por abuso s*xual en contra de una menor'
+2026-05-25 21:39:47,864 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'doble feminicidio de madre e hija en cuautitlán - n+ detienen en guerrero a presunto autor de doble feminicidio de madre e hija'
+2026-05-25 21:39:47,864 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'menor sí fue sustraída'
+2026-05-25 21:39:47,865 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'menores bajo resguardo'
+2026-05-25 21:39:47,865 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'feminicidio de cindy en cuautitlán: lo que se sabe del doble asesinato que dejó a dos menores en orfandad - serendipia - periodismo de datos feminicidio de cindy en cuautitlán: lo que se sabe del doble asesinato que dejó a dos menores en orfandad'
+2026-05-25 21:39:47,866 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,867 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'rapta a su hija'
+2026-05-25 21:39:47,867 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'madre de familia'
+2026-05-25 21:39:47,868 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'niña sustraída'
+2026-05-25 21:39:47,868 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'doble feminicidio - el sol de méxico robo de menor'
+2026-05-25 21:39:47,869 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'menor presenció'
+2026-05-25 21:39:47,869 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,870 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,870 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Media: PostFiltro VP confirmado: 'menor reportada como'
+2026-05-25 21:39:47,871 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,871 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'sustrae a su hija'
+2026-05-25 21:39:47,872 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Media: PostFiltro VP confirmado: 'feminicidio y suicidio en sonora; tragedia familiar deja a un menor en orfandad - el universal feminicidio y suicidio en sonora; tragedia familiar deja a un menor en orfandad'
+2026-05-25 21:39:47,872 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,873 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,873 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'se disparó 30%'
+2026-05-25 21:39:47,874 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,874 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,875 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: '884 niñas asesinadas en una década'
+2026-05-25 21:39:47,876 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,877 - src.analysis.semantic_detector - INFO - [PostFiltro] CONFIRMADO Alta: PostFiltro VP confirmado: 'madre de dos'
+2026-05-25 21:39:47,877 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'corrupción de menores'
+2026-05-25 21:39:47,877 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'matan a madre e hijo cuando intentaban'
+2026-05-25 21:39:47,878 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,879 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,879 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,880 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,881 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,881 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'menor asesinada'
+2026-05-25 21:39:47,882 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,883 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,883 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'hijo asesino'
+2026-05-25 21:39:47,884 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,884 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,884 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'hijo habría matado'
+2026-05-25 21:39:47,885 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'hijo la habría asesinado'
+2026-05-25 21:39:47,885 - src.analysis.semantic_detector - INFO - [PostFiltro] REVISAR Alta→Media: PostFiltro: sin patrón VP/FP claro, requiere revisión humana
+2026-05-25 21:39:47,886 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Alta→No relevante: PostFiltro FP: 'orfandad por feminicidio: 30 años'
+2026-05-25 21:39:47,886 - src.analysis.semantic_detector - INFO - [PostFiltro] DEGRADAR Media→No relevante: PostFiltro FP: 'orfandad por feminicidio: 30 años'
+2026-05-25 21:39:48,128 - src.analysis.bertopic_clustering - INFO - Iniciando clustering de 125 documentos
+2026-05-25 21:40:07,154 - sentence_transformers.base.model - INFO - No device provided, using cpu
+2026-05-25 21:40:07,312 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,326 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:07,407 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,422 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:07,423 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2.
+2026-05-25 21:40:07,504 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,516 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:07,598 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,612 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/README.md "HTTP/1.1 200 OK"
+2026-05-25 21:40:07,693 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,706 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/modules.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:07,788 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,801 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:07,883 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-25 21:40:07,965 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:07,979 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:08,370 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-25 21:40:08,535 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-25 21:40:08,618 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-25 21:40:08,718 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-25 21:40:08,801 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:08,816 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:08,913 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:08,926 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:09,012 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:09,030 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:09,131 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:09,145 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:09,228 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:09,242 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:09,328 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-25 21:40:09,412 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-25 21:40:12,139 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-25 21:40:12,518 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 21:40:12,531 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-25 21:40:12,616 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 "HTTP/1.1 200 OK"
+2026-05-25 21:40:12,622 - src.analysis.bertopic_clustering - INFO - Pipeline BERTopic construido exitosamente
+2026-05-25 21:40:24,619 - src.analysis.bertopic_clustering - INFO - Outliers iniciales: 21/125 (16.8%)
+2026-05-25 21:40:24,649 - src.analysis.bertopic_clustering - INFO - Clustering completado: 5 temas, outliers finales: 21/125 (16.8%)
+2026-05-25 21:40:43,309 - src.analysis.bertopic_clustering - INFO - Modelo guardado en /app/models/bertopic_nna_model
+2026-05-25 21:40:44,405 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-05-25 21:40:46,020 - src.database.repository - INFO - Batch insert: 596 noticias insertadas
+2026-05-25 21:40:46,453 - src.analysis.bertopic_clustering - INFO - Guardados 6 clusters en PostgreSQL
+2026-05-25 21:40:46,502 - root - INFO - Datos cargados: 596 noticias desde análisis
+2026-05-25 21:40:46,504 - root - INFO - Análisis background completado exitosamente
+2026-05-25 22:06:59,054 - root - INFO - Datos cargados: 596 noticias desde análisis
+2026-05-25 22:07:23,803 - src.analysis.investigator - INFO - Iniciando investigación para: Asesinan a Mujer Vendedora de Frituras en Irapuato...
+2026-05-25 22:07:23,804 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-25 22:07:27,071 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-25 22:07:27,073 - src.analysis.investigator - INFO - Query generada: Asesinan vendedora frituras Irapuato madre
+2026-05-25 22:07:27,074 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+vendedora+frituras+Irapuato+madre
+2026-05-25 22:07:27,926 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+vendedora+frituras+Irapuato+madre
+2026-05-25 22:07:28,765 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato
+2026-05-25 22:07:33,920 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato): 202
+2026-05-25 22:07:33,920 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato
+2026-05-25 22:07:41,785 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://lite.duckduckgo.com/lite/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato): 202
+2026-05-25 22:07:41,785 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-25 22:07:41,785 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Asesinan vendedora frituras Irapuato madre. Intentando con búsqueda nativa de Gemini...
+2026-05-25 22:07:41,786 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-25 22:07:54,405 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-25 22:07:54,406 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-25 22:09:31,930 - src.analysis.investigator - INFO - Iniciando investigación para: “Mi papá es malo”: revelan testimonio de niño que ...
+2026-05-25 22:09:31,932 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-25 22:09:35,972 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-25 22:09:35,975 - src.analysis.investigator - INFO - Query generada: feminicidio Cuautitlán madre abuela niño
+2026-05-25 22:09:35,975 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=feminicidio+Cuautitl%C3%A1n+madre+abuela+ni%C3%B1o
+2026-05-25 22:09:36,265 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=feminicidio+Cuautitl%C3%A1n+madre+abuela+ni%C3%B1o): 202
+2026-05-25 22:09:36,266 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=feminicidio+Cuautitl%C3%A1n+madre+abuela+ni%C3%B1o
+2026-05-25 22:09:36,534 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://lite.duckduckgo.com/lite/?q=feminicidio+Cuautitl%C3%A1n+madre+abuela+ni%C3%B1o): 202
+2026-05-25 22:09:36,535 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=%E2%80%9CMi+pap%C3%A1+es+malo%E2%80%9D%3A+revelan+testimonio+de+ni%C3%B1o+que+
+2026-05-25 22:09:44,718 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=%E2%80%9CMi+pap%C3%A1+es+malo%E2%80%9D%3A+revelan+testimonio+de+ni%C3%B1o+que+): 202
+2026-05-25 22:09:44,719 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=%E2%80%9CMi+pap%C3%A1+es+malo%E2%80%9D%3A+revelan+testimonio+de+ni%C3%B1o+que+
+2026-05-25 22:09:45,044 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://lite.duckduckgo.com/lite/?q=%E2%80%9CMi+pap%C3%A1+es+malo%E2%80%9D%3A+revelan+testimonio+de+ni%C3%B1o+que+): 202
+2026-05-25 22:09:45,045 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-05-25 22:09:45,045 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: feminicidio Cuautitlán madre abuela niño. Intentando con búsqueda nativa de Gemini...
+2026-05-25 22:09:45,046 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-05-25 22:09:58,378 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-05-25 22:09:58,380 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-05-25 22:14:24,715 - app - INFO - Logout: hector
+2026-05-25 22:15:09,742 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-26 00:44:52,826 - app - INFO - Login exitoso: hector desde 172.19.0.1
+2026-05-26 01:01:15,963 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'deja | ni', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-26 01:01:16,118 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%deja ni%', 'contenido_1': '%deja ni%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-26 01:01:25,993 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'madre | de', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-26 01:01:25,995 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%madre de%', 'contenido_1': '%madre de%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-26 01:01:40,266 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'madre | de', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-26 01:01:40,357 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%madre de%', 'contenido_1': '%madre de%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-05-26 01:01:48,680 - src.database.repository - ERROR - Error FTS: (psycopg2.errors.UndefinedColumn) column "rank_fts" does not exist
+LINE 9:             ORDER BY rank_fts * COALESCE(n.relevancia_final,...
+                             ^
+
+[SQL: 
+            SELECT
+                n.*,
+                ts_rank(n.busqueda_fts, query) AS rank_fts
+            FROM noticias n,
+                 to_tsquery('spanish_unaccent', %(query)s) query
+            WHERE n.busqueda_fts @@ query
+        
+            ORDER BY rank_fts * COALESCE(n.relevancia_final, n.score_compuesto, 0) DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'query': 'madre | de', 'limit': 20, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-26 01:01:48,683 - root - WARNING - FTS fallback: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+
+[SQL: SELECT count(*) AS count_1 
+FROM (SELECT noticias.id AS noticias_id, noticias.titulo AS noticias_titulo, noticias.contenido AS noticias_contenido, noticias.enlace AS noticias_enlace, noticias.fuente AS noticias_fuente, noticias.fecha AS noticias_fecha, noticias.score_feminicidio AS noticias_score_feminicidio, noticias.score_nna AS noticias_score_nna, noticias.score_compuesto AS noticias_score_compuesto, noticias.relevancia_final AS noticias_relevancia_final, noticias.clasificacion AS noticias_clasificacion, noticias.clasificacion_final AS noticias_clasificacion_final, noticias.score_semantico AS noticias_score_semantico, noticias.modo_deteccion AS noticias_modo_deteccion, noticias.cluster_id AS noticias_cluster_id, noticias.topic_id AS noticias_topic_id, noticias.topic_description AS noticias_topic_description, noticias.max_similarity AS noticias_max_similarity, noticias.content_hash AS noticias_content_hash, noticias.scrape_method AS noticias_scrape_method, noticias.menores_identificados AS noticias_menores_identificados, noticias.batch_id AS noticias_batch_id, noticias.investigacion_json AS noticias_investigacion_json, noticias.created_at AS noticias_created_at, noticias.updated_at AS noticias_updated_at 
+FROM noticias 
+WHERE noticias.titulo ILIKE %(titulo_1)s OR noticias.contenido ILIKE %(contenido_1)s) AS anon_1]
+[parameters: {'titulo_1': '%madre de%', 'contenido_1': '%madre de%'}]
+(Background on this error at: https://sqlalche.me/e/20/2j85)

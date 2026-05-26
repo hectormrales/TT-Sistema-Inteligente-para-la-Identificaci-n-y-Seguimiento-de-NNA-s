@@ -6,13 +6,13 @@
 	\UCitem{Versión}{\color{Gray}
 		1.0
 	}\UCitem{Autor}{\color{Gray}
-		Tesista de Ingeniería
+		Héctor Alberto Morales Martínez
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Analista de Datos
+		Analista de datos
 	}\UCitem{Propósito}{\begin{Titemize}
-		\Titem Alimentar la base de datos con información clasificada, deduplicada y libre del Efecto Péndulo.
+		\Titem Alimentar la base de datos con información clasificada, deduplicada y libre del efecto péndulo.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
 		\Titem URLs de medios o consultas pre-configuradas.
@@ -49,12 +49,12 @@
 \begin{UCtrayectoria}
 	\UCpaso[\UCActor] Dispara la ejecución del colector mediante el Dashboard o el temporizador del servidor.
 	\UCpaso[\UCsist] Obtiene la lista de fuentes habilitadas desde el esquema relacional \ErrorRef{CU-01}{E2}{Falla BD}.
-	\UCpaso[\UCsist] Ejecuta la recolección dinámica (StealthSession v7.0) evadiendo contramedidas \ErrorRef{CU-01}{E1}{Bloqueo WAF}.
+	\UCpaso[\UCsist] Ejecuta la recolección dinámica (StealthSession) evadiendo contramedidas \ErrorRef{CU-01}{E1}{Bloqueo WAF}.
 	\UCpaso[\UCsist] Aplica el filtro de la cascada de deduplicación y el algoritmo BERTopic para contexto global.
 	\UCpaso[\UCsist] Envía el texto purificado al \texttt{SemanticDetector} para su clasificación escalonada.
-	\UCpaso[\UCsist] Aplica la Capa 0 (Escudo Léxico) y la Capa 1 (Escudo Suave) para penalizar contenido no fáctico.
-	\UCpaso[\UCsist] Ejecuta la Capa 2 (Inferencia BETO Fine-Tuned) para obtener el score semántico base \ErrorRef{CU-01}{E3}{Memoria Saturada}.
-	\UCpaso[\UCsist] Aplica la Capa 3 (Bonificaciones Heurísticas) y emite el score final (Alta, Media, No relevante).
+	\UCpaso[\UCsist] Aplica la Capa 0 (escudo léxico) y la Capa 1 (escudo suave) para penalizar contenido no fáctico.
+	\UCpaso[\UCsist] Ejecuta la Capa 2 (inferencia BETO Fine-Tuned) para obtener el score semántico base \ErrorRef{CU-01}{E3}{Memoria Saturada}.
+	\UCpaso[\UCsist] Aplica la Capa 3 (bonificaciones heurísticas) y emite el score final (Alta, Media, No relevante).
 	\UCpaso[\UCsist] Almacena los resultados consolidados en la Base de Datos PostgreSQL \ErrorRef{CU-01}{E2}{Falla BD}.
 \end{UCtrayectoria}
 

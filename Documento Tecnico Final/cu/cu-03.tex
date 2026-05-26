@@ -1,16 +1,16 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-03}{Investigación Profunda Bajo Demanda}{
-	Permite al analista activar el módulo DeepInvestigator sobre una noticia clasificada como "Alta" para generar una ficha de caso estructurada mediante búsqueda web y síntesis con IA generativa (Gemini Flash).
+\begin{UseCase}{CU-03}{Investigación profunda bajo demanda}{
+	Permite al analista activar el módulo DeepInvestigator sobre una noticia clasificada como ``Alta'' para generar una ficha de caso estructurada mediante búsqueda web y síntesis con IA (Gemini Flash).
 }
 	\UCitem{Versión}{\color{Gray}
 		1.0
 	}\UCitem{Autor}{\color{Gray}
-		Tesista de Ingeniería
+		Héctor Alberto Morales Martínez
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Analista de Datos / Trabajador Social
+		Analista de datos / Trabajador social
 	}\UCitem{Propósito}{\begin{Titemize}
 		\Titem Profundizar en los detalles de un caso específico delegando la investigación multi-fuente y la síntesis a agentes de IA.
 	\end{Titemize}
@@ -18,17 +18,17 @@
 		\Titem ID de la noticia seleccionada.
 	\end{Titemize}
 	}\UCitem{Origen}{\begin{Titemize}
-		\Titem Botón "Investigar" en la tarjeta de la noticia dentro del Dashboard.
+		\Titem Botón ``Investigar mas en la web'' en la tarjeta de la noticia dentro del Dashboard.
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
 		\Titem Ficha estructurada en formato JSON renderizada en la interfaz (Ubicación, Víctimas, NNA Afectados, Situación Actual, Medios de Contacto).
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
-		\Titem Interfaz del Dashboard (Modal de resultados).
-		\Titem Base de Datos (almacenamiento de la investigación asociada a la noticia).
+		\Titem Interfaz del Dashboard (Casos objetivo).
+		\Titem Base de datos (almacenamiento de la investigación asociada a la noticia).
 	\end{Titemize}
 	}\UCitem{Precondiciones}{\begin{Titemize}
-		\Titem La noticia debe estar registrada en el sistema y tener clasificación "Alta".
+		\Titem La noticia debe estar registrada en el sistema y tener clasificación ``Alta''.
 		\Titem Debe existir conexión a Internet y cuota disponible en la API de Gemini.
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
@@ -47,8 +47,8 @@
 
 %--------------------------------------
 \begin{UCtrayectoria}
-	\UCpaso[\UCActor] Analiza el listado de noticias con score "Alta" en el Dashboard.
-	\UCpaso[\UCActor] Selecciona una noticia de interés y hace clic en el botón \IUbutton{Investigar}.
+	\UCpaso[\UCActor] Analiza el listado de noticias con score ``Alta'' en el dashboard.
+	\UCpaso[\UCActor] Selecciona una noticia de interés y hace clic en el botón \IUbutton{Investigar mas en la web}.
 	\UCpaso[\UCsist] Cambia el estado de la investigación a \texttt{running} y lanza un hilo de ejecución en segundo plano.
 	\UCpaso[\UCsist] Invoca a la API de Gemini para generar una consulta de búsqueda altamente específica (máximo 6 palabras) basada en la noticia \ErrorRef{CU-03}{E2}{Fallo API Gemini}.
 	\UCpaso[\UCsist] Ejecuta la búsqueda de la consulta en DuckDuckGo (HTML y Lite) \ErrorRef{CU-03}{E1}{Sin resultados DDG}.
@@ -62,9 +62,9 @@
 
 %--------------------------------------
 \begin{UCtrayectoriaA}{CU-03}{A}{DuckDuckGo no retorna URLs utilizables o bloquea la petición}
-	\UCpaso[\UCsist] Activa el mecanismo de "fallback" utilizando la herramienta nativa \texttt{GoogleSearch} de Gemini.
+	\UCpaso[\UCsist] Activa el mecanismo de ''fallback'' utilizando la herramienta nativa \texttt{GoogleSearch} de Gemini.
 	\UCpaso[\UCsist] Ejecuta la búsqueda de información directamente a través del modelo de lenguaje sin scraping externo.
-	\UCpaso[\UCsist] Si la búsqueda interna también falla, marca el estado como \texttt{error} y notifica al usuario en el Dashboard.
+	\UCpaso[\UCsist] Si la búsqueda interna también falla, marca el estado como \texttt{error} y notifica al usuario en el dashboard.
 	\UCpaso[] El Caso de Uso termina o continúa en el paso 8 de la trayectoria principal si el fallback es exitoso.
 \end{UCtrayectoriaA}
 
@@ -72,7 +72,7 @@
 \begin{UCtrayectoriaA}{CU-03}{B}{La API de Gemini responde con un error de cuota o falla de conexión}
 	\UCpaso[\UCsist] Captura la excepción de la API externa.
 	\UCpaso[\UCsist] Registra el error en los logs.
-	\UCpaso[\UCsist] Cambia el estado de la investigación a \texttt{error} indicando "Fallo en el servicio de IA".
+	\UCpaso[\UCsist] Cambia el estado de la investigación a \texttt{error} indicando ``Fallo en el servicio''.
 	\UCpaso[\UCActor] Visualiza el mensaje de error en la interfaz, permitiéndole reintentar más tarde.
 	\UCpaso[] El Caso de Uso termina de manera anormal.
 \end{UCtrayectoriaA}

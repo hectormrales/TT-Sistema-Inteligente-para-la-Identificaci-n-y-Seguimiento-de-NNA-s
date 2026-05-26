@@ -218,6 +218,13 @@ El contenedor \texttt{nna-webapp} sirve el dashboard interactivo y la interfaz d
     algorítmica del backend y asegurando un canal limpio para la consulta y visualización de los datos estructurados.
 \end{itemize}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/arquitecturascrap.png}
+    \caption{Arquitectura del sistema.}
+    \label{fig:arquitectura}
+\end{figure}
+
 \section{Especificación de requerimientos}
 \label{sec:met_trazabilidad_prototipos}
 
@@ -239,38 +246,28 @@ de garantizar el seguimiento del avance, la siguiente tabla muestra la matriz de
 \textbf{P3} &
 \textbf{P4} \\
 \hline
-\textbf{RF-01} &
-Extracción multi-fuente mediante técnicas de \textit{web scraping}. &
-$\sim$ & \checkmark & \checkmark & \checkmark & \checkmark \\
-\hline
-\textbf{RF-02} &
-Deduplicación y lógica en cascada (MD5 $\rightarrow$ SimHash $\rightarrow$ Jaccard $\rightarrow$ coseno TF-IDF). &
---- & --- & $\sim$ & \checkmark & \checkmark \\
-\hline
-\textbf{RF-03} &
-Clasificación semántica binaria profunda mediante el modelo Transformer \textbf{BETO Fine-tuned} localmente a nivel de tokens relacionales. &
---- & --- & --- & $\sim$ & \checkmark \\
-\hline
-\textbf{RF-04} &
-Mitigación de colisiones léxicas (\textit{efecto péndulo}) mediante un algoritmo híbrido de puntuación escalonada. &
---- & --- & --- & --- & \checkmark \\
-\hline
-\textbf{RF-05} &
-Agrupamiento semántico latente mediante la integración de \texttt{BERTopic}. &
---- & --- & --- & \checkmark & \checkmark \\
-\hline
-\textbf{RF-06} &
-Persistencia híbrida distribuida (PostgreSQL relacional con indexación GIN + CSV) para la recuperación de datos. &
---- & $\sim$ & $\sim$ & \checkmark & \checkmark \\
-\hline
-\textbf{RF-07} &
-Dashboard administrativo web interactivo con el módulo \texttt{DeepInvestigator} para validación, exportación masiva y gestión de fuentes. &
---- & --- & --- & --- & \checkmark \\
-\hline\hline
-\textbf{RNF-01} &
-\textbf{Seguridad y privacidad etica:} Anonimización programática de infancias (cumplimiento LGDNNA) e integridad transaccional ACID de extremo a extremo. &
---- & --- & $\sim$ & \checkmark & \checkmark \\
-\hline
+\textbf{RF-01} & Recolección multifuente & $\sim$ & \checkmark & \checkmark & \checkmark & \checkmark \\ \hline
+\textbf{RF-02} & Deduplicación en cascada & --- & --- & $\sim$ & \checkmark & \checkmark \\ \hline
+\textbf{RF-03} & Clasificación escalonada & --- & --- & --- & $\sim$ & \checkmark \\ \hline
+\textbf{RF-04} & Agrupamiento semántico (BERTopic) & --- & --- & --- & \checkmark & \checkmark \\ \hline
+\textbf{RF-05} & Investigación profunda bajo demanda & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RF-06} & Ingreso manual de enlace externo & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RF-07} & Gestión de casos en seguimiento & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RF-08} & Exportación CSV de seguimiento & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RF-09} & Búsqueda de Texto Completo (FTS) & --- & --- & --- & \checkmark & \checkmark \\ \hline
+\textbf{RF-10} & Exportación CSV del análisis completo & --- & \checkmark & \checkmark & \checkmark & \checkmark \\ \hline
+\textbf{RF-11} & Visualizaciones y estadísticas del corpus & --- & --- & \checkmark & \checkmark & \checkmark \\ \hline
+\textbf{RF-12} & Gestión del catálogo de fuentes & --- & --- & \checkmark & \checkmark & \checkmark \\ \hline
+\textbf{RF-13} & Autenticación de usuarios & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RF-14} & Limpieza de historial & --- & --- & --- & --- & \checkmark \\ \hline\hline
+\textbf{RNF-01} & Optimización de memoria (OOM) & --- & --- & --- & $\sim$ & \checkmark \\ \hline
+\textbf{RNF-02} & Evasión de contramedidas web (WAF) & --- & --- & --- & \checkmark & \checkmark \\ \hline
+\textbf{RNF-03} & Resiliencia en APIs externas & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RNF-04} & Integridad de base de datos (ACID) & --- & --- & --- & \checkmark & \checkmark \\ \hline
+\textbf{RNF-05} & Procesamiento asíncrono no bloqueante & --- & --- & \checkmark & \checkmark & \checkmark \\ \hline
+\textbf{RNF-06} & Autenticación y control de acceso & --- & --- & --- & --- & \checkmark \\ \hline
+\textbf{RNF-07} & Compatibilidad dual PostgreSQL/CSV & --- & --- & --- & \checkmark & \checkmark \\ \hline
+\textbf{RNF-08} & Trazabilidad por lote de análisis & --- & --- & --- & \checkmark & \checkmark \\ \hline
 \end{tabular}
 \end{table}
 

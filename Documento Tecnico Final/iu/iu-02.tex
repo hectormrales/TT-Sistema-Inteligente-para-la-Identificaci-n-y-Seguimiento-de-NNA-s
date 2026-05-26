@@ -3,8 +3,8 @@
 \section{IU-02 Gestión de Fuentes de Información}
 
 \subsection{Objetivo}
-	Permitir al administrador controlar el catálogo completo de orígenes periodísticos que alimentan
-	el pipeline de recolección, con capacidades de alta, edición, desactivación, eliminación y
+	Permitir al administrador el control del catálogo completo de orígenes periodísticos que alimentan
+	el flujo de recolección, con capacidades de alta, edición, desactivación, eliminación y
 	sondeo técnico previo de nuevas URLs.
 
 \subsection{Diseño}
@@ -47,7 +47,7 @@
 		      formulario antes de confirmar el alta (CU-02).
 		\item \IUbutton{Guardar Fuente}: Registra la nueva fuente en la base de datos una
 		      vez verificada (CU-02).
-		\item \IUbutton{Probar Fuente}: Ejecuta un sondeo completo sobre una fuente ya
+		\item \IUbutton{Probar fuente}: Ejecuta un sondeo completo sobre una fuente ya
 		      registrada, incluyendo extracción de artículos de muestra, y actualiza su
 		      estado en la tabla (\texttt{POST /api/sources/<id>/test}).
 		\item \IUbutton{Desactivar / Activar}: Alterna el campo \texttt{is\_active} de

@@ -1,4 +1,4 @@
-\documentclass[10pt,openany]{book}
+\documentclass[10pt,openany,oneside]{book}
 
 \usepackage{cdt/cdtUsecases}
 \usepackage{txfonts}
@@ -13,8 +13,8 @@
 	Seguimiento de los derechos de los NNA\\[0.4em] 
 	por feminicidios \vspace{0.7cm}}
 \subtitle{\Etapa}
-\author{\vspace{0.5cm}\textbf{Morales Martinez Hector Alberto}}
-\organization{Directores:\\\Directores}
+\author{Presentan:\\\Autor \vspace{0.5cm}}
+\organization{Directores:\\\Directores} 
 \showInstrucciones
 \date{Ciudad de México, a 4 de junio de 2026}
 
@@ -23,6 +23,24 @@
 \renewcommand{\listtablename}{Índice de tablas}
 \renewcommand{\tablename}{Tabla} 
 \ThisLRCornerWallPaper{1}{theme/bannerAzul}
+\AddToShipoutPictureBG*{%
+	\AtPageUpperLeft{%
+		\put(\dimexpr 1cm\relax, \dimexpr -4.3cm\relax){%
+			\makebox[0pt][l]{\includegraphics[height=3.0cm]{theme/ipn.png}}%
+		}%
+		\put(\dimexpr \paperwidth - 1cm\relax, \dimexpr -4.3cm\relax){%
+			\makebox[0pt][r]{\includegraphics[height=3.0cm]{theme/escom.png}}%
+		}%
+		\put(\dimexpr \paperwidth / 2\relax, \dimexpr -3.0cm\relax){%
+			\makebox[0pt][c]{%
+				\begin{tabular}{c}
+					\textbf{\huge INSTITUTO POLITÉCNICO NACIONAL} \\
+					\textbf{\LARGE ESCUELA SUPERIOR DE CÓMPUTO}
+				\end{tabular}%
+			}% 
+		}%
+	}% 
+}
 \maketitle
 \thispagestyle{empty}
 
@@ -45,9 +63,6 @@
 \include{1Introduccion}
 
 %=========================================================
-\include{Requerimientos}
-
-%=========================================================
 \include{2JustificacionAlcance}
 
 %=========================================================
@@ -60,13 +75,16 @@
 \include{5Metodologia}
 
 %=========================================================
-\include{6DesarrolloTT1}
+\include{Requerimientos}
 
 %=========================================================
 \include{Arquitectura}
 
 %=========================================================
 \include{DisenoDeDatos}
+
+%=========================================================
+\include{6DesarrolloTT1}
 
 %=========================================================
 \include{7DesarrolloTT2}

@@ -1,20 +1,22 @@
 \babel@toc {spanish}{}\relax 
-\contentsline {table}{\numberline {1}{\ignorespaces Información general y acta de constitución del proyecto}}{\es@scroman {vii}}{table.0.1}%
+\contentsline {table}{\numberline {1}{\ignorespaces Información general y acta de constitución del proyecto}}{\es@scroman {viii}}{table.0.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2.1}{\ignorespaces Distinción entre información procesada y excluida}}{7}{table.2.1}%
-\contentsline {table}{\numberline {2.2}{\ignorespaces Correspondencia entre objetivos del protocolo y componentes implementados}}{10}{table.2.2}%
+\contentsline {table}{\numberline {2.1}{\ignorespaces Distinción entre información procesada y excluida}}{8}{table.2.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Comparativa de técnicas de extracción de datos para monitoreo de medios}}{24}{table.4.1}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Comparativa de modelos de representación lingüística para clasificación semántica}}{28}{table.4.2}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}}{32}{table.4.3}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Comparativa de técnicas de extracción de datos para monitoreo de medios}}{27}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Comparativa de modelos de representación lingüística para clasificación semántica}}{31}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}}{37}{table.4.3}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Evolución del stack tecnológico}}{37}{table.5.1}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Matriz de trazabilidad general}}{39}{table.5.2}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces Comparativa de métricas de TT1 contra metas del TT2}}{43}{table.6.1}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {7.1}{\ignorespaces Casos de uso del módulo de investigación profunda}}{54}{table.7.1}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Evolución del stack tecnológico}}{42}{table.5.1}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Matriz de trazabilidad general}}{44}{table.5.2}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Comparativa de métricas de TT1 contra metas del TT2}}{77}{table.7.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces Casos de uso del módulo de investigación profunda}}{88}{table.8.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {9.1}{\ignorespaces Distribución de duplicados eliminados por fase de la cascada de deduplicación}}{91}{table.9.1}%
+\contentsline {table}{\numberline {9.2}{\ignorespaces Distribución de noticia por etapa en la clasificación escalonada}}{91}{table.9.2}%
+\contentsline {table}{\numberline {9.3}{\ignorespaces Evaluación comparativa de métricas TT1/P2 vs. metas TT2 vs. resultados P4}}{93}{table.9.3}%
