@@ -1,9 +1,7 @@
 % ARCHIVO DE BIBLIOGRAFÍA
 % Referencias organizadas por categoría para facilitar su gestión
 
-% ============================================================================
 % CONTEXTO SOCIAL Y FEMINICIDIO
-% ============================================================================
 
 @book{lagarde2008antropologia,
   author    = {Lagarde y de los Ríos, Marcela},
@@ -61,9 +59,7 @@
   year        = {2023}
 }
 
-% ============================================================================
 % DATOS OFICIALES Y GOBIERNO
-% ============================================================================
 
 @misc{inegi2023estadisticas,
   author       = {{Instituto Nacional de Estadística y Geografía (INEGI)}},
@@ -89,9 +85,7 @@
   note         = {Accedido: 2025-11-05}
 }
 
-% ============================================================================
 % MARCO LEGAL
-% ============================================================================
 
 @misc{lgdnna2014,
   author       = {{Congreso de la Unión}},
@@ -117,9 +111,7 @@
   note         = {Adoptada: 20 de noviembre de 1989. Ratificada por México: 21 de septiembre de 1990}
 }
 
-% ============================================================================
 % PROCESAMIENTO DE LENGUAJE NATURAL
-% ============================================================================
 
 @book{jurafsky2023speech,
   author    = {Jurafsky, Dan and Martin, James H.},
@@ -181,9 +173,7 @@
   pages   = {133--142}
 }
 
-% ============================================================================
 % MACHINE LEARNING Y CLUSTERING
-% ============================================================================
 
 @book{geron2022hands,
   author    = {Géron, Aurélien},
@@ -232,9 +222,7 @@
   pages   = {2825--2830}
 }
 
-% ============================================================================
 % WEB SCRAPING Y RECOLECCIÓN DE DATOS
-% ============================================================================
 
 @book{mitchell2018web,
   author    = {Mitchell, Ryan},
@@ -262,9 +250,7 @@
   note         = {\url{https://www.rfc-editor.org/rfc/rfc3986}}
 }
 
-% ============================================================================
 % TECNOLOGÍAS Y FRAMEWORKS
-% ============================================================================
 
 @misc{python,
   author       = {{Python Software Foundation}},
@@ -314,9 +300,7 @@
   note         = {Biblioteca de Python para manipulación de datos}
 }
 
-% ============================================================================
 % METODOLOGÍAS DE DESARROLLO
-% ============================================================================
 
 @book{beck2000extreme,
   author    = {Beck, Kent},
@@ -354,9 +338,7 @@
   pages   = {61--72}
 }
 
-% ============================================================================
 % ARQUITECTURA Y DISEÑO DE SOFTWARE
-% ============================================================================
 
 @book{newman2015building,
   author    = {Newman, Sam},
@@ -382,9 +364,7 @@
   type   = {Tesis doctoral}
 }
 
-% ============================================================================
 % TRABAJOS RELACIONADOS
-% ============================================================================
 
 @inproceedings{kumar2018hate,
   author    = {Kumar, Ritesh and Ojha, Atul Kr. and Malmasi, Shervin and Zampieri, Marcos},
@@ -410,22 +390,6 @@
   year      = {2018},
   pages     = {1546--1557}
 }
-
-% ============================================================================
-% NOTAS DE USO
-% ============================================================================
-% Para citar en el documento LaTeX usar:
-%   \cite{clave}           -> [1]
-%   \citep{clave}          -> (Autor, año) con natbib
-%   \citet{clave}          -> Autor (año) con natbib
-%   \cite{clave1,clave2}   -> [1, 2]
-%
-% Ejemplo de citas en texto:
-%   El feminicidio es definido por \citet{lagarde2008antropologia} como...
-%   Los datos oficiales muestran un incremento \citep{sesnsp2023incidencia}.
-%   El algoritmo DBSCAN \cite{ester1996dbscan} permite identificar outliers...
-
-% Missing entries added automatically
 @article{grootendorst2022bertopic,
   title   = {BERTopic: Neural topic modeling with a class-based TF-IDF procedure},
   author  = {Grootendorst, Maarten},
@@ -501,9 +465,6 @@
   publisher = {O'Reilly Media}
 }
 
-% ============================================================================
-% OPTIMIZACIÓN DE TRANSFORMERS Y HARDWARE (NUEVAS ENTRADAS)
-% ============================================================================
 
 @inproceedings{settles2009active,
   author      = {Settles, Burr},
@@ -530,9 +491,7 @@
   note    = {Justificación teórica del congelamiento de capas en arquitecturas BERT}
 }
 
-% ============================================================================
-% WEB SCRAPING AVANZADO Y SEGURIDAD PERIMETRAL (NUEVAS ENTRADAS)
-% ============================================================================
+% WEB SCRAPING AVANZADO Y SEGURIDAD PERIMETRAL 
 
 @misc{altheide2019ja3,
   author       = {Altheide, John and Brotherston, John},
@@ -550,9 +509,8 @@
   pages     = {45--58}
 }
 
-% ============================================================================
-% MODELOS GENERATIVOS DE LENGUAJE (NUEVAS ENTRADAS)
-% ============================================================================
+
+% MODELOS GENERATIVOS DE LENGUAJE
 
 @techreport{gemini2023report,
   title       = {Gemini: A Family of Highly Capable Multimodal Models},
@@ -561,4 +519,178 @@
   year        = {2023},
   type        = {Technical Report},
   note        = {Sustento técnico del motor generativo implementado en DeepInvestigator}
+}
+
+% Alias para \cite{google2023gemini} usado en el Marco Teórico
+@techreport{google2023gemini,
+  title       = {Gemini: A Family of Highly Capable Multimodal Models},
+  author      = {{Google DeepMind}},
+  institution = {Google DeepMind},
+  year        = {2023},
+  type        = {Technical Report},
+  note        = {Modelo generativo Gemini Flash empleado en el módulo DeepInvestigator}
+}
+
+@article{brown2020language,
+  author  = {Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie
+             and Kaplan, Jared and Dhariwal, Prafulla and Neelakantan, Arvind and
+             Shyam, Pranav and Sastry, Girish and Askell, Amanda and others},
+  title   = {Language Models are Few-Shot Learners},
+  journal = {Advances in Neural Information Processing Systems},
+  volume  = {33},
+  pages   = {1877--1901},
+  year    = {2020},
+  note    = {GPT-3: fundamento teórico de los LLM decoder}
+}
+
+@article{wei2022emergent,
+  author  = {Wei, Jason and Tay, Yi and Bommasani, Rishi and Raffel, Colin and
+             Zoph, Barret and Borgeaud, Sebastian and Yogatama, Dani and Bosma,
+             Maarten and Zhou, Denny and Metzler, Donald and others},
+  title   = {Emergent Abilities of Large Language Models},
+  journal = {Transactions on Machine Learning Research},
+  year    = {2022},
+  note    = {Propiedad de emergencia en LLM de gran escala}
+}
+
+
+% ALGORITMOS DE HASHING Y DEDUPLICACIÓN
+
+@techreport{rivest1992md5,
+  author      = {Rivest, Ronald},
+  title       = {The MD5 Message-Digest Algorithm},
+  institution = {MIT Laboratory for Computer Science and RSA Data Security, Inc.},
+  year        = {1992},
+  type        = {RFC 1321},
+  note        = {Internet Engineering Task Force. \url{https://www.rfc-editor.org/rfc/rfc1321}}
+}
+
+@article{jaccard1912distribution,
+  author  = {Jaccard, Paul},
+  title   = {The Distribution of the Flora in the Alpine Zone},
+  journal = {New Phytologist},
+  year    = {1912},
+  volume  = {11},
+  number  = {2},
+  pages   = {37--50}
+}
+
+@inproceedings{charikar2002similarity,
+  author    = {Charikar, Moses S.},
+  title     = {Similarity Estimation Techniques from Rounding Algorithms},
+  booktitle = {Proceedings of the 34th Annual ACM Symposium on Theory of Computing (STOC)},
+  year      = {2002},
+  pages     = {380--388},
+  publisher = {ACM},
+  note      = {Algoritmo SimHash (Locality-Sensitive Hashing)}
+}
+
+% TOKENIZACIÓN Y REPRESENTACIÓN TEXTUAL
+
+@inproceedings{schuster2012wordpiece,
+  author    = {Schuster, Mike and Nakamura, Kaisuke},
+  title     = {Japanese and Korean Voice Search},
+  booktitle = {2012 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  year      = {2012},
+  pages     = {5149--5152},
+  publisher = {IEEE},
+  note      = {Introduce el algoritmo WordPiece de segmentación sub-léxica}
+}
+
+@book{salton1988term,
+  author    = {Salton, Gerard and Buckley, Chris},
+  title     = {Term-Weighting Approaches in Automatic Text Retrieval},
+  journal   = {Information Processing \& Management},
+  year      = {1988},
+  volume    = {24},
+  number    = {5},
+  pages     = {513--523},
+  publisher = {Elsevier},
+  note      = {Formulación clásica del modelo TF-IDF}
+}
+
+@article{yin2019benchmarking,
+  author  = {Yin, Wenpeng and Hay, Jamaal and Roth, Dan},
+  title   = {Benchmarking Zero-shot Text Classification: Datasets, Evaluation and Entailment Approach},
+  journal = {arXiv preprint arXiv:1909.00161},
+  year    = {2019},
+  note    = {Clasificación zero-shot por inferencia de lenguaje natural}
+}
+
+% REDUCCIÓN DE DIMENSIONALIDAD Y MALDICIÓN
+
+@inproceedings{beyer1999nearest,
+  author    = {Beyer, Kevin and Goldstein, Jonathan and Ramakrishnan, Raghu and Shaft, Uri},
+  title     = {When Is ``Nearest Neighbor'' Meaningful?},
+  booktitle = {International Conference on Database Theory (ICDT)},
+  year      = {1999},
+  pages     = {217--235},
+  publisher = {Springer},
+  note      = {Maldición de la dimensionalidad en espacios de alta dimensión}
+}
+
+% BASES DE DATOS RELACIONALES
+
+@article{stonebraker1986design,
+  author  = {Stonebraker, Michael and Rowe, Lawrence A.},
+  title   = {The Design of POSTGRES},
+  journal = {ACM SIGMOD Record},
+  year    = {1986},
+  volume  = {15},
+  number  = {2},
+  pages   = {340--355},
+  note    = {Artículo fundacional de PostgreSQL}
+}
+
+@book{ramakrishnan2000database,
+  author    = {Ramakrishnan, Raghu and Gehrke, Johannes},
+  title     = {Database Management Systems},
+  edition   = {3rd},
+  year      = {2000},
+  publisher = {McGraw-Hill},
+  address   = {New York},
+  note      = {Cubre estructuras de índices GIN e índices invertidos}
+}
+
+% SISTEMAS NEURO-SIMBÓLICOS E IA ÉTICA
+
+@article{garcez2022neurosymbolic,
+  author  = {Garcez, Artur d'Avila and Lamb, Luis C.},
+  title   = {Neurosymbolic AI: The 3rd Wave},
+  journal = {Artificial Intelligence Review},
+  year    = {2023},
+  volume  = {56},
+  pages   = {12387--12406},
+  note    = {Revisión del paradigma neuro-simbólico; fundamento teórico del Scoring Escalonado}
+}
+
+@misc{oecd2019,
+  author       = {{Organisation for Economic Co-operation and Development (OECD)}},
+  title        = {Recommendation of the Council on Artificial Intelligence},
+  year         = {2019},
+  howpublished = {OECD Legal Instruments, OECD/LEGAL/0449},
+  note         = {Principios de IA ética: transparencia, responsabilidad y bienestar humano.
+                  \url{https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449}}
+}
+
+% OPTIMIZACIÓN DE ENTRENAMIENTO
+
+@inproceedings{ott2018scaling,
+  author    = {Ott, Myle and Edunov, Sergey and Grangier, David and Auli, Michael},
+  title     = {Scaling Neural Machine Translation},
+  booktitle = {Proceedings of the Third Conference on Machine Translation (WMT)},
+  year      = {2018},
+  pages     = {1--9},
+  publisher = {Association for Computational Linguistics},
+  note      = {Fundamento del patrón Gradient Accumulation para simular lotes grandes}
+}
+
+% PROTOCOLOS WEB
+
+@misc{koster1994robots,
+  author       = {Koster, Martijn},
+  title        = {A Standard for Robot Exclusion},
+  year         = {1994},
+  howpublished = {\url{https://www.robotstxt.org/orig.html}},
+  note         = {Protocolo robots.txt. Accedido: 2026-01-10}
 }

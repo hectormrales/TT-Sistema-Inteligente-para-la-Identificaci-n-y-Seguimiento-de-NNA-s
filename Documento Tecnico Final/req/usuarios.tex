@@ -1,0 +1,66 @@
+% !TeX root = ../proyecto.tex
+
+\section{Perfiles de Usuario}
+
+A continuación se describen los perfiles de los actores (humanos o de software) que interactúan con el sistema.
+
+\begin{Usuario}{Analista}{Analista de Datos / Trabajador Social}
+    \Uitem[Descripción:] Usuario principal del sistema. Encargado de monitorear la
+    recolección automatizada, interpretar los tableros de visualización, realizar
+    investigaciones profundas sobre casos de alta relevancia y gestionar la lista de
+    seguimiento de NNA en situación de orfandad.
+    \Uitem[Funciones:] 
+        \begin{itemize}
+            \item Inicio y cierre de sesión autenticada en el sistema (CU-06).
+            \item Revisión del corpus clasificado, gráficas de distribución temporal,
+            de relevancia, geográfica y por fuente en el Dashboard (IU-01, IU-06).
+            \item Búsqueda de texto completo sobre el corpus clasificado mediante FTS
+            con stemming en español (CU-07).
+            \item Filtrado del corpus por lote de análisis (\texttt{batch\_id}),
+            clasificación y presencia de NNA.
+            \item Ejecución de la Investigación Profunda Bajo Demanda (módulo
+            \texttt{DeepInvestigator}) sobre noticias de Alta relevancia, generando
+            una ficha de caso en JSON con 7 campos estructurados (CU-03).
+            \item Ingestión manual de enlaces externos mediante URL arbitraria no
+            capturada por el pipeline automático (CU-04).
+            \item Gestión de la lista de seguimiento activo de casos investigados y
+            exportación a CSV (\texttt{seguimiento\_casos\_nna.csv}) (CU-05).
+        \end{itemize}
+\end{Usuario}
+
+\begin{Usuario}{Admin}{Administrador del Sistema}
+    \Uitem[Descripción:] Encargado del mantenimiento operativo y de la configuración
+    del sistema web. Hereda \textit{todas} las funciones del perfil Analista y
+    adicionalmente gestiona el catálogo de fuentes, las cuentas de usuario y el
+    historial del pipeline.
+    \Uitem[Funciones:] 
+        \begin{itemize}
+            \item Todas las funciones del perfil Analista.
+            \item Gestión completa (Alta, Baja y Cambios) del catálogo de Fuentes de
+            Información periodística, incluyendo sondeo técnico previo
+            (\texttt{probe\_url}) y prueba de extracción de artículos muestra
+            (\texttt{test\_source}) (CU-02).
+            \item Activación y desactivación de fuentes predeterminadas del sistema
+            (el administrador no puede eliminarlas permanentemente, solo desactivarlas).
+            \item Registro y administración de cuentas de usuario del sistema
+            (alta de nuevos analistas, habilitación y deshabilitación de cuentas).
+            \item Limpieza del historial completo de análisis: registros en PostgreSQL,
+            archivos CSV del directorio \texttt{data/} y caché de URLs procesadas
+            \texttt{seen\_urls.json} (RF-14).
+        \end{itemize}
+\end{Usuario}
+
+\begin{Usuario}[usecase]{Cronjob}{Sistema Automatizado (Cronjob)}
+    \Uitem[Descripción:] Actor lógico de software. Representa al disparador automático
+    de tareas en segundo plano, independiente de la interfaz web. No requiere
+    autenticación de usuario.
+    \Uitem[Funciones:] 
+        \begin{itemize}
+            \item Disparar la ejecución iterativa del pipeline completo de recolección,
+            deduplicación y análisis semántico en los intervalos configurados por el
+            administrador (CU-01).
+            \item Asignar un identificador de lote único (\texttt{batch\_id}) a cada
+            ejecución, garantizando la trazabilidad y el filtrado por corrida en el
+            Dashboard (RNF-08).
+        \end{itemize}
+\end{Usuario}

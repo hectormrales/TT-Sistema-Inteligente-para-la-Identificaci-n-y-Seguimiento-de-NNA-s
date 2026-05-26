@@ -1,0 +1,84 @@
+% !TeX root = ../proyecto.tex
+
+\section{Requerimientos Funcionales}
+
+A continuación se enlistan los requerimientos funcionales del sistema, los cuales definen las
+capacidades de recolección, análisis, investigación e interacción con el dashboard web.
+
+\begin{requerimientos}
+    % \FRitem{ID}{Nombre}{Descripción}{Prioridad}{Referencia}
+
+    \FRitem{RF-01}{Recolección Multifuente}{El sistema debe extraer noticias a partir de canales
+    RSS, consultas directas a Google News y scraping HTML con emulación de fingerprint TLS
+    (\texttt{StealthSession} v7.0) sobre fuentes sin feed RSS.}{Muy Alta}{CU-01, CU-02}
+
+    \FRitem{RF-02}{Deduplicación en Cascada}{El sistema debe filtrar noticias repetidas mediante
+    un pipeline de cuatro fases secuenciales: Hash MD5 exacto, similitud de Jaccard sobre tokens
+    ($J \geq 0.70$), SimHash (distancia Hamming $\leq 6$ bits) y similitud coseno TF-IDF
+    ($\cos \geq 0.85$).}{Alta}{CU-01}
+
+    \FRitem{RF-03}{Clasificación Escalonada (Tiered Scoring v7.1)}{El motor semántico debe procesar
+    las noticias a través de 4 capas autónomas: Capa~0 Escudo Léxico (bloqueo absoluto por dominio
+    ajeno), Capa~1 Escudo Suave (penalización aditiva $\delta = -0.35$ por contenido legislativo),
+    Capa~2 Inferencia BETO Fine-Tuned (o Zero-Shot como fallback) y Capa~3 Bonificación Heurística
+    por evidencia explícita de orfandad.}{Muy Alta}{CU-01}
+
+    \FRitem{RF-04}{Agrupamiento Semántico (BERTopic)}{El sistema debe emplear el pipeline
+    UMAP + HDBSCAN + c-TF-IDF de BERTopic para agrupar noticias sobre el mismo hecho fáctico
+    en tópicos semánticos, con reducción de outliers de 81.4\% a máximo 55\% mediante tres
+    estrategias progresivas.}{Alta}{CU-01}
+
+    \FRitem{RF-05}{Investigación Profunda Bajo Demanda}{El sistema debe sintetizar una ficha de
+    caso estructurada en JSON con siete campos (\texttt{ubicacion}, \texttt{victimas},
+    \texttt{ninos\_afectados}, \texttt{edades}, \texttt{situacion\_actual},
+    \texttt{medios\_contacto}, \texttt{resumen}) a partir de una noticia, usando DuckDuckGo
+    (HTML + Lite) y el LLM Gemini Flash, ejecutado de forma asíncrona en hilo de fondo.}{Muy Alta}{CU-03}
+
+    \FRitem{RF-06}{Ingestión Manual por Enlace Externo}{El analista debe poder introducir una URL
+    periodística arbitraria para que el pipeline de \texttt{DeepInvestigator} extraiga su contenido
+    mediante \texttt{StealthSession}, valide el cuerpo periodístico con Gemini Flash y genere la
+    ficha de caso correspondiente.}{Media}{CU-04}
+
+    \FRitem{RF-07}{Gestión de Casos en Seguimiento}{El sistema debe permitir al analista marcar
+    noticias investigadas (\texttt{en\_seguimiento = True} en el JSON de investigación) para
+    mantenerlas en una lista de monitoreo activo consultable en la pantalla \IUref{IU-04}{Seguimiento}.
+    }{Alta}{CU-05}
+
+    \FRitem{RF-08}{Exportación CSV de Seguimiento}{El sistema debe permitir descargar los registros
+    en seguimiento en formato tabular (\texttt{seguimiento\_casos\_nna.csv}), aplanando los campos
+    del JSON de investigación en columnas individuales (ubicación, víctimas, NNA afectados, edades,
+    situación actual, scores semánticos y enlace original).}{Alta}{CU-05}
+
+    \FRitem{RF-09}{Búsqueda de Texto Completo (FTS)}{El sistema debe permitir búsquedas semánticas
+    sobre el corpus mediante FTS nativo de PostgreSQL con índices GIN y stemming en español
+    (diccionario Snowball), con fallback a búsqueda textual expandida con sinónimos del dominio
+    (\texttt{SynonymDictionary}) sobre CSV.}{Alta}{CU-07}
+
+    \FRitem{RF-10}{Exportación CSV del Análisis Completo}{El sistema debe permitir descargar la
+    totalidad del corpus clasificado en formato CSV, exportando directamente desde PostgreSQL
+    o desde el archivo de datos en memoria como alternativa.}{Media}{CU-01}
+
+    \FRitem{RF-11}{Gráficas y Estadísticas del Corpus}{El sistema debe proveer datos para cuatro
+    visualizaciones: distribución temporal de noticias por mes, distribución de relevancia
+    (Alta/Media/Baja/No relevante), distribución geográfica por estado de México (top 15) y
+    top 10 de fuentes por volumen de noticias.}{Media}{CU-01}
+
+    \FRitem{RF-12}{Gestión del Catálogo de Fuentes}{El administrador debe poder crear, leer,
+    actualizar y eliminar fuentes periodísticas en el catálogo. Fuentes predeterminadas
+    (\texttt{is\_predefined = True}) solo pueden desactivarse, no eliminarse. El sistema debe
+    ofrecer sondeo técnico previo (\texttt{probe\_url}) que detecte tipo de fuente, accesibilidad
+    WAF y feeds RSS disponibles sin persistir la URL.}{Alta}{CU-02}
+
+    \FRitem{RF-13}{Autenticación de Usuarios}{El sistema debe permitir el inicio y cierre de
+    sesión mediante credenciales (usuario y contraseña), establecer sesiones persistentes con
+    Flask-Login y proteger todos los endpoints del dashboard con el decorador
+    \texttt{@login\_required}. Las rutas de salud del sistema (\texttt{/health}) quedan exentas.
+    }{Alta}{CU-06}
+
+    \FRitem{RF-14}{Limpieza de Historial}{El sistema debe permitir al administrador borrar
+    completamente el historial de análisis, incluyendo todos los registros de la base de datos
+    PostgreSQL, los archivos CSV del directorio \texttt{data/} y la caché de URLs procesadas
+    (\texttt{seen\_urls.json}), para reiniciar el pipeline desde cero.}{Baja}{CU-01}
+
+\end{requerimientos}
+\FootnotePrioridad

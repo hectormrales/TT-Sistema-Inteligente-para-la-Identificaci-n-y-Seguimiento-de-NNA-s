@@ -1,0 +1,54 @@
+% !TeX root = ../proyecto.tex
+%--------------------------------------
+\section{IU-01 Dashboard Principal de Noticias}
+
+\subsection{Objetivo}
+	Permitir al analista monitorear el corpus de noticias clasificadas, consultar estadísticas del
+	pipeline, realizar búsquedas de texto completo y acceder a las funcionalidades de investigación
+	profunda y seguimiento de casos.
+
+\subsection{Diseño}
+	Esta pantalla es la vista inicial del sistema tras autenticarse. En la cabecera superior se
+	presenta un selector de \textbf{lote de análisis} (\textit{batch\_id}) y un selector de
+	clasificación (Alta / Media / Baja / Todas) que filtran el contenido de forma sincronizada.
+	Debajo, una fila de \textbf{tarjetas de métricas} (widgets) muestra: total de noticias,
+	noticias con NNA identificados, noticias de Alta relevancia, Media relevancia y número de
+	tópicos BERTopic generados. A continuación, la interfaz se divide en dos áreas: un
+	\textbf{panel de gráficas} (distribución temporal, distribución de relevancia, distribución
+	geográfica por estado y top de fuentes) y un \textbf{panel de lista} con tarjetas interactivas
+	paginadas de noticias. Cada tarjeta incluye: título, fuente, fecha, score semántico BETO,
+	etiquetas de clasificación codificadas por color (rojo: Alta, naranja: Media, gris: Baja) y
+	tópico BERTopic asignado. La barra superior contiene un formulario de búsqueda de texto
+	completo (FTS) y un campo para la ingestión de URL externa.
+
+\IUfig[.9]{dashboard_principal}{IU-01}{Dashboard Principal de Noticias.}
+
+\subsection{Salidas}
+	\begin{itemize}
+		\item Tarjetas de métricas: total noticias, noticias NNA, Alta, Media, número de tópicos.
+		\item Gráficas interactivas: temporal (noticias por mes), relevancia (dona), geográfico
+		      (barras horizontales, top 15 estados) y fuentes (barras, top 10 medios).
+		\item Lista paginada de noticias con título, fuente, fecha, score BETO y tópico.
+		\item Notificaciones de estado del pipeline (en ejecución / completado / error).
+	\end{itemize}
+
+\subsection{Entradas}
+	\begin{itemize}
+		\item Término de búsqueda FTS (barra de búsqueda, referencia a CU-07).
+		\item URL externa para ingestión manual (formulario, referencia a CU-04).
+		\item Selector de clasificación (Alta / Media / Baja / Todas).
+		\item Selector de lote de análisis (\texttt{batch\_id}: último, todos o específico).
+		\item Filtro ``Solo NNA'' (interruptor booleano).
+	\end{itemize}
+
+\subsection{Comandos}
+	\begin{itemize}
+		\item \IUbutton{Ejecutar Análisis}: Dispara el pipeline completo de recolección y
+		      clasificación en segundo plano (CU-01).
+		\item \IUbutton{Investigar}: Activa el módulo \texttt{DeepInvestigator} sobre la noticia
+		      seleccionada y abre el modal \IUref{IU-03}{Modal de Investigación Profunda} (CU-03).
+		\item \IUbutton{Investigar URL}: Procesa la URL introducida manualmente (CU-04).
+		\item \IUbutton{Exportar CSV}: Descarga el corpus completo clasificado (RF-10).
+		\item \IUbutton{Limpiar Historial}: Borra todos los registros de la base de datos,
+		      los CSVs y la caché de URLs procesadas (RF-14).
+	\end{itemize}

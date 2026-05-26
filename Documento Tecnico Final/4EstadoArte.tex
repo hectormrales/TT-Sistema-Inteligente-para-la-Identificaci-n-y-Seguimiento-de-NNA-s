@@ -4,8 +4,9 @@
 \chapter{Estado del Arte}
 \label{cap:estadoarte}
 
-En este capítulo se exponen las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección, sistematización y análisis de datos en el contexto de la violencia de género y sus externalidades.
-Su analisispermite identificar la brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura propuesta en este Trabajo Terminal.
+En este capítulo se exponen las plataformas, metodologías y proyectos de investigación contemporáneos orientados a la recolección,
+sistematización y análisis de datos en el contexto de la violencia de género y sus consecuencias. Su analisispermite identificar la
+brecha tecnológica actual y fundamentar el carácter innovador de la arquitectura propuesta en este Trabajo Terminal.
  
 \section{Sistemas de monitoreo de medios tradicionales}
 \label{sec:ea_monitoreo_tradicional}
@@ -16,13 +17,19 @@ Google Alerts, Meltwater, Mention). Estas herramientas funcionan principalmente 
 de agregación RSS y rastreadores web de propósito general \cite{weisser2020media}.
 
 No obstante, la debilidad fundamental de estos sistemas radica en su dependencia de cadenas de texto
-y expresiones regulares (RegEx). Al carecer de capacidades de inferencia semántica la búsqueda de
-heurísticas combinadas como "feminicidio" y "NNA" o "menores" produce un volumen estadísticamente
-inmanejable de ruido informativo y falsos positivos. Por ejemplo, estos sistemas son incapaces de
-discernir sintácticamente entre un reporte donde el agresor resultó ser menor de edad, una noticia
-puramente estadística o un caso donde un menor quedó en orfandad como víctima indirecta. Esta
-incapacidad de inferencia contextual hace que las herramientas tradicionales resulten operativamente
-ineficaces para el dominio específico de este proyecto.
+y expresiones regulares (RegEx). Al carecer de capacidades de inferencia semántica, la búsqueda de
+heurísticas combinadas como \textit{``feminicidio''} y \textit{``NNA''} o \textit{``menores''} produce un volumen
+estadísticamente inmanejable de ruido informativo y falsos positivos. Esta limitación fue empíricamente
+validada durante el TT1: el Prototipo~1, basado en 15 palabras clave aisladas con vectorización TF-IDF
+y agrupamiento K-Means, registró una tasa de falsos positivos del \textbf{80\%}. El Prototipo~2, que
+enriqueció el detector a 72 patrones regex distribuidos en tres categorías (40 de feminicidio, 15 de NNA
+y 17 de exclusión), redujo los falsos positivos a un \textbf{60\%}, evidenciando el techo estructural del
+paradigma léxico. Estos sistemas son incapaces de discernir sintácticamente entre un reporte donde el
+agresor resultó ser menor de edad, una noticia puramente estadística o un caso donde un menor quedó en
+orfandad como víctima indirecta, pues la co-ocurrencia de tokens no implica la co-ocurrencia de los
+roles semánticos que esos tokens desempeñan en la oración. Esta incapacidad de inferencia contextual
+hace que las herramientas tradicionales resulten operativamente ineficaces para el dominio específico
+de este proyecto.
 
 \section{NLP Aplicado a la Detección de Violencia de Género}
 \label{sec:ea_nlp_violencia}
@@ -93,17 +100,27 @@ innovación radica en la orquestación integral de un flujo de trabajo automatiz
 intervención humana en las etapas de descubrimiento y filtrado:
 
 \begin{enumerate}
-    \item \textbf{Recolección:} Ingesta concurrente y evasiva de fuentes RSS y motores de búsqueda.
-    \item \textbf{Deduplicación Cross-Site:} Colapso de redundancia mediática mediante hashing geométrico y algebraico.
-    \item \textbf{Agrupación Temática:} Modelado latente no supervisado mediante reducción topológica de dimensionalidad y clústering de densidad (BERTopic).
-    \item \textbf{Clasificación Semántica:} Inferencia computacional del contexto exacto de orfandad utilizando modelos fundacionales de atención profunda en español (BETO).
+    \item \textbf{Recolección:} Ingesta concurrente y evasiva de fuentes RSS y motores de búsqueda
+          mediante \texttt{StealthSession} v7.0 con emulación de fingerprint TLS.
+    \item \textbf{Deduplicación Cross-Site:} Colapso de redundancia mediática mediante una cascada
+          de cuatro algoritmos de complejidad creciente (MD5, Jaccard, SimHash y similitud coseno
+          TF-IDF), que eliminó el 25.1\% de duplicados en el corpus de validación.
+    \item \textbf{Agrupación Temática:} Modelado latente no supervisado mediante reducción
+          topológica de dimensionalidad (UMAP) y clústering de densidad variable (HDBSCAN)
+          encapsulados en el pipeline BERTopic.
+    \item \textbf{Clasificación Escalonada:} Arquitectura neuro-simbólica v7.1 con tres capas
+          (Escudo Léxico, Escudo Suave e inferencia BETO Fine-Tuned) que operan sobre un score
+          acumulativo con penalizaciones y bonificaciones aditivas.
+    \item \textbf{Investigación Profunda Bajo Demanda:} Módulo \texttt{DeepInvestigator} que
+          sintetiza fichas de caso estructuradas a partir de búsqueda web (DuckDuckGo) e
+          inferencia de lenguaje natural (Gemini Flash), activado manualmente por el analista.
 \end{enumerate}
 
 En suma, no existe en el ecosistema civil mexicano una herramienta de software que ejecute este ciclo
-completo (recolección, limpieza, deduplicación y clasificación neuro-simbólica) de forma unificada y
-específicamente calibrada para el problema social de los NNA víctimas indirectas de feminicdio. Este
-proyecto trasciende la estadística descriptiva para instaurar una plataforma de inteligencia y de
-respuesta rápida.
+completo ---recolección evasiva, deduplicación en cascada, clasificación escalonada neuro-simbólica
+e investigación profunda bajo demanda--- de forma unificada y específicamente calibrada para el
+problema social de los NNA víctimas indirectas de feminicidio. Este proyecto trasciende la
+estadística descriptiva para instaurar una plataforma de inteligencia operativa y de respuesta rápida.
 
 %----------------------------------------------------------------------------------------
 \section{Técnicas de extracción de datos}
@@ -529,11 +546,11 @@ de los modelos considerados.
 \textbf{Hardware Requerido} &
 \textbf{Resultado} \\
 \hline
-TF-IDF (TT1) &
+TF-IDF + RegEx (TT1) &
 Ninguna (co-ocurrencia léxica) &
 N/A (estadístico) &
 CPU, \textless1\,GB RAM &
-\textit{Descartado} (10\% FP) \\
+\textit{Descartado} (80\% FP en P1; 60\% en P2) \\
 \hline
 Word2Vec / GloVe &
 Estática (sin contexto) &
@@ -568,36 +585,64 @@ API externa / sin GPU local &
 \end{tabular}
 \end{table}
 
-\subsection{Clasificación \textit{Zero-Shot} frente al \textit{Fine-Tuning} Supervisado}
+\subsection{El Límite del \textit{Zero-Shot} y la Transición al Sistema de Clasificación Escalonada}
 \label{subsec:ea_zeroshot_vs_finetune}
 
-La estrategia de clasificación adoptada ---\textit{zero-shot} mediante similitud
-coseno entre embeddings BETO del texto y descripciones de categorías en lenguaje
-natural--- requiere justificación frente al paradigma estándar de fine-tuning
-supervisado, que predomina en la literatura de clasificación de texto con BERT.
-
-El fine-tuning supervisado requiere un corpus etiquetado de volumen suficiente
-($\geq$1{,}000~ejemplos por clase) para evitar sobre-ajuste en modelos de 110~M
-parámetros. Este prerequisito es exactamente la restricción que enfrentó el TT2
-en sus fases iniciales: el corpus de noticias etiquetadas manualmente era
-insuficiente. La clasificación zero-shot ofrece tres ventajas operativas decisivas:
+Durante el Prototipo~3, se implementó la estrategia de clasificación \textit{Zero-Shot} basada en la
+similitud coseno entre los embeddings \texttt{[CLS]} de BETO y descripciones de categorías en lenguaje
+natural ("relevante" y "no relevante"). Las similitudes crudas resultaron extremadamente cercanas
+(diferencias de 0.02--0.05), por lo que se aplicó \textit{Temperature Scaling} con factor térmico 5
+para amplificar la separación probabilística antes de Softmax. Sin embargo, la evaluación empírica
+sobre un corpus de $\sim$800~noticias reveló una vulnerabilidad arquitectónica crítica denominada
+\textbf{Efecto Péndulo}: el modelo oscilaba entre dos estados inaceptables, un exceso masivo de
+falsos positivos y un exceso masivo de falsos negativos. Esta inestabilidad se manifestaba en tres
+escenarios documentados:
 
 \begin{enumerate}
-    \item \textbf{Independencia de datos etiquetados.} Las descripciones de
-          categorías codifican el conocimiento experto del dominio directamente
-          en el espacio de embeddings, sin ningún ejemplo de entrenamiento.
-
-    \item \textbf{Auditabilidad y corrección de sesgos.} Cuando el sistema produce
-          un falso positivo sistemático, la corrección consiste en refinar la
-          descripción de la categoría en lenguaje natural, sin reentrenar el modelo.
-          Esta propiedad es esencial en un sistema de monitoreo de derechos humanos.
-
-    \item \textbf{Trayectoria hacia fine-tuning incremental.} La clase
-          \texttt{SemanticDetector} prevé la coexistencia de ambos modos mediante
-          \texttt{mode=``auto''}: cuando el volumen de datos etiquetados supere el
-          umbral mínimo, el sistema cargará automáticamente el modelo fine-tuned
-          de \texttt{models/finetuned/model.pt}, manteniendo zero-shot como fallback.
+    \item El post-filtro de validación semántica aplicaba reglas binarias absolutas que degradaban
+          noticias genuinas cuya redacción no coincidía con las frases esperadas.
+    \item El filtro léxico bloqueaba completamente noticias con contenido mixto (un hecho de
+          violencia que también mencionaba una iniciativa de ley relacionada).
+    \item El modo \textit{zero-shot} era incapaz de distinguir entre \textit{``mujer asesinada que
+          deja hijos''} y \textit{``ley que protege a hijos de mujeres asesinadas''} porque
+          ambas oraciones comparten el mismo campo semántico en el espacio de embeddings.
 \end{enumerate}
+
+El estado del arte en ajuste de modelos fundacionales establece que, para superar el solapamiento
+semántico en dominios hiper-específicos, el \textbf{Fine-Tuning supervisado} es imperativo
+\cite{peters2019tune}. Para mitigar el desafío de la escasez inicial de datos, el paradigma de
+\textit{Active Learning} \cite{settles2009active} se posiciona como la solución óptima, permitiendo
+que el sistema solicite etiquetado humano exclusivamente sobre los \textit{Hard Negatives}.
+En consecuencia, el Prototipo~4 implementó una \textbf{arquitectura de clasificación escalonada
+v7.1} con tres capas autónomas que operan secuencialmente sobre un score acumulativo:
+
+\begin{description}
+    \item[\textbf{Capa~0 Escudo Léxico}] Filtro de rechazo temprano (\texttt{frozenset}, $O(1)$)
+    que descarta dominios completamente ajenos al feminicidio (deportes, economía, tecnología).
+    Es la única capa que produce bloqueo absoluto (\texttt{score = 0.0}).
+
+    \item[\textbf{Capa~1 Escudo Suave}] Los términos legislativos y estadísticos que en el
+    prototipo anterior producían bloqueo absoluto fueron migrados a un conjunto de penalización
+    aditiva $\delta = -0.35$. Una noticia genuina con score BETO de 0.72 que menciona
+    ``según datos del REDIM'' obtiene score ajustado de 0.37, clasificando como ``Media''
+    en lugar de excluirse. Si el score BETO es alto ($\geq 0.95$), la noticia sobrevive
+    como ``Alta'' ($0.95 - 0.35 = 0.60$).
+
+    \item[\textbf{Capa~2 Inferencia BETO}] Opera con prioridad estricta: el clasificador
+    \textit{Finetuned} (binario, scores en $[0,1]$) tiene precedencia sobre el modo
+    \textit{Zero-Shot fallback} (scores concentrados en $[0.40, 0.70]$), que se activa
+    automáticamente cuando el modelo ajustado no está disponible.
+
+    \item[\textbf{Capa~3 Post-filtro de Validación}] Inyecta bonificaciones al detectar
+    evidencia explícita de orfandad real (patrones como \texttt{qued[oó] al cuidado},
+    \texttt{menores? (bajo|en) resguardo}) y penalizaciones al detectar roles invertidos
+    (menor como agresor). Esta capa nunca produce exclusiones absolutas para noticias
+    clasificadas como ``Media''.
+\end{description}
+
+Este diseño neuro-simbólico, donde las reglas simbólicas modulan la salida del componente neuronal
+mediante penalizaciones y bonificaciones aditivas en lugar de rechazos binarios absolutos, eliminó
+el Efecto Péndulo y constituye la contribución arquitectónica central del TT2.
 
 \subsection{Soberanía de Datos y Rechazo de APIs Privativas}
 \label{subsec:ea_soberania_datos}
@@ -623,10 +668,59 @@ argumentos no negociables:
           exacta de los resultados reportados. BETO es un modelo de pesos abiertos
           cuya revisión exacta queda fijada en el registro del proyecto.
 
-    \item \textbf{Viabilidad en hardware universitario.} BETO-base (110~M parámetros,
-          \texttt{float32}) requiere $\approx$440~MB de VRAM o 2.2~GB de RAM en CPU,
-          compatible con laptops de desarrollo estándar de 8~GB RAM.
+\item \textbf{Viabilidad algorítmica en hardware universitario (8 GB RAM).} El ajuste fino tradicional de BETO-base (110~M parámetros) provoca invariablemente desbordamientos de memoria volátil (\textit{Out Of Memory}) en equipos de desarrollo estándar. Sin embargo, la literatura reciente en optimización de redes profundas demuestra que congelar el \textit{encoder} preentrenado y ajustar exclusivamente las capas de clasificación lineales superiores (\textbf{Linear Probing}) preserva el conocimiento latente mientras reduce el cómputo drásticamente \cite{michel2019sixteen}. Implementando esta técnica en conjunto con la \textbf{Acumulación de Gradientes} (\textit{Gradient Accumulation}), el sistema garantiza el re-entrenamiento local en CPU sin depender de clústeres externos ni aceleración por GPU.
 \end{enumerate}
+
+\subsection{Investigación Profunda Bajo Demanda: \textit{DeepInvestigator}}
+\label{subsec:ea_deepinvestigator}
+
+Una limitación crítica identificada al finalizar el TT1 era que el pipeline producía
+\textit{clasificaciones de relevancia} pero no extraía \textbf{información estructurada} sobre
+los casos específicos: quién era la víctima directa, cuántos menores quedaron huérfanos, en qué
+estado se encontraban o qué institución estaba a cargo. Esta carencia era especialmente grave
+para el propósito central del sistema, pues la intervención de organizaciones civiles requiere
+fichas de caso accionables, no puntuaciones de relevancia.
+
+La alternativa obvia habría sido integrar la investigación profunda dentro del flujo
+recolector-analítico automático. Sin embargo, la implementación reveló dos problemas
+irresolubles dentro de las restricciones operativas del proyecto:
+
+\begin{enumerate}
+    \item \textbf{Latencia no tolerable.} Cada investigación implica al menos dos llamadas a
+          DuckDuckGo (búsqueda y extracción de contenido) y dos llamadas a la API de Gemini
+          Flash (generación de query y síntesis del JSON final), elevando el tiempo de ejecución
+          del flujo completo entre 45 y 90 minutos adicionales.
+    \item \textbf{Costo de API desproporcionado.} La API de Google Gemini opera bajo cuotas
+          en el plan gratuito; la investigación automática de todas las noticias ``Alta''
+          saturaba la cuota en el primer tercio del corpus.
+\end{enumerate}
+
+La solución adoptada siguió el paradigma \textbf{reactivo e interactivo}: el módulo
+\texttt{DeepInvestigator} (\texttt{src/analysis/investigator.py}) se convierte en una
+herramienta que el analista activa manualmente desde el dashboard sobre una noticia
+específica. Activado, ejecuta cuatro pasos secuenciales:
+
+\begin{enumerate}
+    \item \textbf{Generación de query (Gemini Flash).} El modelo genera una frase de búsqueda
+          de alta especificidad (máximo 6~palabras) a partir del título y los primeros párrafos,
+          incluyendo el nombre de la víctima y detalles únicos del caso.
+    \item \textbf{Búsqueda en DuckDuckGo.} La query se envía tanto a la versión HTML como a la
+          versión Lite de DuckDuckGo para maximizar la cobertura ante bloqueos intermitentes.
+    \item \textbf{Scraping de contenido complementario.} \texttt{StealthSession} extrae el texto
+          de cada URL retornada, filtrando ruido HTML, y concatena hasta 15{,}000~caracteres
+          de contexto enriquecido.
+    \item \textbf{Síntesis estructurada (Gemini Flash).} El bloque de texto se envía a Gemini
+          con un prompt de analista criminal especializado en derechos de la infancia. La respuesta
+          es un JSON estricto con siete campos: \texttt{ubicacion}, \texttt{victimas},
+          \texttt{ninos\_afectados}, \texttt{edades}, \texttt{situacion\_actual},
+          \texttt{medios\_contacto} y \texttt{resumen}.
+\end{enumerate}
+
+El módulo también expone un segundo caso de uso: la \textbf{identificación por enlace externo},
+donde el analista proporciona directamente la URL de una noticia que el flujo automático no detectó,
+y el sistema reutiliza el mismo pipeline de investigación para incorporarla. Esta funcionalidad
+completa el ciclo de la plataforma convirtiendo el sistema en una herramienta colaborativa donde
+el criterio experto del analista y la potencia de cómputo del pipeline se complementan.
 
 % ─── FIN SECCIÓN NLP MODELS ────────────────────────────────────────────────────
 
@@ -893,27 +987,46 @@ problema social planteado. La recolección mediante RSS provee eficiencia pero n
 comprensión; TF-IDF provee velocidad pero no contexto; K-Means provee estructura
 pero no semántica; BETO provee comprensión pero puede alucinar sin reglas simbólicas.
 
-La innovación fundamental de este Trabajo Terminal no radica en la invención de
-ningún algoritmo nuevo, sino en la \textbf{orquestación arquitectónica} de seis
-tecnologías maduras ---RSS+StealthSession, PostgreSQL FTS, BETO, BERTopic
-(UMAP+HDBSCAN+c-TF-IDF), clasificación zero-shot y lógica neuro-simbólica--- en
-un pipeline coherente, auditablemente correcto y específicamente calibrado para un
-dominio donde el error de clasificación tiene consecuencias humanas reales.
+La innovación fundamental de este Trabajo Terminal no radica en la invención de ningún algoritmo
+nuevo, sino en la \textbf{orquestación arquitectónica} de siete tecnologías y estrategias maduras
+---Sindicación RSS unida a la infraestructura de \texttt{StealthSession} v7.0, deduplicación en
+cascada de cuatro fases, persistencia relacional en PostgreSQL~16 con indexación GIN para FTS, el
+modelo Transformer monolingüe \textbf{BETO Fine-Tuned} mediante \textit{Active Learning}, el
+entorno de modelado de tópicos \texttt{BERTopic} optimizado defensivamente, el algoritmo híbrido de
+\textbf{Scoring Escalonado v7.1} y el módulo de \textbf{investigación profunda bajo demanda}
+\texttt{DeepInvestigator}--- en un pipeline de datos coherente, auditablemente correcto y
+específicamente calibrado para un dominio social complejo donde el error de clasificación tiene
+consecuencias humanas directas.
 
-Cada decisión tecnológica documentada en este capítulo puede trazarse directamente
-a una necesidad social concreta. La elección de RSS sobre scraping estático
-garantiza cobertura sostenida sin saturar los servidores de medios independientes
-con recursos limitados. La migración a PostgreSQL con FTS garantiza que los
-trabajadores sociales del DIF puedan consultar el sistema en tiempo real sin esperar
-escaneos lineales de CSV. La elección de BETO sobre mBERT garantiza que el sistema
-comprende el español coloquial y periodístico mexicano con la misma precisión que
-el español académico. La lógica neuro-simbólica garantiza que el sistema nunca
-clasificará a un menor agresor como víctima indirecta, ni descartará un caso real
-de orfandad por la ambigüedad redaccional de un periodista local.
+Cada decisión tecnológica documentada en este capítulo puede trazarse directamente a una necesidad
+social concreta:
 
-En suma, el ecosistema tecnológico seleccionado en el TT2 está diseñado para
-una sola misión: \textbf{garantizar que ningún caso de niña, niño o adolescente
-que quedó en orfandad por feminicidio sea invisible para las instituciones
-del Estado que tienen la obligación legal de protegerlo}.
+\begin{itemize}
+    \item La elección de RSS sobre scraping estático garantiza cobertura sostenida sin saturar los
+          servidores de medios independientes con recursos limitados; \texttt{StealthSession} v7.0
+          extiende esta cobertura al 35\% de fuentes sin feed RSS mediante emulación de
+          fingerprint TLS.
+    \item La deduplicación en cascada (MD5 → Jaccard → SimHash → coseno TF-IDF) garantiza que un
+          mismo caso de feminicidio cubierto por múltiples medios con vocabulario diferente no
+          genere alertas redundantes que distorsionen la urgencia de la intervención.
+    \item La migración a PostgreSQL con FTS garantiza que los trabajadores sociales del DIF puedan
+          consultar el sistema en tiempo real con latencia $O(\log n)$, sin esperar escaneos
+          lineales de CSV.
+    \item La elección de BETO sobre mBERT garantiza que el sistema comprende el español coloquial
+          y periodístico mexicano con la misma precisión que el español académico, con una ventaja
+          reportada de 3--8\% en F1 para tareas de clasificación en español.
+    \item El Scoring Escalonado v7.1 garantiza que el sistema nunca clasificará a un menor agresor
+          como víctima indirecta, ni descartará un caso real de orfandad por la ambigüedad
+          redaccional de un periodista local.
+    \item El \texttt{DeepInvestigator} garantiza que los analistas dispongan de fichas de caso
+          estructuradas ---con ubicación, número de NNA afectados, situación actual e institución
+          competente--- para cada caso que merezca intervención, sin depender de búsquedas
+          manuales en portales de noticias.
+\end{itemize}
+
+En suma, el ecosistema tecnológico seleccionado en el TT2 está diseñado para una sola misión:
+\textbf{garantizar que ningún caso de niña, niño o adolescente que quedó en orfandad por
+feminicidio sea invisible para las instituciones del Estado que tienen la obligación legal
+de protegerlo}.
 
 

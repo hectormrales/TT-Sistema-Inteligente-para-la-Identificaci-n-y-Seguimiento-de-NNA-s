@@ -1,0 +1,40 @@
+% !TeX root = ../proyecto.tex
+%--------------------------------------
+\section{IU-05 Pantalla de Inicio de Sesión}
+
+\subsection{Objetivo}
+	Autenticar la identidad del usuario mediante credenciales registradas para habilitar el acceso
+	a las funcionalidades protegidas del Dashboard web.
+
+\subsection{Diseño}
+	Pantalla de acceso único al sistema, presentada antes de cualquier vista del Dashboard.
+	Consiste en un formulario centrado con el logotipo del sistema en la parte superior, seguido
+	de dos campos de entrada (usuario y contraseña) y una casilla de verificación opcional
+	``Recordarme''. El diseño es minimalista, sin menú lateral ni cabecera de navegación. Un
+	enlace inferior dirige a la pantalla de registro para nuevos usuarios. Los mensajes de error
+	(credenciales incorrectas, cuenta deshabilitada) se presentan como alertas sobre el formulario.
+
+\IUfig[.7]{login}{IU-05}{Pantalla de Inicio de Sesión.}
+
+\subsection{Salidas}
+	\begin{itemize}
+		\item Redirección al \IUref{IU-01}{Dashboard Principal} en caso de autenticación exitosa.
+		\item Mensaje de alerta ``Usuario o contraseña incorrectos'' si las credenciales son inválidas.
+		\item Mensaje de alerta ``Tu cuenta está deshabilitada'' si el administrador ha inactivado
+		      la cuenta.
+	\end{itemize}
+
+\subsection{Entradas}
+	\begin{itemize}
+		\item Nombre de usuario (\texttt{username}, campo de texto).
+		\item Contraseña (\texttt{password}, campo enmascarado).
+		\item Opción ``Recordarme'' (casilla de verificación booleana, opcional).
+	\end{itemize}
+
+\subsection{Comandos}
+	\begin{itemize}
+		\item \IUbutton{Iniciar Sesión}: Envía las credenciales al endpoint
+		      \texttt{POST /login} para validación (CU-06).
+		\item \IUbutton{Registrarse}: Redirige al formulario de registro de nuevo usuario
+		      (\texttt{GET /register}).
+	\end{itemize}

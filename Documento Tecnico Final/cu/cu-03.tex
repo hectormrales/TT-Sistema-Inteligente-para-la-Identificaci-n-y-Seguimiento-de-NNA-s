@@ -1,7 +1,7 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-03}{Visualización de Clústeres Temáticos}{
-	Describe la interacción donde el analista consulta los resultados del agrupamiento semántico (BERTopic) y visualiza las "Fichas de Caso" para los eventos consolidados.
+\begin{UseCase}{CU-03}{Investigación Profunda Bajo Demanda}{
+	Permite al analista activar el módulo DeepInvestigator sobre una noticia clasificada como "Alta" para generar una ficha de caso estructurada mediante búsqueda web y síntesis con IA generativa (Gemini Flash).
 }
 	\UCitem{Versión}{\color{Gray}
 		1.0
@@ -12,51 +12,67 @@
 	}\UCitem{Actor}{
 		Analista de Datos / Trabajador Social
 	}\UCitem{Propósito}{\begin{Titemize}
-		\Titem Reducir la carga cognitiva consolidando múltiples noticias redundantes en grupos de eventos fácticos unificados.
+		\Titem Profundizar en los detalles de un caso específico delegando la investigación multi-fuente y la síntesis a agentes de IA.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
-		\Titem Parámetros de filtrado por fechas o niveles de relevancia.
-		\Titem ID del Clúster seleccionado.
+		\Titem ID de la noticia seleccionada.
 	\end{Titemize}
 	}\UCitem{Origen}{\begin{Titemize}
-		\Titem Clics del usuario en el menú y tarjetas interactivas del Dashboard.
+		\Titem Botón "Investigar" en la tarjeta de la noticia dentro del Dashboard.
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
-		\Titem Interfaz con métricas clave, palabras c-TF-IDF y lista de noticias asociadas.
-		\Titem Renderizado de la Ficha Consolidada.
+		\Titem Ficha estructurada en formato JSON renderizada en la interfaz (Ubicación, Víctimas, NNA Afectados, Situación Actual, Medios de Contacto).
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
-		\Titem Pantalla del navegador del usuario.
+		\Titem Interfaz del Dashboard (Modal de resultados).
+		\Titem Base de Datos (almacenamiento de la investigación asociada a la noticia).
 	\end{Titemize}
 	}\UCitem{Precondiciones}{\begin{Titemize}
-		\Titem Debe existir al menos un proceso de ejecución de BERTopic completado en BD (Tabla de clusters poblada).
+		\Titem La noticia debe estar registrada en el sistema y tener clasificación "Alta".
+		\Titem Debe existir conexión a Internet y cuota disponible en la API de Gemini.
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
-		\Titem Ninguna (Operación de solo lectura).
+		\Titem Se vincula una ficha de investigación estructurada al registro de la noticia.
 	\end{Titemize}
 	}\UCitem{Errores}{\begin{Titemize}
-		\Titem {\bf \hypertarget{CU-03.E1}{E1}}: No existen clústeres para el rango de fechas seleccionado \Trayref{CU-03}{A}.
+		\Titem {\bf \hypertarget{CU-03.E1}{E1}}: DuckDuckGo no retorna resultados válidos o bloquea la conexión \Trayref{CU-03}{A}.
+		\Titem {\bf \hypertarget{CU-03.E2}{E2}}: Exceso de cuota en la API de Gemini o fallo de red con el proveedor \Trayref{CU-03}{B}.
 	\end{Titemize}
 	}\UCitem{Tipo}{
 		Caso de uso primario
 	}\UCitem{Observaciones}{
-		Los clusters se representan visualmente con código de colores (Verde=NNA confirmado, Rojo=Descartado).
+		La operación se ejecuta de manera asíncrona en un hilo de fondo (background thread) para no bloquear la interfaz web del usuario.
 	}
 \end{UseCase}
 
 %--------------------------------------
 \begin{UCtrayectoria}
-	\UCpaso[\UCActor] Accede a la pestaña "Grupos Temáticos" en el menú lateral del Dashboard.
-	\UCpaso[\UCsist] Ejecuta una consulta a PostgreSQL extrayendo los nodos centrales de cada clúster de noticias recientes.
-	\UCpaso[\UCsist] Verifica que la consulta retorne datos \ErrorRef{CU-03}{E1}{Sin resultados}.
-	\UCpaso[\UCsist] Aplica el mapeo de estilos (tarjetas) y presenta el mapa de clústeres en pantalla.
-	\UCpaso[\UCActor] Identifica un grupo relevante y hace clic en el botón \IUbutton{Ver Detalles del Caso}.
-	\UCpaso[\UCsist] Consulta las noticias hijas pertenecientes al clúster seleccionado.
-	\UCpaso[\UCsist] Renderiza en un modal o ventana nueva la información consolidada usando la lógica del \texttt{investigator.py}.
+	\UCpaso[\UCActor] Analiza el listado de noticias con score "Alta" en el Dashboard.
+	\UCpaso[\UCActor] Selecciona una noticia de interés y hace clic en el botón \IUbutton{Investigar}.
+	\UCpaso[\UCsist] Cambia el estado de la investigación a \texttt{running} y lanza un hilo de ejecución en segundo plano.
+	\UCpaso[\UCsist] Invoca a la API de Gemini para generar una consulta de búsqueda altamente específica (máximo 6 palabras) basada en la noticia \ErrorRef{CU-03}{E2}{Fallo API Gemini}.
+	\UCpaso[\UCsist] Ejecuta la búsqueda de la consulta en DuckDuckGo (HTML y Lite) \ErrorRef{CU-03}{E1}{Sin resultados DDG}.
+	\UCpaso[\UCsist] Extrae y limpia las URLs resultantes de la búsqueda.
+	\UCpaso[\UCsist] Realiza scraping del contenido de las fuentes complementarias utilizando \texttt{StealthSession}.
+	\UCpaso[\UCsist] Envía el texto multi-fuente consolidado a la API de Gemini junto con el prompt de analista criminal \ErrorRef{CU-03}{E2}{Fallo API Gemini}.
+	\UCpaso[\UCsist] Recibe y valida el JSON estructurado con los detalles del caso.
+	\UCpaso[\UCsist] Guarda el resultado en la base de datos y actualiza el estado a \texttt{done}.
+	\UCpaso[\UCActor] El frontend, mediante \textit{polling}, detecta el fin del proceso y despliega la ficha estructurada en pantalla.
 \end{UCtrayectoria}
 
 %--------------------------------------
-\begin{UCtrayectoriaA}{CU-03}{A}{No hay datos en el rango de fechas actual}
-	\UCpaso Muestra un mensaje en pantalla (Empty State): "No se encontraron clústeres generados para el periodo seleccionado".
-	\UCpaso[] El Caso de Uso termina.
+\begin{UCtrayectoriaA}{CU-03}{A}{DuckDuckGo no retorna URLs utilizables o bloquea la petición}
+	\UCpaso[\UCsist] Activa el mecanismo de "fallback" utilizando la herramienta nativa \texttt{GoogleSearch} de Gemini.
+	\UCpaso[\UCsist] Ejecuta la búsqueda de información directamente a través del modelo de lenguaje sin scraping externo.
+	\UCpaso[\UCsist] Si la búsqueda interna también falla, marca el estado como \texttt{error} y notifica al usuario en el Dashboard.
+	\UCpaso[] El Caso de Uso termina o continúa en el paso 8 de la trayectoria principal si el fallback es exitoso.
+\end{UCtrayectoriaA}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-03}{B}{La API de Gemini responde con un error de cuota o falla de conexión}
+	\UCpaso[\UCsist] Captura la excepción de la API externa.
+	\UCpaso[\UCsist] Registra el error en los logs.
+	\UCpaso[\UCsist] Cambia el estado de la investigación a \texttt{error} indicando "Fallo en el servicio de IA".
+	\UCpaso[\UCActor] Visualiza el mensaje de error en la interfaz, permitiéndole reintentar más tarde.
+	\UCpaso[] El Caso de Uso termina de manera anormal.
 \end{UCtrayectoriaA}

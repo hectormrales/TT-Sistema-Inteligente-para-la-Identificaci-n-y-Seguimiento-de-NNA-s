@@ -2,33 +2,19 @@
 \contentsline {table}{\numberline {1}{\ignorespaces Información general y acta de constitución del proyecto}}{\es@scroman {vii}}{table.0.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2.1}{\ignorespaces Catálogo de Casos de Uso del Sistema}}{6}{table.2.1}%
-\contentsline {table}{\numberline {2.2}{\ignorespaces Requerimientos Funcionales: Subsistema de Recolección}}{7}{table.2.2}%
-\contentsline {table}{\numberline {2.3}{\ignorespaces Requerimientos Funcionales: Subsistema de Deduplicación}}{8}{table.2.3}%
-\contentsline {table}{\numberline {2.4}{\ignorespaces Requerimientos Funcionales: Subsistema de Análisis Semántico (Motor BETO)}}{9}{table.2.4}%
-\contentsline {table}{\numberline {2.5}{\ignorespaces Requerimientos Funcionales: Subsistema de Agrupamiento BERTopic}}{10}{table.2.5}%
-\contentsline {table}{\numberline {2.6}{\ignorespaces Requerimientos Funcionales: Subsistema de Persistencia}}{11}{table.2.6}%
-\contentsline {table}{\numberline {2.7}{\ignorespaces Requerimientos No Funcionales: Métricas de Calidad y Restricciones}}{12}{table.2.7}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Distinción entre información procesada y excluida}}{15}{table.3.1}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Correspondencia entre objetivos del protocolo y componentes implementados}}{18}{table.3.2}%
+\contentsline {table}{\numberline {2.1}{\ignorespaces Distinción entre información procesada y excluida}}{7}{table.2.1}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces Correspondencia entre objetivos del protocolo y componentes implementados}}{10}{table.2.2}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Comparativa de técnicas de extracción de datos para monitoreo de medios}}{32}{table.5.1}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Comparativa de modelos de representación lingüística para clasificación semántica}}{36}{table.5.2}%
-\contentsline {table}{\numberline {5.3}{\ignorespaces Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}}{40}{table.5.3}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Comparativa de técnicas de extracción de datos para monitoreo de medios}}{24}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Comparativa de modelos de representación lingüística para clasificación semántica}}{28}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}}{32}{table.4.3}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces Evolución del stack tecnológico}}{45}{table.6.1}%
-\contentsline {table}{\numberline {6.2}{\ignorespaces Matriz de trazabilidad general}}{47}{table.6.2}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Evolución del stack tecnológico}}{37}{table.5.1}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Matriz de trazabilidad general}}{39}{table.5.2}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {7.1}{\ignorespaces Comparativa de métricas: TT1 vs. metas del TT2}}{51}{table.7.1}%
-\contentsline {table}{\numberline {7.2}{\ignorespaces Diccionario de Datos: Entidad \texttt {noticias}.}}{52}{table.7.2}%
-\contentsline {table}{\numberline {7.3}{\ignorespaces Diccionario de Datos: Entidad \texttt {detecciones}.}}{54}{table.7.3}%
-\contentsline {table}{\numberline {7.4}{\ignorespaces Diccionario de Datos: Entidad \texttt {clusters\_semanticos}.}}{54}{table.7.4}%
-\contentsline {table}{\numberline {7.5}{\ignorespaces Diccionario de Datos: Entidad \texttt {fuentes}.}}{55}{table.7.5}%
-\contentsline {table}{\numberline {7.6}{\ignorespaces Diccionario de Datos: Entidad \texttt {usuarios}.}}{55}{table.7.6}%
+\contentsline {table}{\numberline {6.1}{\ignorespaces Comparativa de métricas de TT1 contra metas del TT2}}{43}{table.6.1}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {8.1}{\ignorespaces Casos de uso del módulo de investigación profunda}}{66}{table.8.1}%
-\contentsline {table}{\numberline {8.2}{\ignorespaces Matriz de Casos de Prueba Críticos y Resultados de Ejecución.}}{69}{table.8.2}%
+\contentsline {table}{\numberline {7.1}{\ignorespaces Casos de uso del módulo de investigación profunda}}{54}{table.7.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

@@ -1,0 +1,29 @@
+% !TeX root = ../proyecto.tex
+%--------------------------------------
+\section{IU-04 Seguimiento de Casos y Exportación}
+
+\subsection{Objetivo}
+	Proporcionar al analista una vista tabular de todos los casos de orfandad confirmados que requieren atención continua, facilitando la exportación externa de sus datos.
+
+\subsection{Diseño}
+	Consiste en una tabla de datos (DataGrid) que concentra la información aplanada proveniente de las Fichas de Caso (IU-03). Es una interfaz que prioriza la lectura y el monitoreo masivo, incluyendo controles de paginación y un botón de exportación global prominente en la cabecera.
+
+\IUfig[.8]{seguimiento_casos}{IU-04}{Pantalla de Seguimiento de Casos Activos.}
+
+\subsection{Salidas}
+	\begin{itemize}
+		\item Tabla plana con metadatos: ID Noticia, Título, Ubicación, Número de NNA afectados, Edad promedio.
+		\item Descarga directa del archivo \texttt{seguimiento\_casos.csv} (mediante el navegador web).
+		\item Mensaje tipo Toast indicando si la exportación fue exitosa o si la lista estaba vacía.
+	\end{itemize}
+	
+\subsection{Entradas}
+	\begin{itemize}
+		\item Ninguna (los casos son ingresados desde el \IUref{IU-03}{Modal de Investigación}).
+	\end{itemize}
+
+\subsection{Comandos}
+	\begin{itemize}
+		\item \IUbutton{Exportar a CSV}: Compila todos los casos activos de la base de datos en un archivo estructurado y lo descarga al equipo del usuario (CU-05).
+		\item \IUbutton{Retirar de Seguimiento}: Marca el caso como inactivo (resuelto o cerrado) y lo desaparece de la vista tabular.
+	\end{itemize}

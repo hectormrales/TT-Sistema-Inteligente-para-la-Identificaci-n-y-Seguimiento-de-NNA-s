@@ -1,63 +1,90 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-02}{Gestionar Fuentes de Información}{
-	Permite a los administradores registrar, editar, habilitar o eliminar de forma lógica los orígenes periodísticos (RSS o Búsqueda HTML) que alimentan al motor de recolección.
+\begin{UseCase}{CU-02}{Gestión del Catálogo de Fuentes de Información}{%
+	Permite al administrador gestionar el catálogo de fuentes periodísticas (RSS, HTML, sitemap) que alimentan el pipeline de recolección. Contempla el alta, edición, eliminación lógica, activación/desactivación y sondeo previo de URLs.
 }
 	\UCitem{Versión}{\color{Gray}
-		1.0
+		2.0
 	}\UCitem{Autor}{\color{Gray}
 		Tesista de Ingeniería
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Administrador del Sistema / Organización Civil
+		Administrador del Sistema
 	}\UCitem{Propósito}{\begin{Titemize}
-		\Titem Garantizar la actualización constante y plural de los orígenes informativos a nivel nacional.
+		\Titem Mantener actualizado el catálogo de orígenes periodísticos accesibles por el recolector, garantizando cobertura geográfica y temática del corpus.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
-		\Titem Nombre del Medio.
-		\Titem URL de origen.
-		\Titem Tipo de fuente (RSS / Search).
+		\Titem URL de la fuente (obligatoria).
+		\Titem Nombre del medio de comunicación (opcional; se infiere del dominio si se omite).
+		\Titem Tipo de fuente (\texttt{auto} / \texttt{rss} / \texttt{sitemap} / \texttt{html}).
+		\Titem Notas adicionales (campo libre, opcional).
 	\end{Titemize}
 	}\UCitem{Origen}{\begin{Titemize}
-		\Titem Formularios del Dashboard web.
+		\Titem Formulario y tabla de administración en la pantalla \IUref{IU-02}{Gestión de Fuentes}.
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
-		\Titem Confirmación visual del registro y tabla actualizada de fuentes.
+		\Titem Confirmación visual con los datos de la fuente creada, actualizada o eliminada.
+		\Titem Resultado del sondeo técnico de la URL (tipo detectado, feeds RSS encontrados, crawl-delay, accesibilidad WAF).
+		\Titem Tabla de fuentes actualizada con estado \texttt{ok / warning / blocked / error}.
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
-		\Titem Interfaz web (Pantalla de Fuentes).
-		\Titem Tabla \texttt{fuentes} en BD.
+		\Titem Tabla \texttt{news\_sources} en PostgreSQL.
+		\Titem Interfaz web (Pantalla \IUref{IU-02}{Gestión de Fuentes}).
 	\end{Titemize}
 	}\UCitem{Precondiciones}{\begin{Titemize}
-		\Titem El actor debe contar con una sesión activa en el Dashboard web.
+		\Titem El actor debe contar con una sesión activa en el Dashboard web (CU-07).
+		\Titem La base de datos PostgreSQL debe estar operativa.
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
-		\Titem La URL ingresada queda lista para ser procesada en la siguiente ejecución del Cronjob (CU-01).
+		\Titem Las fuentes activas quedan disponibles para el recolector en la próxima ejecución del pipeline (CU-01).
+		\Titem Las fuentes predeterminadas del sistema solo pueden desactivarse; no pueden eliminarse.
 	\end{Titemize}
 	}\UCitem{Errores}{\begin{Titemize}
-		\Titem {\bf \hypertarget{CU-02.E1}{E1}}: URL inalcanzable (DNS Error o 404), el sistema rechaza el registro \Trayref{CU-02}{A}.
+		\Titem {\bf \hypertarget{CU-02.E1}{E1}}: URL duplicada ya registrada en el catálogo \Trayref{CU-02}{A}.
+		\Titem {\bf \hypertarget{CU-02.E2}{E2}}: Intento de eliminar una fuente predeterminada del sistema \Trayref{CU-02}{B}.
+		\Titem {\bf \hypertarget{CU-02.E3}{E3}}: La URL no inicia con \texttt{http://} o \texttt{https://} \Trayref{CU-02}{C}.
 	\end{Titemize}
 	}\UCitem{Tipo}{
 		Caso de uso primario
 	}\UCitem{Observaciones}{
-		Ninguna
+		El sondeo técnico (endpoint \texttt{POST /api/sources/probe}) es una operación no persistente: detecta el tipo de fuente y la accesibilidad WAF \textit{antes} de registrarla, permitiendo al administrador tomar una decisión informada.
 	}
 \end{UseCase}
 
 %--------------------------------------
 \begin{UCtrayectoria}
-	\UCpaso[\UCActor] Ingresa al módulo de "Gestión de Fuentes" en el Dashboard.
-	\UCpaso[\UCsist] Muestra la tabla con las fuentes actualmente registradas y su estado.
-	\UCpaso[\UCActor] Selecciona la opción "Agregar Nueva Fuente" e ingresa la información requerida (Nombre, URL, Tipo).
-	\UCpaso[\UCActor] Presiona el botón \IUbutton{Guardar}.
-	\UCpaso[\UCsist] Ejecuta un ping de validación (health check) en segundo plano para verificar conectividad \ErrorRef{CU-02}{E1}{URL Inválida}.
-	\UCpaso[\UCsist] Almacena el nuevo registro en la base de datos PostgreSQL.
-	\UCpaso[\UCsist] Actualiza la tabla en pantalla mostrando un mensaje de éxito.
+	\UCpaso[\UCActor] Ingresa a la pantalla de \IUref{IU-02}{Gestión de Fuentes} desde el menú lateral.
+	\UCpaso[\UCActor] Introduce la URL de la nueva fuente en el formulario de alta.
+	\UCpaso[\UCActor] Hace clic en \IUbutton{Sondear URL} para obtener una vista previa técnica antes de registrar.
+	\UCpaso[\UCsist] Invoca \texttt{DynamicScraper.probe\_url()} que detecta el tipo de contenido (RSS, sitemap, HTML), verifica el archivo \texttt{robots.txt} y determina si requiere modo stealth \ErrorRef{CU-02}{E3}{URL inválida}.
+	\UCpaso[\UCsist] Devuelve el resultado del sondeo al formulario (tipo detectado, feeds RSS encontrados, crawl-delay recomendado, accesibilidad WAF).
+	\UCpaso[\UCActor] Revisa los resultados, ajusta el nombre y tipo si fuera necesario, y hace clic en \IUbutton{Guardar Fuente}.
+	\UCpaso[\UCsist] Verifica que la URL no esté ya registrada \ErrorRef{CU-02}{E1}{URL duplicada}.
+	\UCpaso[\UCsist] Crea el registro en la tabla \texttt{news\_sources} con \texttt{is\_active = True} y \texttt{last\_status = 'pending'}.
+	\UCpaso[\UCsist] Muestra mensaje de confirmación y actualiza la tabla de fuentes en pantalla.
 \end{UCtrayectoria}
 
 %--------------------------------------
-\begin{UCtrayectoriaA}{CU-02}{A}{La validación de la URL retorna error (Status code distinto de 2xx)}
-	\UCpaso Muestra un mensaje de alerta visual en la interfaz web indicando que la fuente no parece estar en línea.
-	\UCpaso[] El Caso de Uso termina sin guardar el registro para evitar ensuciar el pipeline.
+\begin{UCtrayectoriaA}{CU-02}{A}{La URL ingresada ya está registrada en el catálogo}
+	\UCpaso[\UCsist] Detecta el registro duplicado en la consulta de unicidad.
+	\UCpaso[\UCsist] Retorna HTTP 409 con el mensaje ``Esta URL ya existe como fuente''.
+	\UCpaso[\UCActor] Lee la notificación de error y puede modificar la URL o desactivar la entrada existente.
+	\UCpaso[] El Caso de Uso termina sin crear un nuevo registro.
+\end{UCtrayectoriaA}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-02}{B}{El administrador intenta eliminar una fuente predeterminada del sistema}
+	\UCpaso[\UCsist] Detecta que el atributo \texttt{is\_predefined = True} está activo para el registro.
+	\UCpaso[\UCsist] Retorna HTTP 403 con el mensaje ``No se puede eliminar una fuente predeterminada. Puedes desactivarla en su lugar.''.
+	\UCpaso[\UCActor] Opta por usar el interruptor \IUbutton{Desactivar} en lugar de eliminar.
+	\UCpaso[] El Caso de Uso termina sin modificar el registro.
+\end{UCtrayectoriaA}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-02}{C}{La URL ingresada no tiene esquema HTTP válido}
+	\UCpaso[\UCsist] El validador del backend detecta que la cadena no inicia con \texttt{http://} ni \texttt{https://}.
+	\UCpaso[\UCsist] Retorna HTTP 400 con mensaje ``La URL debe comenzar con http:// o https://''.
+	\UCpaso[\UCActor] Corrige la URL en el formulario y reintenta.
+	\UCpaso[] El Caso de Uso continúa en el paso 7 de la trayectoria principal.
 \end{UCtrayectoriaA}

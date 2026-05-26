@@ -1,7 +1,7 @@
 % !TeX root = ../proyecto.tex
 
-\begin{UseCase}{CU-01}{Ejecutar Pipeline Semántico}{
-	Este caso de uso describe el flujo automatizado mediante el cual el sistema recolecta, filtra, deduplica y clasifica semánticamente las noticias utilizando el motor heurístico y la inferencia del modelo BETO.
+\begin{UseCase}{CU-01}{Ejecutar flujo de recolección y procesamiento de noticias}{
+	Este caso de uso describe el flujo automatizado mediante el cual el sistema recolecta, filtra, deduplica y clasifica semánticamente las noticias utilizando la clasificación escalonada.
 }
 	\UCitem{Versión}{\color{Gray}
 		1.0
@@ -10,9 +10,9 @@
 	}\UCitem{Supervisa}{\color{Gray}
 		Director de Trabajo Terminal
 	}\UCitem{Actor}{
-		Cronjob (Sistema) / Analista de Datos
+		Analista de Datos
 	}\UCitem{Propósito}{\begin{Titemize}
-		\Titem Alimentar la base de datos con información clasificada y deduplicada libre de ruido estadístico.
+		\Titem Alimentar la base de datos con información clasificada, deduplicada y libre del Efecto Péndulo.
 	\end{Titemize}
 	}\UCitem{Entradas}{\begin{Titemize}
 		\Titem URLs de medios o consultas pre-configuradas.
@@ -21,7 +21,7 @@
 		\Titem Tabla de \texttt{fuentes} en PostgreSQL.
 	\end{Titemize}
 	}\UCitem{Salidas}{\begin{Titemize}
-		\Titem Textos normalizados y puntajes heurísticos/neuronales.
+		\Titem Textos normalizados y puntajes de clasificación escalonada (Alta, Media, No relevante).
 	\end{Titemize}
 	}\UCitem{Destino}{\begin{Titemize}
 		\Titem Tablas \texttt{noticias} y \texttt{detecciones}.
@@ -31,17 +31,17 @@
 		\Titem Debe existir conexión a Internet y proxies/headers configurados.
 	\end{Titemize}
 	}\UCitem{Postcondiciones}{\begin{Titemize}
-		\Titem Se generan nuevos registros clasificados de NNA en orfandad listos para análisis.
+		\Titem Se generan nuevos registros clasificados de NNA en orfandad listos para validación.
 	\end{Titemize}
 	}\UCitem{Errores}{\begin{Titemize}
 		\Titem {\bf \hypertarget{CU-01.E1}{E1}}: Bloqueo por WAF (ej. Cloudflare HTTP 403), el sistema ignora la fuente y continúa \Trayref{CU-01}{A}.
 		\Titem {\bf \hypertarget{CU-01.E2}{E2}}: Falla en BD PostgreSQL (Conexión rechazada o caída en transacción) \Trayref{CU-01}{B}.
-		\Titem {\bf \hypertarget{CU-01.E3}{E3}}: Desbordamiento de Memoria (OOM - Out of Memory) por saturación en la inferencia del modelo BETO \Trayref{CU-01}{C}.
+		\Titem {\bf \hypertarget{CU-01.E3}{E3}}: Desbordamiento de Memoria (OOM - Out of Memory) por saturación en la inferencia \Trayref{CU-01}{C}.
 	\end{Titemize}
 	}\UCitem{Tipo}{
 		Caso de uso primario
 	}\UCitem{Observaciones}{
-		Operación crítica, intensiva en procesamiento (uso de CPU para tensor operations).
+		Operación crítica, intensiva en procesamiento. Utiliza inferencia en lotes con el modelo BETO Fine-Tuned.
 	}
 \end{UseCase}
 
@@ -49,11 +49,13 @@
 \begin{UCtrayectoria}
 	\UCpaso[\UCActor] Dispara la ejecución del colector mediante el Dashboard o el temporizador del servidor.
 	\UCpaso[\UCsist] Obtiene la lista de fuentes habilitadas desde el esquema relacional \ErrorRef{CU-01}{E2}{Falla BD}.
-	\UCpaso[\UCsist] Ejecuta la recolección dinámica (StealthSessions) evadiendo contramedidas \ErrorRef{CU-01}{E1}{Bloqueo WAF}.
-	\UCpaso[\UCsist] Aplica el filtro de la cascada de deduplicación (MD5, Jaccard, SimHash, Coseno).
-	\UCpaso[\UCsist] Envía el texto purificado al \texttt{SemanticDetector} para su procesamiento.
-	\UCpaso[\UCsist] Calcula el factor de ponderación $\alpha$ (fusión neuro-simbólica) procesando inferencias por lotes \ErrorRef{CU-01}{E3}{Memoria Saturada}.
-	\UCpaso[\UCsist] Almacena los resultados consolidados en la Base de Datos \ErrorRef{CU-01}{E2}{Falla BD}.
+	\UCpaso[\UCsist] Ejecuta la recolección dinámica (StealthSession v7.0) evadiendo contramedidas \ErrorRef{CU-01}{E1}{Bloqueo WAF}.
+	\UCpaso[\UCsist] Aplica el filtro de la cascada de deduplicación y el algoritmo BERTopic para contexto global.
+	\UCpaso[\UCsist] Envía el texto purificado al \texttt{SemanticDetector} para su clasificación escalonada.
+	\UCpaso[\UCsist] Aplica la Capa 0 (Escudo Léxico) y la Capa 1 (Escudo Suave) para penalizar contenido no fáctico.
+	\UCpaso[\UCsist] Ejecuta la Capa 2 (Inferencia BETO Fine-Tuned) para obtener el score semántico base \ErrorRef{CU-01}{E3}{Memoria Saturada}.
+	\UCpaso[\UCsist] Aplica la Capa 3 (Bonificaciones Heurísticas) y emite el score final (Alta, Media, No relevante).
+	\UCpaso[\UCsist] Almacena los resultados consolidados en la Base de Datos PostgreSQL \ErrorRef{CU-01}{E2}{Falla BD}.
 \end{UCtrayectoria}
 
 %--------------------------------------
@@ -67,15 +69,15 @@
 \begin{UCtrayectoriaA}{CU-01}{B}{Falla la conexión o transacción con la base de datos PostgreSQL}
 	\UCpaso Intercepta la excepción de SQLAlchemy (ej. \texttt{OperationalError}).
 	\UCpaso Emite una alerta crítica en los registros del sistema (\texttt{CRITICAL}) indicando la caída del servicio.
-	\UCpaso Ejecuta un \textit{Rollback} automático de cualquier transacción que haya quedado pendiente o parcialmente ejecutada.
+	\UCpaso Ejecuta un \textit{Rollback} automático de cualquier transacción que haya quedado pendiente.
 	\UCpaso Notifica al administrador mediante el canal de monitoreo configurado.
 	\UCpaso[] El Caso de Uso termina de manera anormal.
 \end{UCtrayectoriaA}
 
 %--------------------------------------
-\begin{UCtrayectoriaA}{CU-01}{C}{El modelo BETO satura la memoria disponible (OOM) durante la inferencia por lotes}
+\begin{UCtrayectoriaA}{CU-01}{C}{El modelo BETO satura la memoria disponible (OOM) durante la inferencia}
 	\UCpaso Detecta la excepción de asignación de tensores (\texttt{MemoryError} o \texttt{RuntimeError} de PyTorch).
-	\UCpaso Libera explícitamente el caché de memoria (invocando el recolector de basura o limpieza del caché local).
-	\UCpaso Divide dinámicamente el lote de noticias problemático en fragmentos más pequeños (\textit{chunks}).
-	\UCpaso[] El Caso de Uso continúa en el paso 6 procesando los fragmentos reducidos.
+	\UCpaso Libera explícitamente el caché de memoria (invocando el recolector de basura).
+	\UCpaso Divide dinámicamente el lote de noticias problemático en fragmentos unitarios (tamaño de lote = 1).
+	\UCpaso[] El Caso de Uso continúa en el paso 7 procesando los fragmentos reducidos.
 \end{UCtrayectoriaA}

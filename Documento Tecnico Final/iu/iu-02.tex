@@ -1,0 +1,58 @@
+% !TeX root = ../proyecto.tex
+%--------------------------------------
+\section{IU-02 Gestión de Fuentes de Información}
+
+\subsection{Objetivo}
+	Permitir al administrador controlar el catálogo completo de orígenes periodísticos que alimentan
+	el pipeline de recolección, con capacidades de alta, edición, desactivación, eliminación y
+	sondeo técnico previo de nuevas URLs.
+
+\subsection{Diseño}
+	Consiste en dos paneles. El panel superior presenta un \textbf{formulario de alta} con cuatro
+	campos (nombre, URL, tipo de fuente y notas) y el botón de sondeo previo. El panel inferior
+	muestra una \textbf{tabla de administración} con todas las fuentes registradas, indicando
+	para cada una: nombre, URL, tipo detectado, estado (\texttt{ok / warning / blocked / error}),
+	fecha del último sondeo y número de artículos encontrados en la última prueba. Las fuentes
+	predeterminadas del sistema aparecen marcadas con un ícono de candado y sin botón de
+	eliminación. Las fuentes personalizadas muestran botones de edición y eliminación. Todas
+	las fuentes cuentan con un interruptor de activación/desactivación.
+
+\IUfig[.9]{gestion_fuentes}{IU-02}{Pantalla de Gestión de Fuentes.}
+
+\subsection{Salidas}
+	\begin{itemize}
+		\item Resultado del sondeo técnico previo: tipo detectado (RSS / HTML / sitemap),
+		      feeds RSS disponibles, crawl-delay, accesibilidad WAF e indicador stealth.
+		\item Tabla de fuentes con columnas: Nombre, URL, Tipo, Estado, Último sondeo,
+		      Artículos detectados y Acciones.
+		\item Notificación de éxito al registrar, actualizar o eliminar una fuente.
+		\item Error HTTP 409 si la URL ya está registrada.
+		\item Error HTTP 403 si se intenta eliminar una fuente predeterminada.
+	\end{itemize}
+
+\subsection{Entradas}
+	\begin{itemize}
+		\item URL de la fuente (campo obligatorio, debe iniciar con \texttt{http://} o
+		      \texttt{https://}).
+		\item Nombre del medio de comunicación (opcional; se infiere del dominio si se omite).
+		\item Tipo de fuente (selector: \texttt{auto} / \texttt{rss} / \texttt{sitemap} /
+		      \texttt{html}).
+		\item Notas adicionales (texto libre, opcional).
+	\end{itemize}
+
+\subsection{Comandos}
+	\begin{itemize}
+		\item \IUbutton{Sondear URL}: Detecta el tipo de fuente y su accesibilidad sin
+		      registrarla (\texttt{POST /api/sources/probe}). Muestra el resultado en el
+		      formulario antes de confirmar el alta (CU-02).
+		\item \IUbutton{Guardar Fuente}: Registra la nueva fuente en la base de datos una
+		      vez verificada (CU-02).
+		\item \IUbutton{Probar Fuente}: Ejecuta un sondeo completo sobre una fuente ya
+		      registrada, incluyendo extracción de artículos de muestra, y actualiza su
+		      estado en la tabla (\texttt{POST /api/sources/<id>/test}).
+		\item \IUbutton{Desactivar / Activar}: Alterna el campo \texttt{is\_active} de
+		      la fuente mediante un interruptor, excluyéndola o incluyéndola en el próximo
+		      barrido de recolección (\texttt{POST /api/sources/<id>/toggle}).
+		\item \IUbutton{Eliminar}: Elimina permanentemente una fuente personalizada
+		      (\texttt{DELETE /api/sources/<id>}). No disponible para fuentes predeterminadas.
+	\end{itemize}

@@ -1,0 +1,76 @@
+% !TeX root = ../proyecto.tex
+
+\begin{UseCase}{CU-07}{Búsqueda y Filtrado de Noticias}{%
+	Permite al analista realizar búsquedas de texto completo sobre el corpus de noticias clasificadas, utilizando Full-Text Search de PostgreSQL con stemming en español o búsqueda por sinónimos sobre CSV como fallback, con soporte de filtros por clasificación y estado NNA.
+}
+	\UCitem{Versión}{\color{Gray}
+		1.0
+	}\UCitem{Autor}{\color{Gray}
+		Tesista de Ingeniería
+	}\UCitem{Supervisa}{\color{Gray}
+		Director de Trabajo Terminal
+	}\UCitem{Actor}{
+		Analista de Datos / Trabajador Social
+	}\UCitem{Propósito}{\begin{Titemize}
+		\Titem Localizar rápidamente noticias específicas dentro del corpus clasificado usando términos de búsqueda, filtros de relevancia y restricciones por detección de NNA.
+	\end{Titemize}
+	}\UCitem{Entradas}{\begin{Titemize}
+		\Titem Término de búsqueda (\texttt{q}).
+		\Titem Filtro de clasificación (Alta / Media / Baja / No relevante), opcional.
+		\Titem Filtro ``Solo NNA'' (booleano), opcional.
+		\Titem Límite de resultados (\texttt{limit}), por defecto 20.
+	\end{Titemize}
+	}\UCitem{Origen}{\begin{Titemize}
+		\Titem Barra de búsqueda en la cabecera del Dashboard principal \IUref{IU-01}{Dashboard}.
+	\end{Titemize}
+	}\UCitem{Salidas}{\begin{Titemize}
+		\Titem Lista de noticias relevantes ordenadas por score de relevancia FTS.
+		\Titem Indicador de la fuente de datos utilizada (\texttt{postgresql\_fts} o \texttt{csv\_synonyms}).
+		\Titem Número total de resultados encontrados.
+	\end{Titemize}
+	}\UCitem{Destino}{\begin{Titemize}
+		\Titem Sección de resultados en la interfaz \IUref{IU-01}{Dashboard}.
+	\end{Titemize}
+	}\UCitem{Precondiciones}{\begin{Titemize}
+		\Titem El actor debe tener una sesión activa (CU-06).
+		\Titem El corpus debe haber sido procesado por al menos un ciclo del pipeline (CU-01).
+	\end{Titemize}
+	}\UCitem{Postcondiciones}{\begin{Titemize}
+		\Titem Se despliegan los resultados filtrados en la interfaz sin modificar la base de datos.
+	\end{Titemize}
+	}\UCitem{Errores}{\begin{Titemize}
+		\Titem {\bf \hypertarget{CU-07.E1}{E1}}: El término de búsqueda está vacío \Trayref{CU-07}{A}.
+		\Titem {\bf \hypertarget{CU-07.E2}{E2}}: No hay datos disponibles (ni PostgreSQL ni CSV) \Trayref{CU-07}{B}.
+	\end{Titemize}
+	}\UCitem{Tipo}{
+		Caso de uso primario
+	}\UCitem{Observaciones}{
+		El motor FTS de PostgreSQL aplica el diccionario Snowball en español, reduciendo variantes morfológicas de \textit{``feminicidio''}, \textit{``feminicida''} y \textit{``feminicidios''} a la misma raíz léxica. El fallback a CSV utiliza el módulo \texttt{SynonymDictionary} para expandir el término de búsqueda con sinónimos del dominio.
+	}
+\end{UseCase}
+
+%--------------------------------------
+\begin{UCtrayectoria}
+	\UCpaso[\UCActor] Escribe un término de búsqueda en la barra de búsqueda del Dashboard y presiona \IUbutton{Buscar} o la tecla Enter.
+	\UCpaso[\UCsist] Valida que el parámetro \texttt{q} no esté vacío \ErrorRef{CU-07}{E1}{Query vacío}.
+	\UCpaso[\UCsist] Verifica si hay datos en PostgreSQL (\texttt{\_check\_postgres()}).
+	\UCpaso[\UCsist] Si PostgreSQL está disponible, invoca \texttt{NoticiasRepository.buscar\_fts()} con índices GIN sobre columnas \texttt{tsvector} en $O(\log n)$.
+	\UCpaso[\UCsist] Si no hay datos en PostgreSQL, aplica búsqueda textual sobre el CSV en memoria, expandiendo el término con el \texttt{SynonymDictionary} \ErrorRef{CU-07}{E2}{Sin datos}.
+	\UCpaso[\UCsist] Retorna la lista de resultados con el campo \texttt{data\_source} indicando el motor utilizado.
+	\UCpaso[\UCActor] Revisa los resultados y puede activar el módulo \texttt{DeepInvestigator} sobre cualquier resultado (CU-03).
+\end{UCtrayectoria}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-07}{A}{El término de búsqueda está vacío}
+	\UCpaso[\UCsist] Retorna HTTP 400 con el mensaje ``Query requerido''.
+	\UCpaso[\UCActor] Introduce un término de búsqueda válido.
+	\UCpaso[] El Caso de Uso termina; el actor puede reintentar.
+\end{UCtrayectoriaA}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-07}{B}{No hay datos disponibles en ninguna fuente}
+	\UCpaso[\UCsist] Detecta que PostgreSQL no tiene registros y el CSV no existe en disco.
+	\UCpaso[\UCsist] Retorna HTTP 404 con el mensaje ``No hay datos disponibles''.
+	\UCpaso[\UCActor] Ejecuta primero el pipeline de recolección y análisis (CU-01) para generar datos.
+	\UCpaso[] El Caso de Uso termina.
+\end{UCtrayectoriaA}

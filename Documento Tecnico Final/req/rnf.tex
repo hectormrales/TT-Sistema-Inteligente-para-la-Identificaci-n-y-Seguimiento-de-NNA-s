@@ -1,0 +1,95 @@
+% !TeX root = ../proyecto.tex
+
+\section{Requerimientos No Funcionales}
+
+Se detallan los requerimientos de calidad, seguridad, desempeño y tolerancia a fallos del
+sistema inteligente.
+
+\begin{NFRequerimientos}
+    % \NFRitem{ID}{Atributo}{Necesidad}{Estrategia}{Referencia}
+
+    \NFRitem{RNF-01}{Optimización de Memoria (OOM)}
+            {El modelo BETO no debe provocar cierres abruptos del proceso por saturación de RAM
+            durante la inferencia en lote.}
+            {Implementar liberación explícita del caché de PyTorch y reducción dinámica del
+            tamaño del lote (\textit{batch-size}) a la unidad (\texttt{batch\_size = 1}) ante
+            excepciones \texttt{MemoryError} o \texttt{RuntimeError}. La técnica de
+            \textit{Gradient Accumulation} permite simular lotes grandes usando RAM mínima
+            durante el Fine-Tuning.}
+            {CU-01}
+
+    \NFRitem{RNF-02}{Evasión de Contramedidas Web (WAF)}
+            {El recolector debe poder acceder a periódicos digitales protegidos por
+            Web Application Firewalls empresariales (Cloudflare, Akamai) sin ser bloqueado
+            sistemáticamente.}
+            {Uso del módulo \texttt{StealthSession} v7.0 con emulación de fingerprint TLS via
+            \texttt{cloudscraper}, delays con distribución log-normal ($\mu=2.5$, $\sigma=0.7$)
+            y patrón \textit{Circuit Breaker} por dominio que evita el bloqueo permanente de IP
+            tras 3 fallos consecutivos (cooldown de 300~s con extensión a 600~s).}
+            {CU-01, CU-02}
+
+    \NFRitem{RNF-03}{Resiliencia en APIs Externas}
+            {El módulo \texttt{DeepInvestigator} no debe terminar abruptamente si DuckDuckGo
+            bloquea las peticiones de scraping de búsqueda.}
+            {Implementar fallback hacia la herramienta nativa \texttt{GoogleSearch} de Gemini,
+            ejecutando la búsqueda directamente dentro del modelo sin scraping externo. Si
+            ambos mecanismos fallan, el estado de la investigación pasa a \texttt{error}
+            con notificación al usuario.}
+            {CU-03}
+
+    \NFRitem{RNF-04}{Integridad de Base de Datos (ACID)}
+            {Los fallos de conexión o errores de validación durante inserciones masivas
+            no deben dejar la base de datos en estados corruptos o con registros parciales.}
+            {Uso estricto de transacciones atómicas de SQLAlchemy con \textit{Rollback}
+            automático ante excepciones del tipo \texttt{OperationalError} o
+            \texttt{IntegrityError}. Las restricciones \texttt{FOREIGN KEY} con
+            \texttt{CASCADE DELETE} garantizan la coherencia referencial sin lógica
+            adicional en la capa de aplicación.}
+            {CU-01, CU-05}
+
+    \NFRitem{RNF-05}{Procesamiento Asíncrono No Bloqueante}
+            {Las operaciones de larga duración (pipeline de análisis y consultas a Gemini)
+            no deben bloquear la interfaz web del Dashboard ni la atención de otras
+            peticiones HTTP.}
+            {Uso de hilos en segundo plano (\textit{daemon threads}) gestionados con
+            \texttt{threading.Thread} y un mapa de estado en memoria
+            (\texttt{\_analysis\_status}, \texttt{\_active\_investigations}) consultado
+            por el frontend mediante \textit{polling} periódico a los endpoints
+            \texttt{/api/analyze/status} y \texttt{/api/investigate/status/<id>}.}
+            {CU-01, CU-03}
+
+    \NFRitem{RNF-06}{Autenticación y Control de Acceso}
+            {Todos los endpoints del Dashboard y la API REST deben requerir una sesión
+            autenticada. El acceso sin autenticación debe redirigir al formulario de
+            inicio de sesión.}
+            {Implementación de Flask-Login con el decorador \texttt{@login\_required}
+            en todas las rutas excepto \texttt{/health}, \texttt{/login} y
+            \texttt{/register}. Las contraseñas se almacenan como hashes
+            \texttt{bcrypt} y nunca en texto plano. La protección contra redirecciones
+            abiertas (\textit{Open Redirect}) se valida en el helper
+            \texttt{\_is\_safe\_url()}.}
+            {CU-06}
+
+    \NFRitem{RNF-07}{Compatibilidad Dual PostgreSQL / CSV}
+            {El sistema debe mantener la capacidad de operar sobre datos en formato
+            CSV cuando la base de datos PostgreSQL no esté disponible, garantizando
+            continuidad operativa básica del Dashboard.}
+            {Implementación del patrón \textit{Check-then-Fallback} en todos los
+            endpoints de datos: \texttt{\_check\_postgres()} verifica si existen
+            registros en PostgreSQL; en caso negativo, \texttt{\_load\_data()}
+            carga el CSV del directorio \texttt{data/}. El campo
+            \texttt{data\_source} en cada respuesta JSON indica el motor activo.}
+            {CU-01, CU-07}
+
+    \NFRitem{RNF-08}{Trazabilidad por Lote de Análisis (Batch ID)}
+            {El sistema debe permitir consultar el historial de ejecuciones
+            independientes del pipeline y filtrar los datos del Dashboard por
+            lote específico para análisis comparativo.}
+            {Cada ejecución del pipeline asigna un \texttt{batch\_id} único a
+            todos los registros insertados en ese ciclo. Los endpoints
+            \texttt{/api/stats}, \texttt{/api/noticias} y \texttt{/api/batches}
+            aceptan el parámetro \texttt{batch\_id} (\texttt{latest},
+            \texttt{all} o un identificador específico).}
+            {CU-01}
+
+\end{NFRequerimientos}

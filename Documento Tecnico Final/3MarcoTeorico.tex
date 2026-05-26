@@ -4,7 +4,7 @@
 \label{cap:marcoteorico}
 
 En este capítulo se establece el fundamento matemático y conceptual que sustenta
-la arquitectura neuro-simbólica del Sistema Inteligente para la Identificación y
+la arquitectura del Sistema Inteligente para la Identificación y
 Seguimiento de NNA. Cada sección describe una tecnología implementada en el sistema
 y justifica su adopción frente a las alternativas disponibles, trazando así una línea
 directa entre los principios teóricos formales y las decisiones de implementación
@@ -212,34 +212,104 @@ $\hat{e}$ es su versión normalizada empleada en la clasificación zero-shot.
 \label{sec:mt_inferencia}
 
 
-\subsection{Clasificación zero-shot por similitud coseno}
+\subsection{Clasificación zero-shot por similitud coseno (modo fallback)}
 \label{subsec:mt_zeroshot}
 
 El paradigma de \textbf{clasificación zero-shot} \cite{yin2019benchmarking} permite
-categorizar documentos en clases definidas en lenguaje natural sin que disponga de
-ejemplos etiquetados de entrenamiento para dichas clases. Esta implementación adoptada
-en el sistema es la clasificación por similitud coseno entre embeddings. Se
-precomputan representaciones BETO para descripciones textuales de las categorías de
-clasificación (\textit{"noticia que reporta un caso concreto de feminicidio donde
-los hijos de la víctima quedaron en orfandad o bajo resguardo institucional"}
-para la clase \textit{"relevante"}; \textit{"notas estadísticas, políticas públicas, reporte
-donde el menor es el agresor o feminicidio de una menor de edad"} para la clase
-\textit{"no relevante"}).
+categorizar documentos en clases definidas en lenguaje natural sin requerir
+ejemplos etiquetados de entrenamiento para dichas clases. En el sistema, este
+paradigma opera como \textbf{modo de fallback}: se activa automáticamente cuando
+el clasificador ajustado (Fine-Tuned) no está disponible, garantizando así la
+continuidad operativa del pipeline en su fase inicial o ante la ausencia del
+archivo de modelo guardado.
 
-En tiempo de inferencia, el embedding del texto $\hat{e}_{texto}$ se compara contra
-los embeddings de cada categoría $\hat{e}_{c}$ mediante el producto punto (lo que
-equivale a la similitud coseno):
+La implementación adoptada es la clasificación por similitud coseno entre embeddings.
+Se precomputan representaciones BETO para descriptores textuales de las categorías
+(\textit{``noticia que reporta un caso concreto de feminicidio donde los hijos de
+la víctima quedaron en orfandad o bajo resguardo institucional''} para la clase
+\textit{relevante}; \textit{``notas estadísticas, políticas públicas o reporte donde
+el menor es el agresor''} para la clase \textit{no relevante}). En tiempo de
+inferencia, el embedding del texto $\hat{e}_{texto}$ se compara contra los
+embeddings de cada categoría $\hat{e}_{c}$ mediante el producto punto (equivalente
+a similitud coseno, dado que los vectores están normalizados en $\ell_2$):
 
 \begin{equation}
     s_c = \hat{e}_{texto} \cdot \hat{e}_c = \cos(\hat{e}_{texto}, \hat{e}_c)
 \end{equation}
 
-La mayor ventaja de este paradigma sobre el fine-tuning supervisado es que
-el conocimiento experto del dominio se codifica directamente en las descripciones
-de categorías en lenguaje natural, lo cual hace que sean auditables y modificables
-por cualquier miembro del equipo sin necesidad de reentrenar el modelo. Por otro lado,
-el modelo neuronal aporta la capacidad de la generalización semántica aprendida
-durante el preentrenamiento.
+La ventaja principal de este paradigma es que el conocimiento experto del dominio
+se codifica en lenguaje natural auditable y modificable sin reentrenamiento. Su
+limitación, identificada empíricamente durante el Prototipo~3 como el
+\textit{Efecto Péndulo}, es que los scores tienden a concentrarse en el rango
+$[0.40, 0.70]$, reduciendo la discriminabilidad del clasificador entre noticias
+legislativas y casos fácticos de orfandad con vocabulario solapado.
+
+
+%----------------------------------------------------------------------------------------
+\subsection{Ajuste fino supervisado (\textit{Fine-Tuning}) con \textit{Linear Probing}}
+\label{subsec:mt_finetuning}
+%----------------------------------------------------------------------------------------
+
+El \textbf{ajuste fino} (\textit{Fine-Tuning}) \cite{devlin2019bert} de un modelo
+preentrenado consiste en continuar el proceso de entrenamiento sobre un corpus
+etiquetado del dominio objetivo, actualizando los pesos del modelo para especializar
+sus representaciones hacia las características semánticas específicas de la tarea.
+En el sistema, esta es la modalidad de inferencia \textbf{prioritaria}: el módulo
+\texttt{semantic\_detector.py} verifica al inicializarse si existe un clasificador
+guardado y, de haberlo, lo carga como motor principal; en caso contrario, activa
+el modo zero-shot como fallback.
+
+Dado que el reentrenamiento completo de los 110~millones de parámetros de BETO
+exige capacidades de cómputo (GPU de alto rendimiento, memoria de video de
+al menos 16~GB) incompatibles con el entorno de desarrollo del proyecto (CPU
+con 8~GB de RAM), el sistema implementa la estrategia de \textbf{\textit{Linear
+Probing}}: se congelan (\texttt{requires\_grad = False}) todos los bloques
+Transformer del encoder BETO y únicamente se entrena la capa lineal de clasificación
+superpuesta (la \textit{cabeza de clasificación}):
+
+\begin{equation}
+    \hat{y} = \text{softmax}\!\left(W_{clf} \cdot \hat{e}_{\texttt{[CLS]}} + b_{clf}\right)
+\end{equation}
+
+Donde $W_{clf} \in \mathbb{R}^{C \times 768}$ es la matriz de pesos de la cabeza
+de clasificación, $b_{clf} \in \mathbb{R}^{C}$ es el vector de sesgo, $C$ es el
+número de clases (Alta, Media, No~relevante) y $\hat{e}_{\texttt{[CLS]}} \in
+\mathbb{R}^{768}$ es el embedding del token \texttt{[CLS]} extraído de la última
+capa del encoder congelado. El número de parámetros entrenables se reduce de
+110~millones a aproximadamente $768 \times C + C \approx 2{,}307$ parámetros,
+reduciendo el consumo de memoria de gradientes en $\sim$99.99\%.
+
+
+%----------------------------------------------------------------------------------------
+\subsection{Acumulación de Gradientes (\textit{Gradient Accumulation})}
+\label{subsec:mt_gradacc}
+%----------------------------------------------------------------------------------------
+
+El \textbf{\textit{Gradient Accumulation}} \cite{ott2018scaling} es una técnica
+que permite simular el entrenamiento con lotes de tamaño grande (necesario para
+estabilidad del descenso del gradiente) en equipos con memoria RAM limitada, sin
+realizar el paso de actualización de pesos (\texttt{optimizer.step()}) en cada
+lote individual. El algoritmo acumula los gradientes de $k$ lotes consecutivos
+antes de aplicar una sola actualización de pesos:
+
+\begin{equation}
+    \nabla_{\theta}^{\text{acum}} = \frac{1}{k} \sum_{i=1}^{k} \nabla_{\theta} \mathcal{L}(x_i, y_i)
+\end{equation}
+
+Donde $\nabla_{\theta} \mathcal{L}(x_i, y_i)$ es el gradiente de la función de
+pérdida para el $i$-ésimo mini-lote y $k$ es el factor de acumulación. El efecto
+es matemáticamente equivalente a entrenar con un lote de tamaño efectivo
+$k \times \texttt{batch\_size}$, usando solo la memoria de un lote de tamaño
+$\texttt{batch\_size}$ en cada paso.
+
+En el sistema, se emplea \texttt{batch\_size = 4} con un factor de acumulación
+$k = 8$, dando un lote efectivo de 32~muestras por actualización, valor estándar
+para el Fine-Tuning estable de modelos BERT. El proceso de entrenamiento incorpora
+adicional una estrategia de detención temprana (\textit{Early Stopping}) basada
+en el F1-score macro sobre el conjunto de validación: si el F1 no mejora en 3
+epocas consecutivas (\texttt{patience = 3}), el entrenamiento se detiene y se
+recuperan los pesos del mejor epoch, previniendo el sobreajuste ante el tamaño
+reducido del corpus etiquetado.
 
 
 \section{Agrupamiento semántico y reducción de dimensionalidad}
@@ -588,7 +658,7 @@ sobre la tabla \texttt{noticias}, concatenando título (peso A, mayor relevancia
 y contenido (peso B, menor relevancia) para el ranking de resultados.
 
 %========================================================================================
-\section{Sistemas Neuro-Simbólicos: Fundamentos Teóricos}
+\section{Sistemas Neuro-Simbólicos y Clasificación Escalonada v7.1}
 \label{sec:mt_neurosimbolico}
 %========================================================================================
 
@@ -601,23 +671,158 @@ estructurado del dominio, razonamiento determinista y auditable).
 
 Los sistemas neuro-simbólicos surgen como respuesta a las limitaciones individuales
 de cada paradigma. Los sistemas puramente neuronales son poderosos en generalización
-pero producen \textit{alucinaciones} (predicciones erróneas con alta confianza) en
-distribuciones fuera del rango de entrenamiento. Los sistemas puramente simbólicos
-son auditables y correctos por construcción, pero no escalan ante vocabulario abierto
-y lenguaje natural no estructurado.
+pero producen \textit{alucinaciones} en distribuciones fuera del rango de entrenamiento.
+Los sistemas puramente simbólicos son auditables y correctos por construcción, pero
+no escalan ante vocabulario abierto y lenguaje natural no estructurado.
 
-En el contexto del sistema desarrollado, el componente neuronal (BETO) provee
+En el contexto del sistema, el componente neuronal (BETO Fine-Tuned) provee la
 comprensión semántica del lenguaje periodístico, mientras que el componente simbólico
-(árbol de decisión con Bypass de Oro, Bozal de Penalización y Factor Alpha Dinámico)
-garantiza que ninguna predicción viole el conocimiento experto del dominio: que un
-menor agresor no sea clasificado como víctima, que una nota estadística sin caso
-concreto no genere una alerta, y que el grado de confianza del componente neuronal
-module de forma auditablemente correcta su peso en la decisión final.
+(las cuatro capas de la arquitectura de \textit{Scoring Escalonado} v7.1) garantiza
+que ninguna predicción viole el conocimiento experto del dominio.
 
-Esta arquitectura opera bajo el principio de \textit{corrección por capas}: primero
-los filtros simbólicos de certeza máxima (Bypass de Oro) tienen prioridad absoluta
-sobre el componente neuronal; luego los filtros simbólicos de corrección actúan como
-restricciones; y solo en los casos genuinamente ambiguos ---donde ninguna regla
-simbólica ofrece certeza suficiente--- el sistema delega la decisión al componente
-neuronal ponderado por su propio grado de confianza (Factor Alpha Dinámico).
+%----------------------------------------------------------------------------------------
+\subsection{Arquitectura de \textit{Scoring Escalonado} v7.1: las cuatro capas}
+\label{subsec:mt_scoring}
+%----------------------------------------------------------------------------------------
+
+La arquitectura v7.1 organiza la clasificación semántica en cuatro capas secuenciales
+que operan sobre un \textbf{score acumulativo} $S \in \mathbb{R}$, inicializado en
+cero al comienzo de la inferencia sobre cada noticia:
+
+\begin{description}
+    \item[\textbf{Capa~0 --- Escudo Léxico (bloqueo absoluto).}]
+          Evaluación determinista mediante un conjunto congelado de tokens de dominio
+          ajeno (\texttt{frozenset}), con complejidad $O(1)$ por consulta. Si el
+          texto contiene \textit{exclusivamente} términos de dominios fuera del
+          alcance del sistema (deportes, economía, política exterior), la noticia
+          es descartada inmediatamente sin continuar a las capas siguientes. Esta
+          es la capa de mayor especificidad simbólica.
+
+    \item[\textbf{Capa~1 --- Escudo Suave (penalización aditiva).}]
+          Evaluación semántica sobre dominios limítrofes: contenido legislativo
+          (reformas, iniciativas de ley), estadístico (porcentajes nacionales
+          sin caso concreto) o de alcance geográfico extranacional. Si el texto
+          cae en alguna de estas categorías, se aplica una penalización aditiva
+          $\delta = -0.35$ al score acumulativo:
+          \begin{equation}
+              S \leftarrow S + \delta, \quad \delta = -0.35
+          \end{equation}
+          A diferencia de la Capa~0, esta penalización no es una exclusión binaria:
+          una noticia legislativa que simultáneamente describe un caso fáctico
+          concreto puede recuperar el score en las capas siguientes.
+
+    \item[\textbf{Capa~2 --- Inferencia BETO (score semántico probabilístico).}]
+          El texto de la noticia se procesa por el clasificador BETO Fine-Tuned
+          (o Zero-Shot como fallback). El logit de la clase positiva,
+          transformado por softmax al rango $[0, 1]$, se añade directamente
+          al score acumulativo:
+          \begin{equation}
+              S \leftarrow S + P(\text{relevante} \mid \text{texto})
+          \end{equation}
+          Para que la noticia avance al post-filtro, se requiere $S > 0.50$
+          al concluir esta capa.
+
+    \item[\textbf{Capa~3 --- Post-filtro de validación (bonificaciones heurísticas).}]
+          Se buscan en el texto un conjunto de patrones lingüísticos de alta
+          especificidad que evidencian orfandad fáctica: expresiones del tipo
+          \textit{``quedó al cuidado de''}, \textit{``el menor presenció''},
+          \textit{``DIF resguardó''}, \textit{``hijos quedaron huérfanos''}, etc.
+          Cada patrón encontrado añade una bonificación positiva al score:
+          \begin{equation}
+              S \leftarrow S + \sum_{p \in P_{enc}} b_p
+          \end{equation}
+          donde $P_{enc}$ es el conjunto de patrones encontrados y $b_p > 0$ es
+          el peso de cada bonificación. El score final determina la clasificación
+          definitiva: $S \geq 0.80$ \;$\rightarrow$\; Alta; $0.50 \leq S < 0.80$
+          \;$\rightarrow$\; Media; $S < 0.50$ \;$\rightarrow$\; No relevante.
+\end{description}
+
+Esta arquitectura opera bajo el principio de \textit{corrección por capas}: los
+filtros simbólicos de certeza máxima (Capa~0) tienen prioridad absoluta; los
+filtros de penalización (Capa~1) actúan como restricciones suaves; y solo en
+los casos genuinamente ambiguos el sistema delega la decisión al componente
+neuronal (Capa~2), cuyo resultado puede ser confirmado o reforzado por evidencia
+explícita de orfandad (Capa~3).
+
+
+%========================================================================================
+\section{Modelos de Lenguaje de Gran Escala y el Módulo \textit{DeepInvestigator}}
+\label{sec:mt_llm}
+%========================================================================================
+
+Los \textbf{Modelos de Lenguaje de Gran Escala} (\textit{Large Language Models},
+LLM) \cite{brown2020language} son sistemas de IA generativa basados en arquitecturas
+Transformer de muy alta capacidad (desde miles de millones hasta billones de
+parámetros) entrenados sobre corpus de texto de escala masiva (cientos de miles
+de millones de tokens). A diferencia de BETO, que produce únicamente representaciones
+vectoriales (\textit{encoder-only}), los LLM son modelos \textit{decoder} (o
+\textit{encoder-decoder}) capaces de generar texto libre condicionado a una
+instrucción o contexto (\textit{prompt}).
+
+La capacidad de razonamiento de los LLM emerge a partir de cierta escala de
+parámetros y datos de entrenamiento, una propiedad denominada
+\textit{emergencia} \cite{wei2022emergent}: modelos de mayor capacidad
+exhiben comportamientos cualitativamente diferentes a los de modelos más pequeños,
+incluyendo seguimiento de instrucciones complejas, razonamiento en múltiples pasos
+(\textit{Chain-of-Thought}) y síntesis estructurada de información de múltiples
+fuentes.
+
+%----------------------------------------------------------------------------------------
+\subsection{Síntesis estructurada mediante Gemini Flash}
+\label{subsec:mt_gemini}
+%----------------------------------------------------------------------------------------
+
+El módulo \texttt{DeepInvestigator} emplea \textbf{Gemini Flash} (Google DeepMind)
+\cite{google2023gemini}, un LLM de alta eficiencia diseñado para tareas de
+inferencia de latencia reducida. El módulo lo utiliza en dos tareas distintas:
+
+\begin{enumerate}
+    \item \textbf{Generación de consulta de búsqueda.} Dado el título y el fragmento
+          inicial del artículo periodístico, el LLM genera una consulta de búsqueda
+          altamente específica (máximo 6~palabras) que maximiza la probabilidad de
+          recuperar fuentes complementarias sobre el mismo caso fáctico. Esta tarea
+          requiere compresión semántica y desambiguación de nombres propios.
+
+    \item \textbf{Síntesis estructurada en JSON.} Dados los textos multi-fuente
+          recolectados (artículo original + fuentes complementarias scrapeadas),
+          el LLM produce una ficha de caso estructurada con siete campos:
+          \texttt{ubicacion}, \texttt{victimas}, \texttt{ninos\_afectados},
+          \texttt{edades}, \texttt{situacion\_actual}, \texttt{medios\_contacto}
+          y \texttt{resumen}. El campo \texttt{medios\_contacto} requiere
+          conocimiento factual externo (DIF municipal y Fiscalía competente
+          según la ubicación inferida), que el LLM provee a través de su
+          conocimiento paramétrico adquirido durante el preentrenamiento.
+\end{enumerate}
+
+El diseño del módulo es \textbf{reactivo e interactivo}: no se integra
+autonómicamente en el pipeline de recolección sino que se activa bajo demanda
+explícita del analista, por dos razones técnicas documentadas. Primera, la
+latencia del pipeline completo (generación de query + DuckDuckGo + scraping
++ síntesis LLM) tiene un promedio de 47~segundos por caso, incompatible con
+el procesamiento de un corpus de cientos de noticias. Segunda, el consumo de
+cuota de la API de Gemini escala linealmente con el número de invocaciones,
+lo que hace inviable su ejecución automática sobre el corpus completo.
+
+%----------------------------------------------------------------------------------------
+\subsection{Agentes de búsqueda y el patrón OSINT}
+\label{subsec:mt_osint}
+%----------------------------------------------------------------------------------------
+
+El pipeline del \texttt{DeepInvestigator} sigue el patrón de \textbf{OSINT}
+(\textit{Open Source Intelligence}): la recopilación y síntesis sistemática
+de información públicamente disponible en Internet para producir inteligencia
+accionable sobre un sujeto o evento específico. En el sistema, el sujeto
+es el caso de orfandad descubierto por el pipeline principal, y la
+información accionable son los datos de contacto institucional (DIF, Fiscalía)
+necesarios para una posible intervención de protección a la infancia.
+
+El módulo implementa un mecanismo de \textbf{fallback de búsqueda} en dos
+niveles. En el nivel primario, emplea DuckDuckGo (variante HTML y Lite,
+sin rastreo de usuario) como motor de búsqueda, seguido de scraping
+de los resultados mediante \texttt{StealthSession}. En el nivel secundario
+(fallback), si DuckDuckGo bloquea la petición o no retorna URLs utilizables,
+el módulo invoca la herramienta nativa \texttt{GoogleSearch} integrada en
+Gemini, delegando la búsqueda al LLM sin scraping externo. Esta estrategia
+de fallback garantiza la resiliencia del módulo ante bloqueos temporales
+de motores de búsqueda sin interrumpir el flujo de investigación del analista.
 

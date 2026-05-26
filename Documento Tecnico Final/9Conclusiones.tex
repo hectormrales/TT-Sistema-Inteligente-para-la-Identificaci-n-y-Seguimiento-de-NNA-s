@@ -1,99 +1,158 @@
 % !TeX root = proyecto.tex
 
-%========================================================================================
 % CAPÍTULO 9: CONCLUSIONES Y TRABAJO FUTURO
-%========================================================================================
 
-\chapter{Conclusiones y trabajo a futuro}
+\chapter{Conclusiones y trabajo a Futuro}
 \label{cap:conclusiones}
 
 \section{Conclusión general y cumplimiento de objetivos}
+\label{sec:conc_general}
 
-El desarrollo del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA por feminicidios} asegura
-el cumplimiento del \textbf{Objetivo General} estipulado en el protocolo de este Trabajo Terminal. Se consolidó una
-plataforma inteligente capaz de automatizar la detección de Niñas, Niños y Adolescentes (NNA) en situación
-de orfandad por feminicidio a partir de fuentes de información no estructuradas. Desde una perspectiva de
-ingeniería de software este sistema realiza la transformación de flujos de datos heurísticos y caóticos en
-evidencia estructurada de alto valor operativo dándoles a los especialistas, tomadores de decisiones y defensores
-de derechos humanos un instrumento tecnológico para visibilizar una problema crítico a escala nacional.
+El desarrollo del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA
+en situación de orfandad por feminicidio} cumplió satisfactoriamente el \textbf{Objetivo
+General} del Trabajo Terminal el cual fue construir una plataforma automatizada que detecte, clasifique
+y facilite el seguimiento de casos de Niñas, Niños y Adolescentes (NNA) víctimas indirectas
+de feminicidio, a partir de fuentes periodísticas públicas en México, con la suficiente
+precisión semántica para ser operativamente útil para organizaciones de la sociedad civil.
 
-Esta meta se realizó por medio de los cuatro \textbf{Objetivos Específicos (OE)} los cuales se detallan a continuación:
+\section{Cumplimiento de los Objetivos Específicos}
+\label{sec:conc_oe}
 
-\subsection{Cumplimiento del OE-1 Identificación de Fuentes}
-Se justificó teórica y prácticamente la selección de portales de noticias locales, medios digitales independientes y secciones
-de nota roja como las fuentes primarias idóneas para este dominio. Debido a la opacidad de los registros oficiales, estos medios
-locales demostraron ser los canales informativos más consistentes para rastrear casos fácticos dispersos a lo largo del territorio
-nacional capturando detalles operativos y relacionales que a menudo son ignorados en fuentes nacionales generalistas.
+\subsection{OE-1 Identificación y selección de fuentes públicas}
+\label{subsec:conc_oe1}
 
-\subsection{Cumplimiento del OE-2 Módulo de Web Scraping}
-Se implementó y estabilizó una arquitectura de extracción de datos robusta que es capaz de operar de manera constante y sistemática.
-Este módulo de \textit{Web Scraping} automatizado supera restricciones de las barreras \textit{anti-bot} y las inconsistencias
-estructurales de múltiples periódicos. Al garantizar la recolección continua de textos periodísticos en este módulo se consolidó
-el cimiento de datos indispensable para alimentar las posteriores capas de procesamiento del sistema.
+Se determinó que los portales de noticias locales, los medios digitales independientes
+y las secciones policiacas son las fuentes de mayor densidad informativa para casos
+específicos de feminicidio con NNA afectados. La evaluación técnica de tres estrategias
+de extracción (scraping HTML estático, automatización de navegadores y agregación RSS
+con sesiones \textit{stealth}) estableció que la arquitectura híbrida
+\textbf{RSS + StealthSession} es la unica viable bajo las restricciones
+operativas del proyecto pues los feeds RSS eliminan la barrera de los WAF para el 65\%
+del corpus, mientras que \texttt{StealthSession} extiende la cobertura al 35\%
+restante mediante emulación de fingerprint TLS con \texttt{cloudscraper}.
+Al cierre del TT2 el sistema monitorea \textbf{45 fuentes RSS} nacionales y de
+género e incluyendo medios especializados como CIMAC Noticias y complementadas
+por consultas a Google News.
 
-\subsection{Cumplimiento del OE-3 Procesamiento de Lenguaje Natural (NLP)}
-El análisis del texto libre se resolvió mediante la integración de técnicas avanzadas de Procesamiento de Lenguaje Natural (NLP).
-Se detalló y justificó el uso de modelos de lenguaje basados en arquitecturas \textit{Transformers} mas especifico el modelo BETO,
-acoplado a un análisis lingüístico avanzado. Esta combinación permitió extraer con precisión la información de las narrativas,
-estructurando datos clave como edades, parentescos y ubicaciones geográficas a partir del caos del lenguaje humano.
+\subsection{OE-2 Módulo de extracción de datos}
+\label{subsec:conc_oe2}
 
-\subsection{Cumplimiento del OE-4 Base de Datos y Dashboard Web}
-El ciclo de información se cerró exitosamente con el diseño e implementación de un modelo de persistencia híbrida (PostgreSQL)
-y un \textit{Dashboard} interactivo construido sobre el framework Flask. Esta arquitectura garantiza el almacenamiento,
-la consulta, la visualización y la auditoría social de la información de manera segura y eficiente lo que permite a los
-usuarios finales interactuar dinámicamente con los hallazgos del sistema.
+Se implementó un módulo de recolección con tres mecanismos que complementan la calidad de datos.
+La clase \texttt{StealthSession} resuelve la barrera de los Web Application Firewalls (WAF) de
+Cloudflare y Akamai mediante emulación de fingerprint TLS, delays que imitan patrones de lectura humana
+y un \textit{Circuit Breaker} por dominio que previene el bloqueo permanente de IP.
+La cascada de deduplicación de cuatro fases garantiza la calidad del corpus eliminando al rededor de 25\% de redundancia periodística.
+En producción el sistema procesó 847 noticias brutas y entregó 634 noticias únicas en un único ciclo de ejecución.
 
-\section{Evolución del Prototipo 0 al Prototipo 4}
+\subsection{OE-3 Procesamiento de lenguaje natural}
+\label{subsec:conc_oe3}
 
-La culminación exitosa, estable y escalable de este Trabajo Terminal demostro la viabilidad de haber adoptado la metodología
-\textbf{Evolutiva}. En dominios de desarrollo donde la fuente de datos (el texto libre y la nota roja hiperlocal) es intrínsecamente no determinista,
-asimétrica y altamente inestable, las aproximaciones monolíticas o en cascada resultan en un fracaso estructural garantizado.
-El prototipado evolutivo no operó en ningún momento como un ejercicio de prueba y error aleatorio, sino como un 
-riguroso ciclo iterativo de ingeniería de software estructurado en fases estandarizadas de diagnóstico algorítmico,
-perfilamiento de métricas, aislamiento de vulnerabilidades lógicas y consecuente rediseño arquitectónico fundamentado.
+La implementación del motor de clasificación semántica basado en \textbf{BETO}
+(\textit{bert-base-spanish-wwm-cased}) que es un modelo Transformer bidireccional
+con 110 millones de parámetros ya preentrenado exclusivamente en español, superó
+estructuralmente el enfoque léxico del TT1. La arquitectura de clasificación
+escalonada integra cuatro capas autónomas (escudo léxico, escudo suave,
+inferencia BETO y post-filtro de validación) que operan sobre un score acumulativo
+con penalizaciones y bonificaciones aditivas, lo que eliminaba el efecto pendulo
+identificado en el prototipo 3 (oscilación entre exceso de falsos positivos y
+falsos negativos). El ajuste fino del clasificador permitió el reentrenamiento
+local en CPU aun con recursos limitados. Adicionalmente el módulo \texttt{DeepInvestigator}
+implementó un flujo de investigación estructurada por caso combinando búsqueda web
+e inferencia con \textit{Gemini Flash} lo que genera fichas de caso con siete campos
+accionables y que incluyen a la institución competente para la intervención.
 
-El trazado del ciclo de vida del producto partió de un \textbf{Prototipo 0} de naturaleza puramente especulativa y de prueba de concepto (\textit{Proof of Concept}), escalando de inmediato a las implementaciones tácticas del \textbf{Prototipo 1 y 2}. Estas versiones seminales estuvieron gobernadas en su totalidad por sistemas expertos y motores de reglas heurísticas lineales (árboles de decisión estáticos y ecuaciones de búsquedas booleanas). Si bien estos esquemas algorítmicos clásicos demostraron su viabilidad de ejecución, bajo costo de cómputo y operatividad en entornos controlados de laboratorio, el análisis forense posterior sobre conjuntos de validación masivos reveló su absoluta y catastrófica fragilidad estructural al enfrentarse a la variabilidad léxica y las impredecibles construcciones gramaticales de la redacción policiaca real. Las reglas heurísticas \textit{hardcodeadas} fallaban, arrojando vectores nulos, frente al uso intensivo de regionalismos, jerga forense y verbos conjugados en la voz pasiva.
+\subsection{OE-4 Base de datos y plataforma web}
+\label{subsec:conc_oe4}
 
-La incapacidad matemática y computacional de abarcar, mediante una telaraña de condicionales \textit{if-else}, la infinidad de permutaciones topológicas que ofrece el lenguaje natural, forzó la obsolescencia programada de dichos módulos. Esta crisis metodológica catalizó la disrupción arquitectónica hacia el \textbf{Prototipo 3}. En esta etapa, de una densidad algorítmica radicalmente mayor, se introdujo formalmente la inferencia neuronal basada en arquitecturas Transformers; no obstante, la naturaleza probabilística del modelo de lenguaje introdujo un vector de fallo imprevisto y crítico: la alucinación de casos provocada por el sesgo semántico. Finalmente, mediante un intenso ciclo de \textit{profiling} matemático y retropropagación de errores de diseño, se ensambló y calibró el \textbf{Prototipo 4}. Esta versión de grado de producción amalgama el control y determinismo estricto de la ingeniería de software algorítmica tradicional con la insuperable robustez de abstracción del \textit{Deep Learning}, logrando por fin la madurez de \textit{pipeline} requerida para un despliegue tolerante a fallos y sin supervisión humana.
+La migración del sistema de persistencia de archivos CSV a \textbf{PostgreSQL}
+resolvió los tres problemas estructurales del TT1 pues se implementó integridad referencial
+mediante restricciones \texttt{FOREIGN KEY} con propagación \texttt{CASCADE DELETE},
+búsqueda de texto completo nativa en español mediante columnas \texttt{tsvector}
+e índices GIN y concurrencia segura ACID entre el flujo de recolección y el Dashboard
+Flask. El acceso a la capa de persistencia se encapsula en \texttt{NoticiasRepository}
+y siguiendo el patrón \textit{Repository} de Martin Fowler, lo que desacopla la lógica
+de negocio del motor de base de datos. La interfaz web del Dashboard expone la clasificación
+jerárquica del corpus (Alta/Media/Baja), el tópico BERTopic asignado, el score
+semántico de BETO y los endpoints del módulo \texttt{DeepInvestigator}.
 
-\section{Aportaciones Técnicas y Superación de Retos Críticos (Logros de TT2)}
 
-El despliegue estabilizado y la puesta en marcha del Prototipo 4 demandó la resolución ingenieril de un conjunto de obstáculos imprevisibles de alta complejidad matemática y arquitectónica. A continuación, se diserta pormenorizadamente sobre las aportaciones tecnológicas que definen el peso específico y el mérito científico innegable de este Trabajo Terminal II:
+\section{Aportaciones Técnicas del Proyecto}
+\label{sec:conc_aportaciones}
 
-\subsection{Mitigación del ``Efecto Péndulo'' mediante Arquitectura Híbrida Escalonada}
-Durante la rigurosa fase de validación empírica del motor semántico, se perfiló matemáticamente el descubrimiento de una anomalía predictiva severa, la cual fue documentada técnicamente como el ``Efecto Péndulo''. Se comprobó mediante análisis de vectores de activación que el modelo \textit{Transformer} base (BETO) exhibía un solapamiento semántico de alta dimensionalidad provocado por simple proximidad léxica. Al operar intrínsecamente como un codificador pre-entrenado para deducir la distribución probabilística de sub-palabras, BETO demostró ser estructuralmente incapaz de discriminar con precisión entre una narrativa puramente fáctica (la cobertura in situ del asesinato material de una madre frente a sus descendientes) y un cuerpo discursivo de índole legislativa o sociopolítica (por ejemplo, editoriales en prensa justificando las adendas de la "Ley Monzón" orientada a la protección jurídica de infancias desamparadas). Ambas tipologías textuales compartían masivamente los mismos anclajes nominales (mujer, asesinato, patria potestad, menor, orfandad), detonando de manera casi idéntica las capas de atención (\textit{Attention Heads}) del Transformer y originando cascadas de falsos positivos que degradaban inaceptablemente la confiabilidad de los clasificadores.
+Más allá del cumplimiento de los objetivos específicos este el proyecto realizó dos
+aportaciones técnicas que fueron mas alla del dominio de aplicación y son generalizables
+a otros sistemas de monitoreo de medios en dominios sociales complejos.
 
-Para erradicar de raíz este fallo sistémico sin amputar la invaluable capacidad de generalización inferencial del Transformer, se diseñó, codificó y desplegó el componente denominado \textbf{Sistema de Scoring Escalonado (Tiered Scoring)}. Esta sofisticada arquitectura neuro-simbólica orquesta 4 capas concurrentes de validación algorítmica diseñadas para embridar matemáticamente las salidas del modelo neuronal. La primera compuerta, el \textbf{Escudo Léxico Duro}, ejecuta un barrido determinista de contención que purga inmediatamente dominios y URLs identificados como ortogonales al fenómeno (por ejemplo, sitios de la Suprema Corte de Justicia). La innovación paradigmática se cristalizó en la segunda fase, el \textbf{Filtro Temático No-Fáctico}. A diferencia de los primitivos filtros de exclusión basados en \textit{stopwords}, este módulo inyecta lógicas de \textit{Soft Penalties} (penalizaciones aritméticas continuas del orden de $-0.35$ aplicadas a la función de verosimilitud de la clase positiva). Esto mitiga el voltaje de la señal cuando se detectan conglomerados de terminología jurídica, logrando neutralizar la polarización sin generar puntos ciegos.
+\subsection{Sistema de clasificación escalonada}
+\label{subsec:conc_neurosimbolico}
 
-Una vez sanitizado el vector de entrada, la tercera etapa confía el cálculo denso a la \textbf{Inferencia BETO}, permitiendo que el clasificador Transformer opere sobre un espacio de características depurado. Por último, para asegurar la máxima robustez en casos ambiguos de borde (\textit{edge-cases}), un componente final de \textbf{Bonificaciones Heurísticas Sintácticas} inyecta refuerzos probabilísticos aditivos (incrementos delta en la probabilidad cruda) tras realizar un análisis de dependencias (PoC - \textit{Part of Speech}) que evalúa la topología del grafo verbal de la oración, confirmando si la sintaxis corresponde a la perpetración de una agresión pasiva. Esta topología híbrida de la versión 7.1 calibró definitivamente la incertidumbre del Transformer, abatiendo la inestabilidad de las curvas ROC y restituyendo un margen de precisión quirúrgica de nivel productivo para la clasificación binaria del dominio sociopolítico.
+La arquitectura de clasificación escalonada demostro empíricamente que la
+integración de reglas simbólicas como moduladoras de la salida de un
+modelo neuronal en lugar de reemplazarlo o de operar en paralelo sin retroalimentación
+resuelve el problema del solapamiento semántico en dominios complejos de forma
+más robusta que el Fine-Tuning supervisado por sí solo. El mecanismo de penalización
+aditiva ($\delta = -0.35$) del escudo suave garantiza que el conocimiento estructurado
+del dominio preserve la capacidad de comprensión contextual de BETO sin generar exclusiones
+binarias absolutas que descarten casos genuinos por ambigüedad redaccional.
 
-\subsection{Optimización bajo Restricciones Severas de Hardware Local (8GB RAM)}
-Un parteaguas técnico de altísimo impacto derivado de esta investigación residió en viabilizar computacionalmente la fase de afinamiento de pesos (\textit{Fine-Tuning}) de un modelo neuronal hiperparametrizado dentro de una infraestructura de cómputo local con restricciones de memoria de nivel doméstico. La arquitectura original del modelo BETO desplegado engloba un volumen superior a los 110 millones de parámetros entrenables en coma flotante. Analizado estrictamente desde el cálculo vectorial y la gestión de punteros de memoria subyacente, el mero acto de transferir a la Memoria de Acceso Aleatorio (RAM) la matriz de pesos completa del modelo base, aunado al estado dinámico de los optimizadores estocásticos (como tensores de momento de AdamW) y la preservación ineludible de los mapas de gradientes producidos durante la ejecución del algoritmo de \textit{Backpropagation}, conllevaba a la saturación instantánea y crítica del espacio de direccionamiento en una máquina dotada con un tope absoluto de 8 GB de memoria RAM compartida. Cada simulación iterativa de entrenamiento completo (\textit{Full Fine-Tuning}) detonaba un fallo de segmentación (\textit{Segmentation Fault}) provocado por \textit{Out Of Memory} (OOM).
 
-Para rebasar victoriosamente esta, hasta entonces, infranqueable barrera de hardware físico, se orquestó e integró en el bucle de entrenamiento una configuración extrema de \textit{Transfer Learning} anclada en un esquema estricto de \textbf{Linear Probing} e inteligentemente apuntalada con \textbf{Gradient Accumulation}. Inicialmente, se impuso un bloqueo algebraico sobre la matriz de derivadas parciales, congelando programáticamente el codificador profundo (\textit{encoder}) a través de la directiva \texttt{requires\_grad=False} a lo largo de los tensores correspondientes a las capas neuronales de la 0 a la 11. Este ajuste arquitectónico desconectó el cálculo del gradiente en más del 95\% del grafo de operaciones, reservando el preciado, pero exiguo, ancho de banda de la memoria ram exclusivamente para ajustar la cabeza de clasificación final (la última capa de red completamente conectada o densa).
+\section{Trabajo Futuro}
+\label{sec:conc_futuro}
 
-En adición, la privación de recursos de VRAM y RAM empujó al límite operativo dictaminando la ejecución forzosa de micro-lotes de descenso estocástico (\textit{batch size} de 1). Matemáticamente, los tamaños de lote tan reducidos exponen la superficie de la función de pérdida a picos erráticos de ruido estadístico que colapsan totalmente la convergencia del entrenamiento. La contramedida técnica a este escenario fue la inyección de una subrutina avanzada de \textbf{Acumulación de Gradientes} operando bajo un hiperparámetro de \texttt{gradient\_accumulation\_steps=8}. Esta técnica magistral impidió que los tensores liberaran actualizaciones tempranas a la red, posponiendo la señal de ajuste de los pesos (\textit{optimizer.step()}) hasta aglomerar y promediar algebraicamente las contribuciones acumuladas a través de 8 pasos sucesivos del procesador. El resultado fue la simulación empírica impecable de un tamaño de lote virtual (\textit{virtual batch size}) estadísticamente idóneo, preservando la viabilidad matemática de la función de convergencia mientras se blindaban de forma absoluta los severos límites topológicos del silicio en la memoria local.
 
-\section{Trabajo Futuro (Líneas de Investigación Abiertas)}
+El prototipo 4 establece una plataforma operativa y una arquitectura extensible.
+Se identifican cuatro líneas de investigación y desarrollo abiertas para una
+investigación a futuro.
 
-Cimentado en el formidable nivel de madurez tecnológica, solidez algorítmica y eficiencia computacional validado íntegramente por la liberación del Prototipo 4, la arquitectura fundamental sienta las bases operativas para un abanico de iteraciones escalables mucho más ambiciosas. Conforme a la visión de expansión tecnológica y rigor científico del proyecto, se postulan formalmente las siguientes tres trayectorias transversales de investigación como vectores estratégicos para la evolución a largo plazo del \textit{pipeline} inteligente:
+\subsection{Consolidación de la base de entrenamiento mediante aprendizaje activo}
+\label{subsec:fut_activelearning}
 
-\begin{itemize}
-    \item \textbf{Transición Arquitectónica hacia Grandes Modelos de Lenguaje Generativos (LLMs Locales):}
-    
-    El primer pilar fundamental de la evolución arquitectónica proyecta la migración imperativa de la capa semántica de la aplicación, abandonando la filosofía limitante de la clasificación puramente discriminativa. En el Prototipo 4 actual, la labor de inferencia de la red BERT se concentra estrictamente en la emisión de un vector de probabilidad binaria y \textit{softmax} en la clasificación temática final. La hoja de ruta estratégica exige adoptar la insuperable flexibilidad de un paradigma generativo plenamente autorregresivo. La maduración de modelos fundacionales de parámetros abiertos (destacando las implementaciones eficientes de la serie LLaMA-3, Mistral, Qwen u homólogos) demuestra empíricamente la viabilidad de delegar el pesado procesamiento cognitivo hacia inferencias relacionales orgánicas, suprimiendo de tajo la latencia impuesta por llamadas asíncronas a *endpoints* privados en la nube como OpenAI y erradicando paralelamente cualquier vector de fuga para la privacidad de las víctimas colaterales.
-    
-    El despliegue efectivo de una familia LLM generativa en el núcleo del sistema requerirá la mitigación matemática agresiva de su huella de memoria en los servidores locales. Se proyecta la adopción rigurosa de estrategias de entrenamiento paramétrico de baja dimensionalidad (LoRA y sus variantes adaptativas), fusionadas indiscutiblemente con el pre-procesamiento de sub-rutinas de cuantización asimétrica de enteros a bajas precisiones de profundidad de bit (e.g., 4-bit NormalFloat en implementaciones de tipo QLoRA). Al dotar al sistema base de una o más unidades de procesamiento gráfico (GPU) orientadas a centros de cómputo (Serie Tensor Core o similar), será posible articular cadenas complejas de \textit{Retrieval-Augmented Generation} (RAG). Este acoplamiento de vanguardia empoderará al nodo central no sólo para dictaminar binariamente la existencia de víctimas y descartar ruido en el documento periodístico, sino para autocompletar una síntesis en prosa relacional. El modelo adquirirá la potestad técnica de correlacionar reportes difusos, inferir subrepticiamente la cardinalidad de los nodos en las ontologías de parentesco y producir reportes y narrativas inteligibles de extrema calidad para los expertos en políticas públicas, consolidando así un escalón de hiper-automatización que sobrepasa con creces la frontera inicial de una clasificación predictiva a secas.
+El clasificador BETO del prototipo 4 fue ajustado con un corpus de entrenamiento
+de tamaño reducido. La siguiente iteración prioritaria es la implementación formal de
+un ciclo de aprendizaje activo donde el sistema identifique automáticamente
+los casos de mayor incertidumbre de clasificación y  los presente al analista para etiquetado
+asi como la reintegracion de las etiquetas al proceso de \textit{Fine-Tuning}.
+Este ciclo incremental permitiría reducir progresivamente la tasa de falsos positivos por
+debajo del 10\% sin incrementar el volumen total de datos de entrenamiento requeridos.
 
-    \item \textbf{Ingesta Dinámica en Tiempo Real y Diversificación por APIs Sociales:}
-    
-    Desde la arista de la captura de telemetría e ingesta periodística, resulta patente que el ecosistema generador de información en materia de violencia e infancias desamparadas no opera en el vacío estático de los sitios web corporativos; por el contrario, la inmediatez impuesta por emergencias vitales se refleja intrínsecamente en latencias de reacción expresadas en milisegundos y en dinámicas de \textit{crowdsourcing} dispersas. En consecuencia, el segundo eje dicta que las capacidades de descubrimiento del módulo de \textit{Web Scraping} actual (ejecutado fundamentalmente por bloques periódicos o \textit{Batch Processing} calendarizado mediante \textit{cron-jobs}) se transmuten sin fisuras hacia una arquitectura reactiva altamente concurrente y fundamentada orgánicamente en un marco de flujo transaccional continuo de eventos (\textit{Event-Driven Streaming Architecture}). Esto impone un rediseño del \textit{middleware} del nodo encargado de captura mediante el aprovisionamiento de \textit{daemons} dedicados, canales asíncronos y suscriptores de *webhooks* escuchando en persistencia total la topología web.
-    
-    Particularmente, será indispensable la programación y acoplamiento simbiótico de puentes de conexión directa hacia los \textit{endpoints} oficiales para desarrolladores expuestos en las arquitecturas de las corporaciones de redes sociales primarias (específicamente la API Graph de Meta y las secuencias de ingesta tipo \textit{Firehose} expuestas por la plataforma X, antes Twitter). Integrar estos flujos de alto ancho de banda garantizará la sintonía milimétrica e inmediata con la inteligencia de campo reportada por decenas de nodos correspondientes a redes de alerta, comités vecinales y colectivos formales de rastreo. La colisión computacional esperada debido al gigantesco caudal de eventos redundantes exigirá una refactorización severa de las heurísticas de normalización de la persistencia de datos. Se proyecta que el módulo requiera la incrustación de árboles especializados en la desambiguación y el modelado probabilístico de tópicos (\textit{Locality-Sensitive Hashing}), en conjunto con el uso de un \textit{bus} de mensajería (tipo Kafka o RabbitMQ). Esto asegurará que miles de micropostulaciones y testimonios paralelos diseminados de forma fraccionaria en redes sobre un mismo hecho delictuoso singular se logren colapsar de manera segura y confiable en un clúster relacional inmutable, reduciendo a cero la fricción logística de los tiempos de reacción, evitando abrumar las alertas generadas por falsos picos de frecuencia artificial y cimentando un robusto paradigma de monitoreo hiperactivo sobre anomalías ciudadanas.
+\subsection{Integración de un módulo de reconocimiento de entidades nombradas (NER)}
+\label{subsec:fut_ner}
 
-    \item \textbf{Diseño de una API REST Pública, Segura y Descentralizada:}
-    
-    El tercer eslabón para la trascendencia tecnológica del presente Trabajo Terminal involucra evolucionar la topología aislada, funcional pero encapsulada, de los módulos analíticos hacia una auténtica columna vertebral escalable que ostente características operacionales bajo el modelo de Plataforma Abierta o \textit{Backend-as-a-Service} (BaaS) de nivel gubernamental o empresarial. Se delineará e instrumentará de forma end-to-end un plano de servicios orquestado por una capa superior de Interfaz de Programación de Aplicaciones (API RESTful o GraphQL), cuyo objetivo central recae en abstraer la abrumadora y encriptada arquitectura relacional de las bases de datos (postgreSQL) proveyendo contratos y firmas de exposición (formato JSON) altamente limpios, agnósticos y parametrizados. 
-    
-    La materialización de este plano de intercambio deberá sobrepasar en varias órdenes de magnitud las convenciones básicas del simple protocolo HTTP. Dadas las severas restricciones legales y el insustituible respeto inalienable por los derechos arco de las Niñas, Niños y Adolescentes albergados a resguardo temporal del \textit{cluster} informático, la concepción del servicio perimetral de red dependerá inexcusablemente de un fortísimo escudo criptográfico de transporte para evitar \textit{Man-in-the-Middle}. Todas las transacciones se someterán obligatoriamente a esquemas multifactor y validaciones atómicas de sesiones apátridas fundamentadas íntegramente en la arquitectura de microservicios usando delegación de responsabilidades bajo la emisión de firmas temporales en formato \textit{JSON Web Tokens} (JWT) gobernadas por estricto apego al marco de seguridad del estándar OAuth 2.0. Asimismo, será mandatorio implementar arquitecturas con pasarelas de red que incrusten componentes activos para la prevención de saturación de estado mediante compuertas automáticas de limitación de solicitudes (\textit{Rate Limiting} heurístico) operando por IP o \textit{Client\_Id}, orquestados con Cortafuegos de Aplicaciones Web (WAF) resilientes. Esta matriz infraestructural blindará el puerto público contra ataques vectores de denegación de servicios distribuidos (DDoS) a nivel capa 7 (aplicación). El efecto último será proporcionar la pieza del rompecabezas final que la interoperabilidad de sistemas requiere con máxima urgencia: proveer conexiones de \textit{socket} seguras y perennemente vigiladas para la lectura pasiva e ingesta autónoma por parte de infraestructuras analíticas de Organizaciones de la Sociedad Civil internacionales, centros estadísticos y procuradurías especializadas; erradicando en firme los silos de la burocracia documental forense a nivel estatal.
-\end{itemize}
+El sistema actual extrae información estructurada por caso mediante el
+\texttt{DeepInvestigator} (síntesis generativa con Gemini Flash). Una mejora
+significativa para el módulo de investigación sería integrar un modelo NER especializado en
+el dominio (entrenado sobre el corpus etiquetado del proyecto) que extraiga
+automáticamente entidades del tipo \texttt{PER} (víctima directa, menores
+afectados), \texttt{LOC} (municipio, estado) y \texttt{ORG} (DIF, Fiscalía)
+directamente del texto de la noticia durante la inferencia, sin dependencia
+de la API externa de Gemini Flash. Esto reduciría la latencia de la investigación
+profunda y aumentaría la precisión de la extracción.
+
+\subsection{Expansión a redes sociales y fuentes no estructuradas}
+\label{subsec:fut_social}
+
+El corpus actual se restringe a noticias periodísticas estructuradas con fecha y
+fuente verificable. Pero un número significativo de casos de orfandad
+por feminicidio son reportados inicialmente en redes sociales por vecinos,
+colectivos o familiares antes de llegar a los medios formales. La integración
+de fuentes como X/Twitter o Telegram requerirá adaptar el módulo de
+deduplicación (los textos son más cortos y el ruido es mayor) y reformular
+los descriptores de categoría del clasificador BETO para textos de estilo
+coloquial en lugar de periodístico.
+
+\subsection{Construcción de una API pública con salvaguardas de privacidad}
+\label{subsec:fut_api}
+
+Para maximizar el impacto social del sistema se propone el diseño de una
+interfaz de programación de aplicaciones (API RESTful) que permita a
+organizaciones civiles, dependencias de gobierno y centros de investigación
+académica consultar el corpus clasificado, recibir alertas de nuevos casos de
+Alta relevancia y exportar estadísticas agregadas. El diseño de esta API deberá
+incorporar desde su arquitectura base los principios de minimización de datos
+establecidos en la LFPDPPP y la LGDNNA que indican que los datos de identificación de las
+víctimas menores de edad deben ser anonimizados antes de la exposición por
+la API, transmitidos exclusivamente mediante TLS 1.3, y sujetos a un esquema
+de autenticación basado en tokens de acceso con alcance acotado por tipo de
+organización solicitante.
+
+\end{document}

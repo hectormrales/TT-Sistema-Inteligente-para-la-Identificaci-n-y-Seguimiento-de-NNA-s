@@ -61,16 +61,16 @@ y migrar hacia fuentes diseñadas para la ingestión automatizada, como lo son l
 \label{subsec:p1_arquitectura}
 
 El prototipo 1 estableció la primera iteración funcional del sistema. La migración hacia
-feeds RSS eliminó la fricción de acceso, pues los feeds son recursos XML diseñados
+feeds RSS eliminó la fricción de acceso pues los feeds son recursos XML diseñados
 explícitamente para el consumo automatizado y no están sujetos a los mecanismos WAF
 que bloquearon el prototipo 0.
 
 El flujo implementado consistió en las siguientes etapas:
 
 \begin{enumerate}
-    \item \textbf{Recolección.} Ingestión de 8 fuentes RSS nacionales mediante
-          \texttt{feedparser}, extrayendo por cada \texttt{<item>} el título,
-          descripción, enlace y fecha de publicación.
+    \item \textbf{Recolección.} Recolección de 8 fuentes RSS nacionales mediante
+          \texttt{feedparser}, extrayendo por cada \texttt{<item>} el título, descripción,
+          enlace y fecha de publicación.
     \item \textbf{Detección rudimentaria de NNA.} Función \texttt{detect\_children\_mentions}
           con 15 palabras clave aisladas (\textit{``hijo''}, \textit{``menor''},
           \textit{``niño''}, \textit{``huérfano''}, etc.).
@@ -79,7 +79,7 @@ El flujo implementado consistió en las siguientes etapas:
           \texttt{max\_features=1000}, \texttt{ngram\_range=(1,1)}.
     \item \textbf{Agrupamiento K-Means.} Clustering con $k=4$ fijo y métrica
           euclidiana sobre la matriz TF-IDF.
-    \item \textbf{Persistencia.} Exportación a CSV mediante \texttt{Pandas}.
+    \item \textbf{Persistencia.} Exportación a CSV mediante \texttt{pandas}.
 \end{enumerate}
 
 \textbf{Volumen de datos:} 96 noticias únicas por ejecución con persistencia en
@@ -92,19 +92,20 @@ Las limitaciones del P1 fueron de tres órdenes:
 
 \begin{description}
     \item[\textbf{Techo semántico del detector.}] La detección por palabras clave
-          aisladas generó una tasa de falsos positivos del \textbf{80\%}: noticias
+          aisladas generó una tasa de falsos positivos del \textbf{80\%} pues eran noticias
           sobre legislación (``aprobación de ley de protección al menor''), campañas
-          de prevención y estadísticas de incidencia activaban el detector sin
+          de prevención o estadísticas de incidencia que activaban el detector sin
           representar casos concretos de orfandad.
 
     \item[\textbf{Dimensionalidad escasa en K-Means.}] El algoritmo asume
-          clústeres globulares de tamaño similar y requiere especificar $k$
-          \textit{a priori}. Con 96 documentos y $k=4$ el sistema forzaba eventos
+          clústeres globulares de tamaño similar y requiere especificar el número de
+          clústeres $k$. Con 96 documentos y $k=4$ el sistema forzaba eventos
           periodísticos distintos en el mismo clúster para balancear tamaños,
           generando grupos sin coherencia semántica real. El \textit{Silhouette
           Score} resultante fue de \textbf{0.23} (baja calidad de agrupamiento).
           El vocabulario limitado a 1{,}000 características también excluía
-          términos especializados del dominio como \textit{``custodia''}, \textit{``DIF''} y \textit{``tutor legal''}.
+          términos especializados del dominio como \textit{``custodia''},
+          \textit{``DIF''} y \textit{``tutor legal''}.
 
     \item[\textbf{Cobertura.}] El sistema cubría solo medios
           nacionales con feed RSS público, excluyendo la prensa regional donde
@@ -113,88 +114,88 @@ Las limitaciones del P1 fueron de tres órdenes:
 \end{description}
 
 
-\section{Prototipo 2: Triple Fuente + DBSCAN + FeminicideDetector}
+\section{Prototipo 2 Triple Fuente + DBSCAN + FeminicideDetector}
 \label{sec:p2_culminacion}
 
 
 \subsection{Evolución del sistema}
 \label{subsec:p2_evolucion}
 
-El Prototipo~2 que fue la culminación del TT1 reestructuró
+El prototipo 2 que fue la culminación del TT1 pues reestructuró
 el sistema en respuesta directa a las limitaciones del P1. Los cambios fueron
-sustanciales en las tres capas del flujo de procesamiento:
+sustanciales en las tres capas del flujo de procesamiento.
 
 \begin{description}
-    \item[\textbf{Recolección: Arquitectura de Triple Fuente.}]
-    Se amplió la estrategia de ingesta a tres mecanismos complementarios:
+    \item[\textbf{Recolección}]
+    Se amplió la estrategia de recolección de noticias a tres fuentes de información:
     (a)~\textbf{10 feeds RSS} nacionales y de género (incorporando CIMAC Noticias
-    y Milenio, especializadas en violencia de género);
+    y Milenio que son especializadas en violencia de género);
     (b)~\textbf{Google News} con 5 consultas de dominio
     (\textit{``feminicidio México''}, \textit{``asesinato mujer''}, \textit{``violencia género''}),
-    (c)~\textbf{Historical Scraper} mediante paginación mensual de Google News,
-    cubriendo el período mayo--noviembre 2025 (6~meses de retrospectiva).
+    (c)~\textbf{Historical scraper} mediante paginación mensual de Google News,
+    cubriendo el período mayo--noviembre 2025 (6 meses de noticias passadas).
 
-    \item[\textbf{Detección: Clase \texttt{FeminicideDetector} (72 patrones RegEx).}]
+    \item[\textbf{Detección}]
     Se reemplazó la función rudimentaria por una clase especializada con
-    \textbf{tres categorías de patrones}: 40~patrones de feminicidio (incluyendo
-    patrones contextuales como \texttt{r'mujer.*asesinada'} y
-    \texttt{r'cadáver.*femenino'}), 15~patrones de NNA (patrones relacionales
-    como \texttt{r'hijo.*huérfano'} y \texttt{r'adolescente.*perdió.*madre'})
-    y \textbf{17~patrones de exclusión}. Esta última categoría fue un cambio importante
-    en el P2 pues al detectar términos como \texttt{r'ley.*protección'},
-    \texttt{r'estadística'} o \texttt{r'campaña.*prevención'}, la noticia era
-    descartada automáticamen. Además el sistema asignaba un \textit{score} de
-    confianza continuo y una prioridad discreta (Alta/Media/Baja/Irrelevante).
+    \textbf{tres categorías de patrones} como 40 patrones de feminicidio (incluyendo
+    patrones contextuales como \texttt{r'mujer.*asesinada'} o \texttt{r'cadáver.*femenino'}),
+    15 patrones de NNA (patrones relacionales como \texttt{r'hijo.*huérfano'} o \texttt{r'adolescente.*perdió.*madre'})
+    y \textbf{17 patrones de exclusión}. Esta última categoría fue un cambio importante
+    pues al detectar términos como \texttt{r'ley.*protección'}, \texttt{r'estadística'} o
+    \texttt{r'campaña.*prevención'} la noticia era descartada automáticamente. Además
+    el sistema asignaba un \textit{score} de confianza continuo y una prioridad
+    discreta (Alta/Media/Baja/Irrelevante).
 
-    \item[\textbf{Agrupamiento: DBSCAN en lugar de K-Means.}]
+    \item[\textbf{Agrupamiento}]
     El cambio de K-Means a DBSCAN respondia a las propiedades de la distribución de
-    noticias periodísticas: la mayoría de los feminicidios son eventos únicos
-    con cobertura mínima (1 o 2 noticias), mientras que un evento mediáticamente
+    noticias periodísticas pues la mayoría de los feminicidios son eventos únicos
+    con cobertura mínima (1 o 2 noticias) mientras que un evento mediáticamente
     relevante (como el caso de Ángela Birkenbach) genera una densidad local de
-    5 a 10 noticias. DBSCAN identificaba naturalmente estas densidades sin
-    requerir un valor de \textit{a priori} para el numero de clústeres, asignando como ruido
-    los eventos que si son únicos y que precisamente son los más valiosos para
-    el sistema pues representan casos individuales.
+    5 a 10 noticias. DBSCAN identificaba estas densidades sin requerir un valor
+    para el numero de clústeres y asi asignaba como ruido los eventos que si son
+    únicos y que precisamente son los más valiosos para el sistema pues representan
+    casos individuales.
 \end{description}
 
 \section{Limitaciones identificadas}
 \label{sec:limitaciones_motivacion}
 
 
-\subsection{Falsos positivos: Insuficiencia de la Sintaxis}
+\subsection{Falsos positivos}
 \label{subsec:limit_fp}
 
 El modulo de deteccion \texttt{FeminicideDetector} redujo los falsos positivos del 80\% (P1) al 60\%
-(P2) que si fue un avance significativo. Sin embargo el análisis de los falsos
-positivos revela un patrón que no puede resolverse únicamente con expresiones regulares:
+(P2) que si fue un avance significativo pero el análisis de los falsos
+positivos revelaba un patrón que no podia resolverse únicamente con expresiones regulares:
 
 \begin{itemize}
     \item \textit{"Durango aprueba la Ley Nicole para prohibir cirugías estéticas
-          en menores de edad"}: esta noticia activa el patrón de NNA ("menores
+          en menores de edad"}. Esta noticia activa el patrón de NNA ("menores
           de edad") sin que los patrones de exclusión capturaran el término
           \textit{"aprueba"} en ese contexto legislativo específico.
     \item \textit{"REDIM reporta: 1 de cada 4 NNA vive en situación de violencia
-          familiar"}: El término \textit{"NNA"} y \textit{"violencia"} activan el
+          familiar"}. El término \textit{"NNA"} y \textit{"violencia"} activan el
           detector en una nota estadística sin ningún caso concreto identificado.
 \end{itemize}
 
 El problema de fondo no es la cantidad de patrones pues el sistema ya tenía 72, sino
-la \textbf{naturaleza sintáctica} del enfoque, la co-ocurrencia de términos no
-implica la co-ocurrencia de los \textit{roles semánticos} que esos términos desempeñan
-en la oración. Una expresión regular no puede distinguir si \textit{"menor"} en
-una noticia es la víctima directa (una menor asesinada), la víctima indirecta (el
-hijo huérfano de la madre asesinada) o el sujeto de una campaña legislativa.
+la \textbf{naturaleza sintáctica} del enfoque porque la co-ocurrencia de términos
+no implica la co-ocurrencia de los \textit{roles semánticos} que esos términos
+desempeñan en la oración. Una expresión regular no puede distinguir si \textit{"menor"}
+en una noticia es la víctima directa (una menor asesinada), la víctima
+indirecta (el hijo huérfano de la madre asesinada) o el sujeto de una campaña
+legislativa.
 Esta distinción es esencial para el dominio del sistema y fue exactamente el tipo de
 comprensión que los modelos de lenguaje bidireccionales como BETO proveen a través de
-sus mecanismos de atención, en donde la representación de cada token es función del contexto
+sus mecanismos de atención en donde la representación de cada token es función del contexto
 completo de la oración.
 
-\subsection{Clustering Léxico: DBSCAN sobre TF-IDF}
+\subsection{Clustering léxico}
 \label{subsec:limit_clustering}
 
-Los 3 clústeres identificados por DBSCAN son semánticamente coherentes, pero cerca del 80\%
+Los clústeres identificados por DBSCAN eran semánticamente coherentes pero cerca del 80\%
 de outliers que aunque eran correctos para eventos únicos ocultaban
-un problema más profundo y es que las noticias sobre el \textit{mismo evento}
+un problema más y es que las noticias sobre el \textit{mismo evento}
 que eran redactadas con vocabulario diferente por distintos medios no eran agrupadas.
 
 Ejemplo documentado: \textit{"Madre es asesinada y deja 2 hijos huérfanos en Ecatepec"}
@@ -203,41 +204,40 @@ Ejemplo documentado: \textit{"Madre es asesinada y deja 2 hijos huérfanos en Ec
 (nota de derechos humanos de \texttt{CIMAC Noticias}) reportaban el mismo caso con
 vocabularios distintos. Los vectores TF-IDF de ambas noticias tenian una similitud
 coseno de 0.18 (muy por debajo del umbral eps=0.8) por lo que DBSCAN los clasificaba
-como documentos independientes. En el espacio semántico de BETO, los documentos
-tendrían embeddings con similitud coseno superior a 0.85 siendo correctamente
+como documentos independientes. En el espacio semántico de BETO los documentos
+tendrían embeddings con similitud coseno superior a 0.85 lo que hacia que fueran correctamente
 agrupados como instancias del mismo evento.
 
 \subsection{La poca escalabilidad del almacenamiento en CSV}
 \label{subsec:limit_csv}
 
-La persistencia en archivos CSV impone restricciones estructurales:
+La persistencia en archivos CSV impone restricciones estructurales.
 
 \begin{itemize}
     \item \textbf{Ausencia de integridad referencial.} No existe mecanismo que
           garantice que una detección apunte a una noticia existente.
     \item \textbf{Sin acceso concurrente.} La escritura por el worker y la
           lectura por el dashboard desde el mismo archivo CSV generaban condiciones
-          de carrera, en el P2 el problema se "solucionó" temporalmente mediante
+          de carrera lo que en el prototipo 2 se "solucionó" temporalmente mediante
           escritura atómica por renombrado pero el problema no se eliminó.
 \end{itemize}
 
-\subsection{Síntesis: La necesidad de comprensión semántica}
+\subsection{Síntesis}
 \label{subsec:limit_sintesis}
 
 Las limitaciones anteriores nos llevan a la conclusión de que el problema 
 de la identificación de NNA en situación de orfandad por
 feminicidio \textbf{requiere comprensión semántica del lenguaje natural} no solo
 reconocimiento de patrones léxicos. El texto de una noticia periodística es un
-artefacto pragmático donde el significado emerge de la interacción entre entidades,
-roles semánticos, modalidades y contexto narrativo, dimensiones que están
-fuera del alcance de las expresiones regulares.
+artefacto lingüístico donde el significado emerge de la interacción entre entidades,
+roles semánticos y contexto, dimensiones que están fuera del alcance de las expresiones regulares.
 
-La tabla~\ref{tab:baseline_tt2_meta} muestra los objetivos cuantitativos que el
+La siguiente tabla muestra los objetivos cuantitativos que el
 Trabajo Terminal II debe alcanzar para superar lo establecido en el Trabajo Terminal I.
 
 \begin{table}[H]
 \centering
-\caption{Comparativa de métricas: TT1 vs. metas del TT2}
+\caption{Comparativa de métricas de TT1 contra metas del TT2}
 \label{tab:baseline_tt2_meta}
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{|p{4.5cm}|c|c|c|}
@@ -248,7 +248,7 @@ Trabajo Terminal II debe alcanzar para superar lo establecido en el Trabajo Term
 \textcolor{white}{\textbf{Meta TT2 (P4)}} &
 \textcolor{white}{\textbf{Mejora}} \\
 \hline
-\textbf{Falsos positivos} & 60\% & $\leq$30\% & $-50\%$ \\
+\textbf{Falsos positivos} & 60\% menos del 30\% & $-50\%$ \\
 \hline
 \textbf{Fuentes monitoreadas} & 10 RSS + Google News & 45 RSS + Google News + Stealth & $+350\%$ \\
 \hline
@@ -258,11 +258,11 @@ Trabajo Terminal II debe alcanzar para superar lo establecido en el Trabajo Term
 \hline
 \textbf{Latencia de consulta} & $O(n)$ scan CSV & $O(\log n)$ índice GIN & Órdenes de magnitud \\
 \hline
-\textbf{Motor de clasificación} & RegEx (72 patrones) & BETO + Neuro-Simbólico & Paradigma distinto \\
+\textbf{Motor de clasificación} & RegEx (72 patrones) & BETO fine-tuning & Paradigma distinto \\
 \hline
 \end{tabular}
 \end{table}
 
-Las metas de la tabla~\ref{tab:baseline_tt2_meta} son los objetivos mínimos que hacen del sistema una herramienta operativamente
-confiable para organizaciones civiles que trabajan con casos reales de NNA en
+Las metas de la tabla~\ref{tab:baseline_tt2_meta} son los objetivos mínimos que hacen del sistema una herramienta
+operativamente confiable para organizaciones civiles que trabajan con casos reales de NNA en
 situación de vulnerabilidad.

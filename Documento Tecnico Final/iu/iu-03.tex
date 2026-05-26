@@ -1,0 +1,30 @@
+% !TeX root = ../proyecto.tex
+%--------------------------------------
+\section{IU-03 Modal de Investigación Profunda}
+
+\subsection{Objetivo}
+	Mostrar la síntesis estructurada (Ficha de Caso en JSON) generada por los agentes de Inteligencia Artificial (Gemini Flash) sobre un caso crítico de orfandad.
+
+\subsection{Diseño}
+	Esta interfaz se presenta como una ventana emergente (Modal) sobrepuesta en el Dashboard. Contiene el texto original a la izquierda y la información estructurada a la derecha, dividida en tarjetas (Ubicación, Víctimas, Instituciones Involucradas, etc.). Durante el proceso asíncrono, muestra un indicador de carga (spinner).
+
+\IUfig[.8]{investigacion_modal}{IU-03}{Modal de Resultados del DeepInvestigator.}
+
+\subsection{Salidas}
+	\begin{itemize}
+		\item Título y resumen generados por IA.
+		\item Datos estructurados: Ubicación geográfica del suceso, edades y géneros de las víctimas, NNA afectados.
+		\item URL de referencia y dependencias sugeridas (ej. DIF Municipal).
+		\item Alerta de error si ocurre un fallo en la API (ej. Cuota Excedida o Fallo de DDG).
+	\end{itemize}
+	
+\subsection{Entradas}
+	\begin{itemize}
+		\item Ninguna (es una interfaz de lectura resultante del CU-03).
+	\end{itemize}
+
+\subsection{Comandos}
+	\begin{itemize}
+		\item \IUbutton{Agregar a Seguimiento}: Etiqueta el caso como relevante e inserta la noticia investigada en la lista de monitoreo activo (CU-05).
+		\item \IUbutton{Cerrar}: Oculta el modal de investigación y regresa al Dashboard principal.
+	\end{itemize}

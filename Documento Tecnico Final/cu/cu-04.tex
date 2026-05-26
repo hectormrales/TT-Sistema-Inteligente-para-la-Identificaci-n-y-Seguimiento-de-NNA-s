@@ -1,0 +1,66 @@
+% !TeX root = ../proyecto.tex
+
+\begin{UseCase}{CU-04}{Identificación por Enlace Externo}{
+	Permite al analista someter una URL periodística arbitraria que no fue capturada por el sistema automático, extraer su contenido, validar su relevancia e investigarla profundamente reutilizando el pipeline del módulo DeepInvestigator.
+}
+	\UCitem{Versión}{\color{Gray}
+		1.0
+	}\UCitem{Autor}{\color{Gray}
+		Tesista de Ingeniería
+	}\UCitem{Supervisa}{\color{Gray}
+		Director de Trabajo Terminal
+	}\UCitem{Actor}{
+		Analista de Datos / Trabajador Social
+	}\UCitem{Propósito}{\begin{Titemize}
+		\Titem Incorporar al sistema casos relevantes descubiertos manualmente por el usuario navegando en la web, mitigando los falsos negativos del pipeline automatizado.
+	\end{Titemize}
+	}\UCitem{Entradas}{\begin{Titemize}
+		\Titem URL externa del artículo periodístico.
+	\end{Titemize}
+	}\UCitem{Origen}{\begin{Titemize}
+		\Titem Formulario de "Identificar Enlace Externo" en el Dashboard.
+	\end{Titemize}
+	}\UCitem{Salidas}{\begin{Titemize}
+		\Titem Ficha estructurada en formato JSON (Ubicación, Víctimas, NNA Afectados, etc.) del nuevo caso.
+	\end{Titemize}
+	}\UCitem{Destino}{\begin{Titemize}
+		\Titem Interfaz del Dashboard (Modal de resultados).
+		\Titem Base de Datos.
+	\end{Titemize}
+	}\UCitem{Precondiciones}{\begin{Titemize}
+		\Titem La URL debe ser accesible de forma pública.
+		\Titem El servicio de Gemini Flash debe estar disponible.
+	\end{Titemize}
+	}\UCitem{Postcondiciones}{\begin{Titemize}
+		\Titem Se incorpora una nueva noticia validada e investigada a la base de datos del sistema.
+	\end{Titemize}
+	}\UCitem{Errores}{\begin{Titemize}
+		\Titem {\bf \hypertarget{CU-04.E1}{E1}}: La URL apunta a contenido no válido (Avisos de cookies, Error 403, etc) \Trayref{CU-04}{A}.
+	\end{Titemize}
+	}\UCitem{Tipo}{
+		Caso de uso primario
+	}\UCitem{Observaciones}{
+		Este módulo actúa como una vía de inyección manual que aprovecha la infraestructura de extracción y análisis ya existente en el sistema.
+	}
+\end{UseCase}
+
+%--------------------------------------
+\begin{UCtrayectoria}
+	\UCpaso[\UCActor] Ingresa al apartado de "Identificar Enlace Externo" en el Dashboard.
+	\UCpaso[\UCActor] Pega la URL de la noticia en el campo de texto y hace clic en \IUbutton{Investigar URL}.
+	\UCpaso[\UCsist] Accede a la URL proporcionada mediante \texttt{StealthSession} y extrae el texto del artículo aplicando rutinas de limpieza.
+	\UCpaso[\UCsist] Envía el texto extraído a Gemini Flash solicitando la generación de un título corto o la validación del contenido \ErrorRef{CU-04}{E1}{Contenido Inválido}.
+	\UCpaso[\UCsist] Invoca el pipeline interno de \texttt{DeepInvestigator} utilizando el texto validado y el nuevo título.
+	\UCpaso[\UCsist] Genera una consulta específica, busca en DuckDuckGo, hace scraping multi-fuente y sintetiza la ficha (mismos pasos que CU-03).
+	\UCpaso[\UCsist] Almacena la noticia y su ficha de investigación en la base de datos.
+	\UCpaso[\UCsist] Muestra los resultados estructurados en la interfaz del usuario.
+\end{UCtrayectoria}
+
+%--------------------------------------
+\begin{UCtrayectoriaA}{CU-04}{A}{La extracción retorna contenido que no corresponde a una noticia válida}
+	\UCpaso[\UCsist] El modelo Gemini evalúa el texto y retorna la bandera \texttt{NOTICIA\_INVALIDA}.
+	\UCpaso[\UCsist] Detiene el flujo de ejecución antes de iniciar la investigación profunda.
+	\UCpaso[\UCsist] Retorna un mensaje de error a la interfaz web indicando que la URL parece estar bloqueada, es un aviso de privacidad o no contiene cuerpo periodístico.
+	\UCpaso[\UCActor] Lee el error y puede intentar con una URL alternativa.
+	\UCpaso[] El Caso de Uso termina sin registrar información en la base de datos para no corromper los registros.
+\end{UCtrayectoriaA}
