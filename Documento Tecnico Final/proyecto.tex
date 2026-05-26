@@ -1,5 +1,20 @@
 \documentclass[10pt,openany,oneside]{book}
 
+% Parches de compatibilidad delayed (al inicio del documento) para evitar colisiones con paquetes
+\usepackage{expl3}
+\ExplSyntaxOn
+\AtBeginDocument{
+  \cs_if_exist:NF \tag_mc_end: { \cs_new:Nn \tag_mc_end: {} }
+  \cs_if_exist:NF \tbl_gdecr_row_count: { \cs_new:Nn \tbl_gdecr_row_count: {} }
+}
+\ExplSyntaxOff
+
+\makeatletter
+\AtBeginDocument{
+  \providecommand{\insert@pcolumn}{\insert@column}
+}
+\makeatother
+
 \usepackage{cdt/cdtUsecases}
 \usepackage{txfonts}
 \usepackage{float}
@@ -43,6 +58,8 @@
 }
 \maketitle
 \thispagestyle{empty}
+
+\include{Resumen}
 
 \frontmatter
 \tableofcontents
@@ -99,7 +116,7 @@
 \include{9Conclusiones}
 
 %=========================================================
-\include{10TrabajoFuturo}
+%\include{10TrabajoFuturo}
 
 \bibliographystyle{plain}
 \bibliography{bibliografia}

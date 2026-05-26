@@ -109,7 +109,7 @@ los términos raros:
     \text{IDF}(t, D) = \log\frac{|D|}{|\{d \in D : t \in d\}| + 1}
 \end{equation}
 
-Este sistema implementa una variante de TF-IDF que multiplica
+Este sistema implementa una variante de TF-IDF que multiplca
 el peso de términos del glosario de dominio (por ejemplo: \textit{"orfandad"},
 \textit{"DIF"}, \textit{"resguardo"}) por un factor amplificador $\beta > 1$ que incremente
 artificialmente su IDF efectivo. Esta modificación operacionaliza el
@@ -528,37 +528,34 @@ Un umbral $\cos \geq 0.85$ marca el par como duplicado. Este paso es $O(n^2)$ en
 el peor caso pero, gracias al pre-filtrado de las fases anteriores, solo se aplica
 a un subconjunto pequeño de pares candidatos.
 
-%========================================================================================
-\section{Tecnologías de Extracción de Datos y Persistencia}
+
+\section{Tecnologías de extracción de datos y persistencia}
 \label{sec:mt_extraccion}
-%========================================================================================
 
-%----------------------------------------------------------------------------------------
-\subsection{Protocolos de Sindicación: RSS y Atom}
+
+
+\subsection{Protocolos de sindicación RSS y Atom}
 \label{subsec:mt_rss}
-%----------------------------------------------------------------------------------------
 
-RSS (\textit{Really Simple Syndication}) \cite{hammersley2005developing} y Atom son
-estándares de sindicación web basados en XML que permiten a los sitios publicar
-resúmenes estructurados de su contenido más reciente para su consumo por agentes
-automatizados. Un feed RSS 2.0 típico encapsula 20--50 artículos con sus metadatos
-(título, enlace, resumen, fecha, autor) en un documento XML de \textless~50~KB,
-en contraste con los 500~KB--2~MB de una página HTML completa con recursos estáticos.
+RSS (\textit{Really Simple Syndication}) y Atom son estándares de sindicación web
+basados en XML que permiten a los sitios publicar resúmenes estructurados de su
+contenido más reciente para su consumo por agentes automatizados. Un feed RSS 2.0
+típico encapsula 20-50 artículos con sus metadatos (título, enlace, resumen, fecha,
+autor) en un documento XML de 50 KB en contraste con los 500 KB-2 MB de una página
+HTML completa con recursos estáticos.
 
 La estructura del elemento raíz \texttt{<channel>} y sus \texttt{<item>} hijos
-es un estándar inmutable: el esquema XML no cambia ante actualizaciones del diseño
+es un estándar puesto que el esquema XML no cambia ante actualizaciones del diseño
 del portal, eliminando la fragilidad de los selectores CSS del HTML scraping.
 Los endpoints RSS son recursos públicos destinados explícitamente a la ingestión
-automatizada; los WAF no aplican \textit{fingerprinting} TLS sobre ellos, reduciendo
-la fricción de recolección a prácticamente cero para las 45~fuentes RSS del sistema.
+automatizada y los WAF no aplican \textit{fingerprinting} TLS sobre ellos lo que reduce
+la fricción de recolección a prácticamente cero para las 45 fuentes RSS del sistema.
 
-%----------------------------------------------------------------------------------------
-\subsection{Evasión de WAF: \textit{StealthSession} y TLS/JA3 Fingerprinting}
+\subsection{Evasión de WAF con \textit{StealthSession} y TLS/JA3 Fingerprinting}
 \label{subsec:mt_stealth}
-%----------------------------------------------------------------------------------------
 
-Los \textit{Web Application Firewalls} (WAF) de grado empresarial ---Cloudflare,
-Akamai, PerimeterX--- identifican y bloquean scrapers mediante \textbf{TLS/JA3
+Los \textit{Web Application Firewalls} (WAF) de grado empresarial como \textit{Cloudflare},
+Akamai y PerimeterX identifican y bloquean scrapers mediante \textbf{TLS/JA3
 fingerprinting}: durante el saludo TLS (\textit{TLS handshake}), el cliente anuncia
 sus capacidades de cifrado (cipher suites, extensiones TLS, curvas elípticas)
 en un orden determinístico que identifica unívocamente la librería SSL utilizada.
@@ -657,61 +654,59 @@ El sistema crea automáticamente el \texttt{tsvector} de cada noticia mediante u
 sobre la tabla \texttt{noticias}, concatenando título (peso A, mayor relevancia)
 y contenido (peso B, menor relevancia) para el ranking de resultados.
 
-%========================================================================================
-\section{Sistemas Neuro-Simbólicos y Clasificación Escalonada v7.1}
+\section{Sistemas neuro-simbólico}
 \label{sec:mt_neurosimbolico}
-%========================================================================================
 
-La arquitectura neuro-simbólica \cite{garcez2022neurosymbolic} es un paradigma de
-inteligencia artificial que combina dos tradiciones complementarias: el razonamiento
+El sistema neuro-simbólico \cite{garcez2022neurosymbolic} es un paradigma de
+inteligencia artificial que combina dos tradiciones complementarias como el razonamiento
 \textbf{neuronal} (aprendizaje de representaciones probabilísticas a partir de datos,
 generalización por interpolación en espacios de embeddings) y el razonamiento
 \textbf{simbólico} (manipulación explícita de reglas lógicas formales, conocimiento
-estructurado del dominio, razonamiento determinista y auditable).
+estructurado del dominio, razonamiento determinista y explicable).
 
 Los sistemas neuro-simbólicos surgen como respuesta a las limitaciones individuales
 de cada paradigma. Los sistemas puramente neuronales son poderosos en generalización
 pero producen \textit{alucinaciones} en distribuciones fuera del rango de entrenamiento.
-Los sistemas puramente simbólicos son auditables y correctos por construcción, pero
+Los sistemas puramente simbólicos son robustos y correctos por construcción, pero
 no escalan ante vocabulario abierto y lenguaje natural no estructurado.
 
 En el contexto del sistema, el componente neuronal (BETO Fine-Tuned) provee la
-comprensión semántica del lenguaje periodístico, mientras que el componente simbólico
-(las cuatro capas de la arquitectura de \textit{Scoring Escalonado} v7.1) garantiza
+comprensión semántica del lenguaje periodístico mientras que el componente simbólico
+(las cuatro capas de la arquitectura de clasificación escalonada) garantiza
 que ninguna predicción viole el conocimiento experto del dominio.
 
-%----------------------------------------------------------------------------------------
-\subsection{Arquitectura de \textit{Scoring Escalonado} v7.1: las cuatro capas}
-\label{subsec:mt_scoring}
-%----------------------------------------------------------------------------------------
 
-La arquitectura v7.1 organiza la clasificación semántica en cuatro capas secuenciales
-que operan sobre un \textbf{score acumulativo} $S \in \mathbb{R}$, inicializado en
-cero al comienzo de la inferencia sobre cada noticia:
+\subsection{Arquitectura de clasificación escalonada}
+\label{subsec:mt_scoring}
+
+
+La arquitectura organiza la clasificación semántica en cuatro capas secuenciales
+que operan sobre un \textbf{score acumulativo} que inicializa en cero y va
+acumulando valores a medida que avanza por las capas.
 
 \begin{description}
-    \item[\textbf{Capa~0 --- Escudo Léxico (bloqueo absoluto).}]
+    \item[\textbf{Capa 0 Escudo léxico}]
           Evaluación determinista mediante un conjunto congelado de tokens de dominio
           ajeno (\texttt{frozenset}), con complejidad $O(1)$ por consulta. Si el
           texto contiene \textit{exclusivamente} términos de dominios fuera del
-          alcance del sistema (deportes, economía, política exterior), la noticia
+          alcance del sistema (deportes, economía, política exterior) la noticia
           es descartada inmediatamente sin continuar a las capas siguientes. Esta
           es la capa de mayor especificidad simbólica.
 
-    \item[\textbf{Capa~1 --- Escudo Suave (penalización aditiva).}]
-          Evaluación semántica sobre dominios limítrofes: contenido legislativo
+    \item[\textbf{Capa 1 Escudo suave}]
+          Evaluación semántica sobre contenido legislativo
           (reformas, iniciativas de ley), estadístico (porcentajes nacionales
           sin caso concreto) o de alcance geográfico extranacional. Si el texto
-          cae en alguna de estas categorías, se aplica una penalización aditiva
+          cae en alguna de estas categorías, se le aplica una penalización aditiva
           $\delta = -0.35$ al score acumulativo:
           \begin{equation}
               S \leftarrow S + \delta, \quad \delta = -0.35
           \end{equation}
-          A diferencia de la Capa~0, esta penalización no es una exclusión binaria:
-          una noticia legislativa que simultáneamente describe un caso fáctico
-          concreto puede recuperar el score en las capas siguientes.
+          A diferencia de la Capa 0 en esta penalización no es una exclusión binaria sino que
+          a la noticia legislativa que simultáneamente describe un caso violento de feminicidio
+          tiene una probabilidad de recuperar el score en las capas siguientes.
 
-    \item[\textbf{Capa~2 --- Inferencia BETO (score semántico probabilístico).}]
+    \item[\textbf{Capa 2 Inferencia BETO}]
           El texto de la noticia se procesa por el clasificador BETO Fine-Tuned
           (o Zero-Shot como fallback). El logit de la clase positiva,
           transformado por softmax al rango $[0, 1]$, se añade directamente
@@ -722,9 +717,9 @@ cero al comienzo de la inferencia sobre cada noticia:
           Para que la noticia avance al post-filtro, se requiere $S > 0.50$
           al concluir esta capa.
 
-    \item[\textbf{Capa~3 --- Post-filtro de validación (bonificaciones heurísticas).}]
+    \item[\textbf{Capa 3 Post-filtro de validación}]
           Se buscan en el texto un conjunto de patrones lingüísticos de alta
-          especificidad que evidencian orfandad fáctica: expresiones del tipo
+          especificidad que evidencian orfandad como por ejemplo expresiones del tipo
           \textit{``quedó al cuidado de''}, \textit{``el menor presenció''},
           \textit{``DIF resguardó''}, \textit{``hijos quedaron huérfanos''}, etc.
           Cada patrón encontrado añade una bonificación positiva al score:
@@ -737,24 +732,22 @@ cero al comienzo de la inferencia sobre cada noticia:
           \;$\rightarrow$\; Media; $S < 0.50$ \;$\rightarrow$\; No relevante.
 \end{description}
 
-Esta arquitectura opera bajo el principio de \textit{corrección por capas}: los
-filtros simbólicos de certeza máxima (Capa~0) tienen prioridad absoluta; los
-filtros de penalización (Capa~1) actúan como restricciones suaves; y solo en
+Esta arquitectura opera bajo el principio de \textit{corrección por capas} donde
+los filtros simbólicos de certeza máxima (capa 0) tienen prioridad absoluta; los
+filtros de penalización (capa 1) actúan como restricciones suaves; y solo en
 los casos genuinamente ambiguos el sistema delega la decisión al componente
-neuronal (Capa~2), cuyo resultado puede ser confirmado o reforzado por evidencia
-explícita de orfandad (Capa~3).
+neuronal (capa 2), cuyo resultado puede ser confirmado o reforzado por evidencia
+explícita de orfandad (capa 3).
 
 
-%========================================================================================
-\section{Modelos de Lenguaje de Gran Escala y el Módulo \textit{DeepInvestigator}}
+
+\section{Modelos de lenguaje de gran escala y el módulo \textit{DeepInvestigator}}
 \label{sec:mt_llm}
-%========================================================================================
 
-Los \textbf{Modelos de Lenguaje de Gran Escala} (\textit{Large Language Models},
-LLM) \cite{brown2020language} son sistemas de IA generativa basados en arquitecturas
+Los \textbf{Modelos de lenguaje de gran escala} (\textit{Large Language Models}, LLM) \cite{brown2020language} son sistemas de IA generativa basados en arquitecturas
 Transformer de muy alta capacidad (desde miles de millones hasta billones de
 parámetros) entrenados sobre corpus de texto de escala masiva (cientos de miles
-de millones de tokens). A diferencia de BETO, que produce únicamente representaciones
+de millones de tokens). A diferencia de BETO que produce únicamente representaciones
 vectoriales (\textit{encoder-only}), los LLM son modelos \textit{decoder} (o
 \textit{encoder-decoder}) capaces de generar texto libre condicionado a una
 instrucción o contexto (\textit{prompt}).
@@ -767,20 +760,18 @@ incluyendo seguimiento de instrucciones complejas, razonamiento en múltiples pa
 (\textit{Chain-of-Thought}) y síntesis estructurada de información de múltiples
 fuentes.
 
-%----------------------------------------------------------------------------------------
 \subsection{Síntesis estructurada mediante Gemini Flash}
 \label{subsec:mt_gemini}
-%----------------------------------------------------------------------------------------
 
 El módulo \texttt{DeepInvestigator} emplea \textbf{Gemini Flash} (Google DeepMind)
-\cite{google2023gemini}, un LLM de alta eficiencia diseñado para tareas de
+\cite{google2023gemini} que es un LLM de alta eficiencia diseñado para tareas de
 inferencia de latencia reducida. El módulo lo utiliza en dos tareas distintas:
 
 \begin{enumerate}
     \item \textbf{Generación de consulta de búsqueda.} Dado el título y el fragmento
           inicial del artículo periodístico, el LLM genera una consulta de búsqueda
-          altamente específica (máximo 6~palabras) que maximiza la probabilidad de
-          recuperar fuentes complementarias sobre el mismo caso fáctico. Esta tarea
+          altamente específica (máximo 6 palabras) que maximiza la probabilidad de
+          recuperar fuentes complementarias sobre el mismo caso. Esta tarea
           requiere compresión semántica y desambiguación de nombres propios.
 
     \item \textbf{Síntesis estructurada en JSON.} Dados los textos multi-fuente
@@ -790,39 +781,39 @@ inferencia de latencia reducida. El módulo lo utiliza en dos tareas distintas:
           \texttt{edades}, \texttt{situacion\_actual}, \texttt{medios\_contacto}
           y \texttt{resumen}. El campo \texttt{medios\_contacto} requiere
           conocimiento factual externo (DIF municipal y Fiscalía competente
-          según la ubicación inferida), que el LLM provee a través de su
+          según la ubicación inferida) que el LLM provee a través de su
           conocimiento paramétrico adquirido durante el preentrenamiento.
 \end{enumerate}
 
-El diseño del módulo es \textbf{reactivo e interactivo}: no se integra
-autonómicamente en el pipeline de recolección sino que se activa bajo demanda
-explícita del analista, por dos razones técnicas documentadas. Primera, la
-latencia del pipeline completo (generación de query + DuckDuckGo + scraping
-+ síntesis LLM) tiene un promedio de 47~segundos por caso, incompatible con
-el procesamiento de un corpus de cientos de noticias. Segunda, el consumo de
-cuota de la API de Gemini escala linealmente con el número de invocaciones,
+El diseño del módulo es \textbf{reactivo e interactivo} ya que no se integra
+autonómicamente en el flujo de recolección, sino que se activa bajo demanda
+explícita del analista y esto se debe a dos razones técnicas documentadas. La primera es la
+latencia del flujo completo (generación de query + DuckDuckGo + scraping
++ síntesis LLM) que tiene un promedio de 47 segundos por caso lo que es incompatible con
+el procesamiento de un corpus de cientos de noticias. La segunda es el consumo de
+cuota de la API de Gemini que escala linealmente con el número de invocaciones,
 lo que hace inviable su ejecución automática sobre el corpus completo.
 
-%----------------------------------------------------------------------------------------
 \subsection{Agentes de búsqueda y el patrón OSINT}
 \label{subsec:mt_osint}
 %----------------------------------------------------------------------------------------
 
-El pipeline del \texttt{DeepInvestigator} sigue el patrón de \textbf{OSINT}
-(\textit{Open Source Intelligence}): la recopilación y síntesis sistemática
+El flujo del \texttt{DeepInvestigator} sigue el patrón de \textbf{OSINT}
+(\textit{Open Source Intelligence}) que es la recopilación y síntesis sistemática
 de información públicamente disponible en Internet para producir inteligencia
-accionable sobre un sujeto o evento específico. En el sistema, el sujeto
-es el caso de orfandad descubierto por el pipeline principal, y la
+accionable sobre un sujeto o evento específico. En el sistema el sujeto
+es el caso de orfandad descubierto por el flujo principal, y la
 información accionable son los datos de contacto institucional (DIF, Fiscalía)
 necesarios para una posible intervención de protección a la infancia.
 
 El módulo implementa un mecanismo de \textbf{fallback de búsqueda} en dos
-niveles. En el nivel primario, emplea DuckDuckGo (variante HTML y Lite,
+niveles. En el nivel primario usa DuckDuckGo (variante HTML y Lite,
 sin rastreo de usuario) como motor de búsqueda, seguido de scraping
 de los resultados mediante \texttt{StealthSession}. En el nivel secundario
-(fallback), si DuckDuckGo bloquea la petición o no retorna URLs utilizables,
+si DuckDuckGo bloquea la petición o no retorna URLs utilizables,
 el módulo invoca la herramienta nativa \texttt{GoogleSearch} integrada en
-Gemini, delegando la búsqueda al LLM sin scraping externo. Esta estrategia
+Gemini y delega la búsqueda al LLM sin scraping externo. Esta estrategia
 de fallback garantiza la resiliencia del módulo ante bloqueos temporales
 de motores de búsqueda sin interrumpir el flujo de investigación del analista.
+
 

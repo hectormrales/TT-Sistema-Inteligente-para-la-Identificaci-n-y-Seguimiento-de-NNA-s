@@ -17,7 +17,7 @@
 \contentsline {section}{\numberline {2.4}Alcance del sistema}{9}{section.2.4}%
 \contentsline {subsection}{\numberline {2.4.1}Alcance funcional}{9}{subsection.2.4.1}%
 \contentsline {subsection}{\numberline {2.4.2}Alcance geográfico y temporal}{9}{subsection.2.4.2}%
-\contentsline {section}{\numberline {2.5}Limitaciones y exclusiones}{9}{section.2.5}%
+\contentsline {section}{\numberline {2.5}Limitaciones y exclusiones}{10}{section.2.5}%
 \contentsline {subsection}{\numberline {2.5.1}Exclusiones explícitas del alcance}{10}{subsection.2.5.1}%
 \contentsline {subsection}{\numberline {2.5.2}Limitaciones técnicas}{10}{subsection.2.5.2}%
 \contentsline {chapter}{\numberline {3}Marco Teórico}{11}{chapter.3}%
@@ -38,16 +38,16 @@
 \contentsline {section}{\numberline {3.4}Técnicas de Deduplicación \textit {Cross-Site}}{17}{section.3.4}%
 \contentsline {subsection}{\numberline {3.4.1}Hash Exacto MD5}{17}{subsection.3.4.1}%
 \contentsline {subsection}{\numberline {3.4.2}Similitud de Jaccard sobre Conjuntos de Tokens}{17}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}SimHash: Huellas Digitales Localmente Sensibles}{17}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.3}SimHash: Huellas Digitales Localmente Sensibles}{18}{subsection.3.4.3}%
 \contentsline {subsection}{\numberline {3.4.4}Similitud Coseno sobre Vectores TF-IDF}{18}{subsection.3.4.4}%
-\contentsline {section}{\numberline {3.5}Tecnologías de Extracción de Datos y Persistencia}{18}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Protocolos de Sindicación: RSS y Atom}{18}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Evasión de WAF: \textit {StealthSession} y TLS/JA3 Fingerprinting}{18}{subsection.3.5.2}%
+\contentsline {section}{\numberline {3.5}Tecnologías de extracción de datos y persistencia}{18}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Protocolos de sindicación RSS y Atom}{18}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Evasión de WAF con \textit {StealthSession} y TLS/JA3 Fingerprinting}{18}{subsection.3.5.2}%
 \contentsline {subsection}{\numberline {3.5.3}Propiedades ACID de postgresql}{19}{subsection.3.5.3}%
 \contentsline {subsection}{\numberline {3.5.4}Índices GIN y Full-Text Search en Español}{19}{subsection.3.5.4}%
-\contentsline {section}{\numberline {3.6}Sistemas Neuro-Simbólicos y Clasificación Escalonada v7.1}{20}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Arquitectura de \textit {Scoring Escalonado} v7.1: las cuatro capas}{20}{subsection.3.6.1}%
-\contentsline {section}{\numberline {3.7}Modelos de Lenguaje de Gran Escala y el Módulo \textit {DeepInvestigator}}{21}{section.3.7}%
+\contentsline {section}{\numberline {3.6}Sistemas neuro-simbólico}{20}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Arquitectura de clasificación escalonada}{20}{subsection.3.6.1}%
+\contentsline {section}{\numberline {3.7}Modelos de lenguaje de gran escala y el módulo \textit {DeepInvestigator}}{21}{section.3.7}%
 \contentsline {subsection}{\numberline {3.7.1}Síntesis estructurada mediante Gemini Flash}{21}{subsection.3.7.1}%
 \contentsline {subsection}{\numberline {3.7.2}Agentes de búsqueda y el patrón OSINT}{22}{subsection.3.7.2}%
 \contentsline {chapter}{\numberline {4}Estado del Arte}{23}{chapter.4}%
@@ -90,9 +90,9 @@
 \contentsline {subsection}{\numberline {5.2.1}Fase TT-1 Prototipos exploratorios e ingesta sintáctica (P0-P2)}{40}{subsection.5.2.1}%
 \contentsline {subsection}{\numberline {5.2.2}Fase TT-2 Arquitectura de aprendizaje profundo y clasificador escalonado (P3-P4)}{41}{subsection.5.2.2}%
 \contentsline {section}{\numberline {5.3}Evolución del Stack Tecnológico (TT-1 $\rightarrow $ TT-2)}{41}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Arquitectura de Microservicios, Contenerización y Gestión de Recursos}{42}{section.5.4}%
+\contentsline {section}{\numberline {5.4}Arquitectura de microservicios, contenerización y gestión de recursos}{42}{section.5.4}%
 \contentsline {subsection}{\numberline {5.4.1}Contenedor de base de datos \texttt {nna-postgres}}{42}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Contenedor del Backend \texttt {nna-analyzer}}{43}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.2}Contenedor del backend \texttt {nna-analyzer}}{43}{subsection.5.4.2}%
 \contentsline {subsection}{\numberline {5.4.3}Contenedor de interfaz analítica y dashboard web \texttt {nna-webapp}}{43}{subsection.5.4.3}%
 \contentsline {section}{\numberline {5.5}Especificación de requerimientos}{43}{section.5.5}%
 \contentsline {chapter}{\numberline {6}Requerimientos del sistema}{46}{chapter.6}%
@@ -203,3 +203,17 @@
 \contentsline {section}{\numberline {9.3}Resultados del Agrupamiento Semántico (BERTopic)}{92}{section.9.3}%
 \contentsline {section}{\numberline {9.4}Resultados del Módulo de Investigación Profunda (\textit {DeepInvestigator})}{92}{section.9.4}%
 \contentsline {section}{\numberline {9.5}Evaluación comparativa TT1/TT2 y cumplimiento de metas}{92}{section.9.5}%
+\contentsline {chapter}{\numberline {10}Conclusiones y trabajo a Futuro}{94}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Conclusión general y cumplimiento de objetivos}{94}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Cumplimiento de los Objetivos Específicos}{94}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}OE-1 Identificación y selección de fuentes públicas}{94}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}OE-2 Módulo de extracción de datos}{94}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}OE-3 Procesamiento de lenguaje natural}{95}{subsection.10.2.3}%
+\contentsline {subsection}{\numberline {10.2.4}OE-4 Base de datos y plataforma web}{95}{subsection.10.2.4}%
+\contentsline {section}{\numberline {10.3}Aportaciones Técnicas del Proyecto}{95}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Sistema de clasificación escalonada}{95}{subsection.10.3.1}%
+\contentsline {section}{\numberline {10.4}Trabajo Futuro}{95}{section.10.4}%
+\contentsline {subsection}{\numberline {10.4.1}Consolidación de la base de entrenamiento mediante aprendizaje activo}{96}{subsection.10.4.1}%
+\contentsline {subsection}{\numberline {10.4.2}Integración de un módulo de reconocimiento de entidades nombradas (NER)}{96}{subsection.10.4.2}%
+\contentsline {subsection}{\numberline {10.4.3}Expansión a redes sociales y fuentes no estructuradas}{96}{subsection.10.4.3}%
+\contentsline {subsection}{\numberline {10.4.4}Construcción de una API pública con salvaguardas de privacidad}{96}{subsection.10.4.4}%

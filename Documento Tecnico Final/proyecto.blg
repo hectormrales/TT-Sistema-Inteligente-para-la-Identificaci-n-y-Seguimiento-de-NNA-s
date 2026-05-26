@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99e
+This is BibTeX, Version 0.99d
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: proyecto.aux
 Reallocating 'name_of_file' (item size: 1) to 19 items.
@@ -31,47 +31,55 @@ Reallocating 'name_of_file' (item size: 1) to 16 items.
 A level-1 auxiliary file: 8Resultados.aux
 Reallocating 'name_of_file' (item size: 1) to 18 items.
 A level-1 auxiliary file: 9Conclusiones.aux
-I found no \bibdata command---while reading file proyecto.aux
-I found no \bibstyle command---while reading file proyecto.aux
-You've used 41 entries,
-            0 wiz_defined-function locations,
-            139 strings with 1424 characters,
-and the built_in function-call counts, 0 in all, are:
-= -- 0
-> -- 0
-< -- 0
-+ -- 0
-- -- 0
-* -- 0
-:= -- 0
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+Database file #1: bibliografia.bib
+Warning--I didn't find a database entry for "pennington2014glove"
+Warning--I didn't find a database entry for "hochreiter1997lstm"
+Warning--I didn't find a database entry for "lloyd1982least"
+Warning--empty journal in ester1996dbscan
+Warning--empty journal in guo2017calibration
+Warning--can't use both volume and number fields in salton1988term
+You've used 38 entries,
+            2118 wiz_defined-function locations,
+            741 strings with 11757 characters,
+and the built_in function-call counts, 12456 in all, are:
+= -- 1245
+> -- 623
+< -- 9
++ -- 254
+- -- 210
+* -- 738
+:= -- 2113
+add.period$ -- 143
+call.type$ -- 38
+change.case$ -- 216
 chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 0
-format.name$ -- 0
-if$ -- 0
+cite$ -- 41
+duplicate$ -- 474
+empty$ -- 930
+format.name$ -- 210
+if$ -- 2625
 int.to.chr$ -- 0
-int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 0
-num.names$ -- 0
-pop$ -- 0
-preamble$ -- 0
-purify$ -- 0
+int.to.str$ -- 38
+missing$ -- 32
+newline$ -- 216
+num.names$ -- 76
+pop$ -- 243
+preamble$ -- 1
+purify$ -- 177
 quote$ -- 0
-skip$ -- 0
+skip$ -- 359
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
-text.length$ -- 0
+substring$ -- 572
+swap$ -- 116
+text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 0
-warning$ -- 0
-while$ -- 0
-width$ -- 0
-write$ -- 0
-(There were 2 error messages)
+type$ -- 144
+warning$ -- 3
+while$ -- 108
+width$ -- 40
+write$ -- 453
+(There were 6 warnings)
