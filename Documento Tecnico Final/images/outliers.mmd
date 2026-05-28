@@ -1,0 +1,41 @@
+flowchart TD
+    %% Entrada del pipeline
+    In(["Noticia clasificada como ruido o outlier"]) --> S1
+
+    %% Contenedor de las estrategias usando ID seguro
+    subgraph Proceso ["Estrategia progresiva de reducción de outliers"]
+        direction TB
+        
+        S1["Fase 1. Probabilidades Soft<br/>(strategy='probabilities')"]
+        S2["Fase 2. Distribuciones c-TF-IDF<br/>(strategy='distributions')"]
+        S3["Fase 3. Cercanía de embeddings<br/>(strategy='embeddings', threshold=0.3)"]
+        
+        S1 -->|"Si no se puede reasignar"| S2
+        S2 -->|"Si no se puede reasignar"| S3
+    end
+
+    %% Nodos de explicación de negocio
+    classDef infoNode fill:#fcfcfc,stroke:#666,stroke-width:1px,stroke-dasharray: 4 4,font-size:12px;
+    
+    I1[["Evalúa la probabilidad<br/>blanda de HDBSCAN"]]:::infoNode
+    I2[["Compara la similitud léxica<br/>contra el clúster"]]:::infoNode
+    I3[["Mide la distancia semántica<br/>al centroide del clúster"]]:::infoNode
+
+    S1 -.- I1
+    S2 -.- I2
+    S3 -.- I3
+
+    %% Salidas de éxito
+    S1 -->|"Reasignación exitosa"| Out(["Asignada a clúster válido"])
+    S2 -->|"Reasignación exitosa"| Out
+    S3 -->|"Supera umbral 0.3"| Out
+    
+    %% Salida de fallo final
+    S3 -->|"No alcanza umbral"| Fail(["Permanece como outlier"])
+
+    %% Estilos de los filtros
+    style S1 fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px
+    style S2 fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px
+    style S3 fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+    style Fail fill:#ffebee,stroke:#e53935,stroke-width:2px,color:#b71c1c
+    style Out fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20

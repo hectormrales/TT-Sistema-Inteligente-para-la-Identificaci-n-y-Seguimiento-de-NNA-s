@@ -1,0 +1,28 @@
+erDiagram
+    %% Relación: Un clúster puede tener cero o muchas noticias (N:1)
+    CLUSTER_SEMANTICO ||--o{ NOTICIA : "agrupa"
+
+    %% Relación: Una noticia tiene exactamente cero o una detección (1:1)
+    NOTICIA ||--o| DETECCION : "genera (ON DELETE CASCADE)"
+
+    %% Relación: Una noticia puede tener una o muchas entidades (1:N)
+    NOTICIA ||--o{ ENTIDAD : "contiene (ON DELETE CASCADE)"
+
+    NOTICIA {
+        int id PK
+        int cluster_id FK "nullable"
+    }
+
+    DETECCION {
+        int id PK
+        int noticia_id FK "UK, not null"
+    }
+
+    ENTIDAD {
+        int id PK
+        int noticia_id FK "not null"
+    }
+
+    CLUSTER_SEMANTICO {
+        int id PK
+    }

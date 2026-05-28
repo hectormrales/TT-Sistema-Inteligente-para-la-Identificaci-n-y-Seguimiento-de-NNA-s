@@ -90,7 +90,7 @@ detectarse mediante métricas graduales de similitud textual (Jaccard, SimHash, 
 };
 \end{axis}
 \end{tikzpicture}
-\caption{Distribución de duplicados eliminados por fase de la cascada de deduplicación (Total: 213 artículos, 25\% del corpus bruto).}
+\caption{Distribución de duplicados eliminados por fase de la cascada de deduplicación.}
 \label{fig:grafica_dedup}
 \end{figure}
 \vspace{0.4cm}
@@ -142,7 +142,7 @@ Capa 3 & Post-filtro de validación aplicado & 128 & 20.2\% \\
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    title={Embudo analítico de clasificación escalonada},
+    title={Represetancion por fase de la clasificación escalonada},
     xbar,
     width=0.82\textwidth,
     height=7.5cm,
@@ -150,7 +150,7 @@ Capa 3 & Post-filtro de validación aplicado & 128 & 20.2\% \\
     xlabel={Número de noticias},
     symbolic y coords={
         {Alta (orfandad)},
-        {Media (vulnerab.)},
+        {Media (vulnerab)},
         {Post-filtro (Capa 3)},
         {Inferencia BETO (Capa 2)},
         {Escudo suave (Capa 1)},
@@ -172,12 +172,12 @@ Capa 3 & Post-filtro de validación aplicado & 128 & 20.2\% \\
     (225,{Escudo suave (Capa 1)})
     (128,{Inferencia BETO (Capa 2)})
     (128,{Post-filtro (Capa 3)})
-    (101,{Media (vulnerab.)})
+    (101,{Media (vulnerab)})
     (27,{Alta (orfandad)})
 };
 \end{axis}
 \end{tikzpicture}
-\caption{Embudo analítico del sistema de clasificación escalonada: reducción del corpus desde 634 noticias únicas hasta 27 casos de alta relevancia (4.4\%).}
+\caption{Reducción del corpus desde 634 noticias únicas hasta 27 casos de alta relevancia.}
 \label{fig:grafica_embudo}
 \end{figure}
 \vspace{0.4cm}
@@ -239,11 +239,11 @@ Gemini retorna el DIF municipal y la Fiscalía competente según la ubicación
 del caso aun incluso cuando el texto de la noticia no los menciona explícitamente.
 
 \clearpage
-\section{Evaluación comparativa TT1/TT2 y cumplimiento de metas}
+\section{Evaluación comparativa TT I/TT II y cumplimiento de metas}
 \label{sec:res_comparativa}
 
 La siguiente tabla consolida el cumplimiento de los objetivos cuantitativos
-definidos al inicio del TT2 frente a las métricas del TT1 (prototipo 2) y los
+definidos al inicio del TT II frente a las métricas del TT I (prototipo 2) y los
 resultados finales del prototipo 4.
 
 \vspace{0.5cm}
@@ -259,7 +259,7 @@ resultados finales del prototipo 4.
 \textcolor{white}{\textbf{TT1 (P2)}} &
 \textcolor{white}{\textbf{Meta TT2}} &
 \textcolor{white}{\textbf{Resultado P4}} &
-\textcolor{white}{\textbf{¿Cumple?}} \\
+\textcolor{white}{\textbf{Final}} \\
 \hline
 \textbf{Falsos positivos} & 60\% & $< 30\%$ & al rededor del 20\% & \checkmark \\
 \hline
@@ -267,7 +267,7 @@ resultados finales del prototipo 4.
 \hline
 \textbf{Cobertura temporal} & 6 meses & Continua & Operacional & \checkmark \\
 \hline
-\textbf{Persistencia} & CSV plano & PostgreSQL 16 & PostgreSQL 16 (ACID) & \checkmark \\
+\textbf{Persistencia} & CSV plano & PostgreSQL & PostgreSQL (ACID) & \checkmark \\
 \hline
 \textbf{Motor de clasificación} & RegEx (72 patrones) & BETO fine-tuning & BETO Finetuned + Escalonado & \checkmark \\
 \hline
@@ -287,10 +287,10 @@ resultados finales del prototipo 4.
 \end{figure}
 \vspace{0.4cm}
 
-La interfaz del Dashboard con etiquetas visuales (clasificación Alta/Media/Baja
-y score semántico) permiten al analista realizar un barrido visual inmediato sobre
-el corpus clasificado. Lo que en el TT1 representaba decenas de horas para una revisión
-manual fue optimizado en el TT2 a una revisión semi-automatizada que exige apenas
-unos pocos segundos por caso, antes de activar el módulo de investigación profunda para los
-casos que el analista determina que merecen una intervención más exhaustiva.
+Las etiquetas visuales (clasificación Alta/Media/Baja y score semántico)
+permiten al analista realizar un barrido visual sobre el corpus clasificado.
+Lo que en el TT I representaba muchas horas de revisión manual fue optimizado
+en el TT II a una revisión semi-automatizada que exige apenas unos pocos segundos
+por caso antes de activar el módulo de investigación profunda para casos que
+el analista determine que merezcan una intervención más exhaustiva.
 
