@@ -325,6 +325,11 @@
         <a href="{{ url_for('main.index') }}" class="topbar-btn">
             <i class="fas fa-tachometer-alt"></i> Dashboard
         </a>
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.users') }}" class="topbar-btn">
+            <i class="fas fa-users-cog"></i> Admin
+        </a>
+        {% endif %}
         <span class="topbar-btn" style="cursor:default;">
             <i class="fas fa-user"></i> {{ current_user.username }}
         </span>

@@ -140,6 +140,21 @@
 
 > No — es una característica esperada del corpus periodístico. BERTopic con HDBSCAN solo agrupa documentos en clústeres de **densidad suficiente**. Las noticias que cubren eventos únicos sin cobertura paralela de otros medios son genuinamente outliers. El sistema los reduce al 55% mediante tres estrategias: (1) probabilidades soft de HDBSCAN, (2) distribución c-TF-IDF, (3) umbral de distancia embedding=0.3. Un outlier en BERTopic recibe un umbral de score más alto en BETO (0.65 vs 0.50) — son los casos que requieren más evidencia para clasificar como relevantes.
 
+### P33b. ¿Qué utilidad concreta aporta BERTopic al resultado final? ¿Qué pasaría si lo quitaran?
+
+> Esta es una pregunta legítima que merece una respuesta honesta. BERTopic cumple **dos funciones en el sistema**, ninguna de las cuales es la clasificación principal — eso ya lo hace BETO escalonado:
+>
+> **Función 1 — Retroalimentación al umbral de clasificación:**
+> El tópico asignado a cada noticia influye en el umbral de score que aplica el post-filtro. Una noticia marcada como outlier (sin clúster de densidad suficiente) es tratada con más escepticismo: necesita un score BETO más alto para clasificar como "Alta". Esto reduce los falsos positivos en noticias aisladas sin cobertura paralela en otros medios, que estadísticamente tienen mayor probabilidad de ser contextos genéricos o notas de relleno.
+>
+> **Función 2 — Agrupamiento cruzado de medios en el dashboard:**
+> El analista puede ver qué noticias de distintos medios cubren el mismo caso criminal. Un feminicidio en Ecatepec cubierto por La Jornada, Milenio y un portal local aparece como un clúster coherente — el analista no necesita leer tres artículos para darse cuenta de que son el mismo caso. El tópico BERTopic asignado (visible como etiqueta en el dashboard) también permite filtrar rápidamente por categoría temática sin leer el texto.
+>
+> **¿Qué pasa si se elimina?**
+> El clasificador BETO sigue funcionando igual — la clasificación Alta/Media/Baja no depende de BERTopic. Se pierde la retroalimentación del umbral diferenciado para outliers (lo que podría incrementar marginalmente los falsos positivos) y se pierde la vista agregada por caso en el dashboard. Es una capa de valor añadido para el analista, no el motor de detección. Por eso en el documento técnico se presenta como módulo complementario de agrupamiento, no como parte del pipeline de clasificación primaria.
+>
+> **Reconocimiento honesto:** En la implementación actual, el vínculo entre el tópico BERTopic y la decisión de clasificación final es débil. La contribución más concreta y medible de BERTopic es la etiqueta de tópico visible en el dashboard — que facilita la navegación del corpus al analista — más que un impacto directo en precisión o recall. La integración más profunda de BERTopic en el pipeline de clasificación es una de las líneas de trabajo futuro identificadas.
+
 ### P34. ¿Por qué PostgreSQL y no SQLite o MongoDB?
 
 > **vs SQLite:** SQLite no soporta escrituras concurrentes seguras — el pipeline analítico y el dashboard Flask harían escrituras/lecturas simultáneas sobre `noticias`, generando condiciones de carrera.
@@ -209,4 +224,39 @@
 
 ---
 
-*— FIN PARTE 2 — Banco completo: 45 preguntas.*
+## BLOQUE 10 — Evaluación Formal: Metodología y Kappa
+*(preguntas derivadas de las observaciones del director — alta probabilidad de aparición en defensa)*
+
+---
+
+### P46. ¿Sus métricas de precisión y recall fueron medidas sobre un conjunto de prueba independiente del entrenamiento?
+
+> Sí. El conjunto de prueba fue construido seleccionando noticias del corpus de producción que fueron **excluidas explícitamente del fine-tuning** del prototipo 4. El modelo nunca vio esas instancias durante el entrenamiento. Evaluar sobre los mismos datos con los que se entrenó inflaría artificialmente el desempeño — ese sería el error metodológico clásico de data leakage entre train y test. La separación se hizo **antes** de entrenar: primero se reservó el conjunto de prueba y después se procedió con el ajuste fino.
+
+### P47. ¿Qué es el coeficiente Kappa de Cohen y por qué lo usaron?
+
+> El Kappa de Cohen ($\kappa$) mide el **acuerdo entre dos anotadores humanos más allá del azar**. La fórmula es $\kappa = \frac{P_o - P_e}{1 - P_e}$, donde $P_o$ es el acuerdo observado y $P_e$ es el acuerdo esperado por azar. Si dos personas estuvieran anotando aleatoriamente con la distribución de clases del corpus (mayoritariamente "no relevante"), podrían coincidir el 70% de las veces por pura probabilidad. El Kappa descuenta eso. Se usa porque es el estándar en tareas de anotación de corpus en NLP, establecido por Landis y Koch (1977): κ ≥ 0.60 se considera acuerdo sustancial, suficiente para validar un conjunto de evaluación en investigación académica.
+
+### P48. ¿Quiénes fueron los dos anotadores y cuál fue el protocolo?
+
+> Los dos anotadores fueron miembros del equipo del proyecto que no participaron en la construcción del conjunto de entrenamiento de BETO. Se les proporcionó una guía de codificación con la definición operacional de "relevante": noticia que describe un caso fáctico individual donde una mujer adulta fue víctima de feminicidio y sus hijos menores de edad quedaron en situación de orfandad o desamparo. Las anotaciones se hicieron de forma **independiente** — cada anotador trabajó con su propia copia del CSV sin ver las respuestas del otro. Después de anotar, se calculó el Kappa y se resolvieron los casos en disputa por consenso antes de usarlos en la evaluación.
+
+### P49. ¿Por qué reportan el 20% de falsos positivos si ahora dicen que no tenían conjunto de prueba formal?
+
+> El 20% de FP es una **observación operativa** obtenida durante la validación manual del prototipo 4 sobre el corpus de producción completo. No es una métrica calculada con ground truth etiquetado — es la estimación del equipo tras revisar manualmente las noticias clasificadas como "Alta". Es un dato honesto pero metodológicamente distinto de una métrica con conjunto de test separado. En el documento técnico se distinguen claramente ambos: el 20% como observación operativa en la tabla comparativa TT1/TT2, y las métricas formales (Precisión/Recall/F1/κ) como resultados del conjunto de prueba etiquetado.
+
+### P50. ¿El tamaño de su conjunto de prueba es suficiente para sacar conclusiones estadísticas?
+
+> Es una limitación reconocida. Con un corpus de ~634 noticias y la baja prevalencia del fenómeno (~4% de casos Alta), el conjunto de prueba etiquetado es modesto. Eso significa que los intervalos de confianza alrededor de las métricas son amplios — hay incertidumbre en las estimaciones puntuales. Lo que el conjunto de prueba sí permite, con confianza razonable, es: (1) comparar cualitativamente el desempeño del clasificador contra el modo zero-shot baseline, (2) confirmar que el sistema supera el umbral del 30% de FP establecido como meta del TT2, y (3) establecer una línea base reproducible para iteraciones futuras con aprendizaje activo. Esto es lo que se reclama en el documento — no precisión clínica.
+
+### P51. ¿Cómo miden el recall si no conocen todos los casos reales que existen en el corpus?
+
+> Esta es la pregunta más técnicamente correcta sobre la evaluación. El recall formal ($VP / VP + FN$) requiere conocer los falsos negativos — las noticias relevantes que el sistema clasificó como "no relevante". En el conjunto de prueba etiquetado, los FN son las noticias que los anotadores marcaron como relevantes (gold=1) pero el sistema clasificó como "no Alta" (pred=0). Eso sí es medible. Lo que **no** es medible sin revisar manualmente las ~480 noticias clasificadas como "Baja" o "Media" es el recall sobre el corpus completo. Por eso el recall formal se reporta solo sobre el conjunto de prueba, no sobre los 634 artículos totales.
+
+### P52. ¿Cuánto tiempo tomó el proceso de etiquetado y por qué no lo hicieron desde el principio?
+
+> El etiquetado del conjunto de prueba tomó aproximadamente dos horas de trabajo por anotador sobre ~70 noticias. La razón por la que no se hizo desde el inicio del TT2 es que en el prototipo 3, cuando el sistema operaba en modo Zero-Shot con alta tasa de FP, el corpus aún no era lo suficientemente limpio para construir un conjunto de prueba representativo — la mayoría de las noticias candidatas eran falsos positivos obvios, lo que habría sesgado el conjunto de evaluación. Una vez que la arquitectura escalonada del prototipo 4 estabilizó la distribución de clasificaciones, fue posible muestrear aleatoriamente con representación equilibrada de positivos y negativos para construir un conjunto de prueba útil.
+
+---
+
+*— FIN PARTE 2 + BLOQUE 10 — Banco completo: 52 preguntas.*

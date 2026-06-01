@@ -77,6 +77,11 @@ Algoritmos y bibliotecas:
 
 import logging
 import os
+
+# Configuración Estricta Offline para Hugging Face
+os.environ['HF_HUB_OFFLINE'] = '1'
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
+
 import pickle
 import warnings
 from datetime import datetime
@@ -235,7 +240,7 @@ class SemanticClustering:
         from umap import UMAP
 
         # 1. Modelo de embeddings
-        embedding_model = SentenceTransformer(self.embedding_model_name)
+        embedding_model = SentenceTransformer(self.embedding_model_name, local_files_only=True)
 
         # 2. UMAP para reducción de dimensionalidad
         #    min_dist=0.0 fuerza clusters más compactos (mejor para HDBSCAN)
@@ -707,10 +712,15 @@ class SemanticClustering:
 
         try:
             # 1. Mapa de distancia inter-topic
-            fig_topics = self.topic_model.visualize_topics()
-            path = os.path.join(output_dir, "cluster_topic_map.html")
-            fig_topics.write_html(path)
-            output_files["topic_map"] = path
+            # Prevenir crash si solo hay un tópico válido (y el ruido -1)
+            valid_topics = [t for t in self.topic_model.get_topics().keys() if t != -1]
+            if len(valid_topics) > 1:
+                fig_topics = self.topic_model.visualize_topics()
+                path = os.path.join(output_dir, "cluster_topic_map.html")
+                fig_topics.write_html(path)
+                output_files["topic_map"] = path
+            else:
+                logger.info("Insuficientes tópicos para mapeo espacial")
         except Exception as e:
             logger.warning(f"No se pudo generar topic map: {e}")
 

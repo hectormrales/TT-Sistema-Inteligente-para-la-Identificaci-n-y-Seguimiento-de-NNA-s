@@ -10,7 +10,7 @@ from flask import (
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app.models import db, User
-from app.auth.forms import LoginForm, RegistrationForm
+from app.auth.forms import LoginForm
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -29,7 +29,7 @@ def login():
 
         if user and user.check_password(form.password.data):
             if not user.is_active:
-                flash('Tu cuenta está deshabilitada. Contacta al administrador.', 'danger')
+                flash('Tu cuenta esta deshabilitada. Contacta al administrador.', 'danger')
                 return render_template('auth/login.html', form=form)
 
             login_user(user, remember=form.remember_me.data)
@@ -50,29 +50,6 @@ def login():
         )
 
     return render_template('auth/login.html', form=form)
-
-
-@auth_bp.route('/register', methods=['GET', 'POST'])
-def register():
-    """Registro de nuevos usuarios."""
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(
-            username=form.username.data,
-            email=form.email.data.lower(),
-        )
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-
-        current_app.logger.info(f"Nuevo usuario registrado: {user.username}")
-        flash('Registro exitoso. Ya puedes iniciar sesión.', 'success')
-        return redirect(url_for('auth.login'))
-
-    return render_template('auth/register.html', form=form)
 
 
 @auth_bp.route('/logout')

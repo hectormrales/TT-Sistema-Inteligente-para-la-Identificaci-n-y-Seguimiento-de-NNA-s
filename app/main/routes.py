@@ -143,19 +143,19 @@ def index():
 
 # ── API REST ────────────────────────────────────────────────
 
-@main_bp.route('/api/batches')
+@main_bp.route('/api/sessions')
 @login_required
-def api_batches():
-    """Lista todos los batch_ids (historial de ejecuciones)."""
+def api_sessions():
+    """Lista todas las sesiones de búsqueda (historial)."""
     if _check_postgres():
         try:
-            from src.database.repository import NoticiasRepository
-            batches = NoticiasRepository.get_all_batches()
-            return jsonify({'batches': batches})
+            from app.models import SesionBusqueda
+            sessions = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).all()
+            return jsonify({'sessions': [s.to_dict() for s in sessions]})
         except Exception as e:
-            logging.error(f"Error fetching batches: {e}")
+            logging.error(f"Error fetching sessions: {e}")
             return jsonify({'error': str(e)}), 500
-    return jsonify({'batches': []})
+    return jsonify({'sessions': []})
 
 @main_bp.route('/api/stats')
 @login_required
@@ -165,15 +165,22 @@ def api_stats():
     if _check_postgres():
         try:
             from src.database.repository import NoticiasRepository
-            batch_id = request.args.get('batch_id')
-            if batch_id == 'latest':
-                batch_id = NoticiasRepository.get_latest_batch_id()
-            elif batch_id == 'all' or not batch_id:
-                batch_id = None
+            sesion_id = request.args.get('sesion_id')
+            if sesion_id == 'latest':
+                from app.models import SesionBusqueda
+                latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                sesion_id = latest.id if latest else None
+            elif sesion_id == 'all' or not sesion_id:
+                sesion_id = None
+            else:
+                try:
+                    sesion_id = int(sesion_id)
+                except ValueError:
+                    sesion_id = None
                 
-            stats = NoticiasRepository.estadisticas(batch_id=batch_id)
+            stats = NoticiasRepository.estadisticas(sesion_id=sesion_id)
             stats['data_source'] = 'postgresql'
-            stats['current_batch_id'] = batch_id or 'all'
+            stats['current_sesion_id'] = sesion_id or 'all'
             return jsonify(stats)
         except Exception as e:
             logging.warning(f"Fallback a CSV: {e}")
@@ -203,16 +210,23 @@ def api_noticias():
     only_nna = request.args.get('only_nna', 'false').lower() == 'true'
     clasificacion = request.args.get('clasificacion', '').strip()
     orden = request.args.get('orden', 'fecha')
-    batch_id = request.args.get('batch_id')
+    sesion_id = request.args.get('sesion_id')
 
     # Intentar PostgreSQL primero
     if _check_postgres():
         try:
             from src.database.repository import NoticiasRepository
-            if batch_id == 'latest':
-                batch_id = NoticiasRepository.get_latest_batch_id()
-            elif batch_id == 'all' or not batch_id:
-                batch_id = None
+            if sesion_id == 'latest':
+                from app.models import SesionBusqueda
+                latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                sesion_id = latest.id if latest else None
+            elif sesion_id == 'all' or not sesion_id:
+                sesion_id = None
+            else:
+                try:
+                    sesion_id = int(sesion_id)
+                except ValueError:
+                    sesion_id = None
                 
             result = NoticiasRepository.listar(
                 page=page,
@@ -220,10 +234,10 @@ def api_noticias():
                 clasificacion=clasificacion or None,
                 solo_nna=only_nna,
                 orden=orden,
-                batch_id=batch_id,
+                sesion_id=sesion_id,
             )
             result['data_source'] = 'postgresql'
-            result['current_batch_id'] = batch_id or 'all'
+            result['current_sesion_id'] = sesion_id or 'all'
             return jsonify(result)
         except Exception as e:
             logging.warning(f"PostgreSQL fallback: {e}")
@@ -294,12 +308,26 @@ def api_search():
             clasificacion = request.args.get('clasificacion', '').strip() or None
             solo_nna = request.args.get('only_nna', 'false').lower() == 'true'
             limit = int(request.args.get('limit', 20))
+            sesion_id = request.args.get('sesion_id')
+            if sesion_id and sesion_id != 'all':
+                if sesion_id == 'latest':
+                    from app.models import SesionBusqueda
+                    latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                    sesion_id = latest.id if latest else None
+                else:
+                    try:
+                        sesion_id = int(sesion_id)
+                    except ValueError:
+                        sesion_id = None
+            else:
+                sesion_id = None
 
             result = NoticiasRepository.buscar_fts(
                 query=query,
                 limit=limit,
                 clasificacion=clasificacion,
                 solo_nna=solo_nna,
+                sesion_id=sesion_id,
             )
             result['data_source'] = 'postgresql_fts'
             return jsonify(result)
@@ -350,7 +378,7 @@ _analysis_status = {
 _analysis_lock = threading.Lock()
 
 
-def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, scraper_type, app):
+def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, scraper_type, app, sesion_id=None):
     """Ejecuta el pipeline completo en background (hilo separado)."""
     global _analysis_status
     try:
@@ -366,6 +394,7 @@ def _run_analysis_background(enable_semantic, enable_bertopic, enable_postgres, 
                 start_date=start_date,
                 end_date=end_date,
                 scraper_type=scraper_type,
+                sesion_id=sesion_id,
             )
 
             # Recargar datos después del análisis
@@ -410,6 +439,22 @@ def api_analyze():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     scraper_type = request.args.get('scraper', 'all')
+    
+    from app.models import db, SesionBusqueda
+    
+    # Crear la nueva sesión
+    nombre_sesion = f"Búsqueda: {datetime.now().strftime('%d/%b/%Y %H:%M')}"
+    nueva_sesion = SesionBusqueda(
+        nombre_descriptivo=nombre_sesion,
+        parametros_busqueda={
+            'start_date': start_date,
+            'end_date': end_date,
+            'scraper_type': scraper_type
+        }
+    )
+    db.session.add(nueva_sesion)
+    db.session.commit()
+    sesion_id = nueva_sesion.id
 
     with _analysis_lock:
         _analysis_status.update({
@@ -425,13 +470,14 @@ def api_analyze():
     # Lanzar en hilo de fondo (daemon=True para que muera con el worker)
     thread = threading.Thread(
         target=_run_analysis_background,
-        args=(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, scraper_type, app),
+        args=(enable_semantic, enable_bertopic, enable_postgres, start_date, end_date, scraper_type, app, sesion_id),
         daemon=True,
     )
     thread.start()
 
     return jsonify({
         'status': 'started',
+        'sesion_id': sesion_id,
         'message': 'Recolección y análisis iniciados. Consulta /api/analyze/status para ver el progreso.',
     })
 
@@ -485,57 +531,59 @@ def api_export_csv():
 @main_bp.route('/api/charts/temporal')
 @login_required
 def api_charts_temporal():
-    """Datos para gráfico temporal: noticias por mes."""
+    """Datos para gráfico temporal filtrado (Alta vs Media)."""
     if _check_postgres():
         try:
             from src.database.models_noticias import Noticia
             from sqlalchemy import func
+            sesion_id = request.args.get('sesion_id')
+            q = Noticia.query
+            if sesion_id and sesion_id != 'all':
+                if sesion_id == 'latest':
+                    from app.models import SesionBusqueda
+                    latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                    if latest:
+                        q = q.filter(Noticia.sesion_id == latest.id)
+                else:
+                    try:
+                        q = q.filter(Noticia.sesion_id == int(sesion_id))
+                    except ValueError:
+                        pass
+            
             results = (
-                Noticia.query
-                .with_entities(
+                q.with_entities(
                     func.to_char(Noticia.fecha, 'YYYY-MM').label('mes'),
-                    func.count().label('total'),
+                    Noticia.clasificacion,
+                    func.count().label('count'),
                 )
                 .filter(Noticia.fecha.isnot(None))
-                .group_by(func.to_char(Noticia.fecha, 'YYYY-MM'))
+                .group_by(func.to_char(Noticia.fecha, 'YYYY-MM'), Noticia.clasificacion)
                 .order_by(func.to_char(Noticia.fecha, 'YYYY-MM'))
                 .all()
             )
+            
+            data = {}
+            for r in results:
+                if r.mes not in data:
+                    data[r.mes] = {'Alta': 0, 'Media': 0, 'Baja': 0, 'No relevante': 0}
+                data[r.mes][r.clasificacion] = r.count
+                
+            labels = list(data.keys())
             return jsonify({
-                'labels': [r.mes for r in results],
-                'total': [r.total for r in results],
-                'nna': [],
+                'labels': labels,
+                'alta': [data[m].get('Alta', 0) for m in labels],
+                'media': [data[m].get('Media', 0) for m in labels]
             })
         except Exception as e:
             logging.warning(f"Charts temporal PG error: {e}")
-
-    # Fallback a CSV
-    if _current_data is None:
-        return jsonify({'labels': [], 'total': [], 'nna': []})
-
-    df = _current_data.copy()
-    if 'fecha' not in df.columns:
-        return jsonify({'labels': [], 'total': [], 'nna': []})
-
-    df['_fecha'] = pd.to_datetime(df['fecha'], errors='coerce', utc=True)
-    df = df.dropna(subset=['_fecha'])
-    df['_mes'] = df['_fecha'].dt.strftime('%Y-%m')
-    grouped = df.groupby('_mes').agg(
-        total=('_mes', 'size'),
-        nna=('menores_identificados', lambda x: (x == 'Si').sum()),
-    ).reset_index().sort_values('_mes')
-
-    return jsonify({
-        'labels': grouped['_mes'].tolist(),
-        'total': grouped['total'].tolist(),
-        'nna': grouped['nna'].astype(int).tolist(),
-    })
+            return jsonify({'labels': [], 'alta': [], 'media': []})
+    return jsonify({'labels': [], 'alta': [], 'media': []})
 
 
 @main_bp.route('/api/charts/relevancia')
 @login_required
 def api_charts_relevancia():
-    """Datos para gráfico de distribución de relevancia."""
+    """Datos para gráfico de distribución de relevancia (Legacy)."""
     if _check_postgres():
         try:
             from src.database.models_noticias import Noticia
@@ -558,21 +606,48 @@ def api_charts_relevancia():
             })
         except Exception as e:
             logging.warning(f"Charts relevancia PG error: {e}")
+            return jsonify({'alta': 0, 'media': 0, 'baja': 0, 'no_relevante': 0})
+    return jsonify({'alta': 0, 'media': 0, 'baja': 0, 'no_relevante': 0})
 
-    if _current_data is None:
-        return jsonify({'alta': 0, 'media': 0, 'baja': 0, 'no_relevante': 0})
-
-    col = 'clasificacion_final' if 'clasificacion_final' in _current_data.columns else 'clasificacion'
-    if col not in _current_data.columns:
-        return jsonify({'alta': 0, 'media': 0, 'baja': 0, 'no_relevante': 0})
-
-    counts = _current_data[col].value_counts()
-    return jsonify({
-        'alta': int(counts.get('Alta', 0)),
-        'media': int(counts.get('Media', 0)),
-        'baja': int(counts.get('Baja', 0)),
-        'no_relevante': int(counts.get('No relevante', 0)),
-    })
+@main_bp.route('/api/charts/topics')
+@login_required
+def api_charts_topics():
+    """Datos para gráfico de burbujas BERTopic."""
+    if _check_postgres():
+        try:
+            from src.database.models_noticias import ClusterSemantico
+            sesion_id = request.args.get('sesion_id')
+            q = ClusterSemantico.query.filter(ClusterSemantico.es_outlier == False)
+            if sesion_id and sesion_id != 'all':
+                if sesion_id == 'latest':
+                    from app.models import SesionBusqueda
+                    latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                    if latest:
+                        q = q.filter(ClusterSemantico.sesion_id == latest.id)
+                else:
+                    try:
+                        q = q.filter(ClusterSemantico.sesion_id == int(sesion_id))
+                    except ValueError:
+                        pass
+            clusters = q.all()
+            data = []
+            for c in clusters:
+                terms = c.terminos_principales or []
+                if isinstance(terms, dict):
+                    terms = list(terms.keys())
+                elif isinstance(terms, list) and len(terms) > 0 and isinstance(terms[0], list):
+                    terms = [t[0] for t in terms]
+                data.append({
+                    'id': c.id,
+                    'label': c.etiqueta or f"Tópico {c.id}",
+                    'size': c.num_documentos,
+                    'terms': terms[:5]
+                })
+            return jsonify({'topics': data})
+        except Exception as e:
+            logging.warning(f"Charts topics PG error: {e}")
+            return jsonify({'topics': []})
+    return jsonify({'topics': []})
 
 
 @main_bp.route('/api/charts/estados')
@@ -619,70 +694,105 @@ def api_charts_estados():
     if _check_postgres():
         try:
             from src.database.models_noticias import Noticia
-            noticias = Noticia.query.with_entities(
-                Noticia.titulo, Noticia.contenido
+            sesion_id = request.args.get('sesion_id')
+            q = Noticia.query
+            if sesion_id and sesion_id != 'all':
+                if sesion_id == 'latest':
+                    from app.models import SesionBusqueda
+                    latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                    if latest:
+                        q = q.filter(Noticia.sesion_id == latest.id)
+                else:
+                    try:
+                        q = q.filter(Noticia.sesion_id == int(sesion_id))
+                    except ValueError:
+                        pass
+            
+            noticias = q.with_entities(
+                Noticia.titulo, Noticia.contenido, Noticia.clasificacion
             ).all()
-            textos = [f"{n.titulo} {n.contenido or ''}" for n in noticias]
-        except Exception:
-            textos = []
-    elif _current_data is not None:
-        textos = (
-            _current_data['titulo'].fillna('') + ' ' +
-            _current_data.get('contenido', pd.Series(dtype=str)).fillna('')
-        ).tolist()
-    else:
-        textos = []
-
-    # Contar menciones por estado
-    result = {}
-    for estado, pattern in ESTADOS.items():
-        count = sum(1 for t in textos if re.search(pattern, t, re.IGNORECASE))
-        if count > 0:
-            result[estado] = count
-
-    # Ordenar por frecuencia descendente, top 15
-    sorted_result = dict(sorted(result.items(), key=lambda x: x[1], reverse=True)[:15])
-
-    return jsonify({
-        'labels': list(sorted_result.keys()),
-        'values': list(sorted_result.values()),
-    })
+            
+            result_alta = {}
+            result_media = {}
+            
+            for estado, pattern in ESTADOS.items():
+                alta_count = sum(1 for n in noticias if n.clasificacion == 'Alta' and re.search(pattern, f"{n.titulo} {n.contenido}", re.IGNORECASE))
+                media_count = sum(1 for n in noticias if n.clasificacion == 'Media' and re.search(pattern, f"{n.titulo} {n.contenido}", re.IGNORECASE))
+                
+                if alta_count > 0 or media_count > 0:
+                    result_alta[estado] = alta_count
+                    result_media[estado] = media_count
+                    
+            # Ordenar por Alta DESC, luego Media DESC
+            sorted_estados = sorted(result_alta.keys(), key=lambda x: (result_alta[x], result_media[x]), reverse=True)[:15]
+            
+            return jsonify({
+                'labels': sorted_estados,
+                'alta': [result_alta[e] for e in sorted_estados],
+                'media': [result_media[e] for e in sorted_estados],
+            })
+        except Exception as e:
+            logging.warning(f"Charts estados PG error: {e}")
+            return jsonify({'labels': [], 'alta': [], 'media': []})
+    return jsonify({'labels': [], 'alta': [], 'media': []})
 
 
 @main_bp.route('/api/charts/fuentes')
 @login_required
 def api_charts_fuentes():
-    """Top 10 fuentes por número de noticias."""
+    """Top fuentes ordenadas por Tasa de Alta Relevancia."""
     if _check_postgres():
         try:
             from src.database.models_noticias import Noticia
-            from sqlalchemy import func
+            from sqlalchemy import func, case
+            sesion_id = request.args.get('sesion_id')
+            q = Noticia.query
+            if sesion_id and sesion_id != 'all':
+                if sesion_id == 'latest':
+                    from app.models import SesionBusqueda
+                    latest = SesionBusqueda.query.order_by(SesionBusqueda.fecha_creacion.desc()).first()
+                    if latest:
+                        q = q.filter(Noticia.sesion_id == latest.id)
+                else:
+                    try:
+                        q = q.filter(Noticia.sesion_id == int(sesion_id))
+                    except ValueError:
+                        pass
+
             results = (
-                Noticia.query
-                .with_entities(
+                q.with_entities(
                     Noticia.fuente,
-                    func.count().label('count'),
+                    func.count().label('total'),
+                    func.sum(case((Noticia.clasificacion == 'Alta', 1), else_=0)).label('alta_count')
                 )
+                .filter(Noticia.fuente.isnot(None))
                 .group_by(Noticia.fuente)
-                .order_by(func.count().desc())
-                .limit(10)
+                .having(func.count() >= 3)
                 .all()
             )
+            
+            processed = []
+            for r in results:
+                pct = (r.alta_count / r.total) * 100 if r.total > 0 else 0
+                processed.append({
+                    'fuente': r.fuente,
+                    'total': r.total,
+                    'alta': r.alta_count,
+                    'pct': pct
+                })
+                
+            processed.sort(key=lambda x: x['pct'], reverse=True)
+            top_10 = processed[:10]
+            
             return jsonify({
-                'labels': [r.fuente or 'Desconocida' for r in results],
-                'values': [r.count for r in results],
+                'labels': [p['fuente'] for p in top_10],
+                'values': [p['pct'] for p in top_10],
+                'totals': [p['total'] for p in top_10]
             })
         except Exception as e:
             logging.warning(f"Charts fuentes PG error: {e}")
-
-    if _current_data is None:
-        return jsonify({'labels': [], 'values': []})
-
-    counts = _current_data['fuente'].value_counts().head(10)
-    return jsonify({
-        'labels': counts.index.tolist(),
-        'values': counts.values.tolist(),
-    })
+            return jsonify({'labels': [], 'values': [], 'totals': []})
+    return jsonify({'labels': [], 'values': [], 'totals': []})
 
 
 @main_bp.route('/health')
@@ -818,6 +928,33 @@ def api_identify_link():
     try:
         investigator = DeepInvestigator()
         result = investigator.investigate_url(url)
+        
+        if 'error' not in result and _check_postgres():
+            from src.database.models_noticias import Noticia, db
+            from datetime import datetime
+            
+            # Obtener el título, o usar el resumen/URL si no está disponible
+            title = result.get('titulo', 'Noticia Externa (Identificación Manual)')
+            if title == 'Noticia Externa (Identificación Manual)' and 'resumen' in result:
+                title = result['resumen'][:100] + "..."
+                
+            nueva_noticia = Noticia(
+                titulo=title,
+                enlace=url,
+                fecha=datetime.utcnow(),
+                fuente='Investigación Manual',
+                contenido=result.get('resumen', ''),
+                score_feminicidio=1.0,
+                score_nna=1.0,
+                score_compuesto=1.0,
+                clasificacion='Alta',
+                investigacion_json=result
+            )
+            db.session.add(nueva_noticia)
+            db.session.commit()
+            
+            result['noticia_id'] = nueva_noticia.id
+
         return jsonify(result)
     except Exception as e:
         logging.error(f"Error identificando link: {e}")
@@ -886,6 +1023,7 @@ def api_export_seguimiento_csv():
         noticias = [n for n in noticias_raw if n.investigacion_json and n.investigacion_json.get('en_seguimiento') is True]
         
         output = io.StringIO()
+        output.write('\ufeff')  # BOM para Excel (utf-8-sig)
         writer = csv.writer(output)
         
         # Headers
@@ -927,11 +1065,35 @@ def api_export_seguimiento_csv():
             
         response = make_response(output.getvalue())
         response.headers['Content-Disposition'] = 'attachment; filename=seguimiento_casos_nna.csv'
-        response.headers['Content-type'] = 'text/csv'
+        response.headers['Content-type'] = 'text/csv; charset=utf-8'
         return response
     except Exception as e:
         logging.error(f"Error exportando seguimiento a CSV: {e}")
         return jsonify({'error': str(e)}), 500
+
+@main_bp.route('/api/seguimiento/export/pdf/<int:noticia_id>', methods=['GET'])
+@login_required
+def api_export_seguimiento_pdf(noticia_id):
+    """Renderiza una vista optimizada para imprimir como PDF el expediente del caso."""
+    if not _check_postgres():
+        return "La base de datos no está activa.", 500
+        
+    try:
+        from src.database.models_noticias import Noticia
+        from datetime import datetime
+        noticia = Noticia.query.get(noticia_id)
+        
+        if not noticia or not noticia.investigacion_json:
+            return "Caso no encontrado o sin investigación.", 404
+            
+        return render_template('admin/pdf_case.html', 
+                             noticia=noticia, 
+                             inv=noticia.investigacion_json,
+                             datetime=datetime)
+    except Exception as e:
+        logging.error(f"Error generando vista de PDF: {e}")
+        return str(e), 500
+
 
 
 # ── Errores ─────────────────────────────────────────────────

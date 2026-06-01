@@ -127,12 +127,14 @@
         }
 
         .btn-nav.btn-run {
-            background: var(--crimson);
-            border-color: var(--crimson-lt);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
         }
 
         .btn-nav.btn-run:hover {
-            background: var(--crimson-lt);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: white;
         }
 
         .user-chip {
@@ -267,7 +269,11 @@
             cursor: default;
         }
 
-        .stat-card:hover {
+        .stat-card.kpi-clickable {
+            cursor: pointer;
+        }
+
+        .stat-card.kpi-clickable:hover {
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
@@ -1121,6 +1127,39 @@
             }
         }
 
+        /* ── Modo Privacidad ───────────────────────────── */
+        .sensitive-data {
+            filter: blur(5px);
+            user-select: none;
+            transition: filter 0.3s ease;
+        }
+
+        .sensitive-data.unblurred {
+            filter: none;
+            user-select: auto;
+        }
+
+        .privacy-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        .privacy-toggle-btn:hover {
+            color: var(--navy-lt);
+            border-color: var(--navy-lt);
+            background: rgba(42, 82, 152, 0.05);
+        }
+
         @media (max-width: 600px) {
             .stat-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -1255,6 +1294,12 @@
                 <i class="fas fa-rss"></i>
                 <span class="d-none d-md-inline">Fuentes</span>
             </a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin.users') }}" class="btn-nav">
+                <i class="fas fa-users-cog"></i>
+                <span class="d-none d-md-inline">Admin</span>
+            </a>
+            {% endif %}
             <span class="user-chip d-none d-lg-inline-block">
                 <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
             </span>
@@ -1276,30 +1321,57 @@
     <div class="main-content">
         <!-- Estadísticas rápidas -->
         <div class="stat-grid">
-            <div class="stat-card c-total">
+            <div class="stat-card c-total kpi-clickable"
+                onclick="applyFilter('todas'); switchTab('noticias', document.querySelector('.tab-btn[data-tab=\'noticias\']')); window.scrollTo({top:0, behavior:'smooth'});">
                 <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
                 <div class="stat-value" id="totalNoticias">—</div>
                 <div class="stat-label">Noticias totales</div>
             </div>
-            <div class="stat-card c-nna">
+            <div class="stat-card c-nna kpi-clickable"
+                onclick="applyFilter('nna'); switchTab('noticias', document.querySelector('.tab-btn[data-tab=\'noticias\']')); window.scrollTo({top:0, behavior:'smooth'});">
                 <div class="stat-icon"><i class="fas fa-child"></i></div>
                 <div class="stat-value" id="noticiasNNA">—</div>
                 <div class="stat-label">Mencionan NNA</div>
             </div>
-            <div class="stat-card c-alta">
+            <div class="stat-card c-alta kpi-clickable"
+                onclick="applyFilter('alta'); switchTab('noticias', document.querySelector('.tab-btn[data-tab=\'noticias\']')); window.scrollTo({top:0, behavior:'smooth'});">
                 <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
                 <div class="stat-value" id="altaRelevancia">—</div>
                 <div class="stat-label">Alta relevancia</div>
             </div>
-            <div class="stat-card c-media">
+            <div class="stat-card c-media kpi-clickable"
+                onclick="applyFilter('media'); switchTab('noticias', document.querySelector('.tab-btn[data-tab=\'noticias\']')); window.scrollTo({top:0, behavior:'smooth'});">
                 <div class="stat-icon"><i class="fas fa-info-circle"></i></div>
                 <div class="stat-value" id="mediaRelevancia">—</div>
                 <div class="stat-label">Media relevancia</div>
             </div>
-            <div class="stat-card c-cluster">
+            <div class="stat-card c-cluster kpi-clickable" data-bs-toggle="modal" data-bs-target="#clustersModal">
                 <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
                 <div class="stat-value" id="clusters">—</div>
                 <div class="stat-label">Grupos temáticos</div>
+            </div>
+        </div>
+
+        <!-- Modal Grupos Temáticos -->
+        <div class="modal fade" id="clustersModal" tabindex="-1" aria-labelledby="clustersModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content" style="border:none; border-radius:16px; overflow:hidden;">
+                    <div class="modal-header"
+                        style="background:var(--navy-dk); color:white; padding:20px 24px; border:none;">
+                        <h5 class="modal-title" id="clustersModalLabel" style="font-weight:700; font-size:18px;">
+                            <i class="fas fa-project-diagram me-2"></i> Grupos Temáticos Identificados
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding:0; background:#f4f7f6;">
+                        <div id="clustersModalBody" style="max-height: 60vh; overflow-y: auto; padding: 24px;">
+                            <div class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Cargando
+                                clústeres...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1328,8 +1400,19 @@
         <div id="tab-noticias" class="tab-content active">
             <!-- Búsqueda y filtros -->
             <div class="search-panel">
-                <div class="search-label">
-                    <i class="fas fa-search me-1"></i>Búsqueda
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div class="search-label" style="margin-bottom: 0;">
+                        <i class="fas fa-search me-1"></i>Búsqueda
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-history" style="color:var(--text-muted); font-size:12px;"></i>
+                        <span class="filter-label m-0">Historial:</span>
+                        <select id="sessionSelect" class="form-select form-select-sm"
+                            style="font-size: 12px; font-weight:600; color:var(--navy-dk); width: auto; border-color:var(--border); border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);"
+                            onchange="onSessionChange()">
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="search-input-group">
                     <input type="text" id="searchInput"
@@ -1342,43 +1425,13 @@
                 <div class="search-hint">
                     La búsqueda expande automáticamente sinónimos como "niños" incluye "menores", "NNA", "infantes"
                 </div>
-                <div class="filter-bar">
-                    <span class="filter-label">Filtros:</span>
-                    <button class="filter-btn active" id="fb-todas" onclick="applyFilter('todas')">Todas</button>
-                    <button class="filter-btn f-alta" id="fb-alta" onclick="applyFilter('alta')">
-                        <i class="fas fa-circle" style="font-size:7px;"></i> Alta relevancia
-                    </button>
-                    <button class="filter-btn f-media" id="fb-media" onclick="applyFilter('media')">
-                        <i class="fas fa-circle" style="font-size:7px;"></i> Media relevancia
-                    </button>
-                    <button class="filter-btn f-nna" id="fb-nna" onclick="applyFilter('nna')">
-                        <i class="fas fa-child" style="font-size:9px;"></i> NNA identificados
-                    </button>
-                    <button class="filter-btn" id="fb-objetivo" onclick="applyFilter('objetivo')"
-                        style="border-color: #2a5298; color: #2a5298;">
-                        <i class="fas fa-crosshairs"></i> Casos Objetivo
-                    </button>
+                <div class="filter-bar" style="justify-content: flex-end;">
                     <div class="export-bar">
-                        <span class="filter-label">Historial:</span>
-                        <select id="batchSelect" class="form-select form-select-sm"
-                            style="font-size: 11px; width: auto; display: inline-block;" onchange="onBatchChange()">
-                            <option value="">Cargando...</option>
-                        </select>
-                        <span class="filter-label" style="margin-left:12px;">Orden:</span>
-                        <button class="filter-btn" id="sort-fecha" onclick="applySort('fecha')">
-                            <i class="fas fa-calendar-alt" style="font-size:9px;"></i> Fecha
+                        <span class="filter-label" style="margin-right:12px;">Orden:</span>
+                        <button class="filter-btn active" id="sort-fecha" onclick="toggleSortFecha()">
+                            <i class="fas fa-calendar-alt" style="font-size:9px;"></i> Fecha <span
+                                id="sort-fecha-icon"><i class="fas fa-arrow-down"></i></span>
                         </button>
-                        <button class="filter-btn active" id="sort-relevancia" onclick="applySort('relevancia')">
-                            <i class="fas fa-sort-amount-down" style="font-size:9px;"></i> Relevancia
-                        </button>
-                        <a href="/api/export/csv" class="btn-export" title="Exportar datos analizados a CSV">
-                            <i class="fas fa-file-csv"></i> CSV Final
-                        </a>
-                        <a href="/api/export/csv/raw" class="btn-export"
-                            title="Descargar todas las noticias crudas recolectadas por el scraper"
-                            style="border-color: var(--amber); color: var(--amber);">
-                            <i class="fas fa-download"></i> CSV Raw
-                        </a>
                     </div>
                 </div>
             </div>
@@ -1408,23 +1461,13 @@
         <div id="tab-graficos" class="tab-content">
             <div class="charts-grid">
                 <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-chart-line"></i> Tendencia temporal de noticias</div>
-                    <canvas id="chartTemporal" height="200"></canvas>
+                    <div class="chart-title"><i class="fas fa-chart-line"></i> Tendencia temporal filtrada</div>
+                    <canvas id="chartTemporal" height="250"></canvas>
                 </div>
-                <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-chart-pie"></i> Distribución de relevancia</div>
-                    <canvas id="chartRelevancia" height="200"></canvas>
-                </div>
-            </div>
-            <div class="charts-row-2">
                 <div class="chart-card">
                     <div class="chart-title"><i class="fas fa-map-marked-alt"></i> Top estados con mayor incidencia
                     </div>
                     <canvas id="chartEstados" height="250"></canvas>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-rss"></i> Top fuentes de noticias</div>
-                    <canvas id="chartFuentes" height="250"></canvas>
                 </div>
             </div>
         </div>
@@ -1535,7 +1578,7 @@
                 style="background: linear-gradient(135deg, var(--teal) 0%, var(--teal-lt) 100%);">
                 <div style="position:relative;z-index:1;">
                     <div
-                        style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+                        style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
                         <div style="display:flex;align-items:center;gap:12px;">
                             <div
                                 style="background:rgba(255,255,255,0.15);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;">
@@ -1543,6 +1586,10 @@
                             </div>
                             <h2 class="mb-0">Seguimiento de casos investigados</h2>
                         </div>
+                        <a href="/api/seguimiento/export/csv" class="btn"
+                            style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:8px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; gap:8px;">
+                            <i class="fas fa-file-csv"></i> Descargar Sábana de Datos (CSV)
+                        </a>
                     </div>
                     <p>Historial de los casos que han sido procesados a investigacion profunda.
                         Incluye geolocalización, análisis de involucrados y fuentes para
@@ -1578,7 +1625,7 @@
         // ══════════════════════════════════════════════════════════
         //  Estado global
         // ══════════════════════════════════════════════════════════
-        let state = { page: 1, filter: 'todas', search: '', sort: 'relevancia', total: 0, totalPages: 1, batchId: '' };
+        let state = { page: 1, filter: 'todas', search: '', sort: 'fecha_desc', total: 0, totalPages: 1, sesion_id: '' };
         let charts = {};
         let savedNews = JSON.parse(localStorage.getItem('nna_saved') || '[]');
 
@@ -1601,8 +1648,8 @@
         async function loadStats() {
             try {
                 let url = '/api/stats';
-                if (state.batchId) {
-                    url += '?batch_id=' + encodeURIComponent(state.batchId);
+                if (state.sesion_id) {
+                    url += '?sesion_id=' + encodeURIComponent(state.sesion_id);
                 }
                 const r = await fetch(url);
                 if (!r.ok) return;
@@ -1614,47 +1661,41 @@
                 document.getElementById('clusters').textContent = fmt(s.clusters || s.topics || 0);
                 document.getElementById('headerUpdate').textContent = s.ultima_actualizacion || '—';
 
-                // Si no teníamos un batchId seleccionado, usar el que viene del backend
-                if (!state.batchId && s.current_batch_id) {
-                    state.batchId = s.current_batch_id;
-                    await loadBatches();
+                // Si no teníamos un sesion_id seleccionado, usar el que viene del backend
+                if (!state.sesion_id && s.current_sesion_id) {
+                    state.sesion_id = s.current_sesion_id;
+                    await loadSessions();
                 }
             } catch (e) { console.warn('Stats error:', e); }
         }
 
-        async function loadBatches() {
+        async function loadSessions() {
             try {
-                const r = await fetch('/api/batches');
+                const r = await fetch('/api/sessions');
                 if (!r.ok) return;
                 const data = await r.json();
-                const select = document.getElementById('batchSelect');
+                const select = document.getElementById('sessionSelect');
                 select.innerHTML = '';
 
-                if (data.batches && data.batches.length > 0) {
-                    // Ordenar de más reciente a más antiguo asumiendo formato YYYYMMDD_HHMMSS
-                    data.batches.sort().reverse();
-                    data.batches.forEach(b => {
+                if (data.sessions && data.sessions.length > 0) {
+                    data.sessions.forEach(s => {
                         const option = document.createElement('option');
-                        option.value = b;
-
-                        // Formatear para lectura amigable
-                        let lbl = b;
-                        if (b.length === 15 && b.indexOf('_') === 8) {
-                            lbl = b.substring(6, 8) + '/' + b.substring(4, 6) + '/' + b.substring(0, 4) + ' ' +
-                                b.substring(9, 11) + ':' + b.substring(11, 13);
+                        option.value = s.id;
+                        option.textContent = s.nombre_descriptivo || ('Sesión ' + s.id);
+                        if (String(s.id) === String(state.sesion_id) || (state.sesion_id === 'latest' && s.id == data.sessions[0].id)) {
+                            option.selected = true;
+                            state.sesion_id = s.id;
                         }
-                        option.textContent = lbl;
-                        if (b === state.batchId) option.selected = true;
                         select.appendChild(option);
                     });
                 } else {
                     select.innerHTML = '<option value="">Sin historial</option>';
                 }
-            } catch (e) { console.warn('Batches error:', e); }
+            } catch (e) { console.warn('Sessions error:', e); }
         }
 
-        function onBatchChange() {
-            state.batchId = document.getElementById('batchSelect').value;
+        function onSessionChange() {
+            state.sesion_id = document.getElementById('sessionSelect').value;
             state.page = 1;
             loadStats();
             loadNews();
@@ -1670,19 +1711,18 @@
         //  Filters
         // ══════════════════════════════════════════════════════════
         function applyFilter(filter) {
-            state.filter = filter; state.page = 1; state.search = '';
-            document.getElementById('searchInput').value = '';
-            ['todas', 'alta', 'media', 'nna', 'objetivo'].forEach(f => {
-                document.getElementById('fb-' + f).classList.toggle('active', f === filter);
-            });
+            state.filter = filter; 
+            state.page = 1; 
+            state.search = '';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
             loadNews();
         }
 
-        function applySort(sort) {
-            state.sort = sort; state.page = 1;
-            ['fecha', 'relevancia'].forEach(s => {
-                document.getElementById('sort-' + s).classList.toggle('active', s === sort);
-            });
+        function toggleSortFecha() {
+            state.sort = state.sort === 'fecha_desc' ? 'fecha_asc' : 'fecha_desc';
+            state.page = 1;
+            document.getElementById('sort-fecha-icon').innerHTML = state.sort === 'fecha_desc' ? '<i class="fas fa-arrow-down"></i>' : '<i class="fas fa-arrow-up"></i>';
             loadNews();
         }
 
@@ -1696,15 +1736,18 @@
                 let url;
                 if (state.search) {
                     url = '/api/search?q=' + encodeURIComponent(state.search);
-                    if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
+                    if (state.sesion_id) url += '&sesion_id=' + encodeURIComponent(state.sesion_id);
                 } else {
-                    url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
-                    if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
-                        const cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                    url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
+                    if (state.filter === 'alta' || state.filter === 'media') {
+                        const cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                         url += '&clasificacion=' + encodeURIComponent(cls);
                     }
-                    if (state.batchId) {
-                        url += '&batch_id=' + encodeURIComponent(state.batchId);
+                    if (state.filter === 'cluster' && state.cluster_id !== undefined) {
+                        url += '&cluster_id=' + encodeURIComponent(state.cluster_id);
+                    }
+                    if (state.sesion_id) {
+                        url += '&sesion_id=' + encodeURIComponent(state.sesion_id);
                     }
                 }
                 const r = await fetch(url);
@@ -1761,7 +1804,7 @@
             var nId = n.id || 0;
 
             var invHtml = '';
-            if (state.filter === 'objetivo') {
+            if (cls === 'alta') {
                 invHtml = '<div class="mt-2 text-end">' +
                     '<button class="btn-investigate" id="btn-inv-' + nId + '" onclick="startInvestigation(' + nId + ')"><i class="fas fa-search-plus"></i> Investigar más en web</button>' +
                     '</div>' +
@@ -2004,6 +2047,18 @@
                     victimasStr = inv.victimas;
                 }
             }
+            let situacionActualStr = 'No especificada';
+            if (inv.situacion_actual) {
+                if (Array.isArray(inv.situacion_actual)) situacionActualStr = inv.situacion_actual.join(', ');
+                else if (typeof inv.situacion_actual === 'object') situacionActualStr = Object.values(inv.situacion_actual).join(' ');
+                else situacionActualStr = inv.situacion_actual;
+            }
+            let mediosContactoStr = 'No identificados. Se sugiere contactar a la Fiscalía General o DIF local.';
+            if (inv.medios_contacto) {
+                if (Array.isArray(inv.medios_contacto)) mediosContactoStr = inv.medios_contacto.join(', ');
+                else if (typeof inv.medios_contacto === 'object') mediosContactoStr = Object.values(inv.medios_contacto).join(' ');
+                else mediosContactoStr = inv.medios_contacto;
+            }
             const scoreCompuesto = ((caso.score_compuesto || 0) * 100).toFixed(0);
             const cardId = 'seg-card-' + caso.id;
 
@@ -2024,6 +2079,14 @@
             </div>
             
             <div id="${cardId}" style="display:none; margin-top:20px; padding-top:20px; border-top:1px solid var(--border); cursor:default;" onclick="event.stopPropagation()">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <span style="font-size:12px; font-weight:700; color:var(--navy-dk); text-transform:uppercase;">
+                        <i class="fas fa-search me-1"></i> Análisis de Profundidad
+                    </span>
+                    <button class="privacy-toggle-btn" title="Mostrar datos sensibles" type="button" onclick="togglePrivacy(this)">
+                        <i class="fas fa-eye-slash"></i> <span>Privacidad</span>
+                    </button>
+                </div>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
                     <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:center;">
                         <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-map-marker-alt" style="color:var(--crimson); margin-right:5px;"></i>Ubicación</div>
@@ -2032,31 +2095,31 @@
                     
                     <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:center;">
                         <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-user-injured" style="color:var(--amber); margin-right:5px;"></i>Víctimas Directas</div>
-                        <div style="font-size:13.5px; font-weight:500; color:var(--text-main);">${esc(victimasStr)}</div>
+                        <div class="sensitive-data" style="font-size:13.5px; font-weight:500; color:var(--text-main);">${esc(victimasStr)}</div>
                     </div>
 
                     <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border);">
                         <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-child" style="color:var(--teal); margin-right:5px;"></i>Impacto NNA</div>
                         <div style="display:flex; align-items:center; gap:16px;">
                             <div>
-                                <span style="font-size:24px; font-weight:800; color:var(--teal-lt); line-height:1;">${esc(inv.ninos_afectados || inv.nna_afectados || 0)}</span>
+                                <span class="sensitive-data" style="font-size:24px; font-weight:800; color:var(--teal-lt); line-height:1;">${esc(inv.ninos_afectados || inv.nna_afectados || 0)}</span>
                                 <span style="font-size:11.5px; color:var(--text-muted); margin-left:4px;">afectados</span>
                             </div>
                             <div style="border-left:1px solid var(--border); padding-left:16px;">
                                 <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Edades NNA</div>
-                                <div style="display:flex; flex-wrap:wrap; gap:6px;">${nnaHtml}</div>
+                                <div class="sensitive-data" style="display:flex; flex-wrap:wrap; gap:6px;">${nnaHtml}</div>
                             </div>
                         </div>
                     </div>
                     
                     <div style="background:#fef9e7; padding:18px; border-radius:12px; border:1px solid #f9e79f; display:flex; flex-direction:column; justify-content:center; grid-column:1/-1;">
                         <div style="font-size:10.5px; font-weight:800; color:#b7950b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-home" style="margin-right:5px;"></i>Situación actual NNA</div>
-                        <div style="font-size:14px; font-weight:600; color:var(--text-main);">${esc(inv.situacion_actual || 'No especificada')}</div>
+                        <div class="sensitive-data" style="font-size:14px; font-weight:600; color:var(--text-main);">${esc(situacionActualStr)}</div>
                     </div>
 
                     <div style="background:#f8f9fc; padding:18px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; grid-column:1/-1;">
                         <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;"><i class="fas fa-phone-alt" style="color:var(--navy-lt); margin-right:5px;"></i>Medios de contacto sugeridos para atención</div>
-                        <div style="font-size:13.5px; font-weight:600; color:var(--text-main);">${esc(inv.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía General o DIF local.')}</div>
+                        <div style="font-size:13.5px; font-weight:600; color:var(--text-main);">${esc(mediosContactoStr)}</div>
                     </div>
                 </div>
                 
@@ -2070,8 +2133,11 @@
                 ${mapHtml}
                 ${sourcesHtml}
                 
-                <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
-                    <a href="${esc(caso.enlace)}" target="_blank" style="background:var(--gray-bg); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; color:var(--text-main); text-decoration:none; border:1px solid var(--border); display:inline-block; transition:all 0.2s;"><i class="fas fa-external-link-alt me-1"></i>Ver noticia original</a>
+                <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div style="display:flex; gap:10px;">
+                        <a href="${esc(caso.enlace)}" target="_blank" style="background:var(--gray-bg); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; color:var(--text-main); text-decoration:none; border:1px solid var(--border); display:inline-block; transition:all 0.2s;"><i class="fas fa-external-link-alt me-1"></i>Ver original</a>
+                        <a href="/api/seguimiento/export/pdf/${caso.id}" target="_blank" style="background:#fff3cd; color:#856404; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #ffeeba; display:inline-flex; align-items:center; transition:all 0.2s;"><i class="fas fa-file-pdf me-1"></i>Descargar Ficha (PDF)</a>
+                    </div>
                     <span style="font-size:11px; color:var(--text-muted); background:var(--gray-bg); padding:4px 10px; border-radius:8px;">Relevancia original: <strong>${scoreCompuesto}%</strong></span>
                 </div>
             </div>
@@ -2094,35 +2160,45 @@
         async function loadCharts() {
             await Promise.all([
                 loadChartTemporal(),
-                loadChartRelevancia(),
                 loadChartEstados(),
-                loadChartFuentes(),
             ]);
         }
 
         async function loadChartTemporal() {
             try {
-                var r = await fetch('/api/charts/temporal');
+                let url = '/api/charts/temporal';
+                if (state.sesion_id) url += '?sesion_id=' + encodeURIComponent(state.sesion_id);
+                var r = await fetch(url);
                 var d = await r.json();
                 if (charts.temporal) charts.temporal.destroy();
                 charts.temporal = new Chart(document.getElementById('chartTemporal'), {
                     type: 'line',
                     data: {
                         labels: d.labels || [],
-                        datasets: [{
-                            label: 'Total noticias',
-                            data: d.total || [],
-                            borderColor: '#2a5298',
-                            backgroundColor: 'rgba(42,82,152,0.1)',
-                            fill: true,
-                            tension: 0.3,
-                        }],
+                        datasets: [
+                            {
+                                label: 'Alta Relevancia',
+                                data: d.alta || [],
+                                borderColor: '#c0392b',
+                                backgroundColor: 'rgba(192,57,43,0.1)',
+                                fill: true,
+                                tension: 0.3,
+                            },
+                            {
+                                label: 'Media Relevancia',
+                                data: d.media || [],
+                                borderColor: '#d68910',
+                                backgroundColor: 'rgba(214,137,16,0.1)',
+                                fill: true,
+                                tension: 0.3,
+                            }
+                        ],
                     },
                     options: {
                         responsive: true,
                         plugins: { legend: { position: 'bottom' } },
                         scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
+                            y: { beginAtZero: true, title: { display: true, text: 'Casos Confirmados' }, stacked: true },
                             x: { title: { display: true, text: 'Mes' } },
                         },
                     },
@@ -2130,88 +2206,44 @@
             } catch (e) { console.warn('Chart temporal error:', e); }
         }
 
-        async function loadChartRelevancia() {
-            try {
-                var r = await fetch('/api/charts/relevancia');
-                var d = await r.json();
-                if (charts.relevancia) charts.relevancia.destroy();
-                charts.relevancia = new Chart(document.getElementById('chartRelevancia'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Alta', 'Media', 'Baja', 'No relevante'],
-                        datasets: [{
-                            data: [d.alta || 0, d.media || 0, d.baja || 0, d.no_relevante || 0],
-                            backgroundColor: ['#c0392b', '#d68910', '#95a5a6', '#dde3ef'],
-                            borderWidth: 2,
-                        }],
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { usePointStyle: true } },
-                        },
-                    },
-                });
-            } catch (e) { console.warn('Chart relevancia error:', e); }
-        }
 
         async function loadChartEstados() {
             try {
-                var r = await fetch('/api/charts/estados');
+                let url = '/api/charts/estados';
+                if (state.sesion_id) url += '?sesion_id=' + encodeURIComponent(state.sesion_id);
+                var r = await fetch(url);
                 var d = await r.json();
                 if (charts.estados) charts.estados.destroy();
                 charts.estados = new Chart(document.getElementById('chartEstados'), {
                     type: 'bar',
                     data: {
                         labels: d.labels || [],
-                        datasets: [{
-                            label: 'Noticias por estado',
-                            data: d.values || [],
-                            backgroundColor: 'rgba(176,48,48,0.75)',
-                            borderColor: '#b03030',
-                            borderWidth: 1,
-                        }],
+                        datasets: [
+                            {
+                                label: 'Alta Relevancia',
+                                data: d.alta || [],
+                                backgroundColor: '#c0392b',
+                            },
+                            {
+                                label: 'Media Relevancia',
+                                data: d.media || [],
+                                backgroundColor: '#d68910',
+                            }
+                        ],
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
-                        plugins: { legend: { display: false } },
+                        plugins: { legend: { position: 'bottom' } },
                         scales: {
-                            x: { beginAtZero: true, title: { display: true, text: 'Noticias' } },
+                            x: { beginAtZero: true, stacked: true, title: { display: true, text: 'Noticias' } },
+                            y: { stacked: true }
                         },
                     },
                 });
             } catch (e) { console.warn('Chart estados error:', e); }
         }
 
-        async function loadChartFuentes() {
-            try {
-                var r = await fetch('/api/charts/fuentes');
-                var d = await r.json();
-                if (charts.fuentes) charts.fuentes.destroy();
-                charts.fuentes = new Chart(document.getElementById('chartFuentes'), {
-                    type: 'bar',
-                    data: {
-                        labels: d.labels || [],
-                        datasets: [{
-                            label: 'Artículos por fuente',
-                            data: d.values || [],
-                            backgroundColor: 'rgba(42,82,152,0.75)',
-                            borderColor: '#2a5298',
-                            borderWidth: 1,
-                        }],
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { beginAtZero: true, title: { display: true, text: 'Artículos' } },
-                        },
-                    },
-                });
-            } catch (e) { console.warn('Chart fuentes error:', e); }
-        }
 
         // ══════════════════════════════════════════════════════════
         //  Saved / Bookmarks (NGO case tracking)
@@ -2367,15 +2399,12 @@
                 var url;
                 if (state.search) {
                     url = '/api/search?q=' + encodeURIComponent(state.search);
-                    if (state.batchId) url += '&batch_id=' + encodeURIComponent(state.batchId);
+                    if (state.sesion_id) url += '&sesion_id=' + encodeURIComponent(state.sesion_id);
                 } else {
-                    url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna' || state.filter === 'objetivo') + '&orden=' + state.sort;
-                    if (state.filter === 'alta' || state.filter === 'media' || state.filter === 'objetivo') {
-                        var cls = state.filter === 'objetivo' ? 'Alta' : state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
+                    url = '/api/noticias?page=' + state.page + '&per_page=12&only_nna=' + (state.filter === 'nna') + '&orden=' + state.sort;
+                    if (state.filter === 'alta' || state.filter === 'media') {
+                        var cls = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
                         url += '&clasificacion=' + encodeURIComponent(cls);
-                    }
-                    if (state.batchId) {
-                        url += '&batch_id=' + encodeURIComponent(state.batchId);
                     }
                 }
                 var r = await fetch(url);
@@ -2385,7 +2414,7 @@
                 _loadedNoticias = noticias; // cache for bookmarks
                 state.total = data.total || data.resultados || noticias.length;
                 state.totalPages = data.total_pages || 1;
-                var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados', 'objetivo': 'Casos Objetivo' };
+                var labels = { 'todas': 'Noticias recientes', 'alta': 'Alta relevancia', 'media': 'Media relevancia', 'nna': 'NNA identificados' };
                 document.getElementById('resultsTitle').textContent = state.search
                     ? 'Resultados para "' + state.search + '"'
                     : labels[state.filter];
@@ -2498,7 +2527,7 @@
                 } else {
                     // Reutilizamos la lógica de renderizado de investigaciones
                     // Pero con un estilo ligeramente diferente para este panel
-                    renderInvestigationResultInto('identifyResultPanel', data);
+                    renderInvestigationResultInto('identifyResultPanel', data, data.noticia_id);
                 }
             } catch (e) {
                 console.error(e);
@@ -2517,7 +2546,16 @@
                 return;
             }
 
-            let html = '<div class="inv-grid">';
+            let html = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <span style="font-size:12px; font-weight:700; color:var(--navy-dk); text-transform:uppercase;">
+                    <i class="fas fa-search me-1"></i> Análisis de Profundidad
+                </span>
+                <button class="privacy-toggle-btn" title="Mostrar datos sensibles" type="button" onclick="togglePrivacy(this)">
+                    <i class="fas fa-eye-slash"></i> <span>Privacidad</span>
+                </button>
+            </div>`;
+            html += '<div class="inv-grid">';
             html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-map-marker-alt me-1"></i>Ubicación</span><span class="inv-val">' + esc(result.ubicacion || 'No especificado') + '</span></div>';
             let victimasVal = result.victimas || 'No especificado';
             if (victimasVal && typeof victimasVal === 'object' && !Array.isArray(victimasVal)) {
@@ -2527,8 +2565,8 @@
                 victimasVal = victimasVal.map(v => typeof v === 'object' ? Object.values(v).join(' ') : v).join(', ');
             }
 
-            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val">' + esc(victimasVal) + '</span></div>';
-            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val">' + esc(String(result.ninos_afectados || result.nna_afectados || 'No especificado')) + '</span></div>';
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-user me-1"></i>Víctimas directas</span><span class="inv-val sensitive-data">' + esc(victimasVal) + '</span></div>';
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-child me-1"></i>NNA Afectados</span><span class="inv-val sensitive-data">' + esc(String(result.ninos_afectados || result.nna_afectados || 'No especificado')) + '</span></div>';
 
             // Corregir problema [object Object] para edades
             let edadesVal = result.edades || result.edades_nna || 'No especificado';
@@ -2539,13 +2577,21 @@
                 edadesVal = edadesVal.join(', ');
             }
 
-            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val">' + esc(edadesVal) + '</span></div>';
+            html += '<div class="inv-field"><span class="inv-label"><i class="fas fa-birthday-cake me-1"></i>Edades NNA</span><span class="inv-val sensitive-data">' + esc(edadesVal) + '</span></div>';
 
             // Nuevo campo: situación actual
-            html += '<div class="inv-field" style="grid-column: 1 / -1; background:#fef9e7; border-color:#f9e79f;"><span class="inv-label" style="color:#b7950b;"><i class="fas fa-home me-1"></i>Situación Actual NNA</span><span class="inv-val" style="color:var(--text-main);">' + esc(result.situacion_actual || 'No especificada') + '</span></div>';
+            let situacionActual = result.situacion_actual || 'No especificada';
+            if (situacionActual && typeof situacionActual === 'object') {
+                situacionActual = Array.isArray(situacionActual) ? situacionActual.join(', ') : Object.values(situacionActual).join(' ');
+            }
+            html += '<div class="inv-field" style="grid-column: 1 / -1; background:#fef9e7; border-color:#f9e79f;"><span class="inv-label" style="color:#b7950b;"><i class="fas fa-home me-1"></i>Situación Actual NNA</span><span class="inv-val sensitive-data" style="color:var(--text-main);">' + esc(situacionActual) + '</span></div>';
 
             // Nuevo campo: medios de contacto
-            html += '<div class="inv-field" style="grid-column: 1 / -1;"><span class="inv-label" style="color:var(--navy-lt);"><i class="fas fa-phone-alt me-1"></i>Medios de contacto sugeridos</span><span class="inv-val" style="color:var(--text-main); font-weight:600;">' + esc(result.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía o DIF local.') + '</span></div>';
+            let mediosContacto = result.medios_contacto || 'No identificados. Se sugiere contactar a la Fiscalía o DIF local.';
+            if (mediosContacto && typeof mediosContacto === 'object') {
+                mediosContacto = Array.isArray(mediosContacto) ? mediosContacto.join(', ') : Object.values(mediosContacto).join(' ');
+            }
+            html += '<div class="inv-field" style="grid-column: 1 / -1;"><span class="inv-label" style="color:var(--navy-lt);"><i class="fas fa-phone-alt me-1"></i>Medios de contacto sugeridos</span><span class="inv-val" style="color:var(--text-main); font-weight:600;">' + esc(mediosContacto) + '</span></div>';
 
             html += '</div>';
 
@@ -2617,6 +2663,125 @@
                 }
             }
         }
+
+        // ══════════════════════════════════════════════════════════
+        //  Modo Privacidad Dinámico (Delegación Directa)
+        // ══════════════════════════════════════════════════════════
+        window.togglePrivacy = function (toggleBtn) {
+            // Encontramos el contenedor padre general (ej: el panel entero o la tarjeta)
+            const parentContainer = toggleBtn.closest('.active') || toggleBtn.closest('.news-item') || toggleBtn.closest('div[id^="inv-panel-"]') || toggleBtn.closest('div[id^="identifyResultPanel"]') || toggleBtn.closest('div[id^="seg-card-"]');
+
+            if (!parentContainer) return;
+
+            const sensitiveElements = parentContainer.querySelectorAll('.sensitive-data');
+            const icon = toggleBtn.querySelector('i');
+
+            let isBlurred = true;
+
+            sensitiveElements.forEach(el => {
+                el.classList.toggle('unblurred');
+                if (el.classList.contains('unblurred')) {
+                    isBlurred = false;
+                }
+            });
+
+            if (isBlurred) {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        // ══════════════════════════════════════════════════════════
+        //  Modal: Grupos Temáticos (BERTopic)
+        // ══════════════════════════════════════════════════════════
+        (function () {
+            const modalEl = document.getElementById('clustersModal');
+            if (!modalEl) return;
+
+            modalEl.addEventListener('show.bs.modal', async function () {
+                const body = document.getElementById('clustersModalBody');
+                body.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i>Cargando clústeres...</div>';
+
+                try {
+                    const sesionId = (typeof state !== 'undefined' && state.sesion_id) ? state.sesion_id : 'all';
+                    const resp = await fetch(`/api/charts/topics?sesion_id=${sesionId}`);
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    const data = await resp.json();
+                    const topics = data.topics || [];
+
+                    if (topics.length === 0) {
+                        body.innerHTML = `
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-project-diagram fa-3x mb-3" style="opacity:.3;"></i>
+                                <p class="mb-1">No hay grupos temáticos disponibles.</p>
+                                <small>Ejecuta un análisis con BERTopic activado para generarlos.</small>
+                            </div>`;
+                        return;
+                    }
+
+                    // Paleta de colores ciclica para las tarjetas
+                    const palette = [
+                        '#1a3a5c','#2e6b4f','#7b3f00','#4a1580',
+                        '#0d5c63','#8b0000','#1b4332','#5c3d1e',
+                    ];
+
+                    const cards = topics.map((t, i) => {
+                        const color = palette[i % palette.length];
+                        const terms = (t.terms || []).map(x => typeof x === 'object' ? x.termino : x).join(' · ') || '—';
+                        return `
+                            <div style="
+                                background:#fff;
+                                border-radius:12px;
+                                border-left:5px solid ${color};
+                                padding:16px 20px;
+                                margin-bottom:14px;
+                                box-shadow:0 2px 8px rgba(0,0,0,.07);
+                                display:flex;
+                                align-items:flex-start;
+                                gap:16px;
+                            ">
+                                <div style="
+                                    background:${color};
+                                    color:#fff;
+                                    border-radius:50%;
+                                    width:40px;height:40px;
+                                    display:flex;align-items:center;justify-content:center;
+                                    font-weight:700;font-size:15px;flex-shrink:0;
+                                ">${i + 1}</div>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-weight:700;font-size:15px;color:#1a2b3c;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                        ${t.label || 'Tópico ' + (i + 1)}
+                                    </div>
+                                    <div style="font-size:13px;color:#555;margin-bottom:6px;">
+                                        <i class="fas fa-newspaper me-1" style="color:${color};"></i>
+                                        <strong>${t.size || 0}</strong> documentos
+                                    </div>
+                                    <div style="font-size:12px;color:#888;font-style:italic;">
+                                        ${terms}
+                                    </div>
+                                </div>
+                            </div>`;
+                    }).join('');
+
+                    body.innerHTML = `
+                        <p style="font-size:13px;color:#666;margin-bottom:16px;">
+                            <i class="fas fa-info-circle me-1"></i>
+                            ${topics.length} grupo${topics.length !== 1 ? 's' : ''} identificado${topics.length !== 1 ? 's' : ''} por BERTopic sobre el corpus actual.
+                        </p>
+                        ${cards}`;
+
+                } catch (err) {
+                    body.innerHTML = `
+                        <div class="text-center text-danger py-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error al cargar los grupos: ${err.message}
+                        </div>`;
+                }
+            });
+        })();
 
         // ══════════════════════════════════════════════════════════
         //  Init

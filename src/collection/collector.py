@@ -1468,7 +1468,11 @@ def _update_db_source_status(
             source.last_error = error
             db.session.commit()
     except Exception:
-        pass
+        try:
+            from app.models import db
+            db.session.rollback()
+        except Exception:
+            pass
 
 
 def detect_children_mentions(text: str) -> str:

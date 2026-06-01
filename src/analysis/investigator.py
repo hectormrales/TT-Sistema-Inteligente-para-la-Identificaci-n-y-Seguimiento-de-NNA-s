@@ -208,7 +208,7 @@ class DeepInvestigator:
 
     def investigate_url(self, url: str) -> dict:
         """Extrae el contenido de una URL e investiga el caso."""
-        logger.info(f"Identificando caso desde URL: {url}")
+        logger.info(f"Investigando caso desde URL: {url}")
         content = self._scrape_content(url)
         if not content or len(content) < 200:
             return {

@@ -60,7 +60,7 @@
 
 ---
 
-## Diapositiva 03 — Lecciones del TT1 — la línea base
+## Diapositiva 03 —  — la línea base
 **Tiempo: 1:30**
 
 ### Contenido visual
@@ -271,9 +271,10 @@ Tabla de cumplimiento de metas con ✓ en cada fila:
 | **Persistencia** | CSV plano | PostgreSQL 16 | PostgreSQL 16 (ACID) | ✓ |
 
 - Nota: **27 casos de Alta relevancia** (4.4% del corpus) — verificados manualmente
+- Nota metodológica: el ~20% de FP es una observación operativa; Precisión/Recall/F1/κ reportados en el documento técnico
 
 ### Speech
-> *"Los resultados cierran el ciclo que abrimos en el TT1. Las seis metas cuantitativas definidas al inicio del semestre fueron cumplidas. El dato más significativo es la tasa de falsos positivos: pasamos del 60% con RegEx al 20% con la arquitectura escalonada — una reducción del 67% en ruido semántico. El corpus de 634 noticias únicas procesadas en un solo ciclo de ejecución triplica el volumen máximo del TT1. Y las 27 noticias de Alta clasificación fueron verificadas manualmente — todas corresponden a casos reales de orfandad por feminicidio con NNA identificables."*
+> *"Los resultados cierran el ciclo que abrimos en el TT1. Las cinco metas cuantitativas definidas al inicio del semestre fueron cumplidas. La tasa de falsos positivos bajó del 60% con RegEx a alrededor del 20% con la arquitectura escalonada. Ese 20% es una observación operativa sobre el corpus de producción — en el documento técnico se reportan las métricas formales del clasificador: precisión, recall, F1 y el coeficiente Kappa de Cohen, calculadas sobre un conjunto de prueba etiquetado de forma independiente por dos anotadores. Las 27 noticias de Alta clasificación fueron revisadas manualmente y todas corresponden a casos verificables de orfandad por feminicidio con NNA identificables."*
 
 ---
 
@@ -306,7 +307,7 @@ Tabla de cumplimiento de metas con ✓ en cada fila:
 - API pública con anonimización LGDNNA
 
 ### Speech
-> *"El sistema cumplió su objetivo: que ningún caso de NNA en orfandad por feminicidio sea invisible para las instituciones obligadas a protegerlo. Más allá del dominio específico, la arquitectura de clasificación escalonada es una contribución generalizable: demuestra empíricamente que integrar reglas simbólicas como moduladoras de un modelo neuronal resuelve el solapamiento semántico en dominios hiper-específicos de forma más robusta que el fine-tuning supervisado en solitario. El trabajo futuro prioritario es el aprendizaje activo: que el propio sistema identifique los casos de mayor incertidumbre y los presente al analista para etiquetado, reduciendo progresivamente los falsos positivos por debajo del 10%."*
+> *"El sistema cumplió su objetivo operativo: automatizar el descubrimiento de casos de NNA en orfandad por feminicidio que de otra forma permanecerían invisibles para las instituciones obligadas a protegerlos. La arquitectura de clasificación escalonada mostró indicios prometedores de que integrar reglas simbólicas como moduladoras de un modelo neuronal mitiga el solapamiento semántico en dominios hiper-específicos de forma más efectiva que el fine-tuning supervisado en solitario, dentro del alcance del prototipo 4. La limitación principal — y la línea de trabajo futuro más urgente — es la expansión del corpus de evaluación etiquetado, que combinada con aprendizaje activo permitirá al sistema priorizar automáticamente los casos de mayor incertidumbre para reducir los falsos positivos."*
 
 ---
 
@@ -333,13 +334,19 @@ Tabla de cumplimiento de metas con ✓ en cada fila:
 > Tres razones: privacidad (datos de víctimas menores no pueden salir del sistema), costo (600 noticias en GPT-4 = ~$40 USD por ciclo), y reproducibilidad científica (los modelos propietarios modifican sus pesos sin aviso).
 
 **2. ¿El 20% de falsos positivos sigue siendo alto?**
-> Es significativamente mejor que el 60% del TT1. Además, el sistema está diseñado para que el analista humano haga la validación final — el 20% residual son los casos que BETO no puede resolver sin más contexto, exactamente para eso existe el DeepInvestigator.
+> Es significativamente mejor que el 60% del TT1. Hay que distinguir dos cosas: el 20% es una observación operativa durante la validación manual del prototipo 4, no una métrica de conjunto de test formal. Las métricas formales — precisión, recall, F1 y Kappa de Cohen — están calculadas sobre un conjunto de prueba etiquetado independientemente y reportadas en el documento técnico. Además, el sistema está diseñado para que el analista humano haga la validación final — para eso existe el DeepInvestigator.
 
 **3. ¿Es ético usar IA para rastrear casos de feminicidio?**
 > El sistema procesa exclusivamente información periodística pública. No identifica datos personales de NNA — eso está explícitamente excluido por diseño y alineado con la LGDNNA. El objetivo es visibilizar la crisis, no exponer a las víctimas.
 
 **4. ¿Qué pasa si un medio cambia su feed RSS?**
-> El módulo de gestión de fuentes del dashboard incluye un sondeo técnico previo (ping + validación del feed) antes de activar cualquier fuente nueva. Si un feed deja de funcionar, el Circuit Breaker lo detecta y el administrador recibe la alerta.
+> El módulo de gestión de fuentes del dashboard incluye un sondeo técnico previo antes de activar cualquier fuente nueva. Si un feed deja de funcionar, el Circuit Breaker lo detecta y el administrador recibe la alerta.
 
 **5. ¿Cómo validan que las 27 noticias de Alta son casos reales?**
-> Verificación manual: cada una de las 27 fue revisada individualmente por el equipo. Todas contienen menciones explícitas a NNA que quedaron sin madre, con datos de ubicación verificables y cobertura en medios identificados.
+> Dos niveles. Primero, revisión manual individual por el equipo. Segundo, un conjunto de prueba con noticias del corpus de producción no vistas durante el entrenamiento, etiquetadas de forma independiente por dos anotadores, con Kappa de Cohen calculado para validar la confiabilidad del etiquetado. Eso es lo que fundamenta las métricas del documento técnico.
+
+**6. ¿Evaluaron sobre el mismo corpus con el que entrenaron BETO? (pregunta trampa — alta probabilidad)**
+> No. El conjunto de prueba se construyó separando explícitamente las instancias que no fueron usadas en el fine-tuning. El modelo no vio esas noticias durante el entrenamiento. Evaluar sobre datos de entrenamiento inflaría artificialmente el desempeño — ese error de data leakage se evitó.
+
+**7. ¿Por qué Kappa de Cohen y no porcentaje de acuerdo simple?**
+> El porcentaje simple ignora el acuerdo que ocurre por azar. Si el corpus es 80% negativo y ambos anotadores clasifican todo como negativo, el acuerdo sería 80% pero trivial. El Kappa descuenta esa componente aleatoria — es el estándar en anotación de corpus NLP desde Landis y Koch (1977).

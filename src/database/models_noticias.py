@@ -116,6 +116,11 @@ class Noticia(db.Model):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+    
+    # Aislamiento de datos
+    sesion_id = db.Column(
+        db.Integer, db.ForeignKey('sesiones_busqueda.id'), nullable=True, index=True
+    )
 
     # Relaciones
     cluster = db.relationship(
@@ -149,6 +154,7 @@ class Noticia(db.Model):
             "scrape_method": self.scrape_method,
             "batch_id": self.batch_id,
             "investigacion_json": self.investigacion_json,
+            "sesion_id": self.sesion_id,
         }
 
     def __repr__(self):
@@ -230,6 +236,11 @@ class ClusterSemantico(db.Model):
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
+    )
+    
+    # Aislamiento de datos
+    sesion_id = db.Column(
+        db.Integer, db.ForeignKey('sesiones_busqueda.id'), nullable=True, index=True
     )
 
     def to_dict(self) -> dict:

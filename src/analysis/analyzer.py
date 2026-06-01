@@ -481,6 +481,7 @@ class SimplifiedNewsAnalyzer:
         start_date: str | None = None,
         end_date: str | None = None,
         scraper_type: str = 'all',
+        sesion_id: int | None = None,
     ) -> pd.DataFrame:
         """
         Ejecuta el pipeline completo de análisis (v5.0).
@@ -541,7 +542,7 @@ class SimplifiedNewsAnalyzer:
 
         # Paso 11: Persistencia PostgreSQL (OE-3)
         if enable_postgres:
-            self.step_11_persist_to_postgres()
+            self.step_11_persist_to_postgres(sesion_id=sesion_id)
 
         print("=" * 60)
         print(f"  COMPLETADO — {len(self.df_analyzed)} noticias analizadas")
@@ -845,7 +846,7 @@ class SimplifiedNewsAnalyzer:
 
         return self.df_processed
 
-    def step_11_persist_to_postgres(self) -> None:
+    def step_11_persist_to_postgres(self, sesion_id: int | None = None) -> None:
         """
         OE-3: Persistencia en PostgreSQL con FTS.
 
@@ -912,6 +913,7 @@ class SimplifiedNewsAnalyzer:
                         "max_similarity": float(row.get("max_similarity", 0)),
                         "menores_identificados": row.get("menores_identificados", "No"),
                         "scrape_method": row.get("scrape_method", "rss"),
+                        "sesion_id": sesion_id,
                     }
                     records.append(record)
 

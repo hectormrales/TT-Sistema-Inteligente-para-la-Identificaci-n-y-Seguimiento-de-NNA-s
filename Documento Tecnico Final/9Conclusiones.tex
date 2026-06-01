@@ -49,13 +49,14 @@ En producción el sistema procesó 847 noticias brutas y entregó 634 noticias �
 
 La implementación del motor de clasificación semántica basado en \textbf{BETO}
 (\textit{bert-base-spanish-wwm-cased}) que es un modelo Transformer bidireccional
-con 110 millones de parámetros ya preentrenado exclusivamente en español, superó
-estructuralmente el enfoque léxico del TT1. La arquitectura de clasificación
+con 110 millones de parámetros ya preentrenado exclusivamente en español, representó
+una mejora cualitativa sobre el enfoque léxico del TT1. La arquitectura de clasificación
 escalonada integra cuatro capas autónomas (escudo léxico, escudo suave,
 inferencia BETO y post-filtro de validación) que operan sobre un score acumulativo
-con penalizaciones y bonificaciones aditivas, lo que eliminaba el efecto pendulo
-identificado en el prototipo 3 (oscilación entre exceso de falsos positivos y
-falsos negativos). El ajuste fino del clasificador permitió el reentrenamiento
+con penalizaciones y bonificaciones aditivas, lo que \textbf{redujo} el efecto péndulo
+documentado en el prototipo 3 (oscilación entre exceso de falsos positivos y
+falsos negativos), tal como se confirma en la evaluación cuantitativa sobre el
+conjunto de prueba etiquetado presentada en el capítulo~\ref{cap:resultados}. El ajuste fino del clasificador permitió el reentrenamiento
 local en CPU aun con recursos limitados. Adicionalmente el módulo \texttt{DeepInvestigator}
 implementó un flujo de investigación estructurada por caso combinando búsqueda web
 e inferencia con \textit{Gemini Flash} lo que genera fichas de caso con siete campos
@@ -86,14 +87,17 @@ a otros sistemas de monitoreo de medios en dominios sociales complejos.
 \subsection{Sistema de clasificación escalonada}
 \label{subsec:conc_neurosimbolico}
 
-La arquitectura de clasificación escalonada demostro empíricamente que la
+La arquitectura de clasificación escalonada mostró indicios prometedores de que la
 integración de reglas simbólicas como moduladoras de la salida de un
-modelo neuronal en lugar de reemplazarlo o de operar en paralelo sin retroalimentación
-resuelve el problema del solapamiento semántico en dominios complejos de forma
-más robusta que el Fine-Tuning supervisado por sí solo. El mecanismo de penalización
-aditiva ($\delta = -0.35$) del escudo suave garantiza que el conocimiento estructurado
-del dominio preserve la capacidad de comprensión contextual de BETO sin generar exclusiones
-binarias absolutas que descarten casos genuinos por ambigüedad redaccional.
+modelo neuronal —en lugar de reemplazarlo o de operar en paralelo sin retroalimentación—
+mitiga el problema del solapamiento semántico en dominios complejos de forma
+más efectiva que el Fine-Tuning supervisado por sí solo dentro del alcance
+del prototipo~4. El mecanismo de penalización aditiva ($\delta = -0.35$) del escudo suave
+permite que el conocimiento estructurado del dominio module la salida de BETO
+sin generar exclusiones binarias absolutas que descarten casos genuinos por
+ambigüedad redaccional. Los valores de precisión, recall y $\kappa$ de Cohen
+reportados en el capítulo~\ref{cap:resultados} respaldan esta interpretación
+dentro de los límites del conjunto de prueba utilizado.
 
 
 \section{Trabajo Futuro}
@@ -108,12 +112,16 @@ investigación a futuro.
 \label{subsec:fut_activelearning}
 
 El clasificador BETO del prototipo 4 fue ajustado con un corpus de entrenamiento
-de tamaño reducido. La siguiente iteración prioritaria es la implementación formal de
-un ciclo de aprendizaje activo donde el sistema identifique automáticamente
-los casos de mayor incertidumbre de clasificación y  los presente al analista para etiquetado
-asi como la reintegracion de las etiquetas al proceso de \textit{Fine-Tuning}.
-Este ciclo incremental permitiría reducir progresivamente la tasa de falsos positivos por
-debajo del 10\% sin incrementar el volumen total de datos de entrenamiento requeridos.
+de tamaño reducido que, si bien resultó suficiente para demostrar la viabilidad
+del enfoque, constituye la principal limitación del trabajo. La siguiente iteración
+prioritaria es la implementación formal de un ciclo de aprendizaje activo donde
+el sistema identifique automáticamente los casos de mayor incertidumbre de
+clasificación y los presente al analista para etiquetado, así como la
+reintegración de las etiquetas al proceso de \textit{Fine-Tuning}.
+Este ciclo incremental, combinado con la expansión del conjunto de evaluación
+etiquetado por múltiples anotadores, permitiría reducir progresivamente la
+tasa de falsos positivos y mejorar el recall sin incrementar el volumen total
+de datos de entrenamiento requeridos.
 
 \subsection{Integración de un módulo de reconocimiento de entidades nombradas (NER)}
 \label{subsec:fut_ner}

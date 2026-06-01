@@ -42,6 +42,11 @@ Métricas objetivo (OE-1):
 """
 
 import os
+
+# Configuración Estricta Offline para Hugging Face
+os.environ['HF_HUB_OFFLINE'] = '1'
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
+
 import re
 import json
 import logging
@@ -58,6 +63,7 @@ from transformers import (
     AutoModel,
     AutoModelForSequenceClassification,
     pipeline,
+    logging as hf_logging,
 )
 from sklearn.metrics import (
     precision_score, recall_score, f1_score,
@@ -182,9 +188,18 @@ class BETOClassifier(nn.Module):
 
     def __init__(self, num_classes: int = 2, dropout: float = 0.3):
         super().__init__()
+        
+        # Suprimir warnings de PyTorch sobre pesos inesperados
+        current_verbosity = hf_logging.get_verbosity()
+        hf_logging.set_verbosity_error()
+        
         self.bert = AutoModel.from_pretrained(
-            BETO_MODEL_NAME, cache_dir=CACHE_DIR
+            BETO_MODEL_NAME, cache_dir=CACHE_DIR, local_files_only=True
         )
+        
+        # Restaurar logging
+        hf_logging.set_verbosity(current_verbosity)
+        
         hidden_size = self.bert.config.hidden_size  # 768
 
         self.classifier = nn.Sequential(
@@ -333,7 +348,7 @@ class SemanticDetector:
 
         # Tokenizer siempre necesario
         self.tokenizer = AutoTokenizer.from_pretrained(
-            BETO_MODEL_NAME, cache_dir=CACHE_DIR
+            BETO_MODEL_NAME, cache_dir=CACHE_DIR, local_files_only=True
         )
 
         if self.mode == "finetuned":

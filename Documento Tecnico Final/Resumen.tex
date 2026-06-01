@@ -11,33 +11,40 @@
 \vspace{0.8cm}
 
 \noindent
-El presente Trabajo Terminal (no. 2026-A135) constituye la segunda fase de un proyecto de
-investigación aplicada orientado a atender la invisibilidad estadística de las Niñas, Niños y
-Adolescentes (NNA) que se encuentran en situación de orfandad como consecuencia directa de
-un feminicidio en México. Ante la ausencia de un medio nacional unificado y la imposibilidad
-práctica de realizar un monitoreo manual del ecosistema periodístico digital se diseñó y desarrolló
-un \textbf{sistema inteligente} que automatiza el ciclo completo de descubrimiento informativo.
+El presente Trabajo Terminal (no.\ 2026-A135) constituye la segunda fase de un proyecto de
+investigación aplicada orientado a mitigar la invisibilidad estadística de las Niñas, Niños y
+Adolescentes (NNA) en situación de orfandad como consecuencia directa de un feminicidio en México.
+Ante la ausencia de un registro nacional unificado y la inviabilidad operativa del monitoreo
+manual del ecosistema periodístico digital, se diseñó y desarrolló un \textbf{sistema inteligente}
+que automatiza el ciclo completo de descubrimiento informativo: recolección, deduplicación,
+clasificación semántica e investigación profunda de casos.
 
 \vspace{0.5cm}
 
 \noindent
-El sistema integra técnicas de \textit{Web Scraping} para la recolección sistemática de noticias en
-fuentes periodísticas de acceso público, y algoritmos de \textit{Procesamiento de Lenguaje Natural}
-(PLN) para la clasificación semántica y extracción de entidades relevantes (víctimas, NNA,
-situación actual y datos del caso). La información resultante se persiste en una base de datos
-relacional accesible mediante una interfaz web que facilita la consulta y el seguimiento por
-parte de organizaciones civiles e instituciones gubernamentales.
+El módulo de recolección implementa una arquitectura híbrida \textbf{RSS + StealthSession} que
+monitorea 45 fuentes periodísticas nacionales con cobertura complementaria mediante emulación de
+\textit{fingerprint} TLS, eludiendo los \textit{Web Application Firewalls} que bloqueaban el
+acceso directo. La clasificación semántica se basa en \textbf{BETO}
+(\textit{bert-base-spanish-wwm-cased}), un modelo Transformer bidireccional de 110 millones de
+parámetros preentrenado en español, integrado en una \textbf{arquitectura de clasificación
+escalonada} de cuatro capas que combina reglas simbólicas de dominio con la inferencia neuronal
+para reducir el solapamiento semántico propio del corpus de noticias sobre violencia de género.
 
 \vspace{0.5cm}
 
 \noindent
-La arquitectura adoptada es de microservicios desplegados en contenedores Docker, con un
-componente de inteligencia artificial basado en modelos de lenguaje de gran escala (LLM)
-para la identificación contextual de NNA en textos no estructurados. Los resultados obtenidos
-demuestran que el sistema reduce significativamente la latencia en la detección de nuevos
-casos y amplía la cobertura geográfica del monitoreo respecto al enfoque manual previo,
-contribuyendo así a la materialización efectiva del principio del \textit{interés superior de la niñez}
-consagrado en la Ley General de los Derechos de Niñas, Niños y Adolescentes (LGDNNA).
+La evaluación del clasificador se realizó sobre un conjunto de prueba etiquetado de forma
+independiente por dos anotadores, cuyo acuerdo inter-anotador fue cuantificado mediante el
+coeficiente $\kappa$ de Cohen. Los resultados muestran una reducción significativa en la tasa de
+falsos positivos respecto al sistema léxico del TT1, ampliando la cobertura geográfica del
+monitoreo y reduciendo la latencia en la detección de nuevos casos. La información clasificada
+se persiste en una base de datos \textbf{PostgreSQL} con búsqueda de texto completo en español
+y es accesible mediante una interfaz web que incorpora el módulo \texttt{DeepInvestigator}, el
+cual genera fichas de caso estructuradas con datos accionables para organizaciones civiles e
+instituciones gubernamentales, contribuyendo a la materialización del principio del
+\textit{interés superior de la niñez} consagrado en la Ley General de los Derechos de Niñas,
+Niños y Adolescentes (LGDNNA).
 
 \vspace{1.2cm}
 
@@ -51,9 +58,11 @@ Niñas, Niños y Adolescentes (NNA);
 feminicidio;
 orfandad;
 procesamiento de lenguaje natural (PLN);
+clasificación escalonada neuro-simbólica;
+BETO;
 web scraping;
+Kappa de Cohen;
 microservicios;
-modelos de lenguaje de gran escala (LLM);
 derechos de la infancia;
 México.
 

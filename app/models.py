@@ -124,3 +124,29 @@ class NewsSource(db.Model):
 
     def __repr__(self) -> str:
         return f'<NewsSource {self.name} ({self.source_type})>'
+
+
+class SesionBusqueda(db.Model):
+    """Modelo de sesión de recolección/workspace para aislamiento de datos."""
+
+    __tablename__ = 'sesiones_busqueda'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nombre_descriptivo = db.Column(db.String(200), nullable=False)
+    fecha_creacion = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    parametros_busqueda = db.Column(db.JSON, nullable=True)
+
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'nombre_descriptivo': self.nombre_descriptivo,
+            'fecha_creacion': self.fecha_creacion.isoformat() if self.fecha_creacion else None,
+            'parametros_busqueda': self.parametros_busqueda,
+        }
+
+    def __repr__(self) -> str:
+        return f'<SesionBusqueda {self.nombre_descriptivo}>'

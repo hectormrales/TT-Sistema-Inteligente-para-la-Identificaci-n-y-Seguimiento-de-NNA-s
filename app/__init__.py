@@ -90,6 +90,9 @@ def create_app() -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(sources_bp)
+    
+    from app.admin import admin_bp
+    app.register_blueprint(admin_bp)
 
     # ── Base de datos ───────────────────────────────────────
     with app.app_context():

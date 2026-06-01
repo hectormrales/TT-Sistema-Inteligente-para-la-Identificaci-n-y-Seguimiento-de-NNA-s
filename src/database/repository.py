@@ -269,6 +269,7 @@ class NoticiasRepository:
         offset: int = 0,
         clasificacion: str | None = None,
         solo_nna: bool = False,
+        sesion_id: int | None = None,
     ) -> dict:
         """
         Búsqueda Full-Text Search con ranking.
@@ -316,6 +317,9 @@ class NoticiasRepository:
             params["clasificacion"] = clasificacion
         if solo_nna:
             sql += " AND n.menores_identificados = 'Si'"
+        if sesion_id:
+            sql += " AND n.sesion_id = :sesion_id"
+            params["sesion_id"] = sesion_id
 
         # Ordenar por ranking FTS * relevancia del sistema
         sql += """
@@ -336,6 +340,9 @@ class NoticiasRepository:
             count_params["clasificacion"] = clasificacion
         if solo_nna:
             count_sql += " AND n.menores_identificados = 'Si'"
+        if sesion_id:
+            count_sql += " AND n.sesion_id = :sesion_id"
+            count_params["sesion_id"] = sesion_id
 
         try:
             results = db.session.execute(text(sql), params).fetchall()
@@ -356,7 +363,7 @@ class NoticiasRepository:
             logger.error(f"Error FTS: {e}")
             # Fallback a LIKE si FTS falla
             return NoticiasRepository._buscar_fallback(
-                query, limit, offset, clasificacion, solo_nna
+                query, limit, offset, clasificacion, solo_nna, sesion_id
             )
 
     @staticmethod
@@ -366,6 +373,7 @@ class NoticiasRepository:
         offset: int,
         clasificacion: str | None,
         solo_nna: bool,
+        sesion_id: int | None = None,
     ) -> dict:
         """Búsqueda fallback con ILIKE cuando FTS no está disponible."""
         from src.database.models_noticias import Noticia
@@ -385,6 +393,8 @@ class NoticiasRepository:
             q = q.filter(Noticia.clasificacion_final == clasificacion)
         if solo_nna:
             q = q.filter(Noticia.menores_identificados == "Si")
+        if sesion_id:
+            q = q.filter(Noticia.sesion_id == sesion_id)
 
         total = q.count()
         results = (
@@ -413,7 +423,8 @@ class NoticiasRepository:
         clasificacion: str | None = None,
         solo_nna: bool = False,
         orden: str = "fecha",
-        batch_id: str | None = None,
+        sesion_id: int | None = None,
+        cluster_id: int | None = None,
     ) -> dict:
         """
         Lista noticias con paginación y filtros.
@@ -426,8 +437,11 @@ class NoticiasRepository:
         start_time = time.time()
         q = Noticia.query
 
-        if batch_id:
-            q = q.filter(Noticia.batch_id == batch_id)
+        if sesion_id:
+            q = q.filter(Noticia.sesion_id == sesion_id)
+
+        if cluster_id is not None:
+            q = q.filter(Noticia.cluster_id == cluster_id)
 
         if clasificacion:
             q = q.filter(Noticia.clasificacion_final == clasificacion)
@@ -439,12 +453,10 @@ class NoticiasRepository:
             q = q.filter(Noticia.menores_identificados == "Si")
 
         # Ordenación
-        if orden == "fecha":
+        if orden == "fecha_desc" or orden == "fecha":
             q = q.order_by(desc(Noticia.fecha))
-        elif orden == "relevancia":
-            q = q.order_by(desc(Noticia.relevancia_final))
-        elif orden == "score":
-            q = q.order_by(desc(Noticia.score_compuesto))
+        elif orden == "fecha_asc":
+            q = q.order_by(Noticia.fecha)
 
         total = q.count()
         offset = (page - 1) * per_page
@@ -474,7 +486,7 @@ class NoticiasRepository:
         return [b[0] for b in batches if b[0]]
 
     @staticmethod
-    def estadisticas(batch_id: str | None = None) -> dict:
+    def estadisticas(sesion_id: int | None = None) -> dict:
         """
         Estadísticas generales de la base de datos.
 
@@ -485,8 +497,8 @@ class NoticiasRepository:
         start_time = time.time()
         
         q = Noticia.query
-        if batch_id:
-            q = q.filter(Noticia.batch_id == batch_id)
+        if sesion_id:
+            q = q.filter(Noticia.sesion_id == sesion_id)
 
         total = q.count()
         nna = q.filter(Noticia.menores_identificados == "Si").count()
@@ -496,13 +508,13 @@ class NoticiasRepository:
         
         # Para clusters y topics, aplicamos el filtro también
         q_cluster = db.session.query(func.count(func.distinct(Noticia.cluster_id)))
-        if batch_id:
-            q_cluster = q_cluster.filter(Noticia.batch_id == batch_id)
+        if sesion_id:
+            q_cluster = q_cluster.filter(Noticia.sesion_id == sesion_id)
         clusters = q_cluster.scalar() or 0
         
         q_topic = db.session.query(func.count(func.distinct(Noticia.topic_id)))
-        if batch_id:
-            q_topic = q_topic.filter(Noticia.batch_id == batch_id)
+        if sesion_id:
+            q_topic = q_topic.filter(Noticia.sesion_id == sesion_id)
         topics = q_topic.scalar() or 0
 
         # Similitud promedio
