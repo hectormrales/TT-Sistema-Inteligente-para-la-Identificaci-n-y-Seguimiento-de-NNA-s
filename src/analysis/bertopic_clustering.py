@@ -78,9 +78,9 @@ Algoritmos y bibliotecas:
 import logging
 import os
 
-# Configuración Estricta Offline para Hugging Face
-os.environ['HF_HUB_OFFLINE'] = '1'
-os.environ['TRANSFORMERS_OFFLINE'] = '1'
+# Configuración Estricta Offline para Hugging Face (Comentado para permitir primer descarga)
+# os.environ['HF_HUB_OFFLINE'] = '1'
+# os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
 import pickle
 import warnings
@@ -240,7 +240,7 @@ class SemanticClustering:
         from umap import UMAP
 
         # 1. Modelo de embeddings
-        embedding_model = SentenceTransformer(self.embedding_model_name, local_files_only=True)
+        embedding_model = SentenceTransformer(self.embedding_model_name, local_files_only=False)
 
         # 2. UMAP para reducción de dimensionalidad
         #    min_dist=0.0 fuerza clusters más compactos (mejor para HDBSCAN)

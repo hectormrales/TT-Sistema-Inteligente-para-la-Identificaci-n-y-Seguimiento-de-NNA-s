@@ -43,9 +43,9 @@ Métricas objetivo (OE-1):
 
 import os
 
-# Configuración Estricta Offline para Hugging Face
-os.environ['HF_HUB_OFFLINE'] = '1'
-os.environ['TRANSFORMERS_OFFLINE'] = '1'
+# Configuración Estricta Offline para Hugging Face (Comentado para permitir primer descarga de otros modelos)
+# os.environ['HF_HUB_OFFLINE'] = '1'
+# os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
 import re
 import json
