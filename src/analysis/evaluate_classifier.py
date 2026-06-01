@@ -97,68 +97,111 @@ def calcular_kappa(df: pd.DataFrame) -> float:
 # 2. Evaluación del clasificador
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def evaluar_clasificador(df: pd.DataFrame, kappa: float) -> dict:
+def evaluar_clasificador(
+    df: pd.DataFrame,
+    kappa: float,
+    pred_col: str | None = None,
+) -> dict:
     """
-    Ejecuta el clasificador BETO sobre las noticias del conjunto de prueba
-    y calcula las métricas formales contra las etiquetas de consenso.
+    Evalúa el clasificador BETO sobre el conjunto de prueba.
 
-    Solo se evalúan las noticias donde AMBOS anotadores coinciden
-    (etiqueta de consenso). Las noticias en disputa se reportan pero
-    se excluyen del cálculo de métricas.
+    Modos de operación:
+      1. pred_col=None  → carga SemanticDetector (requiere torch/BETO).
+                          Usar dentro de Docker o entorno con GPU.
+      2. pred_col='col' → lee predicciones ya calculadas de esa columna
+                          del CSV (valores: 'Alta', 'Media', 'Baja' o 1/0).
+                          NO necesita torch. Útil en entorno local sin GPU.
+
+    Solo se evalúan noticias donde AMBOS anotadores coinciden (consenso).
 
     Returns:
-        dict con precisión, recall, f1, fp_rate, matriz de confusión.
+        dict con precisión, recall, f1, fp_rate, kappa, matriz de confusión.
     """
-    # Import lazy del detector para evitar carga en importaciones
-    try:
-        from src.analysis.semantic_detector import SemanticDetector
-    except ImportError:
-        # Fallback cuando se ejecuta desde la raíz del proyecto
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
-        from src.analysis.semantic_detector import SemanticDetector
-
-    detector = SemanticDetector(mode="auto")
-
     y_true: list[int] = []
     y_pred: list[int] = []
     disputadas = 0
 
     sep = "=" * 55
-    print(f"\n{sep}")
-    print(f"EVALUANDO CLASIFICADOR — {len(df)} noticias en test set")
-    print(sep)
 
-    for _, row in df.iterrows():
-        nid = row.get("id_noticia", "?")
+    # ── Modo A: predicciones desde columna del CSV (sin torch) ────────────
+    if pred_col is not None:
+        if pred_col not in df.columns:
+            logger.error(
+                "La columna '%s' no existe en el CSV. Columnas disponibles: %s",
+                pred_col, list(df.columns),
+            )
+            sys.exit(1)
+        print(f"\n{sep}")
+        print(f"MODO: predicciones desde columna '{pred_col}'")
+        print(f"EVALUANDO CLASIFICADOR — {len(df)} noticias en test set")
+        print(sep)
 
-        # ── Etiqueta de consenso ──────────────────────────────
-        a1 = int(row["label_a1"])
-        a2 = int(row["label_a2"])
-        if a1 != a2:
-            disputadas += 1
-            print(f"  [SKIP] ID {nid}: anotadores en desacuerdo (a1={a1}, a2={a2})")
-            continue
-        gold = a1
+        for _, row in df.iterrows():
+            nid = row.get("id_noticia", "?")
+            a1  = int(row["label_a1"])
+            a2  = int(row["label_a2"])
+            if a1 != a2:
+                disputadas += 1
+                print(f"  [SKIP] ID {nid}: anotadores en desacuerdo (a1={a1}, a2={a2})")
+                continue
+            gold = a1
 
-        # ── Predicción del sistema ────────────────────────────
-        texto = f"{row.get('titulo', '')} {row.get('contenido', '')}"
+            raw_pred = row[pred_col]
+
+            # Manejar NaN: noticia sin clasificar → tratar como Baja (pred=0)
+            if raw_pred is None or (not isinstance(raw_pred, str) and pd.isna(raw_pred)):
+                pred = 0
+                print(f"  [NaN] ID {nid}: clasificacion vacía → pred=0 (Baja)  gold={gold}")
+            elif isinstance(raw_pred, str):
+                pred = 1 if raw_pred.strip().lower() == "alta" else 0
+            else:
+                pred = int(raw_pred)
+
+            estado = "✓" if gold == pred else "✗"
+            print(f"  [{estado}] ID {nid}: gold={gold}  pred={pred}  cls={raw_pred}")
+            y_true.append(gold)
+            y_pred.append(pred)
+
+    # ── Modo B: inferencia en tiempo real con SemanticDetector (torch) ────
+    else:
+        print(f"\n{sep}")
+        print(f"MODO: inferencia en tiempo real con BETO")
+        print(f"EVALUANDO CLASIFICADOR — {len(df)} noticias en test set")
+        print(sep)
+
         try:
-            resultado = detector.predict(texto)
-            clasificacion = resultado.get("clasificacion", "Baja")
-        except Exception as exc:
-            logger.warning("Error al clasificar ID %s: %s", nid, exc)
-            clasificacion = "Baja"
+            from src.analysis.semantic_detector import SemanticDetector
+        except ImportError:
+            sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+            from src.analysis.semantic_detector import SemanticDetector
 
-        pred = 1 if clasificacion == "Alta" else 0
+        detector = SemanticDetector(mode="auto")
 
-        estado = "✓" if gold == pred else "✗"
-        print(
-            f"  [{estado}] ID {nid}: gold={gold}  pred={pred}"
-            f"  cls={clasificacion}"
-        )
+        for _, row in df.iterrows():
+            nid = row.get("id_noticia", "?")
+            a1  = int(row["label_a1"])
+            a2  = int(row["label_a2"])
+            if a1 != a2:
+                disputadas += 1
+                print(f"  [SKIP] ID {nid}: anotadores en desacuerdo (a1={a1}, a2={a2})")
+                continue
+            gold = a1
 
-        y_true.append(gold)
-        y_pred.append(pred)
+            texto = f"{row.get('titulo', '')} {row.get('contenido', '')}"
+            try:
+                resultado     = detector.predict(texto)
+                clasificacion = resultado.get("clasificacion", "Baja")
+            except Exception as exc:
+                logger.warning("Error al clasificar ID %s: %s", nid, exc)
+                clasificacion = "Baja"
+
+            pred   = 1 if clasificacion == "Alta" else 0
+            estado = "✓" if gold == pred else "✗"
+            print(
+                f"  [{estado}] ID {nid}: gold={gold}  pred={pred}  cls={clasificacion}"
+            )
+            y_true.append(gold)
+            y_pred.append(pred)
 
     if not y_true:
         logger.error("No hay noticias con consenso para evaluar. Abortando.")
@@ -336,18 +379,43 @@ def main():
             "Evaluación formal del clasificador BETO sobre un conjunto de prueba "
             "etiquetado por dos anotadores. Calcula Kappa de Cohen, Precisión, "
             "Recall, F1 y Matriz de Confusión, y exporta tablas LaTeX."
-        )
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Ejemplos:\n"
+            "  # Modo A — predicciones desde columna del CSV (sin torch, funciona local):\n"
+            "  python evaluate_classifier.py --test_csv test_labels.csv --from_col clasificacion\n"
+            "\n"
+            "  # Modo B — inferencia en tiempo real con BETO (requiere Docker/torch):\n"
+            "  python evaluate_classifier.py --test_csv test_labels.csv\n"
+            "  docker exec -it tt-webapp python -m src.analysis.evaluate_classifier "
+            "--test_csv data/test_labels.csv\n"
+        ),
     )
     parser.add_argument(
         "--test_csv",
         required=True,
-        help="Ruta al CSV con las noticias etiquetadas. "
-             "Columnas: id_noticia, titulo, contenido, label_a1, label_a2",
+        help=(
+            "Ruta al CSV con las noticias etiquetadas. "
+            "Columnas obligatorias: id_noticia, titulo, contenido, label_a1, label_a2."
+        ),
+    )
+    parser.add_argument(
+        "--from_col",
+        default=None,
+        metavar="COLUMNA",
+        help=(
+            "Nombre de la columna del CSV que ya contiene las predicciones del sistema "
+            "(p.ej. 'clasificacion' exportada de PostgreSQL). "
+            "Acepta valores: 'Alta'/'Media'/'Baja' o 1/0. "
+            "Si se omite, el script carga SemanticDetector y ejecuta inferencia "
+            "en tiempo real (requiere torch)."
+        ),
     )
     parser.add_argument(
         "--output_tex",
         default="metricas_clasificador.tex",
-        help="Ruta del archivo .tex de salida (default: metricas_clasificador.tex)",
+        help="Ruta del archivo .tex de salida (default: metricas_clasificador.tex).",
     )
     args = parser.parse_args()
 
@@ -356,18 +424,29 @@ def main():
         sys.exit(1)
 
     df = pd.read_csv(args.test_csv)
-    logger.info("Cargando conjunto de prueba: %d noticias desde '%s'", len(df), args.test_csv)
+    logger.info(
+        "Cargando conjunto de prueba: %d noticias desde '%s'", len(df), args.test_csv
+    )
 
-    # Validar columnas requeridas
+    # Validar columnas obligatorias
     required_cols = {"titulo", "contenido", "label_a1", "label_a2"}
     missing = required_cols - set(df.columns)
     if missing:
         logger.error("Columnas faltantes en el CSV: %s", missing)
         sys.exit(1)
 
-    # Ejecutar evaluación
-    kappa = calcular_kappa(df)
-    metricas = evaluar_clasificador(df, kappa)
+    if args.from_col:
+        logger.info(
+            "Modo A activado: leyendo predicciones desde la columna '%s' (sin torch).",
+            args.from_col,
+        )
+    else:
+        logger.info(
+            "Modo B activado: inferencia en tiempo real con SemanticDetector (requiere torch)."
+        )
+
+    kappa    = calcular_kappa(df)
+    metricas = evaluar_clasificador(df, kappa, pred_col=args.from_col)
     exportar_latex(metricas, args.output_tex)
 
 

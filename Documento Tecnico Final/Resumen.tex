@@ -16,34 +16,28 @@ investigación aplicada orientado a mitigar la invisibilidad estadística de las
 Adolescentes (NNA) en situación de orfandad como consecuencia directa de un feminicidio en México.
 Ante la ausencia de un registro nacional unificado y la inviabilidad operativa del monitoreo
 manual del ecosistema periodístico digital, se diseñó y desarrolló un \textbf{sistema inteligente}
-que automatiza el ciclo completo de descubrimiento informativo: recolección, deduplicación,
-clasificación semántica e investigación profunda de casos.
-
+que trata de automatizar el ciclo de descubrimiento informativo de noticias relacionadas con
+casos de feminicidio donde la víctima indirecta pueda ser un NNA.
 \vspace{0.5cm}
 
 \noindent
 El módulo de recolección implementa una arquitectura híbrida \textbf{RSS + StealthSession} que
-monitorea 45 fuentes periodísticas nacionales con cobertura complementaria mediante emulación de
-\textit{fingerprint} TLS, eludiendo los \textit{Web Application Firewalls} que bloqueaban el
-acceso directo. La clasificación semántica se basa en \textbf{BETO}
-(\textit{bert-base-spanish-wwm-cased}), un modelo Transformer bidireccional de 110 millones de
-parámetros preentrenado en español, integrado en una \textbf{arquitectura de clasificación
-escalonada} de cuatro capas que combina reglas simbólicas de dominio con la inferencia neuronal
-para reducir el solapamiento semántico propio del corpus de noticias sobre violencia de género.
+opera sobre fuentes de noticias nacionales y locales con cobertura complementaria mediante
+emulación de \textit{fingerprint} TLS, lo que permite eludir los \textit{Web Application Firewalls}
+que bloquean el acceso. La clasificación semántica se basa en \textbf{BETO}
+(\textit{bert-base-spanish-wwm-cased}), que es un modelo Transformer bidireccional de 110 millones
+de parámetros preentrenado en español e integrado en una \textbf{arquitectura de clasificación
+escalonada} de cuatro capas que combina reglas simbólicas de dominio y la inferencia neuronal
+para reducir el ruido semántico propio del corpus de noticias sobre violencia de género.
 
 \vspace{0.5cm}
 
 \noindent
-La evaluación del clasificador se realizó sobre un conjunto de prueba etiquetado de forma
-independiente por dos anotadores, cuyo acuerdo inter-anotador fue cuantificado mediante el
-coeficiente $\kappa$ de Cohen. Los resultados muestran una reducción significativa en la tasa de
-falsos positivos respecto al sistema léxico del TT1, ampliando la cobertura geográfica del
-monitoreo y reduciendo la latencia en la detección de nuevos casos. La información clasificada
-se persiste en una base de datos \textbf{PostgreSQL} con búsqueda de texto completo en español
-y es accesible mediante una interfaz web que incorpora el módulo \texttt{DeepInvestigator}, el
-cual genera fichas de caso estructuradas con datos accionables para organizaciones civiles e
-instituciones gubernamentales, contribuyendo a la materialización del principio del
-\textit{interés superior de la niñez} consagrado en la Ley General de los Derechos de Niñas,
+La información clasificada se persiste en una base de datos \textbf{PostgreSQL} la cual es
+accesible mediante una interfaz web que incorpora el módulo de \textit{Investigación profunda} (\texttt{DeepInvestigator}),
+donde se generan fichas de caso estructuradas con datos accionables para organizaciones civiles e instituciones gubernamentales,
+contribuyendo a la materialización del principio del \textit{interés superior de la niñez}
+consagrado en la Ley General de los Derechos de Niñas,
 Niños y Adolescentes (LGDNNA).
 
 \vspace{1.2cm}
@@ -58,11 +52,10 @@ Niñas, Niños y Adolescentes (NNA);
 feminicidio;
 orfandad;
 procesamiento de lenguaje natural (PLN);
-clasificación escalonada neuro-simbólica;
+clasificación escalonada;
 BETO;
 web scraping;
-Kappa de Cohen;
-microservicios;
+investigación profunda;
 derechos de la infancia;
 México.
 

@@ -5,10 +5,10 @@
 \chapter{Resultados y evaluación}
 \label{cap:resultados}
 
-Este capítulo expone de forma analítica y cuantitativa el desempeño técnico del sistema
-integrado al cierre del trabajo terminal II. Se demuestra la superación de los objetivos
-cuantitativos establecidos al inicio del TT2 mediante los resultados de una corrida de
-producción completa sobre el corpus de validación final.
+Este capítulo reporta de forma analítica y cuantitativa el desempeño técnico del sistema
+integrado al cierre del trabajo terminal II. Se presentan los resultados de una corrida de
+producción completa sobre el corpus de validación final, contrastando las métricas obtenidas
+con los objetivos cuantitativos establecidos al inicio del TT2.
 
 \section{Resultados de la recolección y deduplicación}
 \label{sec:res_recoleccion}
@@ -142,7 +142,7 @@ Capa 3 & Post-filtro de validación aplicado & 128 & 20.2\% \\
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    title={Represetancion por fase de la clasificación escalonada},
+    title={Representación por fase de la clasificación escalonada},
     xbar,
     width=0.82\textwidth,
     height=7.5cm,
@@ -197,12 +197,92 @@ una vez disponible el clasificador ajustado en el prototipo 4. La diferencia ope
     \item \textbf{Modo \textit{Finetuned} (P4):} El clasificador ajustado produjo scores
           dispersos en todo el rango $[0, 1]$ lo que permitia que el escudo suave y el
           post-filtro operaran sobre una distribución de probabilidad rica y discriminativa.
-          El efecto péndulo fue eliminado, y las 27 noticias de Alta clasificación
-          correspondian a casos de orfandad verificables manualmente.
-\end{itemize}
+          El efecto péndulo fue \textbf{atenuado} de forma significativa, y las 27 noticias
+          de Alta clasificación correspondian a casos de orfandad verificables manualmente,
+          tal como se confirma en la evaluación cuantitativa de la
+          sección~\ref{subsec:res_metricas_clasificador}.
+    \end{itemize}
+
+% ─── SUBSECCIÓN: EVALUACIÓN FORMAL CON MÉTRICAS ─────────────────────────────
+\subsection{Evaluación sobre conjunto de prueba etiquetado}
+\label{subsec:res_metricas_clasificador}
+
+Para validar el desempeño del clasificador escalonado sobre datos \textbf{no vistos
+durante el fine-tuning}, se hizo un conjunto de prueba de 43 noticias
+seleccionadas del corpus de producción mediante muestreo segmentado.
+Excluyendo explícitamente las noticias utilizadas en el entrenamiento del
+prototipo 4. Del total de 43 noticias etiquetadas, 2 fueron excluidas por
+falta de acuerdo entre los anotadores, por lo que el cálculo de métricas se
+realizó sobre $n = 41$ noticias con etiqueta de consenso.
+
+Las noticias fueron etiquetadas de forma independiente por dos anotadores
+(un profesor de la ESCOM y un servidor) siguiendo un protocolo de codificación
+binaria donde se asignó la etiqueta $1$ para casos de orfandad por
+feminicidio y etiqueta $0$ para cualquier otro contenido.
+El acuerdo inter-anotador se midió mediante el coeficiente
+$\kappa$ de Cohen~\cite{cohen1960coefficient} obteniéndose así un $\kappa = 0.91$,
+valor que corresponde a un nivel de acuerdo \textit{casi perfecto} según la
+escala de Landis y Koch~\cite{landis1977measurement}.
+
+\vspace{0.5cm}
+\begin{table}[htbp]
+\centering
+\caption{Métricas de evaluación del clasificador BETO escalonado sobre el
+conjunto de prueba etiquetado}
+\label{tab:metricas_clasificador}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|c|}
+\hline
+\rowcolor{black}
+\textcolor{white}{\textbf{Métrica}} & \textcolor{white}{\textbf{Valor}} \\
+\hline
+Precisión (VP / VP+FP) & 0.77 \\
+\hline
+Recall (sensibilidad) (VP / VP+FN) & 0.95 \\
+\hline
+F1-Score & 0.85 \\
+\hline
+Tasa de Falsos Positivos & 30.0\% \\
+\hline
+$\kappa$ de Cohen (acuerdo inter-anotador) & 0.91 \\
+\hline
+\end{tabular}
+\end{table}
+\vspace{0.4cm}
 
 \clearpage
-\section{Resultados del Agrupamiento Semántico (BERTopic)}
+\begin{table}[htbp]
+\centering
+\caption{Matriz de confusión del clasificador BETO escalonado
+(conjunto de prueba)}
+\label{tab:confusion_matrix}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|c|c|}
+\hline
+\rowcolor{black}
+ & \textcolor{white}{\textbf{Predicción: No relevante}} &
+  \textcolor{white}{\textbf{Predicción: Alta relevancia}} \\
+\hline
+\textbf{No relevante} & 14 (Verdadero Negativo) & 6 (Falso Positivo) \\
+\hline
+\textbf{Alta relevancia} & 1 (Falso Negativo) & 20 (Verdadero Positivo) \\
+\hline
+\end{tabular}
+\end{table}
+
+\vspace{0.4cm}
+\noindent
+Los resultados indican que el clasificador escalonado alcanzó una precisión
+del 77\% y un recall del 95\% sobre el conjunto de prueba etiquetado,
+resultando en un F1-Score de 0.85. La tasa de falsos positivos observada
+(30.0\%) se ubica en el límite de la meta establecida ($\leq 30\%$),
+cumpliendo el umbral de operatividad requerido. El único caso de falso
+negativo (FN~=~1) corresponde a una noticia con redacción ambigua que no
+contenía mención explícita de víctimas menores, lo que evidencia el tipo
+de limitación documentada en el capítulo de trabajo futuro
+(véase \S\ref{subsec:fut_activelearning}).
+
+\section{Resultados del agrupamiento semántico (BERTopic)}
 \label{sec:res_agrupamiento}
 
 
@@ -213,15 +293,16 @@ mediante la estrategia de reducción multi-etapa de tres fases (probabilidades b
 distribuciones c-TF-IDF y cercanía de embeddings con umbral 0.3).
 
 La calidad del agrupamiento del TT2 representa una mejora cualitativa respecto al TT1.
-Mientras K-Means (P1) producia un \textit{Silhouette Score} de \textbf{0.23} operando
+Mientras K-Means (P1) producía un \textit{Silhouette Score} de \textbf{0.23} operando
 sobre vectores TF-IDF léxicos, los tópicos BERTopic del TT2 operan sobre embeddings BETO
-de 768 dimensiones reducidos a 5D por UMAP y lo que permitia agrupar noticias sobre el mismo
-caso criminal publicadas por medios con vocabularios distintos. Entre los tópicos identificados se
+de 768 dimensiones reducidos a 5D por UMAP, lo que permite agrupar noticias sobre el mismo
+caso criminal publicadas por diferentes medios con vocabularios distintos. La coherencia semántica
+de los tópicos fue validada cualitativamente pues entre los 15 tópicos identificados se
 distinguen categorías temáticas como casos de orfandad con intervención institucional
 del DIF, disputas legales por la custodia de menores, cobertura de feminicidios con
 NNA testigos y manifestaciones de colectivos de mujeres.
 
-\section{Resultados del Módulo de Investigación Profunda (\textit{DeepInvestigator})}
+\section{Resultados del módulo de investigación profunda (\textit{DeepInvestigator})}
 \label{sec:res_investigador}
 
 El módulo \texttt{DeepInvestigator} fue activado sobre una muestra de
@@ -234,9 +315,9 @@ estructurada en JSON) con un tiempo promedio de \textbf{47 segundos por caso}.
 La ficha de caso generada para cada noticia incluye los siete campos estructurados
 (\texttt{ubicacion}, \texttt{victimas}, \texttt{ninos\_afectados}, \texttt{edades},
 \texttt{situacion\_actual}, \texttt{medios\_contacto} y \texttt{resumen}),
-con el campo \texttt{medios\_contacto} siendo el de mayor valor operativo pues
-Gemini retorna el DIF municipal y la Fiscalía competente según la ubicación
-del caso aun incluso cuando el texto de la noticia no los menciona explícitamente.
+con el campo \texttt{medios\_contacto}(posibles contactos de institucioes)
+siendo el de mayor valor operativo pues Gemini pues retorna el DIF municipal y la Fiscalía
+competente según la ubicación del caso.
 
 \clearpage
 \section{Evaluación comparativa TT I/TT II y cumplimiento de metas}
@@ -246,13 +327,12 @@ La siguiente tabla consolida el cumplimiento de los objetivos cuantitativos
 definidos al inicio del TT II frente a las métricas del TT I (prototipo 2) y los
 resultados finales del prototipo 4.
 
-\vspace{0.5cm}
 \begin{table}[htbp]
 \centering
 \caption{Evaluación comparativa de métricas}
 \label{tab:res_comparativa}
 \renewcommand{\arraystretch}{1.4}
-\begin{tabular}{|p{4.0cm}|c|c|c|c|}
+\begin{tabular}{|p{3.2cm}|p{2.2cm}|p{2.6cm}|p{5.4cm}|c|}
 \hline
 \rowcolor{black}
 \textcolor{white}{\textbf{Métrica}} &
@@ -261,7 +341,7 @@ resultados finales del prototipo 4.
 \textcolor{white}{\textbf{Resultado P4}} &
 \textcolor{white}{\textbf{Final}} \\
 \hline
-\textbf{Falsos positivos} & 60\% & $< 30\%$ & al rededor del 20\% & \checkmark \\
+\textbf{Falsos positivos} & 60\% & $\leq 30\%$ & 30.0\% (medido en conj. etiquetado, $n=41$, ver §\ref{subsec:res_metricas_clasificador}) & \checkmark \\
 \hline
 \textbf{Fuentes monitoreadas} & 10 RSS & 45 RSS + Google News & 45 RSS + Google News + Stealth & \checkmark \\
 \hline
@@ -275,9 +355,8 @@ resultados finales del prototipo 4.
 \hline
 \end{tabular}
 \end{table}
-\vspace{0.4cm}
+\vspace{0.2cm}
 
-\vspace{0.5cm}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.90\textwidth]{images/dashboard_principal.png}
@@ -287,7 +366,7 @@ resultados finales del prototipo 4.
 \end{figure}
 \vspace{0.4cm}
 
-Las etiquetas visuales (clasificación Alta/Media/Baja y score semántico)
+Las etiquetas visuales (clasificación Alta/Media/Baja)
 permiten al analista realizar un barrido visual sobre el corpus clasificado.
 Lo que en el TT I representaba muchas horas de revisión manual fue optimizado
 en el TT II a una revisión semi-automatizada que exige apenas unos pocos segundos

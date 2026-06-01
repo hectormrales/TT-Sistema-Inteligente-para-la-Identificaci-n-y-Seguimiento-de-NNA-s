@@ -36,6 +36,13 @@ Moses~S. Charikar.
   Computing (STOC)}, pages 380--388. ACM, 2002.
 \newblock Algoritmo SimHash (Locality-Sensitive Hashing).
 
+\bibitem{cohen1960coefficient}
+Jacob Cohen.
+\newblock A coefficient of agreement for nominal scales.
+\newblock {\em Educational and Psychological Measurement}, 20(1):37--46, 1960.
+\newblock Artículo original del coeficiente Kappa de Cohen para medir acuerdo
+  inter-anotador.
+
 \bibitem{lgdnna2014}
 {Congreso de la Unión}.
 \newblock Ley general de los derechos de niñas, niños y adolescentes.
@@ -110,6 +117,13 @@ Martijn Koster.
 \newblock \url{https://www.robotstxt.org/orig.html}, 1994.
 \newblock Protocolo robots.txt. Accedido: 2026-01-10.
 
+\bibitem{landis1977measurement}
+J.~Richard Landis and Gary~G. Koch.
+\newblock The measurement of observer agreement for categorical data.
+\newblock {\em Biometrics}, 33(1):159--174, 1977.
+\newblock Define la escala de interpretación del Kappa: leve, regular,
+  moderado, sustancial, casi perfecto.
+
 \bibitem{leotta2018web}
 M~Leotta et~al.
 \newblock Web scraping with selenium.
@@ -120,14 +134,6 @@ Leland McInnes, John Healy, and James Melville.
 \newblock Umap: Uniform manifold approximation and projection for dimension
   reduction.
 \newblock {\em arXiv preprint arXiv:1802.03426}, 2018.
-
-\bibitem{michel2019sixteen}
-Paul Michel, Omer Levy, and Graham Neubig.
-\newblock Are sixteen heads really better than one?
-\newblock {\em Advances in Neural Information Processing Systems (NeurIPS)},
-  32, 2019.
-\newblock Justificación teórica del congelamiento de capas en arquitecturas
-  BERT.
 
 \bibitem{mikolov2013word2vec}
 Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean.
@@ -140,14 +146,6 @@ Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean.
 \newblock Asamblea General de las Naciones Unidas, 1989.
 \newblock Adoptada: 20 de noviembre de 1989. Ratificada por México: 21 de
   septiembre de 1990.
-
-\bibitem{ott2018scaling}
-Myle Ott, Sergey Edunov, David Grangier, and Michael Auli.
-\newblock Scaling neural machine translation.
-\newblock In {\em Proceedings of the Third Conference on Machine Translation
-  (WMT)}, pages 1--9. Association for Computational Linguistics, 2018.
-\newblock Fundamento del patrón Gradient Accumulation para simular lotes
-  grandes.
 
 \bibitem{peters2019tune}
 Matthew~E. Peters, Sebastian Ruder, and Noah~A. Smith.

@@ -1,6 +1,8 @@
 This is BibTeX, Version 0.99d
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: proyecto.aux
+Reallocating 'name_of_file' (item size: 1) to 12 items.
+A level-1 auxiliary file: Resumen.aux
 Reallocating 'name_of_file' (item size: 1) to 19 items.
 A level-1 auxiliary file: projectCharter.aux
 Reallocating 'name_of_file' (item size: 1) to 13 items.
@@ -43,43 +45,43 @@ Warning--empty journal in guo2017calibration
 Warning--can't use both volume and number fields in salton1988term
 You've used 38 entries,
             2118 wiz_defined-function locations,
-            741 strings with 11757 characters,
-and the built_in function-call counts, 12456 in all, are:
-= -- 1245
-> -- 623
-< -- 9
-+ -- 254
-- -- 210
-* -- 738
-:= -- 2113
-add.period$ -- 143
+            745 strings with 11725 characters,
+and the built_in function-call counts, 12346 in all, are:
+= -- 1238
+> -- 602
+< -- 8
++ -- 248
+- -- 202
+* -- 736
+:= -- 2093
+add.period$ -- 142
 call.type$ -- 38
-change.case$ -- 216
+change.case$ -- 212
 chr.to.int$ -- 0
 cite$ -- 41
-duplicate$ -- 474
+duplicate$ -- 467
 empty$ -- 930
-format.name$ -- 210
-if$ -- 2625
+format.name$ -- 202
+if$ -- 2595
 int.to.chr$ -- 0
 int.to.str$ -- 38
 missing$ -- 32
 newline$ -- 216
 num.names$ -- 76
-pop$ -- 243
+pop$ -- 235
 preamble$ -- 1
-purify$ -- 177
+purify$ -- 173
 quote$ -- 0
-skip$ -- 359
+skip$ -- 353
 stack$ -- 0
-substring$ -- 572
-swap$ -- 116
-text.length$ -- 9
+substring$ -- 602
+swap$ -- 110
+text.length$ -- 8
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 144
 warning$ -- 3
-while$ -- 108
+while$ -- 109
 width$ -- 40
-write$ -- 453
+write$ -- 452
 (There were 6 warnings)
