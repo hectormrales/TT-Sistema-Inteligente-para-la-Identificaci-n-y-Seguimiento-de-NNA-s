@@ -156,7 +156,7 @@
 \contentsline {subsection}{\numberline {6.17.1}Objetivo}{74}{subsection.6.17.1}%
 \contentsline {subsection}{\numberline {6.17.2}Diseño}{74}{subsection.6.17.2}%
 \contentsline {subsection}{\numberline {6.17.3}Salidas}{74}{subsection.6.17.3}%
-\contentsline {subsection}{\numberline {6.17.4}Entradas}{75}{subsection.6.17.4}%
+\contentsline {subsection}{\numberline {6.17.4}Entradas}{74}{subsection.6.17.4}%
 \contentsline {subsection}{\numberline {6.17.5}Comandos}{75}{subsection.6.17.5}%
 \contentsline {chapter}{\numberline {7}Desarrollo de Trabajo Terminal I}{76}{chapter.7}%
 \contentsline {section}{\numberline {7.1}Prototipo 0 Scraping directo sobre HTML}{76}{section.7.1}%
@@ -200,20 +200,20 @@
 \contentsline {subsection}{\numberline {9.2.1}Distribución del embudo analítico}{98}{subsection.9.2.1}%
 \contentsline {subsection}{\numberline {9.2.2}Comportamiento por modo de inferencia}{99}{subsection.9.2.2}%
 \contentsline {subsection}{\numberline {9.2.3}Evaluación sobre conjunto de prueba etiquetado}{99}{subsection.9.2.3}%
-\contentsline {section}{\numberline {9.3}Resultados del agrupamiento semántico (BERTopic)}{100}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Resultados del módulo de investigación profunda (\textit {DeepInvestigator})}{100}{section.9.4}%
-\contentsline {section}{\numberline {9.5}Evaluación comparativa TT I/TT II y cumplimiento de metas}{101}{section.9.5}%
-\contentsline {chapter}{\numberline {10}Conclusiones y trabajo a Futuro}{102}{chapter.10}%
-\contentsline {section}{\numberline {10.1}Conclusión general y cumplimiento de objetivos}{102}{section.10.1}%
-\contentsline {section}{\numberline {10.2}Cumplimiento de los Objetivos Específicos}{102}{section.10.2}%
-\contentsline {subsection}{\numberline {10.2.1}OE-1 Identificación y selección de fuentes públicas}{102}{subsection.10.2.1}%
-\contentsline {subsection}{\numberline {10.2.2}OE-2 Módulo de extracción de datos}{102}{subsection.10.2.2}%
-\contentsline {subsection}{\numberline {10.2.3}OE-3 Procesamiento de lenguaje natural}{103}{subsection.10.2.3}%
-\contentsline {subsection}{\numberline {10.2.4}OE-4 Base de datos y plataforma web}{103}{subsection.10.2.4}%
-\contentsline {section}{\numberline {10.3}Aportaciones Técnicas del Proyecto}{103}{section.10.3}%
-\contentsline {subsection}{\numberline {10.3.1}Sistema de clasificación escalonada}{103}{subsection.10.3.1}%
-\contentsline {section}{\numberline {10.4}Trabajo Futuro}{104}{section.10.4}%
-\contentsline {subsection}{\numberline {10.4.1}Consolidación de la base de entrenamiento mediante aprendizaje activo}{104}{subsection.10.4.1}%
-\contentsline {subsection}{\numberline {10.4.2}Integración de un módulo de reconocimiento de entidades nombradas (NER)}{104}{subsection.10.4.2}%
-\contentsline {subsection}{\numberline {10.4.3}Expansión a redes sociales y fuentes no estructuradas}{104}{subsection.10.4.3}%
-\contentsline {subsection}{\numberline {10.4.4}Construcción de una API pública con salvaguardas de privacidad}{104}{subsection.10.4.4}%
+\contentsline {section}{\numberline {9.3}Resultados del agrupamiento semántico (BERTopic)}{101}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Resultados del módulo de investigación profunda (\textit {DeepInvestigator})}{101}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Evaluación comparativa TT I/TT II y cumplimiento de metas}{102}{section.9.5}%
+\contentsline {chapter}{\numberline {10}Conclusiones y trabajo a Futuro}{103}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Conclusión general y cumplimiento de objetivos}{103}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Cumplimiento de los Objetivos Específicos}{103}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}OE-1 Identificación y selección de fuentes públicas}{103}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}OE-2 Módulo de extracción de datos}{103}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}OE-3 Procesamiento de lenguaje natural}{104}{subsection.10.2.3}%
+\contentsline {subsection}{\numberline {10.2.4}OE-4 Base de datos y plataforma web}{104}{subsection.10.2.4}%
+\contentsline {section}{\numberline {10.3}Aportaciones Técnicas del Proyecto}{104}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Sistema de clasificación escalonada}{104}{subsection.10.3.1}%
+\contentsline {section}{\numberline {10.4}Trabajo Futuro}{105}{section.10.4}%
+\contentsline {subsection}{\numberline {10.4.1}Consolidación de la base de entrenamiento mediante aprendizaje activo}{105}{subsection.10.4.1}%
+\contentsline {subsection}{\numberline {10.4.2}Integración de un módulo de reconocimiento de entidades nombradas (NER)}{105}{subsection.10.4.2}%
+\contentsline {subsection}{\numberline {10.4.3}Expansión a redes sociales y fuentes no estructuradas}{105}{subsection.10.4.3}%
+\contentsline {subsection}{\numberline {10.4.4}Construcción de una API pública con salvaguardas de privacidad}{105}{subsection.10.4.4}%

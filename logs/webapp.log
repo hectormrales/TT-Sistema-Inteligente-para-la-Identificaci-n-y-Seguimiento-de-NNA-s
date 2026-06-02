@@ -21417,3 +21417,55 @@ WHERE noticias.enlace = %(enlace_1)s
  LIMIT %(param_1)s]
 [parameters: {'enlace_1': 'https://news.google.com/rss/articles/CBMi1AFBVV95cUxOYm1pTlJQN1RMM3RuNXg4OGdYdnYxY3YxVTEySjBUOG5Bdm53NXdlY0FCR1RLUk9XVmxZaEZrM3plM0hnYWtKT1dBNktyTjU0 ... (330 characters truncated) ... cydEdSYVpMWVZzaXNNN3E1SDVIWXVBVFYxcEdQamNDUVlsTm50UE4zblZKMDZMWURGNkxLX19Uc0hQZXgwYi1jajB2c1RfdXNwaHpBX1RsLXJzdDFOWm5BNXZzeUxzYVcxN29VcGpoOVMtdw?oc=5', 'param_1': 1}]
 (Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-06-01 22:10:00,708 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-06-01 22:10:00,750 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-01 22:10:00,750 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-01 22:10:00,751 - app - INFO - Esquema FTS inicializado
+2026-06-01 22:10:00,751 - app - INFO - Esquema FTS inicializado
+2026-06-01 22:18:37,635 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-01 22:21:10,509 - src.analysis.investigator - INFO - Iniciando investigación para: Despiden a Jazmín García, policía y madre de dos h...
+2026-06-01 22:21:10,510 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 22:21:12,456 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-01 22:21:12,459 - src.analysis.investigator - INFO - Query generada: Jazmín García policía asesinada San Mateo Tlaltenango
+2026-06-01 22:21:12,460 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Jazm%C3%ADn+Garc%C3%ADa+polic%C3%ADa+asesinada+San+Mateo+Tlaltenango
+2026-06-01 22:21:13,407 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Jazm%C3%ADn+Garc%C3%ADa+polic%C3%ADa+asesinada+San+Mateo+Tlaltenango
+2026-06-01 22:21:14,173 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Despiden+a+Jazm%C3%ADn+Garc%C3%ADa%2C+polic%C3%ADa+y+madre+de+dos+h
+2026-06-01 22:21:47,733 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Despiden+a+Jazm%C3%ADn+Garc%C3%ADa%2C+polic%C3%ADa+y+madre+de+dos+h
+2026-06-01 22:21:48,796 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-01 22:21:48,797 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Jazmín García policía asesinada San Mateo Tlaltenango. Intentando con búsqueda nativa de Gemini...
+2026-06-01 22:21:48,798 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-01 22:22:04,642 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-01 22:22:04,643 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-01 22:22:56,520 - app - INFO - Logout: admin
+2026-06-01 22:25:32,211 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-01 23:13:19,451 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-06-01 23:13:19,494 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-01 23:13:19,495 - app - INFO - Esquema FTS inicializado
+2026-06-01 23:13:19,494 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-01 23:13:19,495 - app - INFO - Esquema FTS inicializado

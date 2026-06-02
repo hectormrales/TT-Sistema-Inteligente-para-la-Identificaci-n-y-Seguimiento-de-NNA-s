@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,18 +13,26 @@
     <style>
         /* ── Variables ── */
         :root {
-            --navy:    #1a3a6b;
-            --navy-d:  #122b52;
+            --navy: #1a3a6b;
+            --navy-d: #122b52;
             --crimson: #b03030;
-            --teal:    #0e7c6e;
-            --amber:   #c47c10;
+            --teal: #0e7c6e;
+            --amber: #c47c10;
             --gray-bg: #f0f2f7;
-            --card-r:  10px;
+            --card-r: 10px;
         }
 
         /* ── Base ── */
-        *, body { font-family: 'Inter', sans-serif; }
-        body { background: var(--gray-bg); min-height: 100vh; margin: 0; }
+        *,
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--gray-bg);
+            min-height: 100vh;
+            margin: 0;
+        }
 
         /* ── Topbar ── */
         .topbar {
@@ -34,11 +43,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
+
         .topbar .brand {
             display: flex;
             align-items: center;
@@ -46,34 +56,64 @@
             text-decoration: none;
             color: #fff;
         }
+
         .brand-icon {
-            width: 38px; height: 38px;
-            display: flex; align-items: center; justify-content: center;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
             padding: 2px;
         }
+
         .brand-icon img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-        .brand-name { font-weight: 700; font-size: 1rem; line-height: 1.1; }
-        .brand-sub  { font-weight: 400; font-size: .68rem; opacity: .75; }
-        .topbar-actions { display: flex; align-items: center; gap: .5rem; }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1.1;
+        }
+
+        .brand-sub {
+            font-weight: 400;
+            font-size: .68rem;
+            opacity: .75;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
         .topbar-btn {
-            background: rgba(255,255,255,.12);
-            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .22);
             color: #fff;
             border-radius: 6px;
             padding: .3rem .75rem;
             font-size: .82rem;
             cursor: pointer;
             text-decoration: none;
-            display: inline-flex; align-items: center; gap: .35rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
             transition: background .15s;
         }
-        .topbar-btn:hover { background: rgba(255,255,255,.22); color: #fff; }
-        .topbar-btn.danger:hover { background: var(--crimson); }
+
+        .topbar-btn:hover {
+            background: rgba(255, 255, 255, .22);
+            color: #fff;
+        }
+
+        .topbar-btn.danger:hover {
+            background: var(--crimson);
+        }
 
         /* ── Subheader ── */
         .subheader {
@@ -85,7 +125,16 @@
             justify-content: space-between;
             gap: 1rem;
         }
-        .subheader-title { font-size: .95rem; font-weight: 600; color: var(--navy); display: flex; align-items: center; gap: .5rem; }
+
+        .subheader-title {
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
         .badge-mx {
             background: #e8f0fe;
             color: var(--navy);
@@ -97,35 +146,84 @@
         }
 
         /* ── Page content ── */
-        .page-content { padding: 1.4rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+        .page-content {
+            padding: 1.4rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
         /* ── Stat cards ── */
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.4rem; }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+        }
+
         .stat-card {
             background: #fff;
             border-radius: var(--card-r);
             padding: 1.1rem 1.2rem;
             border-top: 4px solid var(--navy);
-            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
         }
-        .stat-card.c-active  { border-top-color: var(--teal); }
-        .stat-card.c-error   { border-top-color: var(--crimson); }
-        .stat-card.c-blocked { border-top-color: var(--amber); }
-        .stat-card.c-custom  { border-top-color: #6f42c1; }
-        .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--navy); line-height: 1; }
-        .stat-card.c-active  .stat-num { color: var(--teal); }
-        .stat-card.c-error   .stat-num { color: var(--crimson); }
-        .stat-card.c-blocked .stat-num { color: var(--amber); }
-        .stat-card.c-custom  .stat-num { color: #6f42c1; }
-        .stat-label { font-size: .73rem; color: #6c757d; margin-top: .2rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 500; }
+
+        .stat-card.c-active {
+            border-top-color: var(--teal);
+        }
+
+        .stat-card.c-error {
+            border-top-color: var(--crimson);
+        }
+
+        .stat-card.c-blocked {
+            border-top-color: var(--amber);
+        }
+
+        .stat-card.c-custom {
+            border-top-color: #6f42c1;
+        }
+
+        .stat-num {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .stat-card.c-active .stat-num {
+            color: var(--teal);
+        }
+
+        .stat-card.c-error .stat-num {
+            color: var(--crimson);
+        }
+
+        .stat-card.c-blocked .stat-num {
+            color: var(--amber);
+        }
+
+        .stat-card.c-custom .stat-num {
+            color: #6f42c1;
+        }
+
+        .stat-label {
+            font-size: .73rem;
+            color: #6c757d;
+            margin-top: .2rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-weight: 500;
+        }
 
         /* ── Section card ── */
         .section-card {
             background: #fff;
             border-radius: var(--card-r);
-            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
             margin-bottom: 1.2rem;
         }
+
         .section-head {
             padding: .85rem 1.2rem;
             border-bottom: 1px solid #eef0f5;
@@ -135,11 +233,28 @@
             flex-wrap: wrap;
             gap: .5rem;
         }
-        .section-title { font-weight: 600; font-size: .92rem; color: var(--navy); margin: 0; display: flex; align-items: center; gap: .5rem; }
-        .section-body { padding: 1.2rem; }
+
+        .section-title {
+            font-weight: 600;
+            font-size: .92rem;
+            color: var(--navy);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .section-body {
+            padding: 1.2rem;
+        }
 
         /* ── Filter buttons ── */
-        .filter-strip { display: flex; gap: .4rem; flex-wrap: wrap; }
+        .filter-strip {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+        }
+
         .filter-btn {
             border: 1px solid #cdd5e0;
             background: #fff;
@@ -151,7 +266,11 @@
             cursor: pointer;
             transition: all .15s;
         }
-        .filter-btn:hover { background: var(--gray-bg); }
+
+        .filter-btn:hover {
+            background: var(--gray-bg);
+        }
+
         .filter-btn.active-filter {
             background: var(--navy);
             border-color: var(--navy);
@@ -169,7 +288,11 @@
             cursor: pointer;
             transition: background .15s;
         }
-        .probe-btn:hover { background: var(--navy-d); }
+
+        .probe-btn:hover {
+            background: var(--navy-d);
+        }
+
         .probe-result {
             background: #f8faff;
             border: 1px solid #d0daf5;
@@ -178,7 +301,10 @@
             margin-top: .9rem;
             display: none;
         }
-        .probe-result.show { display: block; }
+
+        .probe-result.show {
+            display: block;
+        }
 
         /* ── Source cards ── */
         .source-item {
@@ -190,31 +316,109 @@
             background: #fff;
             transition: box-shadow .15s;
         }
-        .source-item:hover { box-shadow: 0 3px 10px rgba(0,0,0,.07); }
-        .source-item.inactive { opacity: .6; border-left-color: #adb5bd; }
-        .source-item.predefined { border-left-color: #6f42c1; }
-        .source-item.status-ok { border-left-color: var(--teal); }
-        .source-item.status-error { border-left-color: var(--crimson); }
-        .source-item.status-blocked { border-left-color: var(--amber); }
+
+        .source-item:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .07);
+        }
+
+        .source-item.inactive {
+            opacity: .6;
+            border-left-color: #adb5bd;
+        }
+
+        .source-item.predefined {
+            border-left-color: #6f42c1;
+        }
+
+        .source-item.status-ok {
+            border-left-color: var(--teal);
+        }
+
+        .source-item.status-error {
+            border-left-color: var(--crimson);
+        }
+
+        .source-item.status-blocked {
+            border-left-color: var(--amber);
+        }
 
         /* ── Status dot ── */
-        .status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-        .dot-ok      { background: var(--teal); }
-        .dot-error   { background: var(--crimson); }
-        .dot-blocked { background: var(--amber); }
-        .dot-pending { background: #adb5bd; }
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .dot-ok {
+            background: var(--teal);
+        }
+
+        .dot-error {
+            background: var(--crimson);
+        }
+
+        .dot-blocked {
+            background: var(--amber);
+        }
+
+        .dot-pending {
+            background: #adb5bd;
+        }
 
         /* ── Type badges ── */
-        .type-badge { font-size: .68rem; padding: .18rem .5rem; border-radius: 10px; font-weight: 600; }
-        .type-rss     { background: #e8f5e9; color: #2e7d32; }
-        .type-html    { background: #e3f2fd; color: #1565c0; }
-        .type-sitemap { background: #fff3e0; color: #e65100; }
-        .type-auto    { background: #f3e5f5; color: #7b1fa2; }
+        .type-badge {
+            font-size: .68rem;
+            padding: .18rem .5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .type-rss {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .type-html {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .type-sitemap {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .type-auto {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
 
         /* Origin badges */
-        .badge-sys    { background: #6f42c1; color: #fff; font-size: .65rem; padding: .18rem .45rem; border-radius: 10px; }
-        .badge-custom { background: var(--navy); color: #fff; font-size: .65rem; padding: .18rem .45rem; border-radius: 10px; }
-        .badge-js     { background: var(--amber); color: #fff; font-size: .65rem; padding: .18rem .45rem; border-radius: 10px; }
+        .badge-sys {
+            background: #6f42c1;
+            color: #fff;
+            font-size: .65rem;
+            padding: .18rem .45rem;
+            border-radius: 10px;
+        }
+
+        .badge-custom {
+            background: var(--navy);
+            color: #fff;
+            font-size: .65rem;
+            padding: .18rem .45rem;
+            border-radius: 10px;
+        }
+
+        .badge-js {
+            background: var(--amber);
+            color: #fff;
+            font-size: .65rem;
+            padding: .18rem .45rem;
+            border-radius: 10px;
+        }
 
         /* ── Action buttons ── */
         .action-btn {
@@ -227,24 +431,48 @@
             cursor: pointer;
             transition: all .15s;
         }
-        .action-btn:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
-        .action-btn.danger:hover { background: var(--crimson); border-color: var(--crimson); }
+
+        .action-btn:hover {
+            background: var(--navy);
+            color: #fff;
+            border-color: var(--navy);
+        }
+
+        .action-btn.danger:hover {
+            background: var(--crimson);
+            border-color: var(--crimson);
+        }
 
         /* ── Form controls ── */
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-color: #cdd5e0;
             border-radius: 6px;
             font-size: .85rem;
         }
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--navy);
-            box-shadow: 0 0 0 .2rem rgba(26,58,107,.15);
+            box-shadow: 0 0 0 .2rem rgba(26, 58, 107, .15);
         }
-        .form-label { font-size: .82rem; font-weight: 500; color: var(--navy); margin-bottom: .3rem; }
+
+        .form-label {
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--navy);
+            margin-bottom: .3rem;
+        }
 
         /* ── Toggle switch ── */
-        .form-check-input:checked { background-color: var(--teal); border-color: var(--teal); }
-        .form-check-input { cursor: pointer; }
+        .form-check-input:checked {
+            background-color: var(--teal);
+            border-color: var(--teal);
+        }
+
+        .form-check-input {
+            cursor: pointer;
+        }
 
         /* ── Footer ── */
         .ngo-footer {
@@ -254,405 +482,476 @@
             font-size: .73rem;
             margin-top: .5rem;
         }
-        .ngo-footer strong { color: var(--navy); }
+
+        .ngo-footer strong {
+            color: var(--navy);
+        }
 
         /* ── Modals ── */
-        .modal-header { background: var(--navy); color: #fff; border-radius: .5rem .5rem 0 0; }
-        .modal-header .btn-close { filter: invert(1); }
-        .modal-title { font-size: .92rem; font-weight: 600; }
+        .modal-header {
+            background: var(--navy);
+            color: #fff;
+            border-radius: .5rem .5rem 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .modal-title {
+            font-size: .92rem;
+            font-weight: 600;
+        }
 
         /* ── Loading overlay ── */
         #loading-overlay {
             display: none;
-            position: fixed; inset: 0;
-            background: rgba(26,58,107,.55);
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 58, 107, .55);
             z-index: 9000;
-            align-items: center; justify-content: center;
+            align-items: center;
+            justify-content: center;
         }
-        #loading-overlay.show { display: flex; }
+
+        #loading-overlay.show {
+            display: flex;
+        }
+
         .loading-box {
             background: #fff;
             border-radius: 12px;
             padding: 2rem 2.5rem;
             text-align: center;
-            box-shadow: 0 8px 32px rgba(0,0,0,.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
         }
-        .loading-box .spinner-border { color: var(--navy); width: 3rem; height: 3rem; }
-        .loading-box p { margin-top: .75rem; font-weight: 500; color: var(--navy); font-size: .9rem; }
+
+        .loading-box .spinner-border {
+            color: var(--navy);
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .loading-box p {
+            margin-top: .75rem;
+            font-weight: 500;
+            color: var(--navy);
+            font-size: .9rem;
+        }
 
         /* ── Toast ── */
-        .toast-area { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9500; display: flex; flex-direction: column; gap: .5rem; }
+        .toast-area {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9500;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
         .toast-msg {
             background: var(--navy);
             color: #fff;
             border-radius: 8px;
             padding: .6rem 1rem;
             font-size: .82rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
             animation: slideIn .2s ease;
         }
-        .toast-msg.success { background: var(--teal); }
-        .toast-msg.error   { background: var(--crimson); }
-        .toast-msg.warning { background: var(--amber); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .toast-msg.success {
+            background: var(--teal);
+        }
+
+        .toast-msg.error {
+            background: var(--crimson);
+        }
+
+        .toast-msg.warning {
+            background: var(--amber);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Loading overlay -->
-<div id="loading-overlay">
-    <div class="loading-box">
-        <div class="spinner-border" role="status"></div>
-        <p id="loading-text">Procesando…</p>
+    <!-- Loading overlay -->
+    <div id="loading-overlay">
+        <div class="loading-box">
+            <div class="spinner-border" role="status"></div>
+            <p id="loading-text">Procesando…</p>
+        </div>
     </div>
-</div>
 
-<!-- Toast area -->
-<div class="toast-area" id="toastArea"></div>
+    <!-- Toast area -->
+    <div class="toast-area" id="toastArea"></div>
 
-<!-- ── Topbar ── -->
-<div class="topbar">
-    <a class="brand" href="{{ url_for('main.index') }}">
-        <div class="brand-icon">
-            <img src="{{ url_for('static', filename='img/logo_sistema.png') }}" alt="Logo">
-        </div>
-        <div>
-            <div class="brand-name">Plataforma NNA</div>
-            <div class="brand-sub">Víctimas Indirectas del Feminicidio · México</div>
-        </div>
-    </a>
-    <div class="topbar-actions">
-        <a href="{{ url_for('main.index') }}" class="topbar-btn">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
+    <!-- ── Topbar ── -->
+    <div class="topbar">
+        <a class="brand" href="{{ url_for('main.index') }}">
+            <div class="brand-icon">
+                <img src="{{ url_for('static', filename='img/logo_sistema.png') }}" alt="Logo">
+            </div>
+            <div>
+                <div class="brand-name">Plataforma NNA</div>
+                <div class="brand-sub">Víctimas Indirectas del Feminicidio · México</div>
+            </div>
         </a>
-        {% if current_user.is_admin %}
-        <a href="{{ url_for('admin.users') }}" class="topbar-btn">
-            <i class="fas fa-users-cog"></i> Admin
-        </a>
-        {% endif %}
-        <span class="topbar-btn" style="cursor:default;">
-            <i class="fas fa-user"></i> {{ current_user.username }}
-        </span>
-        <a href="{{ url_for('auth.logout') }}" class="topbar-btn danger" title="Cerrar sesión">
-            <i class="fas fa-sign-out-alt"></i>
-        </a>
-    </div>
-</div>
-
-<!-- ── Subheader ── -->
-<div class="subheader">
-    <div class="subheader-title">
-        <i class="fas fa-rss" style="color:var(--crimson);"></i>
-        Gestión de Fuentes de Noticias
-    </div>
-    <div class="d-flex align-items-center gap-2">
-        <span class="badge-mx"><i class="fas fa-map-marker-alt me-1"></i>Solo México</span>
-        <span style="font-size:.75rem; color:#6c757d;">Detección automática de tipo · Scraping adaptativo</span>
-    </div>
-</div>
-
-<!-- ── Page content ── -->
-<div class="page-content">
-
-    <!-- Stat grid -->
-    <div class="stat-grid">
-        <div class="stat-card">
-            <div class="stat-num" id="totalSources">—</div>
-            <div class="stat-label"><i class="fas fa-list me-1"></i>Total fuentes</div>
-        </div>
-        <div class="stat-card c-active">
-            <div class="stat-num" id="activeSources">—</div>
-            <div class="stat-label"><i class="fas fa-check-circle me-1"></i>Activas</div>
-        </div>
-        <div class="stat-card c-error">
-            <div class="stat-num" id="inactiveSources">—</div>
-            <div class="stat-label"><i class="fas fa-times-circle me-1"></i>Inactivas / error</div>
-        </div>
-        <div class="stat-card c-blocked">
-            <div class="stat-num" id="blockedSources">—</div>
-            <div class="stat-label"><i class="fas fa-shield-alt me-1"></i>Bloqueadas</div>
-        </div>
-        <div class="stat-card c-custom">
-            <div class="stat-num" id="customSources">—</div>
-            <div class="stat-label"><i class="fas fa-user me-1"></i>Personalizadas</div>
+        <div class="topbar-actions">
+            <a href="{{ url_for('main.index') }}" class="topbar-btn">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin.users') }}" class="topbar-btn">
+                <i class="fas fa-users-cog"></i> Admin
+            </a>
+            {% endif %}
+            <span class="topbar-btn" style="cursor:default;">
+                <i class="fas fa-user"></i> {{ current_user.username }}
+            </span>
+            <a href="{{ url_for('auth.logout') }}" class="topbar-btn danger" title="Cerrar sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 
-    <!-- Add source -->
-    <div class="section-card">
-        <div class="section-head">
-            <h2 class="section-title"><i class="fas fa-plus-circle" style="color:var(--teal);"></i> Agregar nueva fuente</h2>
+    <!-- ── Subheader ── -->
+    <div class="subheader">
+        <div class="subheader-title">
+            <i class="fas fa-rss" style="color:var(--crimson);"></i>
+            Gestión de Fuentes de Noticias
         </div>
-        <div class="section-body">
-            <div class="row g-3">
-                <div class="col-md-5">
-                    <label class="form-label">URL de la fuente <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <input type="url" class="form-control" id="newSourceUrl"
-                               placeholder="https://ejemplo.com.mx/feed">
-                        <button class="probe-btn" onclick="probeUrl()" title="Detectar tipo automáticamente">
-                            <i class="fas fa-search-location"></i> Sondear
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge-mx"><i class="fas fa-map-marker-alt me-1"></i>Solo México</span>
+            <span style="font-size:.75rem; color:#6c757d;">Detección automática de tipo · Scraping adaptativo</span>
+        </div>
+    </div>
+
+    <!-- ── Page content ── -->
+    <div class="page-content">
+
+        <!-- Stat grid -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-num" id="totalSources">—</div>
+                <div class="stat-label"><i class="fas fa-list me-1"></i>Total fuentes</div>
+            </div>
+            <div class="stat-card c-active">
+                <div class="stat-num" id="activeSources">—</div>
+                <div class="stat-label"><i class="fas fa-check-circle me-1"></i>Activas</div>
+            </div>
+            <div class="stat-card c-error">
+                <div class="stat-num" id="inactiveSources">—</div>
+                <div class="stat-label"><i class="fas fa-times-circle me-1"></i>Inactivas / error</div>
+            </div>
+            <div class="stat-card c-blocked">
+                <div class="stat-num" id="blockedSources">—</div>
+                <div class="stat-label"><i class="fas fa-shield-alt me-1"></i>Bloqueadas</div>
+            </div>
+            <div class="stat-card c-custom">
+                <div class="stat-num" id="customSources">—</div>
+                <div class="stat-label"><i class="fas fa-user me-1"></i>Personalizadas</div>
+            </div>
+        </div>
+
+        <!-- Add source -->
+        <div class="section-card">
+            <div class="section-head">
+                <h2 class="section-title"><i class="fas fa-plus-circle" style="color:var(--teal);"></i> Agregar nueva
+                    fuente</h2>
+            </div>
+            <div class="section-body">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label">URL de la fuente <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="url" class="form-control" id="newSourceUrl"
+                                placeholder="https://ejemplo.com.mx/feed">
+                            <button class="probe-btn" onclick="probeUrl()" title="Detectar tipo automáticamente">
+                                <i class="fas fa-search-location"></i> Sondear
+                            </button>
+                        </div>
+                        <small class="text-muted" style="font-size:.75rem;">El sistema detectará RSS, HTML, Sitemap o si
+                            usa JavaScript pesado</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="newSourceName"
+                            placeholder="(auto-detecta del dominio)">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" id="newSourceType">
+                            <option value="auto" selected>Auto-detectar</option>
+                            <option value="rss">RSS / Atom</option>
+                            <option value="html">HTML (scraping)</option>
+                            <option value="sitemap">Sitemap XML</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn w-100" style="background:var(--teal);color:#fff;font-size:.84rem;"
+                            onclick="addSource()">
+                            <i class="fas fa-plus"></i> Agregar
                         </button>
                     </div>
-                    <small class="text-muted" style="font-size:.75rem;">El sistema detectará RSS, HTML, Sitemap o si usa JavaScript pesado</small>
+                    <div class="col-12">
+                        <label class="form-label">Notas (opcional)</label>
+                        <input type="text" class="form-control" id="newSourceNotes"
+                            placeholder="Observaciones sobre esta fuente…">
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="newSourceName" placeholder="(auto-detecta del dominio)">
+
+                <!-- Probe result -->
+                <div class="probe-result" id="probeResult">
+                    <h6 style="font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.6rem;">
+                        <i class="fas fa-microscope"></i> Resultado del sondeo
+                    </h6>
+                    <div id="probeDetails"></div>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Tipo</label>
-                    <select class="form-select" id="newSourceType">
-                        <option value="auto" selected>Auto-detectar</option>
-                        <option value="rss">RSS / Atom</option>
-                        <option value="html">HTML (scraping)</option>
-                        <option value="sitemap">Sitemap XML</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn w-100" style="background:var(--teal);color:#fff;font-size:.84rem;" onclick="addSource()">
-                        <i class="fas fa-plus"></i> Agregar
+            </div>
+        </div>
+
+        <!-- Sources list -->
+        <div class="section-card">
+            <div class="section-head">
+                <h2 class="section-title"><i class="fas fa-satellite-dish" style="color:var(--navy);"></i> Fuentes
+                    registradas</h2>
+                <div class="filter-strip">
+                    <button class="filter-btn active-filter" onclick="filterSources('all')"
+                        data-filter="all">Todas</button>
+                    <button class="filter-btn" onclick="filterSources('active')" data-filter="active">
+                        <i class="fas fa-check-circle text-success"></i> Activas
+                    </button>
+                    <button class="filter-btn" onclick="filterSources('inactive')" data-filter="inactive">
+                        <i class="fas fa-times-circle text-danger"></i> Inactivas
+                    </button>
+                    <button class="filter-btn" onclick="filterSources('blocked')" data-filter="blocked">
+                        <i class="fas fa-shield-alt" style="color:var(--amber);"></i> Bloqueadas
+                    </button>
+                    <button class="filter-btn" onclick="filterSources('predefined')" data-filter="predefined">
+                        <i class="fas fa-lock" style="color:#6f42c1;"></i> Sistema
+                    </button>
+                    <button class="filter-btn" onclick="filterSources('custom')" data-filter="custom">
+                        <i class="fas fa-user" style="color:var(--navy);"></i> Personalizadas
                     </button>
                 </div>
-                <div class="col-12">
-                    <label class="form-label">Notas (opcional)</label>
-                    <input type="text" class="form-control" id="newSourceNotes" placeholder="Observaciones sobre esta fuente…">
+            </div>
+            <div class="section-body" style="padding:.8rem 1rem;">
+                <div id="sourcesContainer">
+                    <div class="text-center py-4 text-muted" style="font-size:.85rem;">
+                        <div class="spinner-border spinner-border-sm me-2"></div>Cargando fuentes…
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Probe result -->
-            <div class="probe-result" id="probeResult">
-                <h6 style="font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.6rem;">
-                    <i class="fas fa-microscope"></i> Resultado del sondeo
-                </h6>
-                <div id="probeDetails"></div>
+        <!-- Footer -->
+        <div class="ngo-footer">
+            <strong>Plataforma NNA</strong> — Sistema Inteligente para la Identificación y Seguimiento de Víctimas
+            Indirectas del Feminicidio en México<br>
+            Gestión de fuentes · Scraping adaptativo · Filtrado geográfico México
+        </div>
+    </div><!-- /page-content -->
+
+
+    <!-- ══════════ Modal: Editar fuente ══════════ -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Editar fuente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editSourceId">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="editName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">URL</label>
+                        <input type="url" class="form-control" id="editUrl">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" id="editType">
+                            <option value="auto">Auto</option>
+                            <option value="rss">RSS / Atom</option>
+                            <option value="html">HTML</option>
+                            <option value="sitemap">Sitemap</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas</label>
+                        <input type="text" class="form-control" id="editNotes">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-sm" style="background:var(--navy);color:#fff;"
+                        onclick="saveEdit()">
+                        <i class="fas fa-save"></i> Guardar cambios
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Sources list -->
-    <div class="section-card">
-        <div class="section-head">
-            <h2 class="section-title"><i class="fas fa-satellite-dish" style="color:var(--navy);"></i> Fuentes registradas</h2>
-            <div class="filter-strip">
-                <button class="filter-btn active-filter" onclick="filterSources('all')" data-filter="all">Todas</button>
-                <button class="filter-btn" onclick="filterSources('active')" data-filter="active">
-                    <i class="fas fa-check-circle text-success"></i> Activas
-                </button>
-                <button class="filter-btn" onclick="filterSources('inactive')" data-filter="inactive">
-                    <i class="fas fa-times-circle text-danger"></i> Inactivas
-                </button>
-                <button class="filter-btn" onclick="filterSources('blocked')" data-filter="blocked">
-                    <i class="fas fa-shield-alt" style="color:var(--amber);"></i> Bloqueadas
-                </button>
-                <button class="filter-btn" onclick="filterSources('predefined')" data-filter="predefined">
-                    <i class="fas fa-lock" style="color:#6f42c1;"></i> Sistema
-                </button>
-                <button class="filter-btn" onclick="filterSources('custom')" data-filter="custom">
-                    <i class="fas fa-user" style="color:var(--navy);"></i> Personalizadas
-                </button>
-            </div>
-        </div>
-        <div class="section-body" style="padding:.8rem 1rem;">
-            <div id="sourcesContainer">
-                <div class="text-center py-4 text-muted" style="font-size:.85rem;">
-                    <div class="spinner-border spinner-border-sm me-2"></div>Cargando fuentes…
+    <!-- ══════════ Modal: Test result ══════════ -->
+    <div class="modal fade" id="testModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-vial me-2"></i>Resultado de prueba</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="testResults">
+                    <div class="text-center py-3">
+                        <div class="spinner-border" style="color:var(--navy);" role="status"></div>
+                        <p class="mt-2 text-muted" style="font-size:.85rem;">Probando fuente… puede tardar unos
+                            segundos.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="ngo-footer">
-        <strong>Plataforma NNA</strong> — Sistema Inteligente para la Identificación y Seguimiento de Víctimas Indirectas del Feminicidio en México<br>
-        Gestión de fuentes · Scraping adaptativo · Filtrado geográfico México
-    </div>
-</div><!-- /page-content -->
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allSources = [];
+        let currentFilter = 'all';
 
-<!-- ══════════ Modal: Editar fuente ══════════ -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Editar fuente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="editSourceId">
-                <div class="mb-3">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="editName">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">URL</label>
-                    <input type="url" class="form-control" id="editUrl">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Tipo</label>
-                    <select class="form-select" id="editType">
-                        <option value="auto">Auto</option>
-                        <option value="rss">RSS / Atom</option>
-                        <option value="html">HTML</option>
-                        <option value="sitemap">Sitemap</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Notas</label>
-                    <input type="text" class="form-control" id="editNotes">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-sm" style="background:var(--navy);color:#fff;" onclick="saveEdit()">
-                    <i class="fas fa-save"></i> Guardar cambios
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ══════════ Modal: Test result ══════════ -->
-<div class="modal fade" id="testModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-vial me-2"></i>Resultado de prueba</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="testResults">
-                <div class="text-center py-3">
-                    <div class="spinner-border" style="color:var(--navy);" role="status"></div>
-                    <p class="mt-2 text-muted" style="font-size:.85rem;">Probando fuente… puede tardar unos segundos.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    let allSources = [];
-    let currentFilter = 'all';
-
-    /* ── Helpers ── */
-    function getCsrfToken() {
-        const m = document.querySelector('meta[name="csrf-token"]');
-        return m ? m.getAttribute('content') : '';
-    }
-    function fetchWithCsrf(url, opts = {}) {
-        opts.headers = opts.headers || {};
-        opts.headers['Content-Type'] = 'application/json';
-        opts.headers['X-CSRFToken'] = getCsrfToken();
-        return fetch(url, opts);
-    }
-    function showLoading(msg = 'Procesando…') {
-        document.getElementById('loading-text').textContent = msg;
-        document.getElementById('loading-overlay').classList.add('show');
-    }
-    function hideLoading() { document.getElementById('loading-overlay').classList.remove('show'); }
-    function showToast(msg, type = 'info') {
-        const area = document.getElementById('toastArea');
-        const el = document.createElement('div');
-        el.className = 'toast-msg ' + type;
-        el.textContent = msg;
-        area.appendChild(el);
-        setTimeout(() => el.remove(), 3500);
-    }
-
-    /* ── Load sources ── */
-    async function loadSources(filter) {
-        if (filter !== undefined) currentFilter = filter;
-        try {
-            const resp = await fetch('/fuentes/api/sources');
-            if (!resp.ok) throw new Error('Error cargando fuentes');
-            const data = await resp.json();
-            allSources = data.sources;
-            updateStats(data);
-            filterSources(currentFilter);
-        } catch (err) {
-            document.getElementById('sourcesContainer').innerHTML =
-                `<p class="text-danger text-center py-3" style="font-size:.85rem;"><i class="fas fa-exclamation-triangle me-1"></i>Error cargando fuentes: ${err.message}</p>`;
+        /* ── Helpers ── */
+        function getCsrfToken() {
+            const m = document.querySelector('meta[name="csrf-token"]');
+            return m ? m.getAttribute('content') : '';
         }
-    }
+        function fetchWithCsrf(url, opts = {}) {
+            opts.headers = opts.headers || {};
+            opts.headers['Content-Type'] = 'application/json';
+            opts.headers['X-CSRFToken'] = getCsrfToken();
+            return fetch(url, opts);
+        }
+        function showLoading(msg = 'Procesando…') {
+            document.getElementById('loading-text').textContent = msg;
+            document.getElementById('loading-overlay').classList.add('show');
+        }
+        function hideLoading() { document.getElementById('loading-overlay').classList.remove('show'); }
+        function showToast(msg, type = 'info') {
+            const area = document.getElementById('toastArea');
+            const el = document.createElement('div');
+            el.className = 'toast-msg ' + type;
+            el.textContent = msg;
+            area.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
 
-    function updateStats(data) {
-        const active  = allSources.filter(s => s.is_active && s.last_status !== 'blocked').length;
-        const inactive = allSources.filter(s => !s.is_active || s.last_status === 'error').length;
-        const blocked  = allSources.filter(s => s.last_status === 'blocked').length;
-        const custom   = allSources.filter(s => !s.is_predefined).length;
+        /* ── Load sources ── */
+        async function loadSources(filter) {
+            if (filter !== undefined) currentFilter = filter;
+            try {
+                const resp = await fetch('/fuentes/api/sources');
+                if (!resp.ok) throw new Error('Error cargando fuentes');
+                const data = await resp.json();
+                allSources = data.sources;
+                updateStats(data);
+                filterSources(currentFilter);
+            } catch (err) {
+                document.getElementById('sourcesContainer').innerHTML =
+                    `<p class="text-danger text-center py-3" style="font-size:.85rem;"><i class="fas fa-exclamation-triangle me-1"></i>Error cargando fuentes: ${err.message}</p>`;
+            }
+        }
 
-        document.getElementById('totalSources').textContent   = data.total;
-        document.getElementById('activeSources').textContent  = active;
-        document.getElementById('inactiveSources').textContent = inactive;
-        document.getElementById('blockedSources').textContent  = blocked;
-        document.getElementById('customSources').textContent   = custom;
-    }
+        function updateStats(data) {
+            const active = allSources.filter(s => s.is_active && s.last_status !== 'blocked').length;
+            const inactive = allSources.filter(s => !s.is_active || s.last_status === 'error').length;
+            const blocked = allSources.filter(s => s.last_status === 'blocked').length;
+            const custom = allSources.filter(s => !s.is_predefined).length;
 
-    /* ── Filter ── */
-    function filterSources(filter) {
-        currentFilter = filter;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.toggle('active-filter', btn.dataset.filter === filter);
-        });
+            document.getElementById('totalSources').textContent = data.total;
+            document.getElementById('activeSources').textContent = active;
+            document.getElementById('inactiveSources').textContent = inactive;
+            document.getElementById('blockedSources').textContent = blocked;
+            document.getElementById('customSources').textContent = custom;
+        }
 
-        let filtered = allSources;
-        if (filter === 'active')    filtered = allSources.filter(s => s.is_active && s.last_status !== 'blocked');
-        else if (filter === 'inactive') filtered = allSources.filter(s => !s.is_active || s.last_status === 'error');
-        else if (filter === 'blocked')  filtered = allSources.filter(s => s.last_status === 'blocked');
-        else if (filter === 'predefined') filtered = allSources.filter(s => s.is_predefined);
-        else if (filter === 'custom')   filtered = allSources.filter(s => !s.is_predefined);
+        /* ── Filter ── */
+        function filterSources(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active-filter', btn.dataset.filter === filter);
+            });
 
-        renderSources(filtered);
-    }
+            let filtered = allSources;
+            if (filter === 'active') filtered = allSources.filter(s => s.is_active && s.last_status !== 'blocked');
+            else if (filter === 'inactive') filtered = allSources.filter(s => !s.is_active || s.last_status === 'error');
+            else if (filter === 'blocked') filtered = allSources.filter(s => s.last_status === 'blocked');
+            else if (filter === 'predefined') filtered = allSources.filter(s => s.is_predefined);
+            else if (filter === 'custom') filtered = allSources.filter(s => !s.is_predefined);
 
-    /* ── Render sources ── */
-    function renderSources(sources) {
-        const container = document.getElementById('sourcesContainer');
-        if (!sources.length) {
-            container.innerHTML = `
+            renderSources(filtered);
+        }
+
+        /* ── Render sources ── */
+        function renderSources(sources) {
+            const container = document.getElementById('sourcesContainer');
+            if (!sources.length) {
+                container.innerHTML = `
                 <div class="text-center py-5 text-muted">
                     <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
                     <span style="font-size:.85rem;">No hay fuentes en esta categoría.</span>
                 </div>`;
-            return;
-        }
+                return;
+            }
 
-        const statusMeta = {
-            ok:      { dot: 'dot-ok',      text: 'Funcionando' },
-            error:   { dot: 'dot-error',   text: 'Error' },
-            blocked: { dot: 'dot-blocked', text: 'Bloqueada' },
-            pending: { dot: 'dot-pending', text: 'Sin probar' },
-        };
-        const typeMap = { rss:'type-rss', html:'type-html', sitemap:'type-sitemap', auto:'type-auto' };
+            const statusMeta = {
+                ok: { dot: 'dot-ok', text: 'Funcionando' },
+                error: { dot: 'dot-error', text: 'Error' },
+                blocked: { dot: 'dot-blocked', text: 'Bloqueada' },
+                pending: { dot: 'dot-pending', text: 'Sin probar' },
+            };
+            const typeMap = { rss: 'type-rss', html: 'type-html', sitemap: 'type-sitemap', auto: 'type-auto' };
 
-        let html = '';
-        sources.forEach(src => {
-            const st = statusMeta[src.last_status] || statusMeta.pending;
-            const typeClass = typeMap[src.source_type] || 'type-auto';
-            const inactive  = src.is_active ? '' : 'inactive';
-            const predef    = src.is_predefined ? 'predefined' : '';
-            const statusItemClass = (src.last_status === 'ok' || src.last_status === 'error' || src.last_status === 'blocked')
-                ? `status-${src.last_status}` : '';
+            let html = '';
+            sources.forEach(src => {
+                const st = statusMeta[src.last_status] || statusMeta.pending;
+                const typeClass = typeMap[src.source_type] || 'type-auto';
+                const inactive = src.is_active ? '' : 'inactive';
+                const predef = src.is_predefined ? 'predefined' : '';
+                const statusItemClass = (src.last_status === 'ok' || src.last_status === 'error' || src.last_status === 'blocked')
+                    ? `status-${src.last_status}` : '';
 
-            const originBadge = src.is_predefined
-                ? `<span class="badge-sys ms-1"><i class="fas fa-lock"></i> Sistema</span>`
-                : `<span class="badge-custom ms-1"><i class="fas fa-user"></i> Personalizada</span>`;
+                const originBadge = src.is_predefined
+                    ? `<span class="badge-sys ms-1"><i class="fas fa-lock"></i> Sistema</span>`
+                    : `<span class="badge-custom ms-1"><i class="fas fa-user"></i> Personalizada</span>`;
 
-            const jsBadge = src.js_heavy
-                ? `<span class="badge-js ms-1"><i class="fas fa-code"></i> JS pesado</span>` : '';
+                const jsBadge = src.js_heavy
+                    ? `<span class="badge-js ms-1"><i class="fas fa-code"></i> JS pesado</span>` : '';
 
-            const lastScraped = src.last_scraped
-                ? new Date(src.last_scraped).toLocaleString('es-MX', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
-                : 'Nunca';
+                const lastScraped = src.last_scraped
+                    ? new Date(src.last_scraped).toLocaleString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    : 'Nunca';
 
-            const articlesInfo = src.articles_found != null
-                ? `<span class="ms-2 text-muted" style="font-size:.71rem;"><i class="fas fa-newspaper me-1"></i>${src.articles_found} arts.</span>` : '';
+                const articlesInfo = src.articles_found != null
+                    ? `<span class="ms-2 text-muted" style="font-size:.71rem;"><i class="fas fa-newspaper me-1"></i>${src.articles_found} arts.</span>` : '';
 
-            // Toggle switch
-            const toggleChecked = src.is_active ? 'checked' : '';
-            let actions = `
+                // Toggle switch
+                const toggleChecked = src.is_active ? 'checked' : '';
+                let actions = `
                 <div class="form-check form-switch mb-0 me-1" title="${src.is_active ? 'Desactivar' : 'Activar'}">
                     <input class="form-check-input mt-1" type="checkbox" role="switch" ${toggleChecked}
                            onchange="toggleSource(${src.id})" style="width:2.4em;height:1.25em;">
@@ -661,24 +960,24 @@
                     <i class="fas fa-vial"></i>
                 </button>`;
 
-            if (!src.is_predefined) {
-                actions += `
+                if (!src.is_predefined) {
+                    actions += `
                 <button class="action-btn" onclick="openEdit(${src.id})" title="Editar">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="action-btn danger" onclick="deleteSource(${src.id}, '${src.name.replace(/'/g,"\\'")}')" title="Eliminar">
+                <button class="action-btn danger" onclick="deleteSource(${src.id}, '${src.name.replace(/'/g, "\\'")}')" title="Eliminar">
                     <i class="fas fa-trash"></i>
                 </button>`;
-            }
+                }
 
-            html += `
+                html += `
             <div class="source-item ${inactive} ${predef} ${statusItemClass}">
                 <div class="d-flex justify-content-between align-items-center gap-2">
                     <div class="flex-grow-1 min-width-0">
                         <div class="d-flex align-items-center flex-wrap gap-1 mb-1">
                             <span class="status-dot ${st.dot}" title="${st.text}"></span>
                             <strong style="font-size:.87rem;">${src.name}</strong>
-                            <span class="type-badge ${typeClass}">${(src.source_type||'auto').toUpperCase()}</span>
+                            <span class="type-badge ${typeClass}">${(src.source_type || 'auto').toUpperCase()}</span>
                             ${originBadge}
                             ${jsBadge}
                             ${!src.is_active ? '<span class="badge bg-secondary" style="font-size:.65rem;">Inactiva</span>' : ''}
@@ -697,41 +996,41 @@
                     </div>
                 </div>
             </div>`;
-        });
-
-        container.innerHTML = html;
-    }
-
-    /* ── Probe URL ── */
-    async function probeUrl() {
-        const url = document.getElementById('newSourceUrl').value.trim();
-        if (!url) { showToast('Ingresa una URL primero', 'warning'); return; }
-
-        const probeDiv = document.getElementById('probeResult');
-        const detailsDiv = document.getElementById('probeDetails');
-        probeDiv.classList.add('show');
-        detailsDiv.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" style="color:var(--navy);"></div> <span style="font-size:.82rem;">Analizando URL…</span></div>';
-
-        try {
-            const resp = await fetchWithCsrf('/fuentes/api/sources/probe', {
-                method: 'POST',
-                body: JSON.stringify({ url }),
             });
-            const data = await resp.json();
 
-            if (data.status === 'success') {
-                const p = data.probe;
-                const typeClass = `type-${p.source_type || 'auto'}`;
-                const jsWarning = p.js_heavy
-                    ? `<div class="alert alert-warning py-2 px-3 mt-2" style="font-size:.78rem;"><i class="fas fa-code me-1"></i><strong>Sitio JS intensivo</strong> — se usará scraping dinámico.</div>` : '';
-                const blockWarn = p.blocked
-                    ? `<div class="alert alert-danger py-2 px-3 mt-2" style="font-size:.78rem;"><i class="fas fa-shield-alt me-1"></i><strong>Sitio con bloqueo detectado</strong> — se activará modo stealth.</div>` : '';
+            container.innerHTML = html;
+        }
 
-                detailsDiv.innerHTML = `
+        /* ── Probe URL ── */
+        async function probeUrl() {
+            const url = document.getElementById('newSourceUrl').value.trim();
+            if (!url) { showToast('Ingresa una URL primero', 'warning'); return; }
+
+            const probeDiv = document.getElementById('probeResult');
+            const detailsDiv = document.getElementById('probeDetails');
+            probeDiv.classList.add('show');
+            detailsDiv.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm" style="color:var(--navy);"></div> <span style="font-size:.82rem;">Analizando URL…</span></div>';
+
+            try {
+                const resp = await fetchWithCsrf('/fuentes/api/sources/probe', {
+                    method: 'POST',
+                    body: JSON.stringify({ url }),
+                });
+                const data = await resp.json();
+
+                if (data.status === 'success') {
+                    const p = data.probe;
+                    const typeClass = `type-${p.source_type || 'auto'}`;
+                    const jsWarning = p.js_heavy
+                        ? `<div class="alert alert-warning py-2 px-3 mt-2" style="font-size:.78rem;"><i class="fas fa-code me-1"></i><strong>Sitio JS intensivo</strong> — se usará scraping dinámico.</div>` : '';
+                    const blockWarn = p.blocked
+                        ? `<div class="alert alert-danger py-2 px-3 mt-2" style="font-size:.78rem;"><i class="fas fa-shield-alt me-1"></i><strong>Sitio con bloqueo detectado</strong> — se activará modo stealth.</div>` : '';
+
+                    detailsDiv.innerHTML = `
                     ${jsWarning}${blockWarn}
                     <div class="row g-2 mt-1" style="font-size:.82rem;">
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Tipo detectado:</strong> <span class="type-badge ${typeClass}">${(p.source_type||'unknown').toUpperCase()}</span></p>
+                            <p class="mb-1"><strong>Tipo detectado:</strong> <span class="type-badge ${typeClass}">${(p.source_type || 'unknown').toUpperCase()}</span></p>
                             <p class="mb-1"><strong>Scraping permitido:</strong> ${p.can_scrape ? '<span class="text-success">Sí</span>' : '<span class="text-danger">No (robots.txt)</span>'}</p>
                             <p class="mb-0"><strong>robots.txt:</strong> ${p.robots_txt ? 'Presente' : 'No encontrado'}</p>
                         </div>
@@ -744,178 +1043,179 @@
                     </div>
                     ${p.rss_feeds && p.rss_feeds.length ? `
                     <details class="mt-2"><summary style="font-size:.78rem;cursor:pointer;color:var(--navy);">Ver feeds RSS detectados (${p.rss_feeds.length})</summary>
-                    <ul class="mt-1 mb-0" style="font-size:.75rem;">${p.rss_feeds.map(f=>`<li><a href="${f}" target="_blank">${f}</a></li>`).join('')}</ul>
+                    <ul class="mt-1 mb-0" style="font-size:.75rem;">${p.rss_feeds.map(f => `<li><a href="${f}" target="_blank">${f}</a></li>`).join('')}</ul>
                     </details>` : ''}`;
 
-                if (p.recommended_method) {
-                    document.getElementById('newSourceType').value =
-                        (['rss','html','sitemap'].includes(p.recommended_method)) ? p.recommended_method : 'auto';
+                    if (p.recommended_method) {
+                        document.getElementById('newSourceType').value =
+                            (['rss', 'html', 'sitemap'].includes(p.recommended_method)) ? p.recommended_method : 'auto';
+                    }
+                } else {
+                    detailsDiv.innerHTML = `<p class="text-danger mb-0" style="font-size:.82rem;"><i class="fas fa-exclamation-triangle me-1"></i>${data.error || 'Error desconocido'}</p>`;
                 }
-            } else {
-                detailsDiv.innerHTML = `<p class="text-danger mb-0" style="font-size:.82rem;"><i class="fas fa-exclamation-triangle me-1"></i>${data.error || 'Error desconocido'}</p>`;
+            } catch (err) {
+                detailsDiv.innerHTML = `<p class="text-danger mb-0" style="font-size:.82rem;">Error al sondear: ${err.message}</p>`;
             }
-        } catch (err) {
-            detailsDiv.innerHTML = `<p class="text-danger mb-0" style="font-size:.82rem;">Error al sondear: ${err.message}</p>`;
         }
-    }
 
-    /* ── Add source ── */
-    async function addSource() {
-        const url = document.getElementById('newSourceUrl').value.trim();
-        if (!url) { showToast('La URL es obligatoria', 'warning'); return; }
+        /* ── Add source ── */
+        async function addSource() {
+            const url = document.getElementById('newSourceUrl').value.trim();
+            if (!url) { showToast('La URL es obligatoria', 'warning'); return; }
 
-        showLoading('Agregando fuente…');
-        const payload = {
-            url,
-            name: document.getElementById('newSourceName').value.trim(),
-            source_type: document.getElementById('newSourceType').value,
-            notes: document.getElementById('newSourceNotes').value.trim(),
-        };
-        try {
-            const resp = await fetchWithCsrf('/fuentes/api/sources', { method: 'POST', body: JSON.stringify(payload) });
-            const data = await resp.json();
-            hideLoading();
-            if (resp.ok) {
-                ['newSourceUrl','newSourceName','newSourceNotes'].forEach(id => document.getElementById(id).value = '');
-                document.getElementById('newSourceType').value = 'auto';
-                document.getElementById('probeResult').classList.remove('show');
-                showToast(data.message || 'Fuente agregada', 'success');
-                loadSources();
-            } else {
-                showToast(data.error || 'Error al agregar fuente', 'error');
+            showLoading('Agregando fuente…');
+            const payload = {
+                url,
+                name: document.getElementById('newSourceName').value.trim(),
+                source_type: document.getElementById('newSourceType').value,
+                notes: document.getElementById('newSourceNotes').value.trim(),
+            };
+            try {
+                const resp = await fetchWithCsrf('/fuentes/api/sources', { method: 'POST', body: JSON.stringify(payload) });
+                const data = await resp.json();
+                hideLoading();
+                if (resp.ok) {
+                    ['newSourceUrl', 'newSourceName', 'newSourceNotes'].forEach(id => document.getElementById(id).value = '');
+                    document.getElementById('newSourceType').value = 'auto';
+                    document.getElementById('probeResult').classList.remove('show');
+                    showToast(data.message || 'Fuente agregada', 'success');
+                    loadSources();
+                } else {
+                    showToast(data.error || 'Error al agregar fuente', 'error');
+                }
+            } catch (err) {
+                hideLoading();
+                showToast('Error de red: ' + err.message, 'error');
             }
-        } catch (err) {
-            hideLoading();
-            showToast('Error de red: ' + err.message, 'error');
         }
-    }
 
-    /* ── Test source ── */
-    async function testSource(sourceId) {
-        const modal = new bootstrap.Modal(document.getElementById('testModal'));
-        const resultsDiv = document.getElementById('testResults');
-        resultsDiv.innerHTML = `
+        /* ── Test source ── */
+        async function testSource(sourceId) {
+            const modal = new bootstrap.Modal(document.getElementById('testModal'));
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = `
             <div class="text-center py-4">
                 <div class="spinner-border" style="color:var(--navy);" role="status"></div>
                 <p class="mt-2 text-muted" style="font-size:.83rem;">Probando fuente… puede tardar unos segundos.</p>
             </div>`;
-        modal.show();
+            modal.show();
 
-        try {
-            const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}/test`, { method: 'POST' });
-            const data = await resp.json();
+            try {
+                const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}/test`, { method: 'POST' });
+                const data = await resp.json();
 
-            if (data.status === 'success') {
-                const p = data.probe;
-                const okClass   = data.articles_found > 0 ? 'alert-success' : 'alert-warning';
-                const okIcon    = data.articles_found > 0 ? 'fa-check-circle' : 'fa-exclamation-triangle';
-                const stealth   = p.stealth_mode;
-                const jsHeavy   = p.js_heavy;
-                let html = `
+                if (data.status === 'success') {
+                    const p = data.probe;
+                    const okClass = data.articles_found > 0 ? 'alert-success' : 'alert-warning';
+                    const okIcon = data.articles_found > 0 ? 'fa-check-circle' : 'fa-exclamation-triangle';
+                    const stealth = p.stealth_mode;
+                    const jsHeavy = p.js_heavy;
+                    let html = `
                     <div class="alert ${okClass} d-flex align-items-start gap-2 mb-3" style="font-size:.85rem;">
                         <i class="fas ${okIcon} mt-1"></i>
                         <div>
                             <strong>Prueba completada</strong> — ${data.articles_found} artículo(s) encontrado(s)
                             ${stealth ? '<br><small><i class="fas fa-user-secret me-1"></i>Modo stealth activado</small>' : ''}
-                            ${jsHeavy  ? '<br><small><i class="fas fa-code me-1"></i>Sitio JS intensivo detectado</small>' : ''}
+                            ${jsHeavy ? '<br><small><i class="fas fa-code me-1"></i>Sitio JS intensivo detectado</small>' : ''}
                         </div>
                     </div>
                     <div class="row g-2 mb-3" style="font-size:.83rem;">
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Tipo:</strong> <span class="type-badge type-${p.source_type}">${(p.source_type||'').toUpperCase()}</span></p>
+                            <p class="mb-1"><strong>Tipo:</strong> <span class="type-badge type-${p.source_type}">${(p.source_type || '').toUpperCase()}</span></p>
                             <p class="mb-1"><strong>robots.txt:</strong> ${p.robots_txt ? 'Presente' : 'No'}</p>
                         </div>
                         <div class="col-md-6">
                             <p class="mb-1"><strong>Método:</strong> ${p.recommended_method}</p>
-                            <p class="mb-1"><strong>Crawl delay:</strong> ${p.crawl_delay ? p.crawl_delay+'s' : 'No especificado'}</p>
+                            <p class="mb-1"><strong>Crawl delay:</strong> ${p.crawl_delay ? p.crawl_delay + 's' : 'No especificado'}</p>
                         </div>
                     </div>`;
 
-                if (data.sample_articles && data.sample_articles.length) {
-                    html += `<h6 style="font-size:.84rem;color:var(--navy);font-weight:600;"><i class="fas fa-newspaper me-1"></i>Artículos de muestra:</h6>`;
-                    data.sample_articles.forEach(a => {
-                        html += `
+                    if (data.sample_articles && data.sample_articles.length) {
+                        html += `<h6 style="font-size:.84rem;color:var(--navy);font-weight:600;"><i class="fas fa-newspaper me-1"></i>Artículos de muestra:</h6>`;
+                        data.sample_articles.forEach(a => {
+                            html += `
                             <div class="p-2 mb-2 rounded" style="background:#f8f9fc;border:1px solid #e8ecf4;font-size:.8rem;">
                                 <strong>${a.titulo}</strong>
-                                <p class="text-muted mb-1 mt-1">${(a.contenido||'').substring(0,180)}…</p>
+                                <p class="text-muted mb-1 mt-1">${(a.contenido || '').substring(0, 180)}…</p>
                                 ${a.enlace ? `<a href="${a.enlace}" target="_blank" style="font-size:.75rem;color:var(--teal);">Ver original <i class="fas fa-external-link-alt"></i></a>` : ''}
                             </div>`;
-                    });
-                }
-                resultsDiv.innerHTML = html;
-            } else {
-                resultsDiv.innerHTML = `
+                        });
+                    }
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = `
                     <div class="alert alert-danger" style="font-size:.85rem;">
                         <i class="fas fa-exclamation-triangle me-1"></i>
                         ${data.message || 'Error al probar la fuente'}
                     </div>`;
-            }
-            loadSources();
-        } catch (err) {
-            resultsDiv.innerHTML = `<div class="alert alert-danger" style="font-size:.85rem;">Error: ${err.message}</div>`;
-        }
-    }
-
-    /* ── Toggle ── */
-    async function toggleSource(sourceId) {
-        try {
-            const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}/toggle`, { method: 'POST' });
-            const data = await resp.json();
-            if (resp.ok) { loadSources(); showToast(data.message || 'Estado actualizado', 'success'); }
-            else showToast(data.error, 'error');
-        } catch (err) { showToast('Error: ' + err.message, 'error'); }
-    }
-
-    /* ── Delete ── */
-    async function deleteSource(sourceId, name) {
-        if (!confirm(`¿Eliminar la fuente "${name}"?\nEsta acción no se puede deshacer.`)) return;
-        showLoading('Eliminando fuente…');
-        try {
-            const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}`, { method: 'DELETE' });
-            const data = await resp.json();
-            hideLoading();
-            if (resp.ok) { showToast(data.message || 'Fuente eliminada', 'success'); loadSources(); }
-            else showToast(data.error, 'error');
-        } catch (err) { hideLoading(); showToast('Error: ' + err.message, 'error'); }
-    }
-
-    /* ── Edit ── */
-    function openEdit(sourceId) {
-        const src = allSources.find(s => s.id === sourceId);
-        if (!src) return;
-        document.getElementById('editSourceId').value = src.id;
-        document.getElementById('editName').value     = src.name;
-        document.getElementById('editUrl').value      = src.url;
-        document.getElementById('editType').value     = src.source_type;
-        document.getElementById('editNotes').value    = src.notes || '';
-        new bootstrap.Modal(document.getElementById('editModal')).show();
-    }
-
-    async function saveEdit() {
-        const sourceId = document.getElementById('editSourceId').value;
-        const payload = {
-            name:        document.getElementById('editName').value.trim(),
-            url:         document.getElementById('editUrl').value.trim(),
-            source_type: document.getElementById('editType').value,
-            notes:       document.getElementById('editNotes').value.trim(),
-        };
-        showLoading('Guardando cambios…');
-        try {
-            const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}`, { method: 'PUT', body: JSON.stringify(payload) });
-            const data = await resp.json();
-            hideLoading();
-            if (resp.ok) {
-                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-                showToast('Fuente actualizada', 'success');
+                }
                 loadSources();
-            } else {
-                showToast(data.error, 'error');
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger" style="font-size:.85rem;">Error: ${err.message}</div>`;
             }
-        } catch (err) { hideLoading(); showToast('Error: ' + err.message, 'error'); }
-    }
+        }
 
-    /* ── Init ── */
-    document.addEventListener('DOMContentLoaded', () => { loadSources(); });
-</script>
+        /* ── Toggle ── */
+        async function toggleSource(sourceId) {
+            try {
+                const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}/toggle`, { method: 'POST' });
+                const data = await resp.json();
+                if (resp.ok) { loadSources(); showToast(data.message || 'Estado actualizado', 'success'); }
+                else showToast(data.error, 'error');
+            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+        }
+
+        /* ── Delete ── */
+        async function deleteSource(sourceId, name) {
+            if (!confirm(`¿Eliminar la fuente "${name}"?\nEsta acción no se puede deshacer.`)) return;
+            showLoading('Eliminando fuente…');
+            try {
+                const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}`, { method: 'DELETE' });
+                const data = await resp.json();
+                hideLoading();
+                if (resp.ok) { showToast(data.message || 'Fuente eliminada', 'success'); loadSources(); }
+                else showToast(data.error, 'error');
+            } catch (err) { hideLoading(); showToast('Error: ' + err.message, 'error'); }
+        }
+
+        /* ── Edit ── */
+        function openEdit(sourceId) {
+            const src = allSources.find(s => s.id === sourceId);
+            if (!src) return;
+            document.getElementById('editSourceId').value = src.id;
+            document.getElementById('editName').value = src.name;
+            document.getElementById('editUrl').value = src.url;
+            document.getElementById('editType').value = src.source_type;
+            document.getElementById('editNotes').value = src.notes || '';
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+
+        async function saveEdit() {
+            const sourceId = document.getElementById('editSourceId').value;
+            const payload = {
+                name: document.getElementById('editName').value.trim(),
+                url: document.getElementById('editUrl').value.trim(),
+                source_type: document.getElementById('editType').value,
+                notes: document.getElementById('editNotes').value.trim(),
+            };
+            showLoading('Guardando cambios…');
+            try {
+                const resp = await fetchWithCsrf(`/fuentes/api/sources/${sourceId}`, { method: 'PUT', body: JSON.stringify(payload) });
+                const data = await resp.json();
+                hideLoading();
+                if (resp.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                    showToast('Fuente actualizada', 'success');
+                    loadSources();
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (err) { hideLoading(); showToast('Error: ' + err.message, 'error'); }
+        }
+
+        /* ── Init ── */
+        document.addEventListener('DOMContentLoaded', () => { loadSources(); });
+    </script>
 </body>
+
 </html>

@@ -55,10 +55,18 @@ escalonada integra cuatro capas autónomas (escudo léxico, escudo suave,
 inferencia BETO y post-filtro de validación) que operan sobre un score acumulativo
 con penalizaciones y bonificaciones aditivas, lo que \textbf{redujo} el efecto péndulo
 documentado en el prototipo 3 (oscilación entre exceso de falsos positivos y
-falsos negativos), tal como se confirma en la evaluación cuantitativa sobre el
-conjunto de prueba etiquetado presentada en el capítulo~\ref{cap:resultados}. El ajuste fino del clasificador permitió el reentrenamiento
-local en CPU aun con recursos limitados. Adicionalmente el módulo \texttt{DeepInvestigator}
-implementó un flujo de investigación estructurada por caso combinando búsqueda web
+falsos negativos). La validación formal sobre el conjunto de prueba ciego,
+$n = 41$ noticias con etiqueta de consenso, con \textbf{$\kappa = 0.91$}
+inter-anotador~\cite{cohen1960coefficient} arrojó un
+\textbf{F1-Score de 0.85} y un recall del 95\% sobre la clase de Alta relevancia,
+la métrica de mayor valor operativo en este dominio pues un falso negativo
+implica que un caso real de orfandad no es detectado por el sistema. Si bien $n=41$
+constituye un conjunto de prueba de tamaño reducido el coeficiente $\kappa$ de
+acuerdo casi perfecto garantiza la confiabilidad de las etiquetas de referencia
+(véase §~\ref{subsec:res_metricas_clasificador} para la discusión completa).
+El ajuste fino del clasificador permitió el reentrenamiento local en CPU aun con
+recursos limitados. Adicionalmente el módulo \texttt{DeepInvestigator} implementó
+un flujo de investigación estructurada por caso combinando búsqueda web
 e inferencia con \textit{Gemini Flash} lo que genera fichas de caso con siete campos
 accionables y que incluyen a la institución competente para la intervención.
 

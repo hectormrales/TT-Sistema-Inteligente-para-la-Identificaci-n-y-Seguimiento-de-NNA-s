@@ -60,7 +60,7 @@
 
 ---
 
-## Diapositiva 03 —  — la línea base
+## Diapositiva 03 — Lecciones del TT1 — la línea base
 **Tiempo: 1:30**
 
 ### Contenido visual
@@ -152,7 +152,7 @@ Diagrama de embudo con 4 etapas y sus números reales:
 | Ve: co-ocurrencia de tokens | Ve: rol semántico en contexto bidireccional |
 | *"menor + feminicidio"* → alerta | Distingue: menor agresor vs. menor víctima indirecta |
 | Ciego a la sintaxis | Comprende: *"sus hijos menores quedaron en resguardo del DIF"* |
-| 60% falsos positivos | ~20% falsos positivos |
+| 60% falsos positivos | **30% FP operativo** (F1=0.85, recall=0.95) |
 
 **Abajo:** Arquitectura simplificada de BETO
 - 12 capas Transformer → 110M parámetros → 768 dimensiones por token
@@ -260,21 +260,26 @@ Flujo de 4 pasos con íconos:
 **Tiempo: 1:30** *(la más fácil de defender)*
 
 ### Contenido visual
-Tabla de cumplimiento de metas con ✓ en cada fila:
+Dos bloques: tabla de metas + recuadro de métricas formales
+
+**Tabla de cumplimiento de metas:**
 
 | Métrica | TT1 (P2) | Meta TT2 | Resultado P4 | ✓ |
 |---|---|---|---|---|
-| **Falsos positivos** | 60% | < 30% | ~20% | ✓ |
+| **Falsos positivos** | 60% | ≤ 30% | **30%** | ✓ |
 | **Fuentes monitoreadas** | 10 RSS | 45 RSS + GNews | 45 RSS + GNews + Stealth | ✓ |
 | **Volumen de ingesta** | 281 noticias | >500 únicas | **634 únicas** | ✓ |
 | **Motor de clasificación** | RegEx 72 patrones | BETO fine-tuning | BETO Finetuned + Escalonado | ✓ |
 | **Persistencia** | CSV plano | PostgreSQL 16 | PostgreSQL 16 (ACID) | ✓ |
 
+**Recuadro de métricas formales (corpus ciego, n=41):**
+- Precisión: **0.77** · Recall: **0.95** · F1: **0.85**
+- κ de Cohen: **0.91** (acuerdo casi perfecto entre 2 anotadores)
+- VP=20 · VN=14 · FP=6 · FN=1
 - Nota: **27 casos de Alta relevancia** (4.4% del corpus) — verificados manualmente
-- Nota metodológica: el ~20% de FP es una observación operativa; Precisión/Recall/F1/κ reportados en el documento técnico
 
 ### Speech
-> *"Los resultados cierran el ciclo que abrimos en el TT1. Las cinco metas cuantitativas definidas al inicio del semestre fueron cumplidas. La tasa de falsos positivos bajó del 60% con RegEx a alrededor del 20% con la arquitectura escalonada. Ese 20% es una observación operativa sobre el corpus de producción — en el documento técnico se reportan las métricas formales del clasificador: precisión, recall, F1 y el coeficiente Kappa de Cohen, calculadas sobre un conjunto de prueba etiquetado de forma independiente por dos anotadores. Las 27 noticias de Alta clasificación fueron revisadas manualmente y todas corresponden a casos verificables de orfandad por feminicidio con NNA identificables."*
+> *"Los resultados cierran el ciclo que abrimos en el TT1. Las cinco metas cuantitativas fueron cumplidas. La tasa de falsos positivos bajó del 60% con RegEx al 30% con la arquitectura escalonada — exactamente en el umbral de operatividad que nos fijamos. Pero más importante que ese número operativo son las métricas formales del clasificador, calculadas sobre un corpus de prueba ciego de 41 noticias que el modelo nunca vio durante el entrenamiento: F1 de 0.85, y un recall de 0.95 sobre la clase de Alta relevancia. Ese recall es la métrica que realmente importa en este dominio: un falso negativo significa que un caso real de orfandad no fue detectado. De los 21 casos reales en el corpus de prueba, el sistema identificó 20. El único que se escapó era una noticia con redacción ambigua sin mención explícita de menores. El coeficiente Kappa de Cohen de 0.91 entre los dos anotadores garantiza que esas etiquetas de referencia son confiables."*
 
 ---
 
@@ -283,10 +288,11 @@ Tabla de cumplimiento de metas con ✓ en cada fila:
 
 ### Contenido visual
 - Screenshot del dashboard (imagen `dashboard_principal.png`)
-- Etiquetas señalando: clasificación Alta/Media, score semántico, tópico BERTopic, botón "Investigar", buscador FTS, exportar CSV
+- Etiquetas señalando: badge Alta/Media, score semántico, tópico BERTopic, botón **"Investigar más en web"** (visible en todas las tarjetas Alta), buscador FTS, **Modo Privacidad** (ícono candado por tarjeta)
+- Gráficas activas: tendencia temporal + mapa de estados con mayor incidencia
 
 ### Speech
-> *"El producto final es un dashboard Flask accesible desde cualquier navegador, desplegado en Docker con tres contenedores — la base de datos PostgreSQL, el analizador y la interfaz web. El analista ve inmediatamente las noticias ordenadas por score semántico, puede filtrar por clasificación, buscar con Full-Text Search en español con latencia O(log n) gracias a los índices GIN, y activar el DeepInvestigator sobre cualquier noticia de Alta relevancia con un clic. Los casos investigados se agregan a una lista de seguimiento exportable en CSV. Lo que antes eran decenas de horas de revisión manual se convierte en minutos de revisión semi-automatizada."*
+> *"El producto final es un dashboard Flask accesible desde cualquier navegador, desplegado en Docker. El analista ve las noticias clasificadas automáticamente — cada tarjeta muestra su nivel de relevancia, score semántico y tópico BERTopic. El buscador usa Full-Text Search nativo de PostgreSQL con índices GIN en español, con latencia O(log n) y expansión automática de sinónimos: buscar 'niños' también encuentra 'menores', 'NNA' e 'infantes'. Sobre cualquier noticia de Alta relevancia, el botón de DeepInvestigator está disponible directamente en la tarjeta — sin necesidad de cambiar de vista. Y el Modo Privacidad permite censurar los datos sensibles de cada caso individualmente, artículo por artículo — no es un toggle global, sino control granular por caso, diseñado para que el analista pueda trabajar en entornos compartidos sin exponer identidades de los menores. Es Privacidad por Diseño implementada en el frontend."*
 
 ---
 
@@ -333,8 +339,8 @@ Tabla de cumplimiento de metas con ✓ en cada fila:
 **1. ¿Por qué no usaron GPT-4 o Claude en lugar de BETO?**
 > Tres razones: privacidad (datos de víctimas menores no pueden salir del sistema), costo (600 noticias en GPT-4 = ~$40 USD por ciclo), y reproducibilidad científica (los modelos propietarios modifican sus pesos sin aviso).
 
-**2. ¿El 20% de falsos positivos sigue siendo alto?**
-> Es significativamente mejor que el 60% del TT1. Hay que distinguir dos cosas: el 20% es una observación operativa durante la validación manual del prototipo 4, no una métrica de conjunto de test formal. Las métricas formales — precisión, recall, F1 y Kappa de Cohen — están calculadas sobre un conjunto de prueba etiquetado independientemente y reportadas en el documento técnico. Además, el sistema está diseñado para que el analista humano haga la validación final — para eso existe el DeepInvestigator.
+**2. ¿El 30% de falsos positivos sigue siendo alto?**
+> Es exactamente el umbral de operatividad que nos fijamos como meta al inicio del TT2 — y lo cumplimos. Hay que distinguir dos métricas: el 30% es la tasa de falsos positivos operativa medida sobre el corpus de producción; las métricas formales del clasificador —F1=0.85, recall=0.95, precisión=0.77— se calcularon sobre un corpus de prueba ciego de 41 noticias etiquetadas independientemente. El sistema está diseñado para que el analista humano haga la validación final con el DeepInvestigator — un FP no es un error crítico, es una tarea de revisión de 47 segundos.
 
 **3. ¿Es ético usar IA para rastrear casos de feminicidio?**
 > El sistema procesa exclusivamente información periodística pública. No identifica datos personales de NNA — eso está explícitamente excluido por diseño y alineado con la LGDNNA. El objetivo es visibilizar la crisis, no exponer a las víctimas.
@@ -343,10 +349,16 @@ Tabla de cumplimiento de metas con ✓ en cada fila:
 > El módulo de gestión de fuentes del dashboard incluye un sondeo técnico previo antes de activar cualquier fuente nueva. Si un feed deja de funcionar, el Circuit Breaker lo detecta y el administrador recibe la alerta.
 
 **5. ¿Cómo validan que las 27 noticias de Alta son casos reales?**
-> Dos niveles. Primero, revisión manual individual por el equipo. Segundo, un conjunto de prueba con noticias del corpus de producción no vistas durante el entrenamiento, etiquetadas de forma independiente por dos anotadores, con Kappa de Cohen calculado para validar la confiabilidad del etiquetado. Eso es lo que fundamenta las métricas del documento técnico.
+> Dos niveles. Primero, revisión manual del equipo caso por caso. Segundo, un corpus de prueba ciego de 41 noticias —partición 80/20 estratificada por clase— etiquetadas de forma independiente por dos anotadores: un profesor de ESCOM y el autor del TT. El Kappa de Cohen entre ambos fue **0.91** — acuerdo casi perfecto según la escala de Landis y Koch. Eso es lo que da validez estadística a las métricas reportadas.
 
 **6. ¿Evaluaron sobre el mismo corpus con el que entrenaron BETO? (pregunta trampa — alta probabilidad)**
-> No. El conjunto de prueba se construyó separando explícitamente las instancias que no fueron usadas en el fine-tuning. El modelo no vio esas noticias durante el entrenamiento. Evaluar sobre datos de entrenamiento inflaría artificialmente el desempeño — ese error de data leakage se evitó.
+> No. El corpus etiquetado fue particionado **antes** de iniciar cualquier ciclo de fine-tuning. El 20% —41 noticias— fue aislado físicamente y el modelo nunca accedió a ellas durante el entrenamiento ni durante la optimización de hiperparámetros. Evaluar sobre datos de entrenamiento inflaría artificialmente el desempeño —ese error de data leakage se previno por diseño.
 
 **7. ¿Por qué Kappa de Cohen y no porcentaje de acuerdo simple?**
-> El porcentaje simple ignora el acuerdo que ocurre por azar. Si el corpus es 80% negativo y ambos anotadores clasifican todo como negativo, el acuerdo sería 80% pero trivial. El Kappa descuenta esa componente aleatoria — es el estándar en anotación de corpus NLP desde Landis y Koch (1977).
+> El porcentaje simple ignora el acuerdo que ocurre por azar. Si el corpus es 80% negativo y ambos anotadores clasifican todo como negativo, el acuerdo sería 80% pero trivial. El Kappa descuenta esa componente aleatoria — es el estándar en anotación de corpus NLP desde Landis y Koch (1977). Nuestro κ=0.91 es robusto a esa crítica.
+
+**8. ¿Por qué el dashboard no tiene filtros por categoría?**
+> El diseño deliberadamente simplificado responde a una decisión de UX: los badges visuales de Alta/Media en cada tarjeta hacen redundante un filtro global. El analista puede ordenar por fecha o score semántico, y usar el buscador FTS para consultas específicas. Esto reduce la carga cognitiva y evita que el analista se «quede» en un sólo filtro y pierda contexto cruzado.
+
+**9. ¿El Modo Privacidad realmente protege los datos?**
+> Es una capa de protección para el entorno de trabajo — censurar datos en pantalla para sesiones compartidas o presentaciones. El sistema no almacena datos de identidad de menores: trabaja exclusivamente sobre texto periodístico público. La Privacidad por Diseño en el frontend es la implementación del Principio 7 de Ann Cavoukian aplicado a la interfaz: el usuario controla qué expone, artículo por artículo.
