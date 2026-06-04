@@ -1,0 +1,18 @@
+flowchart LR
+    E["<b>Embeddings BETO</b><br><small>768 dimensiones</small>"] --> U
+    
+    subgraph BERTopic [Motor de agrupamiento semántico]
+        direction LR
+        U["<b>UMAP</b><br><small>Reducción a 5D<br>(Métrica Coseno)</small>"] --> H
+        H["<b>HDBSCAN</b><br><small>Clustering por densidad<br>(Sin K fijo)</small>"] --> C
+        C["<b>c-TF-IDF</b><br><small>Extracción de<br>representación léxica</small>"]
+    end
+    
+    C --> OUT["<b>15 Tópicos</b><br><small>Custodia DIF, NNA Testigos</small>"]
+
+    style E fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+    style U fill:#ffffff,stroke:#64748b
+    style H fill:#ffffff,stroke:#64748b
+    style C fill:#ffffff,stroke:#64748b
+    style OUT fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style BERTopic fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,rx:10

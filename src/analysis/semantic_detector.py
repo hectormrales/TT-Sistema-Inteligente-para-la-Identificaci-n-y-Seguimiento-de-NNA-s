@@ -1,52 +1,4 @@
-# src/analysis/semantic_detector.py — Detector semántico con BETO/BERT
-"""
-OE-1: Migración de detección sintáctica a semántica.
-
-Implementa un clasificador binario basado en BETO (BERT para español)
-para determinar si una noticia está relacionada con feminicidio/NNA.
-
-Arquitectura:
-  ┌─────────────────────────────────────────────────────────┐
-  │  Texto (título + contenido)                             │
-  │         ↓                                               │
-  │  Tokenizer BETO (WordPiece, max_length=512)             │
-  │         ↓                                               │
-  │  BETO Encoder (12 capas Transformer, 768-dim)           │
-  │         ↓                                               │
-  │  [CLS] token → embedding 768-dim                        │
-  │         ↓                                               │
-  │  Clasificador binario (Linear 768→256→1 + Sigmoid)      │
-  │         ↓                                               │
-  │  P(relevante) ∈ [0, 1]                                  │
-  └─────────────────────────────────────────────────────────┘
-
-Modos de operación (prioridad v5.1):
-  1. Fine-tuned (PRIORITARIO): Clasificador binario entrenado con datos
-     etiquetados del pipeline heurístico. Es el único modo que comprende
-     sintaxis relacional (ej. "niña sobrevive" ≠ "niña asesinada").
-  2. Zero-shot (ÚLTIMO RECURSO): Similitud coseno con BETO pre-entrenado.
-     Genera falsos positivos en contextos relacionales. Solo se activa si
-     no existe modelo fine-tuned, con advertencia explícita en el logger.
-  3. Auto: Selecciona finetuned si el modelo existe, zero_shot con warning
-     si no existe.
-
-Modelo base:
-  - dccuchile/bert-base-spanish-wwm-cased (BETO)
-  - Entrenado con corpus en español (Wikipedia + OPUS)
-  - 110M parámetros, 12 capas, 768-dim embeddings
-
-Métricas objetivo (OE-1):
-  - Precisión ≥ 95%
-  - Recall ≥ 90%
-  - Falsos positivos ≤ 3%
-"""
-
 import os
-
-# Configuración Estricta Offline para Hugging Face (Comentado para permitir primer descarga de otros modelos)
-# os.environ['HF_HUB_OFFLINE'] = '1'
-# os.environ['TRANSFORMERS_OFFLINE'] = '1'
-
 import re
 import json
 import logging
@@ -103,7 +55,6 @@ CACHE_DIR = os.environ.get("MODEL_CACHE_DIR", "models/cache")
 FINETUNED_DIR = os.environ.get("FINETUNED_MODEL_DIR", "models/finetuned")
 
 # Descripciones de categorías para zero-shot classification
-# v2.0: Descripciones mucho más específicas para el caso de uso exacto.
 CATEGORY_DESCRIPTIONS = {
     "relevante": (
         "Caso individual, particular y concreto de feminicidio en México donde una mujer fue asesinada, "
@@ -123,9 +74,7 @@ CATEGORY_DESCRIPTIONS = {
 }
 
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Dataset para fine-tuning
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 class NNANewsDataset(Dataset):
     """
@@ -169,9 +118,8 @@ class NNANewsDataset(Dataset):
         }
 
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Clasificador binario con cabeza de clasificación
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 
 class BETOClassifier(nn.Module):
     """
@@ -690,10 +638,10 @@ class SemanticDetector:
     @classmethod
     def _post_filtro_validacion(cls, texto: str) -> dict:
         """
-        Post-filtro de Validación Semántica v6.0.
+        Post-filtro de Validación Semántica
 
         Se ejecuta DESPUÉS de BETO cuando el score >= 0.85 para
-        verificar que el texto realmente describe un caso fáctico de
+        verificar que el texto describe un caso fáctico de
         NNA que queda huérfano/sobreviviente por feminicidio.
 
         Estrategia:
@@ -763,7 +711,7 @@ class SemanticDetector:
 
     def _escudo_suave(self, texto: str) -> tuple[bool, str]:
         """
-        v7.0: Comprueba si el texto contiene keywords del Escudo Suave.
+        Comprueba si el texto contiene keywords del Escudo Suave.
 
         A diferencia del Escudo Léxico (bloqueo total), el Escudo Suave
         aplica una penalización de score (-0.35) pero NO bloquea la noticia.

@@ -1,0 +1,31 @@
+flowchart TB
+ subgraph Pipeline["Flujo analítico"]
+    direction LR
+        N1["<b>[Recolección]</b><br>45 RSS<br>Google News<br>StealthSession"]
+        N2["<b>[Deduplicación]</b><br>Cascada 4F<br>MD5 → Coseno"]
+        N3["<b>[Clasificación]</b><br>BETO escalonado"]
+        N4["<b>[Agrupamiento]</b><br>BERTopic<br>UMAP+HDBSCAN"]
+        N5["<b>[Dashboard]</b><br>Flask<br>PostgreSQL"]
+  end
+ subgraph Infraestructura["Contenedores docker"]
+    direction LR
+        D3[("Contenedor web<br>nna-webapp")]
+        D1[("Contenedor PNL<br>nna-analyzer")]
+        D2[("Contenedor PostgreSQL<br>nna-postgres")]
+  end
+    N1 ==> N2
+    N2 ==> N3
+    N3 ==> N4
+    N4 ==> N5
+    D1 ~~~ D2
+    D2 ~~~ D3
+    Pipeline === Infraestructura
+
+     N1:::block
+     N2:::block
+     N3:::block
+     N4:::block
+     N5:::block
+    classDef block fill:#ffffff,stroke:#1d4ed8,stroke-width:2px,color:#0f172a,rx:8
+    style Pipeline fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,rx:10
+    style Infraestructura fill:#f1f5f9,stroke:#64748b,stroke-width:2px,stroke-dasharray: 5 5,rx:10

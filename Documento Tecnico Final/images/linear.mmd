@@ -1,0 +1,16 @@
+flowchart TD
+    IN[Texto de la Noticia] --> B1
+    
+    subgraph ESTRATEGIA [Linear    . . . . .    probing]
+        direction TB
+        B1["<b>Bloques transformer (BETO)</b><br>110M de parámetros<br><i>(Capas congeladas<br>sin actualizar)</i>"]
+        B2["<b>Cabeza de clasificación</b><br>2,307 parámetros<br><i>(capa entrenable)</i>"]
+        
+        B1 -->|Embeddings 768D| B2
+    end
+    
+    B2 --> OUT[Predicción:<br>Alta / Media / Ruido]
+    
+    style B1 fill:#f1f5f9,stroke:#64748b,stroke-width:2px,stroke-dasharray: 5 5
+    style B2 fill:#dbeafe,stroke:#2563eb,stroke-width:3px
+    style ESTRATEGIA fill:#ffffff,stroke:#cbd5e1,stroke-width:2px,rx:10

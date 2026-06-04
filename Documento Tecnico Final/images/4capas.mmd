@@ -1,0 +1,27 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph subGraph0["Arquitectura neuro-simbólica"]
+    direction TB
+        C0["Capa 0. Escudo léxico<br><small>Bloquea temas ajenos</small>"]
+        C1["Capa 1. Escudo suave<br><small>Penaliza contexto genérico (-0.35)</small>"]
+        C2{"Capa 2. Inferencia BETO<br><small>Asigna probabilidad semántica</small>"}
+        C3["Capa 3. Post-Filtro<br><small>Evalúa roles </small>"]
+  end
+    C0 -- Pasa --> C1
+    C1 -- Score Ajustado --> C2
+    C2 -- Score Base --> C3
+    C3 --> OUT["<b>ALTA ≥0.60</b>"] & n2["`**MEDIA ≥ 0.35**`"] & n3["`**RUIDO &lt; 0.35**`"]
+
+    style C0 fill:#ffffff,stroke:#94a3b8
+    style C1 fill:#ffffff,stroke:#94a3b8
+    style C2 fill:#dbeafe,stroke:#2563eb,stroke-width:3px
+    style C3 fill:#ffffff,stroke:#94a3b8
+    style OUT fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style n2 fill:#FFF9C4,stroke:#FFD600,stroke-width:2px
+    style n3 fill:#ffffff,stroke:#000000,stroke-width:2px
+
+
+    

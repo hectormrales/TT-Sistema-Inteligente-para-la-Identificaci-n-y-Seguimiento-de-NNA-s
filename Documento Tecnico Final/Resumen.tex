@@ -25,19 +25,19 @@ El módulo de recolección implementa una arquitectura híbrida \textbf{RSS + St
 opera sobre fuentes de noticias nacionales y locales con cobertura complementaria mediante
 emulación de \textit{fingerprint} TLS, lo que permite eludir los \textit{Web Application Firewalls}
 que bloquean el acceso. La clasificación semántica se basa en \textbf{BETO}
-(\textit{bert-base-spanish-wwm-cased}), que es un modelo Transformer bidireccional de 110 millones
-de parámetros preentrenado en español e integrado en una \textbf{arquitectura de clasificación
+(\textit{bert-base-spanish-wwm-cased}) que es un modelo Transformer bidireccional de 110 millones
+de parámetros preentrenado en español e integrado en una arquitectura de \textbf{clasificación
 escalonada} de cuatro capas que combina reglas simbólicas de dominio y la inferencia neuronal
-para reducir el ruido semántico propio del corpus de noticias sobre violencia de género.
+para reducir ruido semántico del corpus de noticias sobre violencia de género.
 
 \vspace{0.5cm}
 
 \noindent
 La información clasificada se persiste en una base de datos \textbf{PostgreSQL} la cual es
-accesible mediante una interfaz web que incorpora el módulo de \textit{Investigación profunda} (\texttt{DeepInvestigator}),
-donde se generan fichas de caso estructuradas con datos accionables para organizaciones civiles e instituciones gubernamentales,
-contribuyendo a la materialización del principio del \textit{interés superior de la niñez}
-consagrado en la Ley General de los Derechos de Niñas,
+accesible mediante una interfaz web que incorpora el módulo de \textit{Investigación profunda}
+(\texttt{DeepInvestigator}), donde se generan fichas de caso estructuradas con datos accionables
+para organizaciones civiles lo que contribuye a la materialización del principio del \textit{interés
+superior de la niñez} consagrado en la Ley General de los Derechos de Niñas,
 Niños y Adolescentes (LGDNNA).
 
 \vspace{1.2cm}
