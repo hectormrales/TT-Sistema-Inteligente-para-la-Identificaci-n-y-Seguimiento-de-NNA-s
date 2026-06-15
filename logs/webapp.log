@@ -21469,3 +21469,72 @@ WHERE noticias.enlace = %(enlace_1)s
 2026-06-01 23:13:19,495 - app - INFO - Esquema FTS inicializado
 2026-06-01 23:13:19,494 - src.database.repository - INFO - Esquema FTS inicializado correctamente
 2026-06-01 23:13:19,495 - app - INFO - Esquema FTS inicializado
+2026-06-03 21:40:37,992 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-06-03 21:40:38,049 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-03 21:40:38,050 - app - INFO - Esquema FTS inicializado
+2026-06-03 21:40:38,054 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-03 21:40:38,057 - app - INFO - Esquema FTS inicializado
+2026-06-03 21:41:19,172 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:41:30,401 - app - INFO - Logout: admin
+2026-06-03 21:42:03,837 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:42:09,857 - app - INFO - Logout: admin
+2026-06-03 21:42:36,996 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:42:53,475 - app - INFO - Logout: admin
+2026-06-03 21:43:35,644 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:44:19,869 - app - INFO - Logout: admin
+2026-06-03 21:44:39,440 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:45:34,939 - app - INFO - Logout: admin
+2026-06-03 21:45:46,719 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:46:04,138 - app - INFO - Logout: admin
+2026-06-03 21:46:17,502 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:46:37,375 - src.analysis.investigator - INFO - Iniciando investigación para: ¡Frente a su hijo de 5 años! Mariana es asesinada ...
+2026-06-03 21:46:37,376 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-03 21:46:39,492 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-03 21:46:39,494 - src.analysis.investigator - INFO - Query generada: Mariana asesinada Naucalpan frente hijo
+2026-06-03 21:46:39,494 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Mariana+asesinada+Naucalpan+frente+hijo
+2026-06-03 21:46:40,405 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Mariana+asesinada+Naucalpan+frente+hijo
+2026-06-03 21:46:41,459 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=%C2%A1Frente+a+su+hijo+de+5+a%C3%B1os%21+Mariana+es+asesinada+
+2026-06-03 21:46:55,927 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=%C2%A1Frente+a+su+hijo+de+5+a%C3%B1os%21+Mariana+es+asesinada+
+2026-06-03 21:47:02,344 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-03 21:47:02,344 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Mariana asesinada Naucalpan frente hijo. Intentando con búsqueda nativa de Gemini...
+2026-06-03 21:47:02,345 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-03 21:47:12,687 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-03 21:47:12,689 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-03 21:47:36,255 - app - INFO - Logout: admin
+2026-06-03 21:47:38,043 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:47:55,003 - app - INFO - Logout: admin
+2026-06-03 21:48:05,644 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:48:11,813 - app - INFO - Logout: admin
+2026-06-03 21:48:28,858 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:48:43,310 - src.analysis.investigator - INFO - Iniciando investigación para: Hallan sin vida a mujer y militar dentro de su cas...
+2026-06-03 21:48:43,310 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-03 21:48:47,528 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-03 21:48:47,530 - src.analysis.investigator - INFO - Query generada: Toluca mujer militar hijos asesinada
+2026-06-03 21:48:47,530 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Toluca+mujer+militar+hijos+asesinada
+2026-06-03 21:48:48,688 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Toluca+mujer+militar+hijos+asesinada
+2026-06-03 21:48:50,270 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Hallan+sin+vida+a+mujer+y+militar+dentro+de+su+cas
+2026-06-03 21:49:12,843 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Hallan+sin+vida+a+mujer+y+militar+dentro+de+su+cas
+2026-06-03 21:49:14,015 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-03 21:49:14,015 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Toluca mujer militar hijos asesinada. Intentando con búsqueda nativa de Gemini...
+2026-06-03 21:49:14,016 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-03 21:49:33,230 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-03 21:49:33,232 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-03 21:49:58,697 - app - INFO - Logout: admin
+2026-06-03 21:50:27,999 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:58:06,473 - app - INFO - Logout: admin
+2026-06-03 21:58:22,033 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-03 21:59:31,140 - app - INFO - Logout: admin
+2026-06-03 21:59:43,551 - app - INFO - Login exitoso: admin desde 172.19.0.1
