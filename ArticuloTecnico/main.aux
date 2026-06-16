@@ -1,5 +1,5 @@
 \relax 
-\providecommand \babel@aux [2]{\global \let \babel@toc \@gobbletwo }
+\providecommand\babel@aux[2]{}
 \@nameuse{bbl@beforestart}
 \catcode `"\active 
 \catcode `<\active 
@@ -11,7 +11,6 @@
 \citation{sesnsp2023}
 \citation{redim2022}
 \citation{onu2019}
-\citation{onu2019}
 \citation{bird2009nlp}
 \citation{joachims1998text}
 \citation{pressman2014}
@@ -21,20 +20,20 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {A}Limitaciones del monitoreo manual}{1}{subsection.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {B}Contribución del trabajo}{1}{subsection.1.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {II}Metodología}{1}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {A}Recolección multi-fuente con StealthSession}{1}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A}Recolección multi-fuente}{1}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B}Clasificador Neuro-Simbólico Escalonado}{1}{subsection.2.2}\protected@file@percent }
 \citation{CaneteCFP2020}
 \citation{guo2017calibration}
 \citation{bertopic2022}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B}Clasificador Neuro-Simbólico Escalonado (BETO)}{2}{subsection.2.2}\protected@file@percent }
-\newlabel{eq:score}{{1}{2}{Clasificador Neuro-Simbólico Escalonado (BETO)}{equation.1}{}}
+\newlabel{eq:score}{{1}{2}{Clasificador Neuro-Simbólico Escalonado}{equation.2.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C}Agrupamiento Semántico — BERTopic}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {D}Módulo DeepInvestigator}{2}{subsection.2.4}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Arquitectura del clasificador neuro-simbólico escalonado de cuatro capas. Las capas simbólicas (0 y 1) modulan la salida neuronal de \textsc  {beto}{} (Capa~2) mediante penalizaciones y bonificaciones aditivas antes del post-filtro (Capa~3).}}{2}{figure.1}\protected@file@percent }
 \newlabel{fig:clasificador}{{1}{2}{Arquitectura del clasificador neuro-simbólico escalonado de cuatro capas. Las capas simbólicas (0 y 1) modulan la salida neuronal de \BETO {} (Capa~2) mediante penalizaciones y bonificaciones aditivas antes del post-filtro (Capa~3)}{figure.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D}Módulo DeepInvestigator}{2}{subsection.2.4}\protected@file@percent }
+\newlabel{lst:json}{{1}{2}{Ejemplo de ficha JSON generada por DeepInvestigator (anonimizado)}{lstlisting.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Ejemplo de ficha JSON generada por DeepInvestigator (anonimizado).}{2}{lstlisting.1}\protected@file@percent }
 \citation{landis1977}
 \citation{cohen1960}
-\newlabel{lst:json}{{1}{3}{Ejemplo de ficha JSON generada por DeepInvestigator (anonimizado)}{lstlisting.1}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Ejemplo de ficha JSON generada por DeepInvestigator (anonimizado).}{3}{lstlisting.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {E}Arquitectura de Despliegue}{3}{subsection.2.5}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Arquitectura de microservicios contenerizada. Tres contenedores Docker se comunican sobre la red privada \texttt  {nna-network}, garantizando aislamiento de recursos y persistencia de datos ante reinicios del sistema.}}{3}{figure.2}\protected@file@percent }
 \newlabel{fig:arquitectura}{{2}{3}{Arquitectura de microservicios contenerizada. Tres contenedores Docker se comunican sobre la red privada \texttt {nna-network}, garantizando aislamiento de recursos y persistencia de datos ante reinicios del sistema}{figure.2}{}}
@@ -45,6 +44,8 @@
 \newlabel{tab:metricas}{{I}{3}{Métricas del clasificador escalonado ($n{=}41$)}{table.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C}Distribución del Embudo Analítico}{3}{subsection.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {D}Agrupamiento y DeepInvestigator}{3}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Top~5 tópicos identificados por BERTopic}}{3}{table.2}\protected@file@percent }
+\newlabel{tab:topicos}{{II}{3}{Top~5 tópicos identificados por BERTopic}{table.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {E}Evaluación Comparativa TT-1 / TT-2}{3}{subsection.3.5}\protected@file@percent }
 \bibcite{sesnsp2023}{1}
 \bibcite{redim2022}{2}
@@ -58,8 +59,6 @@
 \bibcite{bird2009nlp}{10}
 \bibcite{joachims1998text}{11}
 \bibcite{pressman2014}{12}
-\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Top~5 tópicos identificados por BERTopic}}{4}{table.2}\protected@file@percent }
-\newlabel{tab:topicos}{{II}{4}{Top~5 tópicos identificados por BERTopic}{table.2}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Comparativa de métricas TT-1 vs.\ TT-2}}{4}{table.3}\protected@file@percent }
 \newlabel{tab:comparativa}{{III}{4}{Comparativa de métricas TT-1 vs.\ TT-2}{table.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {IV}Conclusiones}{4}{section.4}\protected@file@percent }

@@ -1,28 +1,4 @@
-"""
-evaluate_classifier.py — Evaluación formal del clasificador BETO
-sobre un conjunto de prueba etiquetado manualmente por dos anotadores.
 
-Uso:
-    python -m src.analysis.evaluate_classifier --test_csv test_labels.csv
-
-Formato de test_labels.csv (sin header obligatorio, pero recomendado):
-    id_noticia,titulo,contenido,label_a1,label_a2
-    123,"Feminicidio en Jalisco...","El cuerpo de la mujer...",1,1
-    456,"Congreso aprueba ley...","La cámara de diputados...",0,0
-    ...
-
-Columnas:
-    id_noticia  — identificador único (puede ser el id de PostgreSQL)
-    titulo      — título de la noticia
-    contenido   — cuerpo completo (o resumen)
-    label_a1    — etiqueta del Anotador 1: 1=relevante (orfandad), 0=no relevante
-    label_a2    — etiqueta del Anotador 2: 1=relevante (orfandad), 0=no relevante
-
-Salida:
-    - Métricas en consola (Precisión, Recall, F1, Kappa)
-    - Matriz de confusión en consola
-    - Archivo metricas_clasificador.tex con tablas LaTeX listas para copiar
-"""
 
 import argparse
 import os

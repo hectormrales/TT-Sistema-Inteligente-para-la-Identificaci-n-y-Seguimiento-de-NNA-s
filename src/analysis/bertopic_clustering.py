@@ -1,56 +1,9 @@
 # src/analysis/bertopic_clustering.py — Clustering Semántico con BERTopic
 """
-OE-4: Implementación de BERTopic para agrupación semántica de noticias.
 
-Arquitectura del pipeline:
-  ┌──────────────────────────────────────────────────────────┐
-  │  BERTopic = Embeddings + UMAP + HDBSCAN + c-TF-IDF      │
-  │                                                          │
-  │  1. EMBEDDINGS (BETO / sentence-transformers)            │
-  │     ├── Modelo: dccuchile/bert-base-spanish-wwm-cased    │
-  │     ├── Dim: 768                                         │
-  │     └── Ventaja: Captura semántica del español           │
-  │                                                          │
-  │  2. UMAP (Reducción de dimensionalidad)                  │
-  │     ├── n_components: 5                                  │
-  │     ├── n_neighbors: 15                                  │
-  │     ├── min_dist: 0.0 (clusters densos)                  │
-  │     ├── metric: cosine                                   │
-  │     └── Ventaja: Preserva topología vs PCA/t-SNE         │
-  │                                                          │
-  │  3. HDBSCAN (Clustering jerárquico basado en densidad)   │
-  │     ├── min_cluster_size: 8                              │
-  │     ├── min_samples: 5                                   │
-  │     ├── cluster_selection_method: eom                    │
-  │     ├── prediction_data: True (para reducir outliers)    │
-  │     └── Ventaja: No requiere k fijo, detecta ruido      │
-  │                                                          │
-  │  4. c-TF-IDF (Class-based TF-IDF)                       │
-  │     ├── reduce_frequent_words: True                      │
-  │     └── Genera representación por cluster                │
-  │                                                          │
-  │  5. ETIQUETADO AUTOMÁTICO                                │
-  │     ├── KeyBERTInspired (top n-grams por cluster)        │
-  │     └── Labels descriptivas semánticas                   │
-  └──────────────────────────────────────────────────────────┘
-
-Estrategia de reducción de outliers:
-  El problema original: HDBSCAN asigna ~81.4% de documentos como
-  outliers (topic -1) cuando los datos son ruidosos y heterogéneos.
-
-  Solución multi-etapa:
-    1. Ajuste de hiperparámetros HDBSCAN (min_cluster_size=8 en vez de 15+)
-    2. Reducción iterativa de outliers con .reduce_outliers()
-       - strategy='probabilities': Usa probabilidades soft de HDBSCAN
-       - strategy='distributions': Reasigna basado en distribución c-TF-IDF
-       - strategy='embeddings': Reasigna basado en cercanía semántica
-    3. Reasignación manual: K-Nearest-Neighbors de outliers restantes
-       con k=5 al centroide de cluster más cercano
-
-  Objetivo: Reducir outliers de 81.4% a 50-60%.
 
 Algoritmos y bibliotecas:
-  ─────────────────────────────────────────────────────────
+
   BERTopic: Framework modular que encadena embeddings →
             dim-reduction → clustering → representación.
             Permite reemplazar cada componente de forma
@@ -72,7 +25,7 @@ Algoritmos y bibliotecas:
             identificar los términos más representativos de
             cada cluster vs. el corpus completo.
             Referencia: Grootendorst, 2022.
-  ─────────────────────────────────────────────────────────
+
 """
 
 import logging

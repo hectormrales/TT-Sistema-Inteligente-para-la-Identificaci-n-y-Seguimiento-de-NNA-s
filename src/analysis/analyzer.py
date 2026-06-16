@@ -1,33 +1,4 @@
-# src/analysis/analyzer.py — Analizador de noticias con scoring de relevancia
-"""
-Pipeline de análisis NLP con filtrado inteligente (v5.0 — TT2):
 
-  Pipeline original (TT1, pasos 1-8):
-    1. Recolección RSS con scoring dual (feminicidio + NNA)
-    2. Filtrado por relevancia (descarta no-relevantes)
-    3. TF-IDF con vocabulario domain-boosted
-    4. LDA (modelado de tópicos)
-    5. K-Means (clustering temático)
-    6. Similitud coseno (detección de duplicados / noticias relacionadas)
-    7. Reclasificación TF-IDF: re-score usando los vectores aprendidos
-    8. Búsqueda con sinónimos
-
-  Nuevos pasos TT2 (orden de ejecución real, v5.1):
-    9.  Detección semántica con BETO (OE-1) — Umbral único
-        Bypass de Oro (keywords exactas) → Alta inmediata.
-        Para el resto: score_semantico >= 0.50 → Alta, 0.30 → Media.
-    10. Clustering semántico con BERTopic (OE-4) — Post-filtro
-        Solo opera sobre noticias ya clasificadas Alta/Media para
-        evitar contaminar UMAP/HDBSCAN con ruido. min_cluster_size
-        se ajusta dinámicamente al tamaño del corpus filtrado.
-    11. Persistencia en PostgreSQL con FTS (OE-3)
-
-Cambios v5.0:
-  • OE-1: Scoring semántico con BETO reemplaza/complementa el heurístico
-  • OE-3: Resultados se guardan en PostgreSQL además de CSV
-  • OE-4: BERTopic reemplaza K-Means para clustering
-  • Pipeline híbrido: mantiene backward compatibility con CSV
-"""
 
 import os
 import re

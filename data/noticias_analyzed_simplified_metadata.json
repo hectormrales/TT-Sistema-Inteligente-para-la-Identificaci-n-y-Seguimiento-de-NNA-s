@@ -1,8 +1,8 @@
 {
-  "total_noticias": 680,
-  "noticias_con_nna": 179,
-  "alta_relevancia": 8,
-  "media_relevancia": 110,
+  "total_noticias": 689,
+  "noticias_con_nna": 210,
+  "alta_relevancia": 25,
+  "media_relevancia": 124,
   "columnas_disponibles": [
     "titulo",
     "contenido",
@@ -15,6 +15,10 @@
     "clasificacion",
     "menores_identificados",
     "cluster",
+    "scrape_method",
+    "score_victima_indirecta",
+    "score_caso",
+    "nna_victima_indirecta",
     "titulo_limpio",
     "contenido_limpio",
     "texto_combinado",

@@ -8,7 +8,7 @@ diferentes fuentes usando múltiples estrategias:
   3. SimHash             → huellas digitales de contenido (near-duplicate).
   4. TF-IDF coseno       → similitud semántica con vectorización.
 
-Se prioriza velocidad: primero filtros baratos, luego costosos.
+Se prioriza velocidad: primero filtros baratos, luego costoso
 """
 
 import re

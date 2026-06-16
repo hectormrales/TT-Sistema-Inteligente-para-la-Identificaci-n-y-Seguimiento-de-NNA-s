@@ -67,28 +67,28 @@
 % ============================================================
 \begin{document}
 
-% ── Título ───────────────────────────────────────────────────
-\title{Sistema Inteligente para la Identificación y Seguimiento\\
-       de Derechos de los NNA en Situación de Orfandad por Feminicidio}
+% Usando \large (Tamaño mediano) y negritas
+\title{\large\bfseries Sistema Inteligente para la Identificación y Seguimiento
+       de Derechos\\de los NNA en Situación de Orfandad por Feminicidio}
+
 
 % ── Autores — bloque centrado en 3 líneas ────────────────────
 \author{%
-  Héctor Alberto Morales Martínez,\ [Nombre Director 1],\ [Nombre Director 2]\\
-  Escuela Superior de Cómputo\ I.P.N.\ México D.F.\\
-  \textit{E-mail: hectormrales@example.com,\ [email2],\ [email3]}%
+  Héctor Alberto Morales Martínez,\ M. en C. Ulises Saldaña Velez,\ M. en C. Gabriel Hurtado Avilés\\
+  Escuela Superior de Cómputo\ I.P.N.\ México CDMX\\
+  \textit{Tel. 5616148167. E-mail: \href{mailto:hmoralesm1500@alumno.ipn.mx}{hmoralesm1500@alumno.ipn.mx}}%
 }
-
+ 
 \maketitle
 
-% ── Resumen ──────────────────────────────────────────────────
+% ── Resumen ────────────────────────────────────────────────── 
 \begin{abstract}
 Se presenta el diseño, desarrollo y evaluación de un sistema inteligente
-de monitoreo de medios digitales orientado a identificar y dar seguimiento
-a los derechos de las Niñas, Niños y Adolescentes (\NNA{}) en situación
-de orfandad derivada de feminicidios en México. El sistema integra una
-arquitectura de microservicios contenerizada en Docker compuesta por tres
-módulos principales: (1)~un recolector multi-fuente basado en
-\texttt{StealthSession} con emulación de firma TLS/JA3 para evadir
+orientado a identificar y dar seguimiento de las Niñas, Niños y Adolescentes
+(\NNA{}) en situación de orfandad derivada de feminicidios en México. El
+sistema integra una arquitectura de microservicios contenerizada en Docker
+compuesta por tres módulos principales: (1)~un recolector multi-fuente basado
+en \texttt{StealthSession} con emulación de firma TLS/JA3 para evadir
 contramedidas perimetrales en 45~fuentes RSS y Google News;
 (2)~un clasificador neuro-simbólico escalonado de cuatro capas que combina
 el modelo Transformer \BETO{} con ajuste fino supervisado
@@ -118,31 +118,31 @@ Clasificación Neuro-Simbólica, Feminicidio.
 % ============================================================
 \section{Introducción}
 
-México atraviesa una crisis documentada de violencia feminicida: el
+México atraviesa una crisis documentada de violencia feminicida, el
 Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública (SESNSP)
 registra más de 8\,000 víctimas de feminicidio entre 2010 y
 2023~\cite{sesnsp2023}. La Red por los Derechos de la Infancia en México
 (REDIM) estima que al menos 3\,500 \NNA{} perdieron a su madre como
 consecuencia directa de estos crímenes~\cite{redim2022}. A pesar de la
-gravedad de esta cifra, no existe a nivel nacional un padrón oficial ni un
+gravedad de esta cifra no existe a nivel nacional un padrón oficial ni un
 mecanismo estandarizado que documente el estado de estas víctimas indirectas.
 
 La Convención sobre los Derechos del Niño y la Ley General de los Derechos
 de Niñas, Niños y Adolescentes (LGDNNA) establecen el principio del
-\textit{interés superior de la niñez} como eje rector; sin embargo, la
+\textit{interés superior de la niñez} como eje principal, sin embargo, la
 ausencia de datos estructurados imposibilita su materialización
 efectiva~\cite{onu2019}.
 
 \subsection{Limitaciones del monitoreo manual}
 
-La mitigación de esta invisibilidad estadística recae actualmente sobre
-organizaciones de la sociedad civil. La metodología subyacente presenta un
-cuello de botella operativo: la revisión artesanal de fuentes
-hemerográficas. Con más de 1\,200 medios periodísticos digitales activos
-en el país, el factor humano introduce una latencia que provoca que
-numerosos casos pasen desapercibidos. Además, el talento especializado es
-desviado hacia tareas de recolección de datos en lugar de la intervención
-directa con las víctimas~\cite{onu2019}.
+La atención de esta invisibilidad estadística recae actualmente sobre
+organizaciones de la sociedad civil. La metodología actual presenta un
+cuello de botella operativo puesto que requiere la revisión manual de
+fuentes hemerográficas. Con más de 1\,200 medios periodísticos digitales
+activos en el país, el factor humano introduce una latencia que provoca
+que numerosos casos pasen desapercibidos. Como consecuencia, el talento
+humano especializado es desviado hacia tareas de recolección de datos
+en lugar de la intervención directa con las víctimas.
 
 \subsection{Contribución del trabajo}
 
@@ -158,41 +158,39 @@ resolver la ambigüedad semántica inherente al periodismo policial mexicano.
 
 El sistema fue desarrollado bajo un enfoque \textbf{evolutivo basado en
 prototipos}~\cite{pressman2014}, dado la alta incertidumbre tecnológica en
-dos frentes: las infraestructuras dinámicas de evasión web (WAF, JA3
-fingerprinting) y la variabilidad estocástica de los modelos Transformer.
-Cuatro prototipos (P0–P3) sirvieron como entornos de diagnóstico; el
-Prototipo~4 constituye el estado de producción.
+dos frentes como lo son las infraestructuras dinámicas de evasión web
+(WAF, JA3 fingerprinting) y la alta variabilidad e inferencia de los
+modelos Transformer. Cuatro prototipos sirvieron como entornos de diagnóstico;
+la iteración final constituyó el estado de producción.
 
-\subsection{Recolección multi-fuente con StealthSession}
+\subsection{Recolección multi-fuente}
 
-Los prototipos iniciales (P0) utilizaron \texttt{BeautifulSoup} sobre
+Los prototipos iniciales utilizaron \textit{BeautifulSoup} sobre
 peticiones HTTP directas, obteniendo bloqueos HTTP~403 en el 80\% de las
 fuentes por \textit{TLS/JA3 fingerprinting}~\cite{anderson2019tls}.
-El módulo definitivo, \texttt{StealthSession}, resuelve esto mediante:
-(i)~emulación de fingerprint TLS vía \texttt{cloudscraper} con hashes JA3
-idénticos a Chrome/Windows; (ii)~delays log-normales ($\mu{=}2.5$,
+El módulo definitivo, \textit{StealthSession}, resuelve esto mediante
+la emulación de fingerprint TLS vía \textit{cloudscraper} con hashes JA3
+idénticos a Chrome/Windows; con delays log-normales ($\mu{=}2.5$,
 $\sigma{=}0.7$, mediana $\approx$12.2\,s) que imitan comportamiento humano;
-y (iii)~un \textit{Circuit Breaker} por dominio que abre el circuito
-300\,s tras 3~fallos consecutivos.
+y un \textit{Circuit Breaker} por dominio que detiene las peticiones tras
+tres fallos consecutivos.
 
 El recolector monitorea 45~feeds RSS nacionales, Google News y fuentes
-complementarias por scraping HTML, procesando $\approx$900~noticias brutas
+complementarias mediante scraping HTML, procesando $\approx$900~noticias brutas
 por ciclo. La cascada de deduplicación de cuatro fases
-(MD5~$\rightarrow$ Jaccard $J{\geq}0.70$~$\rightarrow$
-SimHash $\Delta_H{\leq}6$~$\rightarrow$ coseno TF-IDF $\cos{\geq}0.85$)
-eliminó 213~duplicados (25\% del corpus), entregando 634~noticias únicas
-al módulo clasificador.
+(MD5~$\rightarrow$ Jaccard~$\rightarrow$ SimHash~$\rightarrow$ coseno TF-IDF) elimina un aproximado del 25\% del
+corpus, entregando al módulo clasificador noticias únicas.
 
-\subsection{Clasificador Neuro-Simbólico Escalonado (BETO)}
+\subsection{Clasificador Neuro-Simbólico Escalonado}
 
 El motor de clasificación opera en cuatro capas autónomas y secuenciales.
 La Fig.~\ref{fig:clasificador} ilustra el flujo completo.
 
-\textbf{Capa~0 — Escudo léxico.} Filtro de rechazo temprano $O(1)$
-mediante \texttt{frozenset} de dominios ajenos (deportes, economía,
+\textbf{Capa~0. Escudo léxico.} Filtro de rechazo temprano $O(1)$
+mediante \textit{frozenset} de dominios ajenos (deportes, economía,
 tecnología). Única capa con bloqueo absoluto (\texttt{score~=~0}).
 
-\textbf{Capa~1 — Escudo temático suave.} Términos legislativos y
+\textbf{Capa~1. Escudo temático suave.} Términos legislativos y
 estadísticos aplican penalización aditiva $\delta{=}{-}0.35$, sin
 bloquear la noticia. Una noticia con score BETO de 0.72 que menciona
 ``según datos del REDIM'' obtiene score ajustado de 0.37
