@@ -168,20 +168,20 @@ la iteración final constituyó el estado de producción.
 Los prototipos iniciales utilizaron \textit{BeautifulSoup} sobre
 peticiones HTTP directas, obteniendo bloqueos HTTP~403 en el 80\% de las
 fuentes por \textit{TLS/JA3 fingerprinting}~\cite{anderson2019tls}.
-El módulo definitivo, \textit{StealthSession}, resuelve esto mediante
+El módulo \textit{StealthSession} resolvía esto mediante
 la emulación de fingerprint TLS vía \textit{cloudscraper} con hashes JA3
 idénticos a Chrome/Windows; con delays log-normales ($\mu{=}2.5$,
 $\sigma{=}0.7$, mediana $\approx$12.2\,s) que imitan comportamiento humano;
 y un \textit{Circuit Breaker} por dominio que detiene las peticiones tras
 tres fallos consecutivos.
 
-El recolector monitorea 45~feeds RSS nacionales, Google News y fuentes
+El recolector scrapea 45~feeds RSS nacionales, Google News y fuentes
 complementarias mediante scraping HTML, procesando $\approx$900~noticias brutas
 por ciclo. La cascada de deduplicación de cuatro fases
 (MD5~$\rightarrow$ Jaccard~$\rightarrow$ SimHash~$\rightarrow$ coseno TF-IDF) elimina un aproximado del 25\% del
 corpus, entregando al módulo clasificador noticias únicas.
 
-\subsection{Clasificador Neuro-Simbólico Escalonado}
+\subsection{Clasificador neuro-simbólico escalonado}
 
 El motor de clasificación opera en cuatro capas autónomas y secuenciales.
 La Fig.~\ref{fig:clasificador} ilustra el flujo completo.
@@ -190,23 +190,21 @@ La Fig.~\ref{fig:clasificador} ilustra el flujo completo.
 mediante \textit{frozenset} de dominios ajenos (deportes, economía,
 tecnología). Única capa con bloqueo absoluto (\texttt{score~=~0}).
 
-\textbf{Capa~1. Escudo temático suave.} Términos legislativos y
-estadísticos aplican penalización aditiva $\delta{=}{-}0.35$, sin
+\textbf{Capa~1. Escudo suave.} Términos legislativos y
+estadísticos aplican penalización aditiva $\delta{=}{-}0.35$ sin
 bloquear la noticia. Una noticia con score BETO de 0.72 que menciona
 ``según datos del REDIM'' obtiene score ajustado de 0.37
-(\textit{Media}).
+(\textit{Media}). 
 
-\textbf{Capa~2 — Inferencia BETO.} \BETO{}
+\textbf{Capa~2. Inferencia BETO.}
 (\textit{bert-base-spanish-wwm-cased}) es un Transformer bidireccional
-con 110~M de parámetros, 12~capas de autoatención y embeddings de
-768~dimensiones, preentrenado sobre Wikipedia en español mediante
+con 110 millones de parámetros, 12 capas de autoatención y embeddings de
+768 dimensiones, preentrenado sobre Wikipedia en español mediante
 MLM~\cite{CaneteCFP2020}. El \textit{hidden state} del token
 \texttt{[CLS]} se extrae como representación global normalizada con
-norma~L2. El sistema opera en modo \textit{Finetuned} (prioritario) o
-\textit{Zero-Shot} con Temperature Scaling factor~5
-(fallback)~\cite{guo2017calibration}.
+norma~L2. El sistema opera en modo \textit{Finetuned} (prioritario).
 
-\textbf{Capa~3 — Post-filtro heurístico.} Inyecta bonificaciones
+\textbf{Capa~3. Post-filtro heurístico.} Aplica bonificaciones
 (+0.10 a +0.25) al detectar patrones de orfandad real
 (\texttt{quedó al cuidado}, \texttt{menores bajo resguardo},
 \texttt{hijos quedaron}) y penalizaciones para roles invertidos
@@ -235,32 +233,32 @@ simbólicas 0, 1 y~3 en función del contenido textual de $x$.
 \end{figure}
 
 Este diseño neuro-simbólico neutraliza el \textbf{efecto péndulo}
-observado en el Prototipo~3, donde \BETO{} clasificaba erróneamente
+observado en el prototipo 3, donde \BETO{} clasificaba erróneamente
 discursos normativos con scores de hasta 0.81 por correlación
 superficial de tokens.
 
-\subsection{Agrupamiento Semántico — BERTopic}
+\subsection{Agrupamiento Semántico BERTopic}
 
-El pipeline BERTopic (UMAP~+~HDBSCAN~+~c-TF-IDF) procesa las
-634~noticias deduplicadas sobre embeddings \BETO{} de 768~dimensiones
-reducidos a 5D por UMAP~\cite{bertopic2022}. Se generaron 15~tópicos
+El flujo de BERTopic (UMAP~+~HDBSCAN~+~c-TF-IDF) procesa las
+noticias únicas sobre embeddings \BETO{} de 768~dimensiones
+reducidos a 5D por UMAP~\cite{bertopic2022}. Se generaron tópicos
 semánticos coherentes (casos con intervención del DIF, disputas por
-custodia, \NNA{} testigos, manifestaciones de colectivos). El porcentaje
-de outliers se redujo del 81.4\% al 55\% mediante reducción multi-etapa.
-El Silhouette Score mejoró de 0.23 (K-Means TF-IDF, P2) a una coherencia
+custodia, \NNA{} testigos, manifestaciones de colectivos). El Silhouette
+Score mejoró de 0.23 (K-Means TF-IDF, P2) a una coherencia
 cualitativa verificable sobre el espacio semántico de 768~dimensiones.
 
-\subsection{Módulo DeepInvestigator}
+\subsection{Módulo DeepInvestigator} 
 
 El módulo \texttt{DeepInvestigator} se activa bajo demanda desde el
 dashboard sobre noticias de clasificación \textit{Alta}. Ejecuta cuatro
-pasos: (1)~generación de query de alta especificidad vía Gemini~Flash;
-(2)~búsqueda dual en DuckDuckGo HTML y Lite; (3)~scraping complementario
-con \texttt{StealthSession}; y (4)~síntesis estructurada en JSON con
-siete campos (\texttt{ubicacion}, \texttt{victimas},
-\texttt{ninos\_afectados}, \texttt{edades}, \texttt{situacion\_actual},
-\texttt{medios\_contacto}, \texttt{resumen}). El campo
-\texttt{medios\_contacto} retorna el DIF municipal y la Fiscalía
+pasos que son la generación de un query de alta especificidad vía Gemini~Flash;
+búsqueda dual en DuckDuckGo HTML y Lite; scraping complementario
+con \textit{StealthSession}; y síntesis estructurada en JSON con
+siete campos (\textit{ubicacion}, \textit{victimas},
+\textit{ninos\_afectados}, \textit{edades}, \textit{situacion\_actual},
+\textit{medios\_contacto}, \textit{resumen}). El campo
+\textit{medios\_contacto} retorna como recomendacion de contacto a institucione
+como el DIF municipal y la Fiscalía
 competente según la ubicación del caso. Tiempo promedio:
 \textbf{47~segundos por caso}.
 
@@ -270,9 +268,9 @@ por Gemini~Flash (datos completamente anonimizados):
 \begin{lstlisting}[language=json,caption={Ejemplo de ficha JSON generada por DeepInvestigator (anonimizado).},label={lst:json}]
 {
   "ubicacion": "Municipio de [ANONIMIZADO], Estado de [ANONIMIZADO]",
-  "victimas": "Mujer adulta, 32 anios",
+  "victimas": "Mujer adulta, 32 años",
   "ninos_afectados": 2,
-  "edades": ["7 anios", "11 anios"],
+  "edades": ["7 años", "11 años"],
   "situacion_actual": "Menores bajo resguardo provisional
     de familiares maternos; DIF municipal en proceso
     de evaluacion de tutela definitiva.",
@@ -287,7 +285,7 @@ por Gemini~Flash (datos completamente anonimizados):
 }
 \end{lstlisting}
 
-\subsection{Arquitectura de Despliegue}
+\subsection{Arquitectura de despliegue}
 
 El sistema se despliega mediante orquestación Docker con tres contenedores
 sobre una red virtual privada (\texttt{nna-network}).
