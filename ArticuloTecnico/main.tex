@@ -41,7 +41,14 @@
     {6}{{\color{blue!70}6}}{1}
     {7}{{\color{blue!70}7}}{1}
     {8}{{\color{blue!70}8}}{1}
-    {9}{{\color{blue!70}9}}{1},
+    {9}{{\color{blue!70}9}}{1}
+    {á}{{\'a}}1
+    {é}{{\'e}}1
+    {í}{{\'i}}1
+    {ó}{{\'o}}1
+    {ú}{{\'u}}1
+    {ñ}{{\~n}}1
+    {Ñ}{{\~N}}1,
 }
 
 % ── Forzar "Resumen" y "Palabras clave" en lugar de Abstract / Index Terms ──
@@ -87,11 +94,10 @@ Se presenta el diseño, desarrollo y evaluación de un sistema inteligente
 orientado a identificar y dar seguimiento de las Niñas, Niños y Adolescentes
 (\NNA{}) en situación de orfandad derivada de feminicidios en México. El
 sistema integra una arquitectura de microservicios contenerizada en Docker
-compuesta por tres módulos principales: (1)~un recolector multi-fuente basado
-en \texttt{StealthSession} con emulación de firma TLS/JA3 para evadir
-contramedidas perimetrales en 45~fuentes RSS y Google News;
-(2)~un clasificador neuro-simbólico escalonado de cuatro capas que combina
-el modelo Transformer \BETO{} con ajuste fino supervisado
+compuesta por tres módulos principales: (1)~un recolector multi-fuentes
+con emulación de firma TLS/JA3 para evadir contramedidas perimetrales en 45~fuentes
+RSS y Google News; (2)~un clasificador neuro-simbólico escalonado de cuatro capas que
+combina el modelo Transformer \BETO{} con ajuste fino supervisado
 (\textit{fine-tuning}) y reglas heurísticas con penalizaciones y
 bonificaciones aditivas para neutralizar el denominado
 \textit{efecto péndulo}; y (3)~un módulo de agrupamiento semántico basado
@@ -110,10 +116,9 @@ de la infancia.
 \end{abstract}
 
 % ── Palabras clave ───────────────────────────────────────────
-\vspace{4pt}
-\noindent\keywordsname\ ---
-Procesamiento de Lenguaje Natural, Web Scraping, BERT, BERTopic,
-Clasificación Neuro-Simbólica, Feminicidio.
+\vspace{0.5em}
+\noindent\textit{Palabras clave} --- \textbf{Procesamiento de Lenguaje Natural,
+Web Scraping, Clasificación neuro-simbólica, NNA.}
 
 % ============================================================
 \section{Introducción}
@@ -206,8 +211,8 @@ norma~L2. El sistema opera en modo \textit{Finetuned} (prioritario).
 
 \textbf{Capa~3. Post-filtro heurístico.} Aplica bonificaciones
 (+0.10 a +0.25) al detectar patrones de orfandad real
-(\texttt{quedó al cuidado}, \texttt{menores bajo resguardo},
-\texttt{hijos quedaron}) y penalizaciones para roles invertidos
+(\textsl{``quedó al cuidado''}, \textsl{``menores bajo resguardo''},
+\textsl{``hijos quedaron''}) y penalizaciones para roles invertidos
 (menor como agresor). Esta capa nunca produce exclusiones absolutas
 para noticias \textit{Media}.
 
@@ -225,10 +230,7 @@ simbólicas 0, 1 y~3 en función del contenido textual de $x$.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{estructura.png}
-  \caption{Arquitectura del clasificador neuro-simbólico escalonado de
-           cuatro capas. Las capas simbólicas (0 y 1) modulan la
-           salida neuronal de \BETO{} (Capa~2) mediante penalizaciones
-           y bonificaciones aditivas antes del post-filtro (Capa~3).}
+  \caption{Arquitectura del clasificador neuro-simbólico escalonado}
   \label{fig:clasificador}
 \end{figure}
 
@@ -261,16 +263,15 @@ siete campos (\textit{ubicacion}, \textit{victimas},
 como el DIF municipal y la Fiscalía
 competente según la ubicación del caso. Tiempo promedio:
 \textbf{47~segundos por caso}.
-
 El siguiente ejemplo ilustra una ficha de caso representativa generada
-por Gemini~Flash (datos completamente anonimizados):
+por Gemini~Flash (datos anonimizados):
 
-\begin{lstlisting}[language=json,caption={Ejemplo de ficha JSON generada por DeepInvestigator (anonimizado).},label={lst:json}]
+\begin{lstlisting}[language=json,caption={Ejemplo de ficha JSON generada por DeepInvestigator.},label={lst:json},escapeinside={(*}{*)}]
 {
   "ubicacion": "Municipio de [ANONIMIZADO], Estado de [ANONIMIZADO]",
-  "victimas": "Mujer adulta, 32 años",
+  "victimas": "Mujer adulta, 32 (*años*)",
   "ninos_afectados": 2,
-  "edades": ["7 años", "11 años"],
+  "edades": ["7 (*años*)", "11 (*años*)"],
   "situacion_actual": "Menores bajo resguardo provisional
     de familiares maternos; DIF municipal en proceso
     de evaluacion de tutela definitiva.",
@@ -377,7 +378,7 @@ los cinco tópicos de mayor frecuencia identificados por el modelo.
 \caption{Top~5 tópicos identificados por BERTopic}
 \label{tab:topicos}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{cp{3.2cm}c}
+\begin{tabular}{c>{\raggedright\arraybackslash}p{3.2cm}c}
 \toprule
 \textbf{ID} & \textbf{Palabras clave (c-TF-IDF)} & \textbf{Frec.} \\
 \midrule
@@ -400,7 +401,7 @@ objetivos cuantitativos definidos al inicio del TT-2.
 \caption{Comparativa de métricas TT-1 vs.\ TT-2}
 \label{tab:comparativa}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{2.0cm}p{1.1cm}p{1.6cm}p{1.6cm}}
+\begin{tabular}{l c >{\centering\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.4cm}}
 \toprule
 \textbf{Métrica} & \textbf{TT-1} & \textbf{Meta TT-2} & \textbf{P4 final} \\
 \midrule
@@ -413,10 +414,10 @@ Persistencia     & CSV     & PostgreSQL     & PostgreSQL ACID $\checkmark$ \\
 \end{tabular}
 \end{table}
 
-% ============================================================
+
 \section{Conclusiones}
 
-Se desarrolló e implementó un sistema de monitoreo inteligente que demuestra
+Se logró desarrollar un sistema inteligente que demuestra
 la viabilidad de automatizar la identificación de \NNA{} en situación de
 orfandad por feminicidio a partir de fuentes periodísticas digitales. Las
 contribuciones técnicas principales son: (i)~la arquitectura de
@@ -429,24 +430,27 @@ salida neuronal de \BETO{} es necesaria para dominios de alta especificidad.
 
 \subsection{Trabajo Futuro}
 
-Se identifican tres líneas prioritarias: (1)~\textbf{Active Learning}:
+Se identifican tres líneas prioritarias. \textbf{Active Learning}:
 incorporar retroalimentación del analista para reentrenar el clasificador
-de forma incremental; (2)~\textbf{Reentrenamiento en GPU}: el fine-tuning
-actual se realizó en CPU con 8~GB RAM; hardware acelerado permitiría
-explorar modelos de mayor capacidad (RoBERTa-es, mDeBERTa); y
-(3)~\textbf{Extensión geográfica}: adaptar el catálogo de fuentes hacia
-Centroamérica para ampliar el impacto del sistema.
+de forma incremental; \textbf{Reentrenamiento en GPU}: el fine-tuning
+actual se realizó en hardware no especializado y con limitaciones de memoria RAM,
+por lo que un entrenamiento en GPU con recursos adecuados permitiría un entrenamiento
+más eficiente y robusto; y (3)~\textbf{Modelos NER}: evaluar el uso de modelos
+NER especializados para la extracción de entidades relevantes (personas,
+instituciones, lugares), lo que evitaria depender de gemini para la extraccion de entidades.
 
-% ============================================================
 \section*{Reconocimientos}
 
-Los autores agradecen a la Escuela Superior de Cómputo (ESCOM) del
+Agradezco a la Escuela Superior de Cómputo (ESCOM) del
 Instituto Politécnico Nacional (IPN) por el apoyo institucional brindado
-durante el desarrollo del Trabajo Terminal 2026-A135, así como a los
-sinodales y profesores que enriquecieron el proyecto con su orientación
-técnica y metodológica.
+durante el desarrollo del Trabajo Terminal 2026-A135, a mis directores el M. en C.
+Ulises Saldaña Vélez y el M. en C. Gabriel Hurtado Avilés, y al resto
+de mis sinodales y profesores que enriquecieron el proyecto con su orientación,
+no sólo técnica y metodológica, sino también con sus palabras de
+aliento y motivación.
 
-% ============================================================
+
+
 \begin{thebibliography}{99}
 
 \bibitem{sesnsp2023}
@@ -465,39 +469,6 @@ Oficina del Alto Comisionado de las Naciones Unidas para los Derechos Humanos,
 ``Diagnóstico sobre la situación de los derechos humanos en México,''
 ONU-DH México, 2019.
 
-\bibitem{CaneteCFP2020}
-J. Cañete, G. Chaperon, R. Fuentes, J.-H. Ho, H. Kang, y J. Pérez,
-``Spanish Pre-trained BERT Model and Evaluation Data,''
-en \textit{Proc. PML4DC at ICLR 2020}, Addis Abeba, Etiopía, 2020.
-
-\bibitem{bertopic2022}
-M. Grootendorst,
-``BERTopic: Neural Topic Modeling with a Class-Based TF-IDF Procedure,''
-\textit{arXiv preprint arXiv:2203.05794}, 2022.
-
-\bibitem{guo2017calibration}
-C. Guo, G. Pleiss, Y. Sun, y K. Q. Weinberger,
-``On Calibration of Modern Neural Networks,''
-en \textit{Proc. 34th Int. Conf. Machine Learning (ICML)},
-Sydney, Australia, 2017, pp.~1321--1330.
-
-\bibitem{cohen1960}
-J. Cohen,
-``A Coefficient of Agreement for Nominal Scales,''
-\textit{Educational and Psychological Measurement},
-vol.~20, no.~1, pp.~37--46, 1960.
-
-\bibitem{landis1977}
-J. R. Landis y G. G. Koch,
-``The Measurement of Observer Agreement for Categorical Data,''
-\textit{Biometrics}, vol.~33, no.~1, pp.~159--174, 1977.
-
-\bibitem{anderson2019tls}
-B. Anderson y D. McGrew,
-``OS Fingerprinting: New Techniques and the Impact on Security Tools,''
-en \textit{Proc. IEEE Security \& Privacy Workshops},
-San Francisco, CA, EE.~UU., 2019, pp.~1--7.
-
 \bibitem{bird2009nlp}
 S. Bird, E. Klein, y E. Loper,
 \textit{Natural Language Processing with Python}.
@@ -514,6 +485,33 @@ Chemnitz, Alemania, 1998, pp.~137--142.
 R. S. Pressman y B. R. Maxim,
 \textit{Software Engineering: A Practitioner's Approach}, 8th~ed.
 Nueva York, NY: McGraw-Hill, 2014.
+
+\bibitem{anderson2019tls}
+B. Anderson y D. McGrew,
+``OS Fingerprinting: New Techniques and the Impact on Security Tools,''
+en \textit{Proc. IEEE Security \& Privacy Workshops},
+San Francisco, CA, EE.~UU., 2019, pp.~1--7.
+
+\bibitem{CaneteCFP2020}
+J. Cañete, G. Chaperon, R. Fuentes, J.-H. Ho, H. Kang, y J. Pérez,
+``Spanish Pre-trained BERT Model and Evaluation Data,''
+en \textit{Proc. PML4DC at ICLR 2020}, Addis Abeba, Etiopía, 2020.
+
+\bibitem{bertopic2022}
+M. Grootendorst,
+``BERTopic: Neural Topic Modeling with a Class-Based TF-IDF Procedure,''
+\textit{arXiv preprint arXiv:2203.05794}, 2022.
+
+\bibitem{landis1977}
+J. R. Landis y G. G. Koch,
+``The Measurement of Observer Agreement for Categorical Data,''
+\textit{Biometrics}, vol.~33, no.~1, pp.~159--174, 1977.
+
+\bibitem{cohen1960}
+J. Cohen,
+``A Coefficient of Agreement for Nominal Scales,''
+\textit{Educational and Psychological Measurement},
+vol.~20, no.~1, pp.~37--46, 1960.
 
 \end{thebibliography}
 
