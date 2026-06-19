@@ -94,25 +94,20 @@ Se presenta el diseño, desarrollo y evaluación de un sistema inteligente
 orientado a identificar y dar seguimiento de las Niñas, Niños y Adolescentes
 (\NNA{}) en situación de orfandad derivada de feminicidios en México. El
 sistema integra una arquitectura de microservicios contenerizada en Docker
-compuesta por tres módulos principales: (1)~un recolector multi-fuentes
-con emulación de firma TLS/JA3 para evadir contramedidas perimetrales en 45~fuentes
-RSS y Google News; (2)~un clasificador neuro-simbólico escalonado de cuatro capas que
-combina el modelo Transformer \BETO{} con ajuste fino supervisado
-(\textit{fine-tuning}) y reglas heurísticas con penalizaciones y
-bonificaciones aditivas para neutralizar el denominado
-\textit{efecto péndulo}; y (3)~un módulo de agrupamiento semántico basado
-en BERTopic (UMAP~+~HDBSCAN~+~c-TF-IDF) y un investigador profundo
-(\textit{DeepInvestigator}) accionable bajo demanda que sintetiza fichas
-de caso estructuradas mediante la API de Gemini~Flash.
-La cascada de deduplicación de cuatro fases (MD5, Jaccard, SimHash y coseno
-TF-IDF) depuró 213~duplicados, resultando en 634~noticias únicas procesadas.
-Sobre un conjunto de prueba ciego de 41~noticias etiquetadas con acuerdo
-inter-anotador $\kappa{=}0.91$, el clasificador alcanzó F1-Score~=~0.85,
-Recall~=~0.95 y tasa de falsos positivos del 30\%, cumpliendo el umbral
-operativo establecido. Los resultados demuestran que la integración de
-razonamiento simbólico sobre el componente neuronal es esencial para dominios
-de alta especificidad semántica como la violencia de género y la protección
-de la infancia.
+compuesta por tres contenedores independientes (\texttt{nna-network}):
+\texttt{nna-postgres}, que ejecuta PostgreSQL con persistencia en volumen y
+búsqueda de texto completo (FTS) en español; \texttt{nna-analyzer}, el backend
+analítico que orquesta la recolección multi-fuente con emulación TLS/JA3,
+un clasificador neuro-simbólico escalonado de cuatro capas basado en \BETO{}
+con ajuste fino supervisado (\textit{fine-tuning}) y agrupamiento semántico BERTopic
+(UMAP~+~HDBSCAN~+~c-TF-IDF); y (3)~\texttt{nna-webapp}, que sirve el
+dashboard interactivo y la API REST mediante Flask, actuando como capa
+de abstracción para el analista. El módulo \textit{DeepInvestigator},
+integrado en el backend, sintetiza fichas de caso estructuradas
+mediante la API de Gemini~Flash bajo demanda. Los resultados demuestran que
+la integración de razonamiento simbólico sobre el componente neuronal es
+essencial para dominios de alta especificidad semántica como la violencia de
+género y la protección de la infancia.
 \end{abstract}
 
 % ── Palabras clave ───────────────────────────────────────────
@@ -245,9 +240,11 @@ El flujo de BERTopic (UMAP~+~HDBSCAN~+~c-TF-IDF) procesa las
 noticias únicas sobre embeddings \BETO{} de 768~dimensiones
 reducidos a 5D por UMAP~\cite{bertopic2022}. Se generaron tópicos
 semánticos coherentes (casos con intervención del DIF, disputas por
-custodia, \NNA{} testigos, manifestaciones de colectivos). El Silhouette
-Score mejoró de 0.23 (K-Means TF-IDF, P2) a una coherencia
-cualitativa verificable sobre el espacio semántico de 768~dimensiones.
+custodia, \NNA{} testigos, manifestaciones de colectivos). A diferencia
+del agrupamiento K-Means estático del prototipo dos, cuyos clústeres
+resultaban semánticamente incoherentes, BERTopic generó tópicos
+interpretables y verificables manualmente mediante sus términos
+representativos.
 
 \subsection{Módulo DeepInvestigator} 
 
