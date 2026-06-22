@@ -63,8 +63,8 @@
 \contentsline {subsection}{\numberline {4.5.2}Automatización de navegador (Selenium / Playwright)}{24}{subsection.4.5.2}%
 \contentsline {subsection}{\numberline {4.5.3}Agregación estructurada (RSS/Atom) y stealth sessions}{25}{subsection.4.5.3}%
 \contentsline {subsection}{\numberline {4.5.4}Tabla comparativa de técnicas de extracción}{25}{subsection.4.5.4}%
-\contentsline {section}{\numberline {4.6}Evolución del almacenamiento}{25}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}Archivos planos (CSV)}{25}{subsection.4.6.1}%
+\contentsline {section}{\numberline {4.6}Evolución del almacenamiento}{26}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Archivos planos (CSV)}{26}{subsection.4.6.1}%
 \contentsline {subsection}{\numberline {4.6.2}PostgreSQL}{26}{subsection.4.6.2}%
 \contentsline {section}{\numberline {4.7}Evolución de los modelos de representación lingüística para NLP}{29}{section.4.7}%
 \contentsline {subsection}{\numberline {4.7.1}Word2Vec y GloVe}{29}{subsection.4.7.1}%

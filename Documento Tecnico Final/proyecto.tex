@@ -77,6 +77,9 @@
 \makeatletter
 \AtBeginDocument{
   \providecommand{\insert@pcolumn}{\insert@column}
+  \@ifundefined{define@key}{}{%
+    \define@key{Gin}{artifact}[true]{}%
+  }%
 }
 \makeatother
 
@@ -142,116 +145,185 @@ por Feminicidios}
 % ============================================================
 \begin{document}
 
+% ============================================================
+% PÁGINA 1: CARÁTULA PRINCIPAL
+% ============================================================
 \begin{titlepage}
-\thispagestyle{empty}
-\begin{center}
-
-\noindent
-  \begin{minipage}[c]{0.12\textwidth} % Logos ligeramente más ajustados
-    \raggedright
-    \includegraphics[width=\linewidth]{theme/ipn.png}%
-  \end{minipage}%
-  \hfill
-  \begin{minipage}[c]{0.74\textwidth} % Máxima anchura para el texto
-    \centering
-    % Ajustamos a tamaño 18 para garantizar que todo quepa en una sola línea
-    {\fontsize{18}{22}\selectfont\bfseries INSTITUTO POLITÉCNICO NACIONAL\par}
-    \vspace{0.4cm}
-    {\fontsize{16}{19}\selectfont\bfseries ESCUELA SUPERIOR DE CÓMPUTO\par}%
-  \end{minipage}%
-  \hfill
-  \begin{minipage}[c]{0.12\textwidth}
-    \raggedleft
-    \includegraphics[width=\linewidth]{theme/escom.png}%
-  \end{minipage}
-
-  \vspace{1.0cm}
-
-  {\LARGE\bfseries\color{titleColor} TRABAJO TERMINAL}\\[6pt]
-  {\Large\bfseries\color{subTitleColor} No. 2026-A135}
-
-  \vspace{1.0cm}
-
-  {\Huge\bfseries\color{titleColor}
-    Sistema Inteligente para la Identificación\\
-    y Seguimiento de los Derechos de los\\
-    NNA por Feminicidios\par
-  }
-
-  \vspace{1.2cm}
-
-  {\large\bfseries Presenta:}
-
-  \vspace{0.8cm}
-
-  {\LARGE\bfseries \TTautor}
-
-  \vspace{1.0cm}
-
-  {\large\textbf{Directores:}}\\[10pt]
-  \begin{minipage}[t]{0.40\textwidth}
-    \centering
-    \TTdirectorA
-  \end{minipage}%
-  \hspace{1.0cm}%
-  \begin{minipage}[t]{0.40\textwidth}
-    \centering
-    \TTdirectorB
-  \end{minipage}
-
-  \vspace{\fill}
-
-\end{center}
+    \thispagestyle{empty} % Elimina cabeceras y números de página
+    \setcounter{page}{0}  % Evita que cuente esta página
+    \noindent
+    
+    % --- COLUMNA IZQUIERDA (LOGOS Y LÍNEA AZUL) ---
+    % Altura al 95% para evitar que brinque a la página 2
+    \begin{minipage}[t][0.95\textheight][t]{0.15\textwidth}
+        \vspace*{-1.5cm} % Empuja el logo más arriba del límite del margen
+        \centering
+        \includegraphics[width=2.5cm]{theme/ipn.png}\par
+        \vspace{0.2cm} 
+        {\color{blue!70!black}\rule{1.5pt}{16.5cm}\hspace{2pt}\rule{1.5pt}{16.5cm}}\par
+        \vspace{0.2cm} 
+        \includegraphics[width=2.5cm]{theme/escom.png}
+    \end{minipage}%
+    \hfill
+    % --- COLUMNA DERECHA (TEXTOS OFICIALES) ---
+    \begin{minipage}[t][0.95\textheight][t]{0.80\textwidth}
+        \vspace*{-1cm} % Sube los textos para alinearse con el logo
+        \centering
+        
+        % Ajustado a tamaño 18 para que quepa perfectamente en una línea
+        {\fontsize{18}{21.6}\selectfont \textbf{INSTITUTO POLITÉCNICO NACIONAL}\par}
+        \vspace{0.3cm}
+        {\fontsize{16}{19.2}\selectfont \textbf{ESCUELA SUPERIOR DE CÓMPUTO}\par}
+        
+        \vspace{1.2cm}
+        {\fontsize{16}{19.2}\selectfont \textbf{ESCOM}\par}
+        
+        \vspace{1.2cm}
+        {\fontsize{14}{16.8}\selectfont \textit{Trabajo Terminal}\par}
+        \vspace{0.8cm}
+        
+        {\fontsize{16}{19.2}\selectfont \textbf{``Sistema Inteligente para la Identificación y Seguimiento de los Derechos de los NNA por Feminicidios''}\par}
+        \vspace{0.3cm}
+        {\fontsize{14}{16.8}\selectfont 2026-A135\par}
+        
+        \vspace*{\fill}
+        
+        {\fontsize{14}{16.8}\selectfont \textit{Presenta}\par}
+        \vspace{0.3cm}
+        {\fontsize{14}{16.8}\selectfont \textbf{Morales Martínez Héctor Alberto}\par}
+        
+        \vspace*{\fill}
+        
+        {\fontsize{14}{16.8}\selectfont \textit{Directores}\par}
+        \vspace{0.3cm}
+        \begin{tabular}{c c}
+            \textbf{\textit{M. en C. Hurtado Avilés Gabriel}} & \textbf{\textit{M. en C. Saldaña Vélez Ulises}}
+        \end{tabular}
+        
+        \vspace*{\fill}
+        
+        \begin{minipage}{\textwidth}
+            \fontsize{12}{14.4}\selectfont
+            \textit{4 de junio del 2026}
+        \end{minipage}
+    \end{minipage}
 \end{titlepage}
 
-% ------------------------------------------------------------
-%  PÁGINA 2 – RESUMEN (Capítulo Resumen.tex)
-% ------------------------------------------------------------
-\include{Resumen}
+% ============================================================
+% PÁGINA 2: SEGUNDA PORTADA Y RESUMEN (DOCUMENTO TÉCNICO)
+% ============================================================
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \noindent
+    \begin{minipage}[c]{0.15\textwidth}
+        \includegraphics[width=\linewidth]{theme/ipn.png}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{0.65\textwidth}
+        \centering
+        \textbf{INSTITUTO POLITÉCNICO NACIONAL}\\
+        \textbf{ESCUELA SUPERIOR DE CÓMPUTO}\\
+        \textbf{SUBDIRECCIÓN ACADÉMICA}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{0.15\textwidth}
+        \includegraphics[width=\linewidth]{theme/escom.png}
+    \end{minipage}
+\end{center}
 
-% ------------------------------------------------------------
-%  PÁGINA 3 – CARTA RESPONSIVA (PDF externo)
-% ------------------------------------------------------------
-% Incluir carta responsiva si el archivo existe
-\IfFileExists{carta_responsiva.pdf}{%
-  \includepdf[pages=-]{carta_responsiva.pdf}%
+\vspace{0.5cm}
+\noindent
+No de TT: \textbf{2026-A135} \hfill \textbf{junio de 2026}
+
+\vspace{1cm}
+\begin{center}
+    Documento Técnico\\[0.5cm]
+    \textbf{\Large ``Sistema Inteligente para la Identificación y Seguimiento de los Derechos de los NNA por Feminicidios''}
+\end{center}
+
+\vspace{0.8cm}
+\begin{center}
+    \textit{Presenta}\\[0.2cm]
+    \textbf{Morales Martínez Héctor Alberto}\footnote{hmoralesm1500@alumno.ipn.mx}
+\end{center}
+
+\vspace{0.6cm}
+\begin{center}
+    \textit{Directores}\\[0.2cm]
+    \begin{tabular}{c c}
+        \textbf{M. en C. Hurtado Avilés Gabriel} & \textbf{M. en C. Saldaña Vélez Ulises}
+    \end{tabular}
+\end{center}
+
+\vspace{1cm}
+\begin{center}
+    \textbf{RESUMEN}
+\end{center}
+\noindent Se presenta el diseño, desarrollo y evaluación de un sistema inteligente orientado a identificar y dar seguimiento de las Niñas, Niños y Adolescentes (NNA) en situación de orfandad derivada de feminicidios en México. El sistema integra una arquitectura de microservicios contenerizada en Docker compuesta por tres módulos principales: un recolector multi-fuente, un clasificador neuro-simbólico escalonado y un módulo de agrupamiento semántico basado en BERTopic.\\[0.5cm]
+\textbf{Palabras clave:} Procesamiento de Lenguaje Natural, Web Scraping, Clasificación neuro-simbólica, NNA.
+\newpage
+% ============================================================
+% PÁGINA 3: CARTA RESPONSIVA A PÁGINA COMPLETA
+% ============================================================
+\IfFileExists{responsiva.pdf}{%
+  \includepdf[pages=-, fitpaper=true]{responsiva.pdf}%
 }{%
-  \newpage
-  \thispagestyle{empty}
-  \vspace*{\fill}
-  \begin{center}
-    {\large\itshape [Insertar aquí la Carta Responsiva firmada (carta\_responsiva.pdf)]}
-  \end{center}
-  \vspace*{\fill}
-  \newpage
+  \IfFileExists{carta_responsiva.pdf}{%
+    \includepdf[pages=-, fitpaper=true]{carta_responsiva.pdf}%
+  }{%
+    \newpage
+    \thispagestyle{empty}
+    \vspace*{\fill}
+    \begin{center}
+      {\large\itshape [Insertar aquí la Carta Responsiva firmada (responsiva.pdf)]}
+    \end{center}
+    \vspace*{\fill}
+    \newpage
+  }%
 }
 
-% ------------------------------------------------------------
-%  PÁGINA 4 – ADVERTENCIA LEGAL (sin numeración)
-% ------------------------------------------------------------
+% ============================================================
+% PÁGINA 4: ADVERTENCIA LEGAL
+% ============================================================
 \newpage
 \thispagestyle{empty}
 
 \vspace*{\fill}
 
-\noindent
-\begin{tabular}{||p{0.9\textwidth}}
-\textbf{Advertencia} \\
-\\
-``Este documento contiene información desarrollada por la Escuela Superior de Cómputo del
-Instituto Politécnico Nacional, a partir de datos y documentos con derecho de propiedad
-y por lo tanto, su uso quedará restringido a las aplicaciones que explícitamente se convengan. \\
-\\
-La aplicación no convenida exime a la escuela su responsabilidad técnica y da lugar a las
-consecuencias legales que para tal efecto se determinen.'' \\
-\\
-Información adicional sobre este reporte técnico podrá obtenerse en: La Subdirección Académica
-de la Escuela Superior de Cómputo del Instituto Politécnico Nacional, situada en
-Av. Juan de Dios Bátiz s/n Teléfono: 57296000, extensión 52000.
-\end{tabular}
+% Título centrado fuera del cuadro
+\begin{center}
+    {\Large \textbf{Advertencia}}
+\end{center}
+
+\vspace{0.5cm}
+
+% Cuadro punteado usando TikZ
+\begin{center}
+\begin{tikzpicture}
+    \node[
+        draw=blue!50,              % Color del borde azul
+        dashed,                    % Estilo de línea punteada/discontinua
+        line width=1.5pt,          % Grosor de la línea
+        inner sep=15pt,            % Espaciado interno (entre texto y borde)
+        text width=0.85\textwidth, % Ancho de la caja de texto
+        align=justify              % Alineación del texto justificada
+    ] {
+        \textit{``Este documento contiene información desarrollada por la Escuela Superior de Cómputo del Instituto Politécnico Nacional, a partir de datos y documentos con derecho de propiedad y por lo tanto, su uso quedará restringido a las aplicaciones que explícitamente se convengan.''}
+        
+        \vspace{0.4cm}
+        La aplicación no convenida exime a la escuela su responsabilidad técnica y da lugar a las consecuencias legales que para tal efecto se determinen.
+        
+        \vspace{0.4cm}
+        Información adicional sobre este reporte técnico podrá obtenerse en:
+        
+        \vspace{0.4cm}
+        La Subdirección Académica de la Escuela Superior de Cómputo del Instituto Politécnico Nacional, situada en Av. Juan de Dios Bátiz s/n Teléfono: 57296000, extensión 52000.
+    };
+\end{tikzpicture}
+\end{center}
 
 \vspace*{\fill}
-
 
 % ============================================================
 %  PÁGINAS PRELIMINARES (numeración romana)
@@ -297,6 +369,22 @@ Que sus derechos encuentren siempre voces que los defiendan.
 
 
 
+
+% ------------------------------------------------------------
+%  PÁGINA: CONSTANCIA DE DIFUSIÓN
+% ------------------------------------------------------------
+\IfFileExists{difusion.pdf}{%
+  \includepdf[pages=-, fitpaper=true]{difusion.pdf}%
+}{%
+  \newpage
+  \thispagestyle{empty}
+  \vspace*{\fill}
+  \begin{center}
+    {\large\itshape [Insertar aquí la Constancia de Difusión (difusion.pdf)]}
+  \end{center}
+  \vspace*{\fill}
+  \newpage
+}
 
 % ------------------------------------------------------------
 %  ÍNDICES
