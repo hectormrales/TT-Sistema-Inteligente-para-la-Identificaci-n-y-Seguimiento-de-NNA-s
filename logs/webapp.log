@@ -22239,3 +22239,209 @@ WHERE noticias.enlace = %(enlace_1)s
 2026-06-04 09:19:30,434 - root - INFO - Datos cargados: 689 noticias desde análisis
 2026-06-04 09:19:30,453 - root - INFO - Datos cargados: 689 noticias desde análisis
 >>>>>>> Stashed changes
+2026-06-21 23:37:13,082 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-06-21 23:37:13,224 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-21 23:37:13,224 - app - INFO - Esquema FTS inicializado
+2026-06-21 23:37:13,234 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-21 23:37:13,235 - app - INFO - Esquema FTS inicializado
+2026-06-21 23:37:13,821 - root - INFO - Datos cargados: 689 noticias desde análisis
+2026-06-21 23:37:13,821 - root - INFO - Datos cargados: 689 noticias desde análisis
+2026-06-21 23:37:46,150 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-21 23:37:46,171 - app - INFO - Logout: admin
+2026-06-21 23:37:49,794 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-21 23:41:01,657 - app - INFO - Logout: admin
+2026-06-21 23:50:18,064 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-21 23:51:05,326 - app - INFO - Logout: admin
+2026-06-21 23:52:23,667 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-21 23:56:15,479 - src.analysis.investigator - INFO - Investigando caso desde URL: https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos
+2026-06-21 23:56:15,791 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-21 23:56:17,512 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-21 23:56:17,514 - src.analysis.investigator - ERROR - Error generando título: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-21 23:56:17,515 - src.analysis.investigator - INFO - Iniciando investigación para: Noticia externa...
+2026-06-21 23:56:17,515 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-21 23:56:18,035 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-21 23:56:18,036 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-21 23:56:18,037 - src.analysis.investigator - INFO - Query generada: Noticia externa
+2026-06-21 23:56:18,037 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-21 23:56:18,885 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-21 23:56:19,645 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-21 23:56:28,572 - src.analysis.investigator - WARNING - Respuesta fallida de DDG (https://html.duckduckgo.com/html/?q=Noticia+externa): 202
+2026-06-21 23:56:28,572 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-21 23:56:29,284 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-21 23:56:29,285 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Noticia externa. Intentando con búsqueda nativa de Gemini...
+2026-06-21 23:56:29,285 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-21 23:56:30,684 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-21 23:56:30,685 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-21 23:56:30,685 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-21 23:57:50,535 - app - INFO - Logout: admin
+2026-06-21 23:58:39,404 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:02:13,798 - src.analysis.investigator - INFO - Investigando caso desde URL: https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos
+2026-06-22 00:02:13,954 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:02:15,626 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:02:15,630 - src.analysis.investigator - ERROR - Error generando título: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:02:15,630 - src.analysis.investigator - INFO - Iniciando investigación para: Noticia externa...
+2026-06-22 00:02:15,631 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:02:16,553 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:02:16,554 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:02:16,555 - src.analysis.investigator - INFO - Query generada: Noticia externa
+2026-06-22 00:02:16,556 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:02:17,206 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:02:17,922 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:02:31,718 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:02:32,379 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-22 00:02:32,379 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Noticia externa. Intentando con búsqueda nativa de Gemini...
+2026-06-22 00:02:32,381 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:02:34,292 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:02:34,292 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:02:34,293 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-22 00:04:34,442 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/feed…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/feed
+2026-06-22 00:04:37,875 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/feed/…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/feed/
+2026-06-22 00:04:41,158 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/rss…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/rss
+2026-06-22 00:04:41,159 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariodemorelos.com — 3 fallos consecutivos. Cooldown 600s
+2026-06-22 00:04:52,118 - app - INFO - Logout: admin
+2026-06-22 00:05:39,788 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:06:48,101 - app - INFO - Logout: admin
+2026-06-22 00:07:36,259 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:11:09,085 - src.analysis.investigator - INFO - Investigando caso desde URL: https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos
+2026-06-22 00:11:09,207 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:11:10,972 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:11:10,973 - src.analysis.investigator - ERROR - Error generando título: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:11:10,974 - src.analysis.investigator - INFO - Iniciando investigación para: Noticia externa...
+2026-06-22 00:11:10,974 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:11:21,063 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:11:21,065 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:11:21,067 - src.analysis.investigator - INFO - Query generada: Noticia externa
+2026-06-22 00:11:21,068 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:11:21,875 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:11:23,043 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:11:33,810 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:11:40,932 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-22 00:11:40,932 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Noticia externa. Intentando con búsqueda nativa de Gemini...
+2026-06-22 00:11:40,933 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:12:00,132 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-22 00:12:00,137 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-22 00:16:50,227 - app - INFO - Logout: admin
+2026-06-22 00:18:08,457 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:19:09,408 - app - INFO - Logout: admin
+2026-06-22 00:19:56,319 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:23:14,975 - src.analysis.investigator - INFO - Investigando caso desde URL: https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos
+2026-06-22 00:23:15,597 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:23:16,546 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:23:16,566 - src.analysis.investigator - ERROR - Error generando título: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:23:16,567 - src.analysis.investigator - INFO - Iniciando investigación para: Noticia externa...
+2026-06-22 00:23:16,567 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:23:18,642 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:23:18,644 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:23:18,644 - src.analysis.investigator - INFO - Query generada: Noticia externa
+2026-06-22 00:23:18,645 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:23:19,444 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:23:20,183 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:23:40,900 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:23:41,853 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-22 00:23:41,854 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Noticia externa. Intentando con búsqueda nativa de Gemini...
+2026-06-22 00:23:41,867 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:23:50,160 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-22 00:23:50,180 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-22 00:23:50,363 - root - ERROR - Error identificando link: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "noticias_enlace_key"
+DETAIL:  Key (enlace)=(https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos) already exists.
+
+[SQL: INSERT INTO noticias (titulo, contenido, enlace, fuente, fecha, score_feminicidio, score_nna, score_compuesto, relevancia_final, clasificacion, clasificacion_final, score_semantico, modo_deteccion, cluster_id, topic_id, topic_description, max_similarity, content_hash, scrape_method, menores_identificados, batch_id, investigacion_json, created_at, updated_at, sesion_id) VALUES (%(titulo)s, %(contenido)s, %(enlace)s, %(fuente)s, %(fecha)s, %(score_feminicidio)s, %(score_nna)s, %(score_compuesto)s, %(relevancia_final)s, %(clasificacion)s, %(clasificacion_final)s, %(score_semantico)s, %(modo_deteccion)s, %(cluster_id)s, %(topic_id)s, %(topic_description)s, %(max_similarity)s, %(content_hash)s, %(scrape_method)s, %(menores_identificados)s, %(batch_id)s, %(investigacion_json)s, %(created_at)s, %(updated_at)s, %(sesion_id)s) RETURNING noticias.id]
+[parameters: {'titulo': "La frase de búsqueda proporcionada, 'Noticia externa', es demasiado genérica y no corresponde a un e...", 'contenido': "La frase de búsqueda proporcionada, 'Noticia externa', es demasiado genérica y no corresponde a un evento noticioso específico. Los resultados de la  ... (311 characters truncated) ... era detalles sobre víctimas específicas, niños afectados, sus edades, o su situación actual, lo cual es necesario para generar el informe solicitado.", 'enlace': 'https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos', 'fuente': 'Investigación Manual', 'fecha': datetime.datetime(2026, 6, 22, 6, 23, 50, 192440), 'score_feminicidio': 1.0, 'score_nna': 1.0, 'score_compuesto': 1.0, 'relevancia_final': 0.0, 'clasificacion': 'Alta', 'clasificacion_final': 'No relevante', 'score_semantico': None, 'modo_deteccion': None, 'cluster_id': None, 'topic_id': None, 'topic_description': None, 'max_similarity': 0.0, 'content_hash': None, 'scrape_method': None, 'menores_identificados': 'No', 'batch_id': None, 'investigacion_json': '{"ubicacion": "No especificado / No encontrado", "victimas": [], "ninos_afectados": null, "edades": [], "situacion_actual": "Informaci\\u00f3n no dis ... (1899 characters truncated) ... JecLqFAFOXJnvctNHdB1PUEMVIPALsBPEigOOOZswbmOChe_1YLeL6fQzrbQWxqJfDnii6Rgh9Vco="], "metodo": "gemini_native_search", "query_usada": "Noticia externa"}', 'created_at': datetime.datetime(2026, 6, 22, 6, 23, 50, 272052, tzinfo=datetime.timezone.utc), 'updated_at': datetime.datetime(2026, 6, 22, 6, 23, 50, 272059, tzinfo=datetime.timezone.utc), 'sesion_id': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-22 00:24:47,099 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/feed…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/feed
+2026-06-22 00:24:53,428 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/feed/…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/feed/
+2026-06-22 00:25:09,074 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/rss…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/rss
+2026-06-22 00:25:09,074 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariodemorelos.com — 3 fallos consecutivos. Cooldown 600s
+2026-06-22 00:25:55,543 - app - INFO - Logout: admin
+2026-06-22 00:26:43,332 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:29:36,900 - app - INFO - Logout: admin
+2026-06-22 00:30:20,840 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:33:46,064 - src.analysis.investigator - INFO - Investigando caso desde URL: https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos
+2026-06-22 00:33:46,193 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:33:52,583 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-22 00:34:19,211 - app - INFO - Logout: admin
+2026-06-22 00:35:02,526 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:35:22,384 - app - INFO - Logout: admin
+2026-06-22 00:36:25,825 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:36:39,972 - app - INFO - Logout: admin
+2026-06-22 00:37:16,840 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:40:23,491 - src.analysis.investigator - INFO - Investigando caso desde URL: https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos
+2026-06-22 00:40:23,707 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:40:24,613 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:40:24,627 - src.analysis.investigator - ERROR - Error generando título: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:40:24,627 - src.analysis.investigator - INFO - Iniciando investigación para: Noticia externa...
+2026-06-22 00:40:24,628 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:40:25,397 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 00:40:25,399 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 00:40:25,400 - src.analysis.investigator - INFO - Query generada: Noticia externa
+2026-06-22 00:40:25,400 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:40:26,127 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:40:26,825 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Noticia+externa
+2026-06-22 00:41:03,616 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Noticia+externa
+2026-06-22 00:41:04,301 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-22 00:41:04,301 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Noticia externa. Intentando con búsqueda nativa de Gemini...
+2026-06-22 00:41:04,313 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 00:41:15,444 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-06-22 00:41:15,454 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.
+2026-06-22 00:41:20,515 - root - ERROR - Error identificando link: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "noticias_enlace_key"
+DETAIL:  Key (enlace)=(https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos) already exists.
+
+[SQL: INSERT INTO noticias (titulo, contenido, enlace, fuente, fecha, score_feminicidio, score_nna, score_compuesto, relevancia_final, clasificacion, clasificacion_final, score_semantico, modo_deteccion, cluster_id, topic_id, topic_description, max_similarity, content_hash, scrape_method, menores_identificados, batch_id, investigacion_json, created_at, updated_at, sesion_id) VALUES (%(titulo)s, %(contenido)s, %(enlace)s, %(fuente)s, %(fecha)s, %(score_feminicidio)s, %(score_nna)s, %(score_compuesto)s, %(relevancia_final)s, %(clasificacion)s, %(clasificacion_final)s, %(score_semantico)s, %(modo_deteccion)s, %(cluster_id)s, %(topic_id)s, %(topic_description)s, %(max_similarity)s, %(content_hash)s, %(scrape_method)s, %(menores_identificados)s, %(batch_id)s, %(investigacion_json)s, %(created_at)s, %(updated_at)s, %(sesion_id)s) RETURNING noticias.id]
+[parameters: {'titulo': 'La búsqueda de la frase exacta "Noticia externa" en la web no arroja resultados sobre un evento espe...', 'contenido': 'La búsqueda de la frase exacta "Noticia externa" en la web no arroja resultados sobre un evento específico con las características solicitadas (ubica ... (216 characters truncated) ...  de fuentes externas. Por lo tanto, no se ha podido recopilar información detallada sobre un evento particular para completar los campos solicitados.', 'enlace': 'https://www.diariodemorelos.com/noticias/matan-pu-aladas-mujer-en-secundaria-de-ocuituco-deja-dos-hijos-hu-rfanos', 'fuente': 'Investigación Manual', 'fecha': datetime.datetime(2026, 6, 22, 6, 41, 15, 460797), 'score_feminicidio': 1.0, 'score_nna': 1.0, 'score_compuesto': 1.0, 'relevancia_final': 0.0, 'clasificacion': 'Alta', 'clasificacion_final': 'No relevante', 'score_semantico': None, 'modo_deteccion': None, 'cluster_id': None, 'topic_id': None, 'topic_description': None, 'max_similarity': 0.0, 'content_hash': None, 'scrape_method': None, 'menores_identificados': 'No', 'batch_id': None, 'investigacion_json': '{"ubicacion": null, "victimas": null, "ninos_afectados": null, "edades": null, "situacion_actual": null, "medios_contacto": null, "resumen": "La b\\u ... (1574 characters truncated) ... n433ZPap-DASY1RPrNwCOX4X7MPMWmZQed0f8MCl57tL1RXQAf6f_Nw73h8Otdt-EuCwSOUI4uWb5q"], "metodo": "gemini_native_search", "query_usada": "Noticia externa"}', 'created_at': datetime.datetime(2026, 6, 22, 6, 41, 20, 451439, tzinfo=datetime.timezone.utc), 'updated_at': datetime.datetime(2026, 6, 22, 6, 41, 20, 451446, tzinfo=datetime.timezone.utc), 'sesion_id': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-06-22 00:41:21,048 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/feed…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/feed
+2026-06-22 00:41:35,087 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/feed/…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/feed/
+2026-06-22 00:41:58,611 - src.collection.scraper - WARNING - Error HTTP en https://www.diariodemorelos.com/rss…: 404 Client Error: Not Found for url: https://www.diariodemorelos.com/rss
+2026-06-22 00:41:58,611 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariodemorelos.com — 3 fallos consecutivos. Cooldown 600s
+2026-06-22 00:42:00,637 - app - INFO - Logout: admin
+2026-06-22 00:54:06,570 - src.database.repository - WARNING - FTS setup warning: (psycopg2.errors.InternalError_) tuple concurrently updated
+
+[SQL: 
+        CREATE OR REPLACE FUNCTION noticias_fts_trigger()
+        RETURNS trigger AS $$
+        BEGIN
+            NEW.busqueda_fts :=
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.titulo, '')), 'A') ||
+                setweight(to_tsvector('spanish_unaccent', COALESCE(NEW.contenido, '')), 'B');
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        ]
+(Background on this error at: https://sqlalche.me/e/20/2j85)
+2026-06-22 00:54:06,612 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-22 00:54:06,612 - src.database.repository - INFO - Esquema FTS inicializado correctamente
+2026-06-22 00:54:06,613 - app - INFO - Esquema FTS inicializado
+2026-06-22 00:54:06,613 - app - INFO - Esquema FTS inicializado
+2026-06-22 00:54:06,698 - root - INFO - Datos cargados: 689 noticias desde análisis
+2026-06-22 00:54:06,698 - root - INFO - Datos cargados: 689 noticias desde análisis
+2026-06-22 00:54:09,712 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 00:54:11,905 - app - INFO - Logout: admin
+2026-06-22 00:54:17,055 - app - INFO - Login exitoso: admin desde 172.19.0.1
+2026-06-22 01:01:17,916 - src.analysis.investigator - INFO - Iniciando investigación para: Asesinan a Mujer Vendedora de Frituras en Irapuato...
+2026-06-22 01:01:17,920 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 01:01:20,658 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 01:01:21,504 - src.analysis.investigator - ERROR - Error generando query: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 01:01:21,505 - src.analysis.investigator - INFO - Query generada: Asesinan a Mujer Vendedora de Frituras
+2026-06-22 01:01:21,506 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+a+Mujer+Vendedora+de+Frituras
+2026-06-22 01:01:22,424 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+a+Mujer+Vendedora+de+Frituras
+2026-06-22 01:01:23,197 - src.analysis.investigator - INFO - Probando búsqueda en: https://html.duckduckgo.com/html/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato
+2026-06-22 01:01:38,932 - src.analysis.investigator - INFO - Probando búsqueda en: https://lite.duckduckgo.com/lite/?q=Asesinan+a+Mujer+Vendedora+de+Frituras+en+Irapuato
+2026-06-22 01:01:39,514 - src.analysis.investigator - INFO - URLs encontradas: 0
+2026-06-22 01:01:39,514 - src.analysis.investigator - WARNING - No se pudieron obtener URLs mediante scraping manual para: Asesinan a Mujer Vendedora de Frituras. Intentando con búsqueda nativa de Gemini...
+2026-06-22 01:01:39,515 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-06-22 01:01:59,420 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-06-22 01:01:59,422 - src.analysis.investigator - ERROR - Error en investigación nativa de Gemini: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+2026-06-22 01:01:59,422 - src.analysis.investigator - INFO - Investigación nativa de Gemini completada.

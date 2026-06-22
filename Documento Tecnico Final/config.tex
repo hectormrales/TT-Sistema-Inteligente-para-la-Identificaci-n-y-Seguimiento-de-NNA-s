@@ -1,40 +1,41 @@
 % !TeX root = proyecto.tex
+% config.tex – Datos del documento (sin redefinir encabezados;
+%              esos se definen en el preámbulo de proyecto.tex)
 
-% Encabezados y pie de página
-\fancyhead[LE]{\includegraphics[height=35pt]{theme/headerPar}} 
-\fancyhead[RO]{\includegraphics[height=35pt]{theme/headerInp}} 
-\fancyhead[RE]{} 
-\fancyhead[LO]{} 
+% ============================================================
+%  Definición de macros auxiliares (si no existen ya en cdtBook)
+% ============================================================
+\providecommand{\defDirectores}[1]{\def\Directores{#1}}
+\providecommand{\defCargoDirectores}[1]{\def\CargoDirectores{#1}}
+\providecommand{\defSinodales}[1]{\def\Sinodales{#1}}
+\providecommand{\defCargoSinodales}[1]{\def\CargoSinodales{#1}}
+\providecommand{\defAutor}[1]{\def\Autor{#1}}
+\providecommand{\defCargoAutor}[1]{\def\CargoAutor{#1}}
+% Colores usados en chapters (si no están ya definidos)
+\providecommand{\authorColor}{authorColor}
 
-\fancyfoot[CO,CE]{{\tiny\color{subTitleColor}\em Av. Juan de Dios Bátiz esq. Miguel Othón de Mendizabal S/N Col. Lindavista, GAM, D. F. {\color{sectionColor}\Telefon} 56 1614 8167 {\color{sectionColor}\Letter} hmoralesm1500@alumno.ipn.mx}}
-\fancyfoot[RO,LE]{\footnotesize\thepage}
-
-
-
-% Datos del documento:
-\definecolor{authorColor}{rgb}{0, 0, 0}
-
-\newcommand{\defDirectores}[1]{\def \Directores {#1}}
-\newcommand{\defCargoDirectores}[1]{\def \CargoDirectores {#1}}
-\newcommand{\defSinodales}[1]{\def \Sinodales {#1}}
-\newcommand{\defCargoSinodales}[1]{\def \CargoSinodales {#1}}
-\newcommand{\defAutor}[1]{\def \Autor {#1}}
-\newcommand{\defCargoAutor}[1]{\def \CargoAutor {#1}}
-
+% ============================================================
+%  Datos del proyecto
+% ============================================================
 \defProyecto{Sistema Inteligente para la Identificación y Seguimiento de los derechos de los NNA por feminicidios}
 \defNumComponente{II}
 \defComponente{}
 \defEtapa{Trabajo Terminal no. 2026-A135}
 
-% Datos del autor:
-\defAutor{Morales Martinez Hector Alberto}
+% ============================================================
+%  Datos del autor
+% ============================================================
+\defAutor{Morales Martínez Héctor Alberto}
 \defCargoAutor{Estudiante}
 
-% Datos de la consultora:
-\defDirectores{M. en C. Ulises Saldaña Velez \\ M. en C. Gabriel Hurtado Avilés} 
+% ============================================================
+%  Datos de los directores
+% ============================================================
+\defDirectores{M. en C. Ulises Saldaña Vélez \\ M. en C. Gabriel Hurtado Avilés}
 \defCargoDirectores{Directores de Trabajo Terminal}
 
-
-% Datos del cliente:
-\defSinodales{Elizabeth Moreno Galván, Rocio Resendiz Muñoz y Mónica Rocío Torres León}
-\defCargoSinodales{Evaluadores Académicos} 
+% ============================================================
+%  Datos de los sinodales
+% ============================================================
+\defSinodales{Elizabeth Moreno Galván, Rocío Reséndiz Muñoz y Mónica Rocío Torres León}
+\defCargoSinodales{Evaluadores Académicos}

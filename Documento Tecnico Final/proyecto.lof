@@ -3,29 +3,29 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Esquema relacional}}{28}{figure.4.1}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Arquitectura modular de BERTopic y su parametrización en TT II}}{35}{figure.4.2}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Reducción de outliers en BERTopic}}{37}{figure.4.3}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Esquema relacional}}{27}{figure.4.1}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Arquitectura modular de BERTopic y su parametrización en TT II}}{34}{figure.4.2}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Reducción de outliers en BERTopic}}{35}{figure.4.3}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Cronograma metodológico de evolución y transición de los prototipos del sistema.}}{41}{figure.5.1}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Arquitectura del sistema.}}{45}{figure.5.2}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Cronograma metodológico de evolución y transición de los prototipos del sistema.}}{39}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Arquitectura del sistema.}}{43}{figure.5.2}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces IU-01~{}Dashboard principal de noticias.}}{69}{figure.6.1}%
-\contentsline {figure}{\numberline {6.2}{\ignorespaces IU-02~{}Pantalla de Gestión de Fuentes.}}{71}{figure.6.2}%
-\contentsline {figure}{\numberline {6.3}{\ignorespaces IU-03~{}Modal de Resultados del DeepInvestigator.}}{72}{figure.6.3}%
-\contentsline {figure}{\numberline {6.4}{\ignorespaces IU-04~{}Pantalla de Seguimiento de Casos Activos.}}{74}{figure.6.4}%
-\contentsline {figure}{\numberline {6.5}{\ignorespaces IU-05~{}Pantalla de Inicio de Sesión.}}{75}{figure.6.5}%
+\contentsline {figure}{\numberline {6.1}{\ignorespaces IU-01~{}Dashboard principal de noticias.}}{65}{figure.6.1}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces IU-02~{}Pantalla de Gestión de Fuentes.}}{67}{figure.6.2}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces IU-03~{}Modal de Resultados del DeepInvestigator.}}{68}{figure.6.3}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces IU-04~{}Pantalla de Seguimiento de Casos Activos.}}{69}{figure.6.4}%
+\contentsline {figure}{\numberline {6.5}{\ignorespaces IU-05~{}Pantalla de Inicio de Sesión.}}{70}{figure.6.5}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Diagrama de flujo del prototipo 2.}}{79}{figure.7.1}%
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Diagrama de flujo del prototipo 2.}}{74}{figure.7.1}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {8.1}{\ignorespaces Modelo entidad-relación de la base de datos en PostgreSQL.}}{85}{figure.8.1}%
-\contentsline {figure}{\numberline {8.2}{\ignorespaces Arquitectura del motor BETO y clasificación \textit {Zero-Shot} con \textit {Temperature Scaling}.}}{87}{figure.8.2}%
-\contentsline {figure}{\numberline {8.3}{\ignorespaces Flujo de deduplicación en cascada.}}{88}{figure.8.3}%
-\contentsline {figure}{\numberline {8.4}{\ignorespaces Flujo de investigación profunda.}}{92}{figure.8.4}%
-\contentsline {figure}{\numberline {8.5}{\ignorespaces Arquitectura del Sistema de Clasificación Escalonada.}}{95}{figure.8.5}%
+\contentsline {figure}{\numberline {8.1}{\ignorespaces Modelo entidad-relación de la base de datos en PostgreSQL.}}{80}{figure.8.1}%
+\contentsline {figure}{\numberline {8.2}{\ignorespaces Arquitectura del motor BETO y clasificación \textit {Zero-Shot} con \textit {Temperature Scaling}.}}{81}{figure.8.2}%
+\contentsline {figure}{\numberline {8.3}{\ignorespaces Flujo de deduplicación en cascada.}}{83}{figure.8.3}%
+\contentsline {figure}{\numberline {8.4}{\ignorespaces Flujo de investigación profunda.}}{87}{figure.8.4}%
+\contentsline {figure}{\numberline {8.5}{\ignorespaces Arquitectura del Sistema de Clasificación Escalonada.}}{90}{figure.8.5}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {9.1}{\ignorespaces Distribución de duplicados eliminados por fase de la cascada de deduplicación.}}{97}{figure.9.1}%
-\contentsline {figure}{\numberline {9.2}{\ignorespaces Reducción del corpus desde 634 noticias únicas hasta 27 casos de alta relevancia.}}{98}{figure.9.2}%
-\contentsline {figure}{\numberline {9.3}{\ignorespaces Heatmap de la matriz de confusión del clasificador escalonado sobre el conjunto de prueba ciego ($n=41$). Los valores de la diagonal principal (VN=14, VP=20) concentran el 83\% de las predicciones. El único falso negativo (FN=1) corresponde a una noticia con redacción ambigua.}}{100}{figure.9.3}%
-\contentsline {figure}{\numberline {9.4}{\ignorespaces Visualización jerárquica de noticias de Alta relevancia en el dashboard con etiquetas de clasificación.}}{102}{figure.9.4}%
+\contentsline {figure}{\numberline {9.1}{\ignorespaces Distribución de duplicados eliminados por fase de la cascada de deduplicación.}}{92}{figure.9.1}%
+\contentsline {figure}{\numberline {9.2}{\ignorespaces Reducción del corpus desde 634 noticias únicas hasta 27 casos de alta relevancia.}}{93}{figure.9.2}%
+\contentsline {figure}{\numberline {9.3}{\ignorespaces Heatmap de la matriz de confusión del clasificador escalonado sobre el conjunto de prueba ciego ($n=41$). Los valores de la diagonal principal (VN=14, VP=20) concentran el 83\% de las predicciones. El único falso negativo (FN=1) corresponde a una noticia con redacción ambigua.}}{95}{figure.9.3}%
+\contentsline {figure}{\numberline {9.4}{\ignorespaces Visualización jerárquica de noticias de Alta relevancia en el dashboard con etiquetas de clasificación.}}{97}{figure.9.4}%
 \addvspace {10\p@ }

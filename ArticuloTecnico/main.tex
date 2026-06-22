@@ -32,16 +32,16 @@
   stringstyle=\color{black},
   morestring=[b]",
   literate=
-   *{0}{{\color{blue!70}0}}{1}
-    {1}{{\color{blue!70}1}}{1}
-    {2}{{\color{blue!70}2}}{1}
-    {3}{{\color{blue!70}3}}{1}
-    {4}{{\color{blue!70}4}}{1}
-    {5}{{\color{blue!70}5}}{1}
-    {6}{{\color{blue!70}6}}{1}
-    {7}{{\color{blue!70}7}}{1}
-    {8}{{\color{blue!70}8}}{1}
-    {9}{{\color{blue!70}9}}{1}
+    {0}{{{\color{blue!70}0}}}{1}
+    {1}{{{\color{blue!70}1}}}{1}
+    {2}{{{\color{blue!70}2}}}{1}
+    {3}{{{\color{blue!70}3}}}{1}
+    {4}{{{\color{blue!70}4}}}{1}
+    {5}{{{\color{blue!70}5}}}{1}
+    {6}{{{\color{blue!70}6}}}{1}
+    {7}{{{\color{blue!70}7}}}{1}
+    {8}{{{\color{blue!70}8}}}{1}
+    {9}{{{\color{blue!70}9}}}{1}
     {á}{{\'a}}1
     {é}{{\'e}}1
     {í}{{\'i}}1
@@ -106,7 +106,7 @@ de abstracción para el analista. El módulo \textit{DeepInvestigator},
 integrado en el backend, sintetiza fichas de caso estructuradas
 mediante la API de Gemini~Flash bajo demanda. Los resultados demuestran que
 la integración de razonamiento simbólico sobre el componente neuronal es
-essencial para dominios de alta especificidad semántica como la violencia de
+esencial para dominios de alta especificidad semántica como la violencia de
 género y la protección de la infancia.
 \end{abstract}
 
@@ -230,7 +230,7 @@ simbólicas 0, 1 y~3 en función del contenido textual de $x$.
 \end{figure}
 
 Este diseño neuro-simbólico neutraliza el \textbf{efecto péndulo}
-observado en el prototipo 3, donde \BETO{} clasificaba erróneamente
+observado en el prototipo tres, donde \BETO{} clasificaba erróneamente
 discursos normativos con scores de hasta 0.81 por correlación
 superficial de tokens.
 
@@ -256,7 +256,7 @@ con \textit{StealthSession}; y síntesis estructurada en JSON con
 siete campos (\textit{ubicacion}, \textit{victimas},
 \textit{ninos\_afectados}, \textit{edades}, \textit{situacion\_actual},
 \textit{medios\_contacto}, \textit{resumen}). El campo
-\textit{medios\_contacto} retorna como recomendacion de contacto a institucione
+\textit{medios\_contacto} retorna como recomendación de contacto a instituciones
 como el DIF municipal y la Fiscalía
 competente según la ubicación del caso. Tiempo promedio:
 \textbf{47~segundos por caso}.
@@ -269,17 +269,12 @@ por Gemini~Flash (datos anonimizados):
   "victimas": "Mujer adulta, 32 (*años*)",
   "ninos_afectados": 2,
   "edades": ["7 (*años*)", "11 (*años*)"],
-  "situacion_actual": "Menores bajo resguardo provisional
-    de familiares maternos; DIF municipal en proceso
-    de evaluacion de tutela definitiva.",
+  "situacion_actual": "Menores bajo resguardo; DIF en evaluacion de tutela.",
   "medios_contacto": {
     "DIF": "DIF Municipal de [ANONIMIZADO], tel. [OMITIDO]",
-    "Fiscalia": "Fiscalia Especializada en Violencia de
-      Genero del Estado de [ANONIMIZADO]"
+    "Fiscalia": "Fiscalia Especializada en Violencia de Genero del Estado de [ANONIMIZADO]"
   },
-  "resumen": "Caso de orfandad derivada de feminicidio.
-    Dos menores identificados; intervencion institucional
-    activa. Se recomienda seguimiento prioritario."
+  "resumen": "Caso de orfandad por feminicidio. Menores identificados; intervencion activa."
 }
 \end{lstlisting}
 
@@ -288,12 +283,12 @@ por Gemini~Flash (datos anonimizados):
 El sistema se despliega mediante orquestación Docker con tres contenedores
 sobre una red virtual privada (\texttt{nna-network}).
 La Fig.~\ref{fig:arquitectura} muestra la arquitectura general.
-\texttt{nna-postgres} ejecuta PostgreSQL~16-alpine con volumen persistente
+\texttt{nna-postgres} ejecuta PostgreSQL con volumen persistente
 e índices GIN para búsqueda de texto completo (FTS) en español.
 \texttt{nna-analyzer} aloja el backend analítico con pesos \BETO{}
-fine-tuned ($\approx$440~MB en caché local).
+fine-tuned.
 \texttt{nna-webapp} sirve el dashboard Flask y la API REST en el
-puerto~5000. Los contenedores dependientes aguardan el \textit{healthcheck}
+puerto~5000. Los contenedores dependientes esperan el \textit{healthcheck}
 de \texttt{nna-postgres} para eliminar condiciones de carrera.
 
 \begin{figure}[htbp]
@@ -315,7 +310,7 @@ En el ciclo de validación final se procesaron $\approx$900~noticias brutas;
 la cascada eliminó 213~duplicados: 89 por MD5 (10.5\%), 61 por Jaccard
 (7.2\%), 43 por SimHash (5.1\%) y 20 por coseno TF-IDF (2.4\%), obteniendo
 \textbf{634~noticias únicas}. Esto representa un incremento del 125\%
-respecto a las 281~noticias del TT-1.
+respecto a las 281~noticias del TT I.
 
 \subsection{Evaluación del Clasificador Escalonado}
 
@@ -354,19 +349,27 @@ $\kappa$ de Cohen (inter-anotador) & 0.91 \\
 
 \subsection{Distribución del Embudo Analítico}
 
-El corpus de 634~noticias fue reducido secuencialmente: 409~superaron
-la Capa~0 (64.5\%), 225 la Capa~1 (35.5\%), 128 la inferencia \BETO{}
-con score~$>$~0.50 (20.2\%), de los cuales \textbf{27 fueron clasificados
-como Alta relevancia} (4.4\%) y \textbf{101 como Media} (15.9\%). Los
-27~casos de Alta correspondieron a eventos de orfandad verificables
-manualmente.
+El corpus de aproximadamente \textbf{600 noticias únicas} fue reducido
+secuencialmente por las cuatro capas del clasificador escalonado:
+409~superaron la Capa~0 (64.5\%); 225 la Capa~1 (35.5\%); 128
+alcanzaron la Capa~2 con score BETO~$>$~0.50 (20.2\%).
+A diferencia de las capas anteriores, la Capa~3 no es un filtro de
+rechazo sino un ajustador que aplica bonificaciones y penalizaciones aditivas sobre el score
+acumulado que determina si una noticia es de alta o media relevancia, por lo que las mismas
+128~noticias atraviesan esta etapa íntegramente (20.2\%), siendo redistribuidas en
+\textbf{27 casos clasificados como Alta relevancia} (4.4\%) y
+\textbf{101 como Media}. (15.9\%).
+Respecto a los 27 casos de Alta Relevancia, 20 correspondieron a eventos
+de orfandad verificables manualmente y 7 fueron clasificados como casos falsos
+positivos. 
+
 
 \subsection{Agrupamiento y DeepInvestigator}
 
-BERTopic generó 15~tópicos semánticos coherentes sobre las 634~noticias.
-El \texttt{DeepInvestigator} completó el flujo de investigación sobre
-15~noticias de Alta clasificación con tiempo promedio de 47\,s por caso
-y generación correcta de fichas con contactos institucionales (DIF
+BERTopic generó 15~tópicos semánticos coherentes sobre alrededor de 600~noticias.
+El modelo \texttt{DeepInvestigator} completó su flujo de investigación
+bajo demanda en noticias de Alta relevancia con un tiempo promedio de 47\,s por caso
+y generación de manera correcta de fichas con contactos institucionales (DIF
 municipal, Fiscalía competente). La TABLA~\ref{tab:topicos} presenta
 los cinco tópicos de mayor frecuencia identificados por el modelo.
 
@@ -388,25 +391,25 @@ los cinco tópicos de mayor frecuencia identificados por el modelo.
 \end{tabular}
 \end{table}
 
-\subsection{Evaluación Comparativa TT-1 / TT-2}
+\subsection{Evaluación Comparativa TT I / TT II}
 
 La \mbox{TABLA~\ref{tab:comparativa}} consolida el cumplimiento de los
-objetivos cuantitativos definidos al inicio del TT-2.
+objetivos cuantitativos definidos al inicio del TT II.
 
 \begin{table}[htbp]
 \centering
-\caption{Comparativa de métricas TT-1 vs.\ TT-2}
+\caption{Comparativa de métricas TT I vs.\ TT II}
 \label{tab:comparativa}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l c >{\centering\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.4cm}}
 \toprule
-\textbf{Métrica} & \textbf{TT-1} & \textbf{Meta TT-2} & \textbf{P4 final} \\
+\textbf{Métrica} & \textbf{TT I} & \textbf{Meta TT II} & \textbf{P4 final} \\
 \midrule
-Falsos positivos & 60\%    & $\leq$30\%     & 30.0\% $\checkmark$ \\
-Fuentes          & 10 RSS  & 45 RSS+GNews   & 45+GN+Stealth $\checkmark$ \\
-Noticias únicas  & 281     & $>$500         & 634 $\checkmark$ \\
-Motor PLN        & RegEx   & BETO ft.       & BETO Escalonado $\checkmark$ \\
-Persistencia     & CSV     & PostgreSQL     & PostgreSQL ACID $\checkmark$ \\
+Falsos positivos & 60\%    & $\leq$30\%     & $\leq$30.0\% $\checkmark$ \\
+Fuentes          & 10 RSS  & 45 RSS+GN   & 45+GN+Stealth $\checkmark$ \\
+Noticias únicas  & $\leq$280     & $>$500         & $>$600 $\checkmark$ \\
+Motor PLN        & RegEx   & BETO ft.       & BETO escal. $\checkmark$ \\
+Persistencia     & CSV     & PostgreSQL     & PGSQL ACID $\checkmark$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -427,14 +430,13 @@ salida neuronal de \BETO{} es necesaria para dominios de alta especificidad.
 
 \subsection{Trabajo Futuro}
 
-Se identifican tres líneas prioritarias. \textbf{Active Learning}:
-incorporar retroalimentación del analista para reentrenar el clasificador
-de forma incremental; \textbf{Reentrenamiento en GPU}: el fine-tuning
+Se identifican tres líneas prioritarias. \textbf{Active Learning} para incorporar retroalimentación del analista
+y así reentrenar el clasificador de forma incremental; \textbf{Reentrenamiento en GPU} dado que el fine-tuning
 actual se realizó en hardware no especializado y con limitaciones de memoria RAM,
 por lo que un entrenamiento en GPU con recursos adecuados permitiría un entrenamiento
-más eficiente y robusto; y (3)~\textbf{Modelos NER}: evaluar el uso de modelos
-NER especializados para la extracción de entidades relevantes (personas,
-instituciones, lugares), lo que evitaria depender de gemini para la extraccion de entidades.
+más eficiente y robusto; y \textbf{Modelos NER} para extraer entidades relevantes (personas,
+instituciones, lugares), lo que haría al sistema más autónomo y evitaría la dependencia
+de Gemini para la extracción de entidades.
 
 \section*{Reconocimientos}
 
@@ -451,64 +453,56 @@ aliento y motivación.
 \begin{thebibliography}{99}
 
 \bibitem{sesnsp2023}
-Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública,
-``Información sobre violencia contra las mujeres,''
-Gobierno de México, Informe anual, 2023.
-[En línea]. Disponible en: \url{https://www.gob.mx/sesnsp}
+Secretariado Ejecutivo del Sistema Nacional de Seguridad P\'{u}blica
+(SESNSP), ``Informaci\'{o}n sobre violencia contra las mujeres,'' Gobierno
+de M\'{e}xico, Informe anual, 2023. [En l\'{i}nea]. Disponible en:
+\url{https://www.gob.mx/sesnsp}
 
 \bibitem{redim2022}
-Red por los Derechos de la Infancia en México (REDIM),
-``Infancia y feminicidio en México: impacto en niñas, niños y adolescentes,''
-REDIM, Ciudad de México, Informe técnico, 2022.
+Red por los Derechos de la Infancia en M\'{e}xico (REDIM), ``Infancia y
+feminicidio en M\'{e}xico: impacto en ni\~{n}as, ni\~{n}os y
+adolescentes,'' REDIM, Ciudad de M\'{e}xico, Informe t\'{e}cnico, 2022.
 
 \bibitem{onu2019}
-Oficina del Alto Comisionado de las Naciones Unidas para los Derechos Humanos,
-``Diagnóstico sobre la situación de los derechos humanos en México,''
-ONU-DH México, 2019.
+Oficina del Alto Comisionado de las Naciones Unidas para los Derechos
+Humanos, ``Diagn\'{o}stico sobre la situaci\'{o}n de los derechos humanos
+en M\'{e}xico,'' ONU-DH M\'{e}xico, 2019.
 
 \bibitem{bird2009nlp}
-S. Bird, E. Klein, y E. Loper,
-\textit{Natural Language Processing with Python}.
-Sebastopol, CA: O'Reilly Media, 2009.
+S.~Bird, E.~Klein, y E.~Loper, \textit{Natural Language Processing with
+Python}. Sebastopol, CA: O'Reilly Media, 2009.
 
 \bibitem{joachims1998text}
-T. Joachims,
-``Text Categorization with Support Vector Machines: Learning with Many
-Relevant Features,''
-en \textit{Proc. 10th European Conf. Machine Learning (ECML)},
-Chemnitz, Alemania, 1998, pp.~137--142.
+T.~Joachims, ``Text categorization with support vector machines: Learning
+with many relevant features,'' en \textit{Proc. 10th Eur. Conf. Machine
+Learning (ECML)}, Chemnitz, Alemania, 1998, pp.~137--142.
 
 \bibitem{pressman2014}
-R. S. Pressman y B. R. Maxim,
-\textit{Software Engineering: A Practitioner's Approach}, 8th~ed.
-Nueva York, NY: McGraw-Hill, 2014.
+R.~S. Pressman y B.~R. Maxim, \textit{Software Engineering: A
+Practitioner's Approach}, 8th~ed. Nueva York, NY: McGraw-Hill, 2014.
 
 \bibitem{anderson2019tls}
-B. Anderson y D. McGrew,
-``OS Fingerprinting: New Techniques and the Impact on Security Tools,''
-en \textit{Proc. IEEE Security \& Privacy Workshops},
-San Francisco, CA, EE.~UU., 2019, pp.~1--7.
+B.~Anderson y D.~McGrew, ``OS fingerprinting: New techniques and the
+impact on security tools,'' en \textit{Proc. IEEE Security \& Privacy
+Workshops}, San Francisco, CA, EE.~UU., 2019, pp.~1--7.
 
 \bibitem{CaneteCFP2020}
-J. Cañete, G. Chaperon, R. Fuentes, J.-H. Ho, H. Kang, y J. Pérez,
-``Spanish Pre-trained BERT Model and Evaluation Data,''
-en \textit{Proc. PML4DC at ICLR 2020}, Addis Abeba, Etiopía, 2020.
+J.~Ca\~{n}ete, G.~Chaperon, R.~Fuentes, J.-H. Ho, H.~Kang, y J.~P\'{e}rez,
+``Spanish pre-trained BERT model and evaluation data,'' en \textit{Proc.
+PML4DC at ICLR 2020}, Addis Abeba, Etiop\'{i}a, 2020.
 
 \bibitem{bertopic2022}
-M. Grootendorst,
-``BERTopic: Neural Topic Modeling with a Class-Based TF-IDF Procedure,''
-\textit{arXiv preprint arXiv:2203.05794}, 2022.
+M.~Grootendorst, ``BERTopic: Neural topic modeling with a class-based
+TF-IDF procedure,'' \textit{arXiv preprint arXiv:2203.05794}, 2022.
 
 \bibitem{landis1977}
-J. R. Landis y G. G. Koch,
-``The Measurement of Observer Agreement for Categorical Data,''
-\textit{Biometrics}, vol.~33, no.~1, pp.~159--174, 1977.
+J.~R. Landis y G.~G. Koch, ``The measurement of observer agreement for
+categorical data,'' \textit{Biometrics}, vol.~33, no.~1, pp.~159--174,
+1977.
 
 \bibitem{cohen1960}
-J. Cohen,
-``A Coefficient of Agreement for Nominal Scales,''
-\textit{Educational and Psychological Measurement},
-vol.~20, no.~1, pp.~37--46, 1960.
+J.~Cohen, ``A coefficient of agreement for nominal scales,''
+\textit{Educ. Psychol. Meas.}, vol.~20, no.~1, pp.~37--46, 1960.
 
 \end{thebibliography}
 

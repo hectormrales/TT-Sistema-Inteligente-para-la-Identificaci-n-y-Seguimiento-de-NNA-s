@@ -1,6 +1,71 @@
+% ============================================================
+%  proyecto.tex  –  Reporte Técnico Trabajo Terminal 2026-A135
+%  Escuela Superior de Cómputo – IPN
+%  Formato institucional ESCOM-IPN
+% ============================================================
+
 \documentclass[10pt,openany,oneside]{book}
 
-% Parches de compatibilidad delayed (al inicio del documento) para evitar colisiones con paquetes
+
+% ============================================================
+%  CODIFICACIÓN Y LENGUAJE
+% ============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+
+\usepackage{amsmath}   % debe ir ANTES de txfonts
+\usepackage{txfonts}   % fuente original del documento
+
+
+% ============================================================
+%  PRE-DECLARAR OPCIONES para paquetes cargados internamente
+%  por cdtBook.sty / cdtUsecases.sty (evita option clash)
+% ============================================================
+\PassOptionsToPackage{usenames,dvipsnames}{color}
+\PassOptionsToPackage{usenames,dvipsnames,table}{xcolor}
+\PassOptionsToPackage{top=2cm,bottom=2cm,left=3cm,right=2cm,head=2cm}{geometry}
+
+% Opciones de hyperref (se refinan con \hypersetup más adelante)
+\PassOptionsToPackage{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}{hyperref}
+
+
+% ============================================================
+%  PAQUETES CDT (carga color, geometry, fncychap, hyperref, etc.)
+% ============================================================
+\usepackage{cdt/cdtUsecases}
+
+% Aplicar márgenes definitivos para TODO el documento
+% (sobreescribe lo que cdtBook haya definido internamente)
+\geometry{top=2cm, bottom=2cm, left=3cm, right=2cm}
+
+% ============================================================
+%  PAQUETES ADICIONALES (después de CDT para no generar clashes)
+% ============================================================
+\usepackage{pdfpages}          % carta responsiva (página 3)
+\usepackage{float}
+\usepackage{threeparttable}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{listings}
+
+% ============================================================
+%  PARCHES DE COMPATIBILIDAD (expl3)
+% ============================================================
 \usepackage{expl3}
 \ExplSyntaxOn
 \AtBeginDocument{
@@ -15,66 +80,237 @@
 }
 \makeatother
 
-\usepackage{cdt/cdtUsecases}
-\usepackage{txfonts}
-\usepackage{float}
-\usepackage{threeparttable}
-\usepackage{tikz}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
+% ============================================================
+%  COLORES INSTITUCIONALES
+% ============================================================
+\definecolor{titleColor}{rgb}{0.3, 0.3, 0.3}
+\definecolor{subTitleColor}{rgb}{0.45, 0.45, 0.45}
+\definecolor{authorColor}{rgb}{0.1, 0.3, 0.7}
+\definecolor{sectionColor}{rgb}{0.1, 0.3, 0.7}
+\definecolor{subsectionColor}{rgb}{0.1, 0.3, 0.7}
+\definecolor{instruccionesColor}{rgb}{0.5, 0.5, 0.5}
+\definecolor{colorPrincipal}{rgb}{0.3, 0.3, 0.3}
+\definecolor{colorSecundario}{rgb}{0.45, 0.45, 0.45}
+\definecolor{colorAgua}{rgb}{0.91, 0.96, 0.99}
 
-
-
+% ============================================================
+%  DATOS CDT (cargados desde config.tex)
+% ============================================================
 \input{config}
 
-\title{Sistema Inteligente para la Identificación y\\[0.1em] 
-	Seguimiento de los derechos de los NNA\\[0.4em] 
-	por feminicidios \vspace{0.7cm}}
-\subtitle{\Etapa}
-\author{Presentan:\\\Autor \vspace{0.5cm}}
-\organization{Directores:\\\Directores} 
-\showInstrucciones
-\date{Ciudad de México, a 4 de junio de 2026}
+% ============================================================
+%  DATOS DEL DOCUMENTO
+% ============================================================
+\newcommand{\TTnumero}{2026-A135}
+\newcommand{\TTtitulo}{Sistema Inteligente para la Identificación y\\
+Seguimiento de los Derechos de los NNA\\
+por Feminicidios}
+\newcommand{\TTetapa}{Trabajo Terminal 2 – Reporte Técnico}
+\newcommand{\TTautor}{Morales Martínez Héctor Alberto}
+\newcommand{\TTboleta}{2016010450}
+\newcommand{\TTcorreo}{hmoralesm1500@alumno.ipn.mx}
+\newcommand{\TTdirectorA}{M. en C. Hurtado Avilés Gabriel}
+\newcommand{\TTdirectorB}{M. en C. Saldaña Vélez Ulises}
+\newcommand{\TTfecha}{Ciudad de México, junio de 2026}
 
 
-\begin{document}
+% ============================================================
+%  NOMBRES LOCALIZADOS
+% ============================================================
+\renewcommand{\contentsname}{Índice general}
+\renewcommand{\listfigurename}{Índice de figuras}
 \renewcommand{\listtablename}{Índice de tablas}
-\renewcommand{\tablename}{Tabla} 
-\ThisLRCornerWallPaper{1}{theme/bannerAzul}
-\AddToShipoutPictureBG*{%
-	\AtPageUpperLeft{%
-		\put(\dimexpr 1cm\relax, \dimexpr -4.3cm\relax){%
-			\makebox[0pt][l]{\includegraphics[height=3.0cm]{theme/ipn.png}}%
-		}%
-		\put(\dimexpr \paperwidth - 1cm\relax, \dimexpr -4.3cm\relax){%
-			\makebox[0pt][r]{\includegraphics[height=3.0cm]{theme/escom.png}}%
-		}%
-		\put(\dimexpr \paperwidth / 2\relax, \dimexpr -3.0cm\relax){%
-			\makebox[0pt][c]{%
-				\begin{tabular}{c}
-					\textbf{\huge INSTITUTO POLITÉCNICO NACIONAL} \\
-					\textbf{\LARGE ESCUELA SUPERIOR DE CÓMPUTO}
-				\end{tabular}%
-			}% 
-		}%
-	}% 
-}
-\maketitle
-\thispagestyle{empty}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\chaptername}{Capítulo}
+\renewcommand{\bibname}{Referencias}
 
+% ============================================================
+%  HYPERREF
+% ============================================================
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = sectionColor,
+  citecolor  = sectionColor,
+  urlcolor   = sectionColor,
+  pdftitle   = {TT 2026-A135 – Sistema Inteligente NNA},
+  pdfauthor  = {Morales Martinez Hector Alberto},
+}
+
+% ============================================================
+%  INICIO DEL DOCUMENTO
+% ============================================================
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+\noindent
+  \begin{minipage}[c]{0.12\textwidth} % Logos ligeramente más ajustados
+    \raggedright
+    \includegraphics[width=\linewidth]{theme/ipn.png}%
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.74\textwidth} % Máxima anchura para el texto
+    \centering
+    % Ajustamos a tamaño 18 para garantizar que todo quepa en una sola línea
+    {\fontsize{18}{22}\selectfont\bfseries INSTITUTO POLITÉCNICO NACIONAL\par}
+    \vspace{0.4cm}
+    {\fontsize{16}{19}\selectfont\bfseries ESCUELA SUPERIOR DE CÓMPUTO\par}%
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.12\textwidth}
+    \raggedleft
+    \includegraphics[width=\linewidth]{theme/escom.png}%
+  \end{minipage}
+
+  \vspace{1.0cm}
+
+  {\LARGE\bfseries\color{titleColor} TRABAJO TERMINAL}\\[6pt]
+  {\Large\bfseries\color{subTitleColor} No. 2026-A135}
+
+  \vspace{1.0cm}
+
+  {\Huge\bfseries\color{titleColor}
+    Sistema Inteligente para la Identificación\\
+    y Seguimiento de los Derechos de los\\
+    NNA por Feminicidios\par
+  }
+
+  \vspace{1.2cm}
+
+  {\large\bfseries Presenta:}
+
+  \vspace{0.8cm}
+
+  {\LARGE\bfseries \TTautor}
+
+  \vspace{1.0cm}
+
+  {\large\textbf{Directores:}}\\[10pt]
+  \begin{minipage}[t]{0.40\textwidth}
+    \centering
+    \TTdirectorA
+  \end{minipage}%
+  \hspace{1.0cm}%
+  \begin{minipage}[t]{0.40\textwidth}
+    \centering
+    \TTdirectorB
+  \end{minipage}
+
+  \vspace{\fill}
+
+\end{center}
+\end{titlepage}
+
+% ------------------------------------------------------------
+%  PÁGINA 2 – RESUMEN (Capítulo Resumen.tex)
+% ------------------------------------------------------------
 \include{Resumen}
 
-\frontmatter
+% ------------------------------------------------------------
+%  PÁGINA 3 – CARTA RESPONSIVA (PDF externo)
+% ------------------------------------------------------------
+% Incluir carta responsiva si el archivo existe
+\IfFileExists{carta_responsiva.pdf}{%
+  \includepdf[pages=-]{carta_responsiva.pdf}%
+}{%
+  \newpage
+  \thispagestyle{empty}
+  \vspace*{\fill}
+  \begin{center}
+    {\large\itshape [Insertar aquí la Carta Responsiva firmada (carta\_responsiva.pdf)]}
+  \end{center}
+  \vspace*{\fill}
+  \newpage
+}
+
+% ------------------------------------------------------------
+%  PÁGINA 4 – ADVERTENCIA LEGAL (sin numeración)
+% ------------------------------------------------------------
+\newpage
+\thispagestyle{empty}
+
+\vspace*{\fill}
+
+\noindent
+\begin{tabular}{||p{0.9\textwidth}}
+\textbf{Advertencia} \\
+\\
+``Este documento contiene información desarrollada por la Escuela Superior de Cómputo del
+Instituto Politécnico Nacional, a partir de datos y documentos con derecho de propiedad
+y por lo tanto, su uso quedará restringido a las aplicaciones que explícitamente se convengan. \\
+\\
+La aplicación no convenida exime a la escuela su responsabilidad técnica y da lugar a las
+consecuencias legales que para tal efecto se determinen.'' \\
+\\
+Información adicional sobre este reporte técnico podrá obtenerse en: La Subdirección Académica
+de la Escuela Superior de Cómputo del Instituto Politécnico Nacional, situada en
+Av. Juan de Dios Bátiz s/n Teléfono: 57296000, extensión 52000.
+\end{tabular}
+
+\vspace*{\fill}
+
+
+% ============================================================
+%  PÁGINAS PRELIMINARES (numeración romana)
+% ============================================================
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% ------------------------------------------------------------
+%  AGRADECIMIENTOS
+% ------------------------------------------------------------
+\chapter*{Agradecimientos}
+\addcontentsline{toc}{chapter}{Agradecimientos}
+
+\noindent
+A mis directores, el \textbf{M. en C. Ulises Saldaña Vélez} y el \textbf{M. en C. Gabriel Hurtado Avilés}:
+gracias por su invaluable guía técnica y el vasto conocimiento que compartieron conmigo a lo largo de este
+Trabajo Terminal. Su guía y visión fueron los pilares que le dieron estructura y solidez a este proyecto.
+Gracias por enseñarme a abordar los problemas complejos con objetividad, por cada revisión y por 
+impulsar mis habilidades de desarrollo.
+
+\vspace{0.6cm}
+
+\noindent
+A mi madre, este logro es tuyo tanto como mío.
+Gracias por enseñarme con el ejemplo de tu propia vida, que rendirse no es una opción.
+Por cada madrugada que no me cuestionaste, por cada día difícil que enfrentaste
+sin dejar de impulsarme hacia adelante y por recordarme siempre que la situación
+no define lo que somos capaces de alcanzar. Siempre serás el motor silencioso
+detrás de cada página de este documento.
+
+\vspace{0.6cm}
+
+\noindent
+Y finalmente, a las niñas, niños y adolescentes cuyas historias están detrás de cada
+dato que este sistema procesa, a ellos va dedicado el fondo de este trabajo.
+Detrás de cada noticia, de cada registro, hay una vida que merece ser vista,
+contada y protegida.
+Si este proyecto contribuye, aunque sea en una pequeña fracción,
+a que su existencia no pase desapercibida ante la sociedad ni ante las instituciones,
+entonces habrá valido cada esfuerzo invertido.
+Que sus derechos encuentren siempre voces que los defiendan.
+
+
+
+
+% ------------------------------------------------------------
+%  ÍNDICES
+% ------------------------------------------------------------
 \tableofcontents
 \listoffigures
 \listoftables
 
-\include{projectCharter}
-
-\mainmatter
-\LRCornerWallPaper{1}{theme/pleca}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ============================================================
+%  CONTENIDO PRINCIPAL (numeración arábiga)
+% ============================================================
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
 
 %=========================================================
 \include{Glosario}

@@ -1,10 +1,8 @@
-This is BibTeX, Version 0.99d
+This is BibTeX, Version 0.99e
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: proyecto.aux
 Reallocating 'name_of_file' (item size: 1) to 12 items.
 A level-1 auxiliary file: Resumen.aux
-Reallocating 'name_of_file' (item size: 1) to 19 items.
-A level-1 auxiliary file: projectCharter.aux
 Reallocating 'name_of_file' (item size: 1) to 13 items.
 A level-1 auxiliary file: Glosario.aux
 Reallocating 'name_of_file' (item size: 1) to 18 items.
@@ -45,7 +43,7 @@ Warning--empty journal in guo2017calibration
 Warning--can't use both volume and number fields in salton1988term
 You've used 38 entries,
             2118 wiz_defined-function locations,
-            745 strings with 11725 characters,
+            744 strings with 11707 characters,
 and the built_in function-call counts, 12346 in all, are:
 = -- 1238
 > -- 602
