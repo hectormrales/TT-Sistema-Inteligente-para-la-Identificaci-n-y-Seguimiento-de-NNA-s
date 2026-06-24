@@ -2,10 +2,10 @@
 
 % CAPÍTULO 9: CONCLUSIONES Y TRABAJO FUTURO
 
-\chapter{Conclusiones y trabajo a Futuro}
-\label{cap:conclusiones}
+\chapter*{CONCLUSIONES Y TRABAJO A FUTURO}
+\addcontentsline{toc}{chapter}{CONCLUSIONES Y TRABAJO A FUTURO}
 
-\section{Conclusión general y cumplimiento de objetivos}
+\section*{Conclusión general y cumplimiento de objetivos}
 \label{sec:conc_general}
 
 El desarrollo del \textit{Sistema Inteligente para la Identificación y Seguimiento de NNA
@@ -15,10 +15,10 @@ y facilite el seguimiento de casos de Niñas, Niños y Adolescentes (NNA) vícti
 de feminicidio, a partir de fuentes periodísticas públicas en México, con la suficiente
 precisión semántica para ser operativamente útil para organizaciones de la sociedad civil.
 
-\section{Cumplimiento de los Objetivos Específicos}
+\section*{Cumplimiento de los Objetivos Específicos}
 \label{sec:conc_oe}
 
-\subsection{OE-1 Identificación y selección de fuentes públicas}
+\subsection*{OE-1 Identificación y selección de fuentes públicas}
 \label{subsec:conc_oe1}
 
 Se determinó que los portales de noticias locales, los medios digitales independientes
@@ -34,7 +34,7 @@ Al cierre del TT2 el sistema monitorea \textbf{45 fuentes RSS} nacionales y de
 género e incluyendo medios especializados como CIMAC Noticias y complementadas
 por consultas a Google News.
 
-\subsection{OE-2 Módulo de extracción de datos}
+\subsection*{OE-2 Módulo de extracción de datos}
 \label{subsec:conc_oe2}
 
 Se implementó un módulo de recolección con tres mecanismos que complementan la calidad de datos.
@@ -44,7 +44,7 @@ y un \textit{Circuit Breaker} por dominio que previene el bloqueo permanente de 
 La cascada de deduplicación de cuatro fases garantiza la calidad del corpus eliminando al rededor de 25\% de redundancia periodística.
 En producción el sistema procesó 847 noticias brutas y entregó 634 noticias únicas en un único ciclo de ejecución.
 
-\subsection{OE-3 Procesamiento de lenguaje natural}
+\subsection*{OE-3 Procesamiento de lenguaje natural}
 \label{subsec:conc_oe3}
 
 La implementación del motor de clasificación semántica basado en \textbf{BETO}
@@ -70,7 +70,7 @@ un flujo de investigación estructurada por caso combinando búsqueda web
 e inferencia con \textit{Gemini Flash} lo que genera fichas de caso con siete campos
 accionables y que incluyen a la institución competente para la intervención.
 
-\subsection{OE-4 Base de datos y plataforma web}
+\subsection*{OE-4 Base de datos y plataforma web}
 \label{subsec:conc_oe4}
 
 La migración del sistema de persistencia de archivos CSV a \textbf{PostgreSQL}
@@ -85,14 +85,14 @@ jerárquica del corpus (Alta/Media/Baja), el tópico BERTopic asignado, el score
 semántico de BETO y los endpoints del módulo \texttt{DeepInvestigator}.
 
 
-\section{Aportaciones Técnicas del Proyecto}
+\section*{Aportaciones Técnicas del Proyecto}
 \label{sec:conc_aportaciones}
 
 Más allá del cumplimiento de los objetivos específicos este el proyecto realizó dos
 aportaciones técnicas que fueron mas alla del dominio de aplicación y son generalizables
 a otros sistemas de monitoreo de medios en dominios sociales complejos.
 
-\subsection{Sistema de clasificación escalonada}
+\subsection*{Sistema de clasificación escalonada}
 \label{subsec:conc_neurosimbolico}
 
 La arquitectura de clasificación escalonada mostró indicios prometedores de que la
@@ -108,7 +108,7 @@ reportados en el capítulo~\ref{cap:resultados} respaldan esta interpretación
 dentro de los límites del conjunto de prueba utilizado.
 
 
-\section{Trabajo Futuro}
+\section*{Trabajo Futuro}
 \label{sec:conc_futuro}
 
 
@@ -116,7 +116,7 @@ El prototipo 4 establece una plataforma operativa y una arquitectura extensible.
 Se identifican cuatro líneas de investigación y desarrollo abiertas para una
 investigación a futuro.
 
-\subsection{Consolidación de la base de entrenamiento mediante aprendizaje activo}
+\subsection*{Consolidación de la base de entrenamiento mediante aprendizaje activo}
 \label{subsec:fut_activelearning}
 
 El clasificador BETO del prototipo 4 fue ajustado con un corpus de entrenamiento
@@ -131,7 +131,7 @@ etiquetado por múltiples anotadores, permitiría reducir progresivamente la
 tasa de falsos positivos y mejorar el recall sin incrementar el volumen total
 de datos de entrenamiento requeridos.
 
-\subsection{Integración de un módulo de reconocimiento de entidades nombradas (NER)}
+\subsection*{Integración de un módulo de reconocimiento de entidades nombradas (NER)}
 \label{subsec:fut_ner}
 
 El sistema actual extrae información estructurada por caso mediante el
@@ -144,7 +144,7 @@ directamente del texto de la noticia durante la inferencia, sin dependencia
 de la API externa de Gemini Flash. Esto reduciría la latencia de la investigación
 profunda y aumentaría la precisión de la extracción.
 
-\subsection{Expansión a redes sociales y fuentes no estructuradas}
+\subsection*{Expansión a redes sociales y fuentes no estructuradas}
 \label{subsec:fut_social}
 
 El corpus actual se restringe a noticias periodísticas estructuradas con fecha y
@@ -156,7 +156,7 @@ deduplicación (los textos son más cortos y el ruido es mayor) y reformular
 los descriptores de categoría del clasificador BETO para textos de estilo
 coloquial en lugar de periodístico.
 
-\subsection{Reentrenamiento profundo de BETO desde capas intermedias}
+\subsection*{Reentrenamiento profundo de BETO desde capas intermedias}
 \label{subsec:fut_beto_finetune}
 
 La estrategia de \textit{linear probing} adoptada en el prototipo 4 en la que congela

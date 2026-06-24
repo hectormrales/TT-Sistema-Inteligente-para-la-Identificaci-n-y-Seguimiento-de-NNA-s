@@ -4,7 +4,7 @@
 %  Formato institucional ESCOM-IPN
 % ============================================================
 
-\documentclass[10pt,openany,oneside]{book}
+\documentclass[12pt,openany,oneside]{book}
 
 
 % ============================================================
@@ -118,15 +118,17 @@ por Feminicidios}
 
 
 % ============================================================
-%  NOMBRES LOCALIZADOS
+%  NOMBRES LOCALIZADOS (Forzados para Babel)
 % ============================================================
-\renewcommand{\contentsname}{Índice general}
-\renewcommand{\listfigurename}{Índice de figuras}
-\renewcommand{\listtablename}{Índice de tablas}
-\renewcommand{\tablename}{Tabla}
-\renewcommand{\figurename}{Figura}
-\renewcommand{\chaptername}{Capítulo}
-\renewcommand{\bibname}{Referencias}
+\addto\captionsspanish{
+  \renewcommand{\contentsname}{ÍNDICE}
+  \renewcommand{\listfigurename}{Índice de figuras}
+  \renewcommand{\listtablename}{Índice de tablas}
+  \renewcommand{\tablename}{Tabla}
+  \renewcommand{\figurename}{Figura}
+  \renewcommand{\chaptername}{Capítulo}
+  \renewcommand{\bibname}{REFERENCIAS}
+}
 
 % ============================================================
 %  HYPERREF
@@ -143,6 +145,11 @@ por Feminicidios}
 % ============================================================
 %  INICIO DEL DOCUMENTO
 % ============================================================
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{} % Esto borra cualquier texto en el encabezado (sección, capítulo, etc.)
+\renewcommand{\headrulewidth}{0pt} % Esto elimina la línea negra horizontal
+\setcounter{tocdepth}{1} % 0=Capítulos, 1=Secciones, 2=Subsecciones
 \begin{document}
 
 % ============================================================
@@ -171,12 +178,12 @@ por Feminicidios}
         \centering
         
         % Ajustado a tamaño 18 para que quepa perfectamente en una línea
-        {\fontsize{18}{21.6}\selectfont \textbf{INSTITUTO POLITÉCNICO NACIONAL}\par}
+        {\fontsize{19}{21.6}\selectfont \textbf{INSTITUTO POLITÉCNICO NACIONAL}\par}
         \vspace{0.3cm}
-        {\fontsize{16}{19.2}\selectfont \textbf{ESCUELA SUPERIOR DE CÓMPUTO}\par}
+        {\fontsize{15}{19.2}\selectfont \textbf{ESCUELA SUPERIOR DE CÓMPUTO}\par}
         
         \vspace{1.2cm}
-        {\fontsize{16}{19.2}\selectfont \textbf{ESCOM}\par}
+        {\fontsize{15}{19.2}\selectfont \textbf{ESCOM}\par}
         
         \vspace{1.2cm}
         {\fontsize{14}{16.8}\selectfont \textit{Trabajo Terminal}\par}
@@ -203,8 +210,9 @@ por Feminicidios}
         \vspace*{\fill}
         
         \begin{minipage}{\textwidth}
+            \centering
             \fontsize{12}{14.4}\selectfont
-            \textit{4 de junio del 2026}
+            \textit{junio 2026}
         \end{minipage}
     \end{minipage}
 \end{titlepage}
@@ -216,49 +224,55 @@ por Feminicidios}
 \thispagestyle{empty}
 \begin{center}
     \noindent
-    \begin{minipage}[c]{0.15\textwidth}
+    % Se ajustaron las proporciones: 13% logos, 74% texto central
+    \begin{minipage}[c]{0.12\textwidth}
         \includegraphics[width=\linewidth]{theme/ipn.png}
     \end{minipage}%
     \hfill
-    \begin{minipage}[c]{0.65\textwidth}
+    \begin{minipage}[c]{0.76\textwidth}
         \centering
-        \textbf{INSTITUTO POLITÉCNICO NACIONAL}\\
-        \textbf{ESCUELA SUPERIOR DE CÓMPUTO}\\
-        \textbf{SUBDIRECCIÓN ACADÉMICA}
+        {\Large \textbf{INSTITUTO POLITÉCNICO NACIONAL}}\\[0.2cm]
+        {\large \textbf{ESCUELA SUPERIOR DE CÓMPUTO}}\\[0.2cm]
+        {\large \textbf{SUBDIRECCIÓN ACADÉMICA}}
     \end{minipage}%
     \hfill
-    \begin{minipage}[c]{0.15\textwidth}
+    \begin{minipage}[c]{0.12\textwidth}
         \includegraphics[width=\linewidth]{theme/escom.png}
     \end{minipage}
 \end{center}
 
-\vspace{0.5cm}
-\noindent
-No de TT: \textbf{2026-A135} \hfill \textbf{junio de 2026}
-
-\vspace{1cm}
-\begin{center}
-    Documento Técnico\\[0.5cm]
-    \textbf{\Large ``Sistema Inteligente para la Identificación y Seguimiento de los Derechos de los NNA por Feminicidios''}
-\end{center}
-
 \vspace{0.8cm}
+\noindent
+No. de TT: \textbf{2026-A135} \hfill \textbf{4 de junio 2026}
+
+\vspace*{\fill} % <-- Resorte vertical para distribuir espacio
+
 \begin{center}
-    \textit{Presenta}\\[0.2cm]
-    \textbf{Morales Martínez Héctor Alberto}\footnote{hmoralesm1500@alumno.ipn.mx}
+    {\large Documento Técnico}\\[0.8cm]
+    \textbf{\LARGE ``Sistema Inteligente para la Identificación y Seguimiento de los Derechos de los NNA por Feminicidios''}
 \end{center}
 
-\vspace{0.6cm}
+\vspace*{\fill}
+
 \begin{center}
-    \textit{Directores}\\[0.2cm]
-    \begin{tabular}{c c}
-        \textbf{M. en C. Hurtado Avilés Gabriel} & \textbf{M. en C. Saldaña Vélez Ulises}
+    \textit{\large Presenta}\\[0.4cm]
+    {\large \textbf{Morales Martínez Héctor Alberto}}\footnote{hmoralesm1500@alumno.ipn.mx}
+\end{center}
+
+\vspace*{\fill}
+
+\begin{center}
+    \textit{\large Directores}\\[0.4cm]
+    % Se redujo a normalsize y se agregó un espacio horizontal de 1cm entre ellos
+    \begin{tabular}{c @{\hspace{1cm}} c}
+        \normalsize \textbf{M. en C. Hurtado Avilés Gabriel} & \normalsize \textbf{M. en C. Saldaña Vélez Ulises}
     \end{tabular}
 \end{center}
 
-\vspace{1cm}
+\vspace*{\fill}
+
 \begin{center}
-    \textbf{RESUMEN}
+    \textbf{\large RESUMEN}
 \end{center}
 \noindent Se presenta el diseño, desarrollo y evaluación de un sistema inteligente orientado a identificar y dar seguimiento de las Niñas, Niños y Adolescentes (NNA) en situación de orfandad derivada de feminicidios en México. El sistema integra una arquitectura de microservicios contenerizada en Docker compuesta por tres módulos principales: un recolector multi-fuente, un clasificador neuro-simbólico escalonado y un módulo de agrupamiento semántico basado en BERTopic.\\[0.5cm]
 \textbf{Palabras clave:} Procesamiento de Lenguaje Natural, Web Scraping, Clasificación neuro-simbólica, NNA.
@@ -336,7 +350,6 @@ No de TT: \textbf{2026-A135} \hfill \textbf{junio de 2026}
 %  AGRADECIMIENTOS
 % ------------------------------------------------------------
 \chapter*{Agradecimientos}
-\addcontentsline{toc}{chapter}{Agradecimientos}
 
 \noindent
 A mis directores, el \textbf{M. en C. Ulises Saldaña Vélez} y el \textbf{M. en C. Gabriel Hurtado Avilés}:
@@ -367,7 +380,10 @@ a que su existencia no pase desapercibida ante la sociedad ni ante las instituci
 entonces habrá valido cada esfuerzo invertido.
 Que sus derechos encuentren siempre voces que los defiendan.
 
-
+\vspace{1.5cm}
+\begin{flushright}
+    \textbf{Morales Martínez Héctor Alberto}
+\end{flushright} 
 
 
 % ------------------------------------------------------------
@@ -390,18 +406,12 @@ Que sus derechos encuentren siempre voces que los defiendan.
 %  ÍNDICES
 % ------------------------------------------------------------
 \tableofcontents
-\listoffigures
-\listoftables
-
 % ============================================================
 %  CONTENIDO PRINCIPAL (numeración arábiga)
 % ============================================================
 \newpage
 \pagenumbering{arabic}
 \setcounter{page}{1}
-
-%=========================================================
-\include{Glosario}
 
 %=========================================================
 \include{1Introduccion}
@@ -443,9 +453,30 @@ Que sus derechos encuentren siempre voces que los defiendan.
 \include{9Conclusiones}
 
 %=========================================================
-%\include{10TrabajoFuturo}
+% Descomentado porque la plantilla lo exige
+\include{10TrabajoFuturo} 
 
+%=========================================================
+% REFERENCIAS (Se cambió el nombre en el preámbulo)
 \bibliographystyle{plain}
 \bibliography{bibliografia}
+
+%=========================================================
+% GLOSARIO 
+\include{Glosario}
+
+%=========================================================
+% INICIO DE APÉNDICES
+\appendix
+
+% Obliga a LaTeX a ponerlo en el Índice General como Apéndice A
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Apéndice A: Índice de figuras}
+\listoffigures
+
+% Obliga a LaTeX a ponerlo en el Índice General como Apéndice B
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Apéndice B: Índice de tablas}
+\listoftables
 
 \end{document}

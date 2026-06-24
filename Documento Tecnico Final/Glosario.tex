@@ -39,7 +39,7 @@ seguridad y operación legal que fundamentan la arquitectura del sistema.
     al 55\% mediante estrategias progresivas de reincorporación.
 
     \item[\hypertarget{tCircuitBreaker}{Circuit Breaker (Disyuntor de Dominio):}]
-    Patrón de resiliencia implementado en \texttt{StealthSession} que tras 3 fallos
+    Patrón de resiliencia implementado en StealthSession que tras 3 fallos
     consecutivos de scraping sobre el mismo dominio web este se ``abre'' y bloquea
     todas las peticiones hacia ese dominio durante 300 segundos (extensible a 600
     en reincidencia) evitando un baneo permanente de IP por presión repetida sobre 

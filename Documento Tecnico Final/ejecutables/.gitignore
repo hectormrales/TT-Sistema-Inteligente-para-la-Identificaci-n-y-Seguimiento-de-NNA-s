@@ -1,0 +1,34 @@
+# Variables de entorno (contienen secretos)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/*.log
+*.log
+
+# Datos generados (los CSV crudos se generan en ejecución)
+data/export_*.csv
+
+# Modelos pesados
+models/finetuned/*.pt
+models/finetuned/*.bin
+models/cache/

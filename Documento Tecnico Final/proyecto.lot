@@ -1,24 +1,22 @@
 \babel@toc {spanish}{}\relax 
 \addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {2.1}{\ignorespaces Distinción entre información procesada y excluida}}{8}{table.2.1}%
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Comparativa de técnicas de extracción}}{25}{table.4.1}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Comparativa de modelos de representación lingüística para clasificación semántica}}{30}{table.4.2}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}}{36}{table.4.3}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Evolución del stack tecnológico}}{41}{table.5.1}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Matriz de trazabilidad general}}{44}{table.5.2}%
+\contentsline {table}{\numberline {1.1}{\ignorespaces Distinción entre información procesada y excluida}}{7}{table.1.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {7.1}{\ignorespaces Comparativa de métricas de TT1 contra metas del TT2}}{76}{table.7.1}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Comparativa de técnicas de extracción}}{29}{table.3.1}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Comparativa de modelos de representación lingüística para clasificación semántica}}{34}{table.3.2}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Comparativa de algoritmos de agrupamiento semántico para corpus periodístico}}{43}{table.3.3}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {8.1}{\ignorespaces Casos de uso del módulo de investigación profunda}}{88}{table.8.1}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Evolución del stack tecnológico}}{50}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Matriz de trazabilidad general}}{54}{table.4.2}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {9.1}{\ignorespaces Distribución de duplicados eliminados por fase de la cascada de deduplicación}}{92}{table.9.1}%
-\contentsline {table}{\numberline {9.2}{\ignorespaces Distribución de noticia por etapa en la clasificación escalonada}}{93}{table.9.2}%
-\contentsline {table}{\numberline {9.3}{\ignorespaces Métricas de evaluación del clasificador escalonado sobre el conjunto de prueba etiquetado}}{94}{table.9.3}%
-\contentsline {table}{\numberline {9.4}{\ignorespaces Matriz de confusión del clasificador escalonado (conjunto de prueba)}}{95}{table.9.4}%
-\contentsline {table}{\numberline {9.5}{\ignorespaces Evaluación comparativa de métricas}}{97}{table.9.5}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Comparativa de métricas de TT1 contra metas del TT2}}{92}{table.6.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Casos de uso del módulo de investigación profunda}}{106}{table.7.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces Distribución de duplicados eliminados por fase de la cascada de deduplicación}}{109}{table.8.1}%
+\contentsline {table}{\numberline {8.2}{\ignorespaces Distribución de noticia por etapa en la clasificación escalonada}}{110}{table.8.2}%
+\contentsline {table}{\numberline {8.3}{\ignorespaces Métricas de evaluación del clasificador escalonado sobre el conjunto de prueba etiquetado}}{111}{table.8.3}%
+\contentsline {table}{\numberline {8.4}{\ignorespaces Matriz de confusión del clasificador escalonado (conjunto de prueba)}}{112}{table.8.4}%
+\contentsline {table}{\numberline {8.5}{\ignorespaces Evaluación comparativa de métricas}}{114}{table.8.5}%

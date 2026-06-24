@@ -1,0 +1,106 @@
+================================================================
+  SISTEMA INTELIGENTE PARA LA IDENTIFICACIÓN Y SEGUIMIENTO DE NNAs
+  Instrucciones de Instalación y Ejecución
+================================================================
+
+REQUISITOS PREVIOS
+------------------
+- Python 3.10 o superior
+- Docker Desktop (recomendado para despliegue completo)
+- Git (opcional)
+- 8 GB RAM mínimo recomendado (por modelos NLP)
+
+----------------------------------------------------------------
+OPCIÓN A: EJECUCIÓN CON DOCKER (recomendada)
+----------------------------------------------------------------
+
+1. Copiar el archivo .env.example y renombrarlo a .env:
+      copy .env.example .env
+
+2. Editar el archivo .env con las credenciales y configuración
+   correspondiente (base de datos, claves de API, etc.).
+
+3. Levantar todos los servicios (aplicación + base de datos):
+      docker-compose up --build
+
+4. Acceder al sistema en el navegador:
+      http://localhost:5000
+
+5. Para detener los servicios:
+      docker-compose down
+
+----------------------------------------------------------------
+OPCIÓN B: EJECUCIÓN LOCAL (sin Docker)
+----------------------------------------------------------------
+
+1. Crear un entorno virtual de Python:
+      python -m venv venv
+      venv\Scripts\activate        (Windows)
+      source venv/bin/activate     (Linux/Mac)
+
+2. Instalar dependencias:
+      pip install -r requirements.txt
+
+3. Configurar variables de entorno:
+      copy .env.example .env
+      (editar el archivo .env con los valores correctos)
+
+4. Ejecutar la aplicación web:
+      python wsgi.py
+
+5. Acceder al sistema en el navegador:
+      http://localhost:5000
+
+----------------------------------------------------------------
+ESTRUCTURA DE ARCHIVOS
+----------------------------------------------------------------
+
+  wsgi.py               → Punto de entrada de la aplicación
+  config.py             → Configuración general del sistema
+  scheduler.py          → Scheduler de recolección automática
+  requirements.txt      → Dependencias Python del proyecto
+  Dockerfile            → Imagen Docker de la aplicación
+  docker-compose.yml    → Orquestación de contenedores
+  .env.example          → Plantilla de variables de entorno
+
+  app/                  → Módulo Flask (interfaz web)
+    ├── __init__.py     → Fábrica de la aplicación
+    ├── models.py       → Modelos de usuario/sesión
+    ├── auth/           → Autenticación y login
+    ├── admin/          → Panel de administración
+    ├── main/routes.py  → Rutas principales del sistema
+    ├── sources/        → Gestión de fuentes de noticias
+    ├── static/         → Recursos estáticos (CSS, JS, imágenes)
+    └── templates/      → Plantillas HTML (Jinja2)
+
+  src/                  → Módulos de inteligencia del sistema
+    ├── analysis/
+    │   ├── analyzer.py           → Motor de análisis principal
+    │   ├── semantic_detector.py  → Detección semántica (NLP/BERT)
+    │   ├── bertopic_clustering.py→ Agrupación temática (BERTopic)
+    │   ├── dedup.py              → Deduplicación de noticias
+    │   ├── investigator.py       → Módulo de investigación de casos
+    │   └── synonyms.py           → Diccionario de sinónimos
+    ├── collection/
+    │   ├── collector.py          → Recolector principal de noticias
+    │   ├── scraper.py            → Web scraping en tiempo real
+    │   └── historical_scraper.py → Recolección de datos históricos
+    └── database/
+        ├── repository.py         → Repositorio de acceso a datos
+        └── models_noticias.py    → Modelos ORM de noticias
+
+  scripts/              → Scripts de utilidad y mantenimiento
+    ├── train_model.py            → Entrenamiento del modelo
+    ├── retrain_local_8gb_ram.py  → Re-entrenamiento en entorno local
+    ├── run_analysis_only.py      → Ejecutar análisis sin interfaz
+    ├── migrate_db_v9.py          → Migración de base de datos
+    ├── evaluate_classifier.py    → Evaluación del clasificador
+    ├── poc_roles_victimas.py     → POC: identificación de roles
+    └── analyze_fp.py             → Análisis de falsos positivos
+
+----------------------------------------------------------------
+CONTACTO / AUTORES
+----------------------------------------------------------------
+  Trabajo Terminal - IPN ESCOM
+  Sistema Inteligente para la Identificación y Seguimiento de NNAs
+================================================================

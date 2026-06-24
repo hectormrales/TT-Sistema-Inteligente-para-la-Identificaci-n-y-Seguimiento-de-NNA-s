@@ -1,220 +1,202 @@
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{Agradecimientos}{\es@scroman {i}}{chapter*.1}%
-\contentsline {section}{\numberline {0.1}Glosario y conceptos técnicos del sistema}{1}{section.0.1}%
-\contentsline {chapter}{\numberline {1}Introducción}{4}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Presentación del proyecto}{4}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Planteamiento del problema}{5}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}La inviabilidad del monitoreo manual}{5}{subsection.1.2.1}%
-\contentsline {section}{\numberline {1.3}Objetivos del Proyecto}{5}{section.1.3}%
-\contentsline {subsection}{\numberline {1.3.1}Objetivo General}{5}{subsection.1.3.1}%
-\contentsline {subsection}{\numberline {1.3.2}Objetivos Específicos}{5}{subsection.1.3.2}%
-\contentsline {chapter}{\numberline {2}Justificación y alcance del proyecto}{6}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Justificación social}{6}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Justificación tecnológica}{7}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Justificación ética y moral: Protección de la privacidad de los NNA}{8}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}El interés superior del niño}{8}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Naturaleza de la información procesada}{8}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}¿Por qué el sistema no proporciona datos completos de NNA?}{8}{subsection.2.3.3}%
-\contentsline {section}{\numberline {2.4}Alcance del sistema}{9}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Alcance funcional}{9}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Alcance geográfico y temporal}{9}{subsection.2.4.2}%
-\contentsline {section}{\numberline {2.5}Limitaciones y exclusiones}{9}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Exclusiones explícitas del alcance}{9}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Limitaciones técnicas}{10}{subsection.2.5.2}%
-\contentsline {chapter}{\numberline {3}Marco Teórico}{11}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Procesamiento de lenguaje natural y representación lingüística}{11}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Tokenización y el algoritmo WordPiece}{11}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Lematización y normalización lexicológica}{12}{subsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.1.3}Modelo de espacio vectorial TF-IDF}{12}{subsection.3.1.3}%
-\contentsline {subsection}{\numberline {3.1.4}Arquitectura Transformer y mecanismo de auto-atención}{12}{subsection.3.1.4}%
-\contentsline {subsection}{\numberline {3.1.5}BETO representaciones bidireccionales para el español}{13}{subsection.3.1.5}%
-\contentsline {section}{\numberline {3.2}Paradigmas de inferencia y clasificación semántica}{14}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Clasificación zero-shot por similitud coseno}{14}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Ajuste fino supervisado (\textit {Fine-Tuning}) con \textit {Linear Probing}}{14}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}Agrupamiento semántico y reducción de dimensionalidad}{15}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}UMAP Proyección topológica preservadora de estructura}{15}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}HDBSCAN Agrupamiento jerárquico por densidad variable}{15}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}c-TF-IDF Relevancia de términos por clúster}{16}{subsection.3.3.3}%
-\contentsline {section}{\numberline {3.4}Técnicas de deduplicación}{16}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Hash exacto MD5}{16}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Similitud de Jaccard sobre conjuntos de tokens}{17}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}SimHash huellas digitales localmente sensibles}{17}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {3.4.4}Similitud coseno sobre vectores TF-IDF}{17}{subsection.3.4.4}%
-\contentsline {section}{\numberline {3.5}Tecnologías de extracción de datos y persistencia}{17}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Protocolos de sindicación RSS y Atom}{17}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Evasión de WAF con \textit {StealthSession} y TLS/JA3 Fingerprinting}{18}{subsection.3.5.2}%
-\contentsline {subsection}{\numberline {3.5.3}Propiedades ACID de postgresql}{18}{subsection.3.5.3}%
-\contentsline {subsection}{\numberline {3.5.4}Índices GIN y Full-Text Search en Español}{18}{subsection.3.5.4}%
-\contentsline {section}{\numberline {3.6}Sistemas neuro-simbólico}{19}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Arquitectura de clasificación escalonada}{19}{subsection.3.6.1}%
-\contentsline {section}{\numberline {3.7}Modelos de lenguaje de gran escala y el módulo \textit {DeepInvestigator}}{20}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}Síntesis estructurada mediante Gemini Flash}{20}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Agentes de búsqueda y el patrón OSINT}{21}{subsection.3.7.2}%
-\contentsline {chapter}{\numberline {4}Estado del Arte}{22}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Sistemas de monitoreo de medios tradicionales}{22}{section.4.1}%
-\contentsline {section}{\numberline {4.2}NLP aplicado a la detección de violencia de género}{22}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Herramientas y esfuerzos existentes en México}{23}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Red por los Derechos de la Infancia en México (REDIM)}{23}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}El Mapa de los Feminicidios en México}{23}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Fundación Futuro con Derechos}{23}{subsection.4.3.3}%
-\contentsline {section}{\numberline {4.4}Análisis comparativo y brecha identificada}{23}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Técnicas de extracción de datos}{24}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Extracción Estática (HTML Parsing con BeautifulSoup)}{24}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Automatización de navegador (Selenium / Playwright)}{24}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Agregación estructurada (RSS/Atom) y stealth sessions}{25}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}Tabla comparativa de técnicas de extracción}{25}{subsection.4.5.4}%
-\contentsline {section}{\numberline {4.6}Evolución del almacenamiento}{26}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}Archivos planos (CSV)}{26}{subsection.4.6.1}%
-\contentsline {subsection}{\numberline {4.6.2}PostgreSQL}{26}{subsection.4.6.2}%
-\contentsline {section}{\numberline {4.7}Evolución de los modelos de representación lingüística para NLP}{29}{section.4.7}%
-\contentsline {subsection}{\numberline {4.7.1}Word2Vec y GloVe}{29}{subsection.4.7.1}%
-\contentsline {subsection}{\numberline {4.7.2}LSTM y GRU}{29}{subsection.4.7.2}%
-\contentsline {subsection}{\numberline {4.7.3}BERT}{29}{subsection.4.7.3}%
-\contentsline {subsection}{\numberline {4.7.4}Justificación de BETO frente a Modelos Multilingües (mBERT)}{30}{subsection.4.7.4}%
-\contentsline {subsection}{\numberline {4.7.5}Zero-Shot y su transición a clasificación escalonada}{30}{subsection.4.7.5}%
-\contentsline {subsection}{\numberline {4.7.6}Soberanía de datos y rechazo de APIs privativas}{31}{subsection.4.7.6}%
-\contentsline {subsection}{\numberline {4.7.7}Investigación profunda bajo demanda}{31}{subsection.4.7.7}%
-\contentsline {section}{\numberline {4.8}Técnicas de agrupamiento}{33}{section.4.8}%
-\contentsline {subsection}{\numberline {4.8.1}Métodos tradicionales}{33}{subsection.4.8.1}%
-\contentsline {subsection}{\numberline {4.8.2}DBSCAN}{33}{subsection.4.8.2}%
-\contentsline {subsection}{\numberline {4.8.3}BERTopic}{33}{subsection.4.8.3}%
-\contentsline {subsubsection}{UMAP}{34}{section*.5}%
-\contentsline {subsubsection}{HDBSCAN}{35}{section*.6}%
-\contentsline {subsubsection}{c-TF-IDF}{35}{section*.7}%
-\contentsline {subsection}{\numberline {4.8.4}Evolución comparativa de TT I a TT II de Léxico a Semántica}{36}{subsection.4.8.4}%
-\contentsline {section}{\numberline {4.9}Conclusión del capítulo}{37}{section.4.9}%
-\contentsline {chapter}{\numberline {5}Metodología de desarrollo}{38}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Metodología de desarrollo evolutivo}{38}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Cronograma general de evolución del proyecto}{38}{subsection.5.1.1}%
-\contentsline {section}{\numberline {5.2}Evolución metodológica de los prototipos}{39}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Fase TT-1 Prototipos exploratorios e ingesta sintáctica (P0-P2)}{39}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}Fase TT-2 Arquitectura de aprendizaje profundo y clasificador escalonado (P3-P4)}{40}{subsection.5.2.2}%
-\contentsline {section}{\numberline {5.3}Evolución del Stack Tecnológico (TT-1 $\rightarrow $ TT-2)}{40}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Arquitectura de microservicios, contenerización y gestión de recursos}{42}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Contenedor de base de datos \texttt {nna-postgres}}{42}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Contenedor del backend \texttt {nna-analyzer}}{42}{subsection.5.4.2}%
-\contentsline {subsection}{\numberline {5.4.3}Contenedor de interfaz analítica y dashboard web \texttt {nna-webapp}}{42}{subsection.5.4.3}%
-\contentsline {section}{\numberline {5.5}Especificación de requerimientos}{43}{section.5.5}%
-\contentsline {chapter}{\numberline {6}Requerimientos del sistema}{45}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Perfiles de usuario}{45}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Requerimientos Funcionales}{46}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Requerimientos No Funcionales}{48}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Modelado de Casos de Uso}{50}{section.6.4}%
-\contentsline {section}{\numberline {6.5}CU-01 Ejecutar flujo de recolección y procesamiento de noticias}{51}{section.6.5}%
-\contentsline {subsection}{\numberline {6.5.1}Descripción completa}{51}{subsection.6.5.1}%
-\contentsline {subsection}{\numberline {6.5.2}Atributos importantes}{51}{subsection.6.5.2}%
-\contentsline {subsection}{\numberline {6.5.3}Trayectorias del Caso de Uso}{51}{subsection.6.5.3}%
-\contentsline {section}{\numberline {6.6}CU-02 Gestión del catálogo de fuentes de información}{53}{section.6.6}%
-\contentsline {subsection}{\numberline {6.6.1}Descripción completa}{53}{subsection.6.6.1}%
-\contentsline {subsection}{\numberline {6.6.2}Atributos importantes}{53}{subsection.6.6.2}%
-\contentsline {subsection}{\numberline {6.6.3}Trayectorias del Caso de Uso}{53}{subsection.6.6.3}%
-\contentsline {section}{\numberline {6.7}CU-03 Investigación profunda bajo demanda}{55}{section.6.7}%
-\contentsline {subsection}{\numberline {6.7.1}Descripción completa}{55}{subsection.6.7.1}%
-\contentsline {subsection}{\numberline {6.7.2}Atributos importantes}{55}{subsection.6.7.2}%
-\contentsline {subsection}{\numberline {6.7.3}Trayectorias del Caso de Uso}{55}{subsection.6.7.3}%
-\contentsline {section}{\numberline {6.8}CU-04 Identificación por enlace externo}{57}{section.6.8}%
-\contentsline {subsection}{\numberline {6.8.1}Descripción completa}{57}{subsection.6.8.1}%
-\contentsline {subsection}{\numberline {6.8.2}Atributos importantes}{57}{subsection.6.8.2}%
-\contentsline {subsection}{\numberline {6.8.3}Trayectorias del Caso de Uso}{57}{subsection.6.8.3}%
-\contentsline {section}{\numberline {6.9}CU-05 Gestión y exportación de seguimiento}{59}{section.6.9}%
-\contentsline {subsection}{\numberline {6.9.1}Descripción completa}{59}{subsection.6.9.1}%
-\contentsline {subsection}{\numberline {6.9.2}Atributos importantes}{59}{subsection.6.9.2}%
-\contentsline {subsection}{\numberline {6.9.3}Trayectorias del Caso de Uso}{59}{subsection.6.9.3}%
-\contentsline {section}{\numberline {6.10}CU-06 Iniciar sesión en el sistema}{61}{section.6.10}%
-\contentsline {subsection}{\numberline {6.10.1}Descripción completa}{61}{subsection.6.10.1}%
-\contentsline {subsection}{\numberline {6.10.2}Atributos importantes}{61}{subsection.6.10.2}%
-\contentsline {subsection}{\numberline {6.10.3}Trayectorias del Caso de Uso}{61}{subsection.6.10.3}%
-\contentsline {section}{\numberline {6.11}CU-07 Búsqueda y Filtrado de Noticias}{63}{section.6.11}%
-\contentsline {subsection}{\numberline {6.11.1}Descripción completa}{63}{subsection.6.11.1}%
-\contentsline {subsection}{\numberline {6.11.2}Atributos importantes}{63}{subsection.6.11.2}%
-\contentsline {subsection}{\numberline {6.11.3}Trayectorias del Caso de Uso}{63}{subsection.6.11.3}%
-\contentsline {section}{\numberline {6.12}Interfaces de Usuario}{65}{section.6.12}%
-\contentsline {section}{\numberline {6.13}IU-01 Dashboard principal de noticias}{65}{section.6.13}%
-\contentsline {subsection}{\numberline {6.13.1}Objetivo}{65}{subsection.6.13.1}%
-\contentsline {subsection}{\numberline {6.13.2}Diseño}{65}{subsection.6.13.2}%
-\contentsline {subsection}{\numberline {6.13.3}Salidas}{65}{subsection.6.13.3}%
-\contentsline {subsection}{\numberline {6.13.4}Entradas}{66}{subsection.6.13.4}%
-\contentsline {subsection}{\numberline {6.13.5}Comandos}{66}{subsection.6.13.5}%
-\contentsline {section}{\numberline {6.14}IU-02 Gestión de Fuentes de Información}{66}{section.6.14}%
-\contentsline {subsection}{\numberline {6.14.1}Objetivo}{66}{subsection.6.14.1}%
-\contentsline {subsection}{\numberline {6.14.2}Diseño}{66}{subsection.6.14.2}%
-\contentsline {subsection}{\numberline {6.14.3}Salidas}{66}{subsection.6.14.3}%
-\contentsline {subsection}{\numberline {6.14.4}Entradas}{67}{subsection.6.14.4}%
-\contentsline {subsection}{\numberline {6.14.5}Comandos}{67}{subsection.6.14.5}%
-\contentsline {section}{\numberline {6.15}IU-03 Módulo de investigación profunda}{67}{section.6.15}%
-\contentsline {subsection}{\numberline {6.15.1}Objetivo}{67}{subsection.6.15.1}%
-\contentsline {subsection}{\numberline {6.15.2}Diseño}{68}{subsection.6.15.2}%
-\contentsline {subsection}{\numberline {6.15.3}Salidas}{68}{subsection.6.15.3}%
-\contentsline {subsection}{\numberline {6.15.4}Entradas}{68}{subsection.6.15.4}%
-\contentsline {subsection}{\numberline {6.15.5}Comandos}{68}{subsection.6.15.5}%
-\contentsline {section}{\numberline {6.16}IU-04 Seguimiento de casos y exportación}{68}{section.6.16}%
-\contentsline {subsection}{\numberline {6.16.1}Objetivo}{68}{subsection.6.16.1}%
-\contentsline {subsection}{\numberline {6.16.2}Diseño}{69}{subsection.6.16.2}%
-\contentsline {subsection}{\numberline {6.16.3}Salidas}{69}{subsection.6.16.3}%
-\contentsline {subsection}{\numberline {6.16.4}Entradas}{69}{subsection.6.16.4}%
-\contentsline {subsection}{\numberline {6.16.5}Comandos}{69}{subsection.6.16.5}%
-\contentsline {section}{\numberline {6.17}IU-05 Pantalla de inicio de sesión}{69}{section.6.17}%
-\contentsline {subsection}{\numberline {6.17.1}Objetivo}{69}{subsection.6.17.1}%
-\contentsline {subsection}{\numberline {6.17.2}Diseño}{70}{subsection.6.17.2}%
-\contentsline {subsection}{\numberline {6.17.3}Salidas}{70}{subsection.6.17.3}%
-\contentsline {subsection}{\numberline {6.17.4}Entradas}{70}{subsection.6.17.4}%
-\contentsline {subsection}{\numberline {6.17.5}Comandos}{70}{subsection.6.17.5}%
-\contentsline {chapter}{\numberline {7}Desarrollo de Trabajo Terminal I}{71}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Prototipo 0 Scraping directo sobre HTML}{71}{section.7.1}%
-\contentsline {subsection}{\numberline {7.1.1}Premisa y enfoque}{71}{subsection.7.1.1}%
-\contentsline {subsection}{\numberline {7.1.2}Resultado}{71}{subsection.7.1.2}%
-\contentsline {subsection}{\numberline {7.1.3}Decisión Técnica}{71}{subsection.7.1.3}%
-\contentsline {section}{\numberline {7.2}Prototipo 1 RSS + K-Means}{72}{section.7.2}%
-\contentsline {subsection}{\numberline {7.2.1}Arquitectura implementada}{72}{subsection.7.2.1}%
-\contentsline {subsection}{\numberline {7.2.2}Limitaciones identificadas}{72}{subsection.7.2.2}%
-\contentsline {section}{\numberline {7.3}Prototipo 2 Triple Fuente + DBSCAN + FeminicideDetector}{72}{section.7.3}%
-\contentsline {subsection}{\numberline {7.3.1}Evolución del sistema}{72}{subsection.7.3.1}%
-\contentsline {section}{\numberline {7.4}Limitaciones identificadas}{73}{section.7.4}%
-\contentsline {subsection}{\numberline {7.4.1}Falsos positivos}{73}{subsection.7.4.1}%
-\contentsline {subsection}{\numberline {7.4.2}Clustering léxico}{73}{subsection.7.4.2}%
-\contentsline {subsection}{\numberline {7.4.3}La poca escalabilidad del almacenamiento en CSV}{73}{subsection.7.4.3}%
-\contentsline {subsection}{\numberline {7.4.4}Síntesis}{76}{subsection.7.4.4}%
-\contentsline {chapter}{\numberline {8}Desarrollo de Trabajo Terminal II}{77}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Contexto: Limitaciones del Prototipo 2}{77}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Patrones arquitectónicos del flujo analítico}{78}{section.8.2}%
-\contentsline {subsection}{\numberline {8.2.1}Patrón \textit {Repository} para la capa de persistencia}{78}{subsection.8.2.1}%
-\contentsline {subsection}{\numberline {8.2.2}Patrón \textit {Pipeline} para el flujo analítico}{78}{subsection.8.2.2}%
-\contentsline {section}{\numberline {8.3}Prototipo 3 Motor semántico BETO y migración de persistencia}{78}{section.8.3}%
-\contentsline {subsection}{\numberline {8.3.1}Migración de CSV a PostgreSQL}{79}{subsection.8.3.1}%
-\contentsline {subsection}{\numberline {8.3.2}Arquitectura del motor BETO}{79}{subsection.8.3.2}%
-\contentsline {subsection}{\numberline {8.3.3}Clasificación \textit {Zero-Shot} y \textit {Temperature Scaling}}{79}{subsection.8.3.3}%
-\contentsline {subsection}{\numberline {8.3.4}Evolución del recolector}{82}{subsection.8.3.4}%
-\contentsline {subsection}{\numberline {8.3.5}Deduplicación en cascada de cuatro fases}{82}{subsection.8.3.5}%
-\contentsline {section}{\numberline {8.4}Prototipo 4 Arquitectura híbrida de clasificación}{84}{section.8.4}%
-\contentsline {subsubsection}{Capa 0 Escudo Léxico}{84}{section*.8}%
-\contentsline {subsubsection}{Capa 1 Escudo temático}{84}{section*.9}%
-\contentsline {subsubsection}{Capa 2 Inferencia con BETO}{84}{section*.10}%
-\contentsline {subsubsection}{Capa 3 Post-filtro de validación}{85}{section*.11}%
-\contentsline {subsection}{\numberline {8.4.1}Por qué la IA sola no basta}{85}{subsection.8.4.1}%
-\contentsline {subsection}{\numberline {8.4.2}Investigador profundo}{85}{subsection.8.4.2}%
-\contentsline {section}{\numberline {8.5}Sistema de clasificación escalonada}{89}{section.8.5}%
-\contentsline {chapter}{\numberline {9}Resultados y evaluación}{91}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Resultados de la recolección y deduplicación}{91}{section.9.1}%
-\contentsline {subsection}{\numberline {9.1.1}Volumen de ingesta}{91}{subsection.9.1.1}%
-\contentsline {subsection}{\numberline {9.1.2}Cascada de deduplicación}{91}{subsection.9.1.2}%
-\contentsline {section}{\numberline {9.2}Resultados de la clasificación semántica escalonada}{91}{section.9.2}%
-\contentsline {subsection}{\numberline {9.2.1}Distribución del embudo analítico}{93}{subsection.9.2.1}%
-\contentsline {subsection}{\numberline {9.2.2}Comportamiento por modo de inferencia}{93}{subsection.9.2.2}%
-\contentsline {subsection}{\numberline {9.2.3}Evaluación sobre conjunto de prueba etiquetado}{94}{subsection.9.2.3}%
-\contentsline {section}{\numberline {9.3}Resultados del agrupamiento semántico (BERTopic)}{95}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Resultados del módulo de investigación profunda (\textit {DeepInvestigator})}{96}{section.9.4}%
-\contentsline {section}{\numberline {9.5}Evaluación comparativa TT I/TT II y cumplimiento de metas}{97}{section.9.5}%
-\contentsline {chapter}{\numberline {10}Conclusiones y trabajo a Futuro}{98}{chapter.10}%
-\contentsline {section}{\numberline {10.1}Conclusión general y cumplimiento de objetivos}{98}{section.10.1}%
-\contentsline {section}{\numberline {10.2}Cumplimiento de los Objetivos Específicos}{98}{section.10.2}%
-\contentsline {subsection}{\numberline {10.2.1}OE-1 Identificación y selección de fuentes públicas}{98}{subsection.10.2.1}%
-\contentsline {subsection}{\numberline {10.2.2}OE-2 Módulo de extracción de datos}{98}{subsection.10.2.2}%
-\contentsline {subsection}{\numberline {10.2.3}OE-3 Procesamiento de lenguaje natural}{99}{subsection.10.2.3}%
-\contentsline {subsection}{\numberline {10.2.4}OE-4 Base de datos y plataforma web}{99}{subsection.10.2.4}%
-\contentsline {section}{\numberline {10.3}Aportaciones Técnicas del Proyecto}{99}{section.10.3}%
-\contentsline {subsection}{\numberline {10.3.1}Sistema de clasificación escalonada}{99}{subsection.10.3.1}%
-\contentsline {section}{\numberline {10.4}Trabajo Futuro}{99}{section.10.4}%
-\contentsline {subsection}{\numberline {10.4.1}Consolidación de la base de entrenamiento mediante aprendizaje activo}{100}{subsection.10.4.1}%
-\contentsline {subsection}{\numberline {10.4.2}Integración de un módulo de reconocimiento de entidades nombradas (NER)}{100}{subsection.10.4.2}%
-\contentsline {subsection}{\numberline {10.4.3}Expansión a redes sociales y fuentes no estructuradas}{100}{subsection.10.4.3}%
-\contentsline {subsection}{\numberline {10.4.4}Reentrenamiento profundo de BETO desde capas intermedias}{100}{subsection.10.4.4}%
+\contentsline {chapter}{INTRODUCCIÓN}{1}{chapter*.3}%
+\contentsline {chapter}{\numberline {1}Justificación y alcance del proyecto}{4}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Justificación social}{4}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Justificación tecnológica}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Justificación ética y moral: Protección de la privacidad de los NNA}{6}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}El interés superior del niño}{6}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Naturaleza de la información procesada}{6}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}¿Por qué el sistema no proporciona datos completos de NNA?}{7}{subsection.1.3.3}%
+\contentsline {section}{\numberline {1.4}Alcance del sistema}{7}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Alcance funcional}{7}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Alcance geográfico y temporal}{8}{subsection.1.4.2}%
+\contentsline {section}{\numberline {1.5}Limitaciones y exclusiones}{9}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}Exclusiones explícitas del alcance}{9}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}Limitaciones técnicas}{9}{subsection.1.5.2}%
+\contentsline {chapter}{\numberline {2}Marco Teórico}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Procesamiento de lenguaje natural y representación lingüística}{10}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Tokenización y el algoritmo WordPiece}{10}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Lematización y normalización lexicológica}{11}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Modelo de espacio vectorial TF-IDF}{11}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Arquitectura Transformer y mecanismo de auto-atención}{12}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.5}BETO representaciones bidireccionales para el español}{13}{subsection.2.1.5}%
+\contentsline {section}{\numberline {2.2}Paradigmas de inferencia y clasificación semántica}{14}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Clasificación zero-shot por similitud coseno}{14}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Ajuste fino supervisado (\textit {Fine-Tuning}) con \textit {Linear Probing}}{14}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Agrupamiento semántico y reducción de dimensionalidad}{15}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}UMAP Proyección topológica preservadora de estructura}{15}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}HDBSCAN Agrupamiento jerárquico por densidad variable}{16}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}c-TF-IDF Relevancia de términos por clúster}{17}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Técnicas de deduplicación}{17}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Hash exacto MD5}{17}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Similitud de Jaccard sobre conjuntos de tokens}{17}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}SimHash huellas digitales localmente sensibles}{18}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}Similitud coseno sobre vectores TF-IDF}{18}{subsection.2.4.4}%
+\contentsline {section}{\numberline {2.5}Tecnologías de extracción de datos y persistencia}{18}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Protocolos de sindicación RSS y Atom}{18}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Evasión de WAF con \textit {StealthSession} y TLS/JA3 Fingerprinting}{19}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}Propiedades ACID de postgresql}{19}{subsection.2.5.3}%
+\contentsline {subsection}{\numberline {2.5.4}Índices GIN y Full-Text Search en Español}{20}{subsection.2.5.4}%
+\contentsline {section}{\numberline {2.6}Sistemas neuro-simbólico}{20}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Arquitectura de clasificación escalonada}{21}{subsection.2.6.1}%
+\contentsline {section}{\numberline {2.7}Modelos de lenguaje de gran escala y el módulo \textit {DeepInvestigator}}{22}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Síntesis estructurada mediante Gemini Flash}{22}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}Agentes de búsqueda y el patrón OSINT}{23}{subsection.2.7.2}%
+\contentsline {chapter}{\numberline {3}Estado del Arte}{24}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Sistemas de monitoreo de medios tradicionales}{24}{section.3.1}%
+\contentsline {section}{\numberline {3.2}NLP aplicado a la detección de violencia de género}{25}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Herramientas y esfuerzos existentes en México}{25}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Red por los Derechos de la Infancia en México (REDIM)}{25}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}El Mapa de los Feminicidios en México}{25}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Fundación Futuro con Derechos}{26}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Análisis comparativo y brecha identificada}{26}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Técnicas de extracción de datos}{26}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Extracción Estática (HTML Parsing con BeautifulSoup)}{26}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Automatización de navegador (Selenium / Playwright)}{27}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Agregación estructurada (RSS/Atom) y stealth sessions}{27}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}Tabla comparativa de técnicas de extracción}{28}{subsection.3.5.4}%
+\contentsline {section}{\numberline {3.6}Evolución del almacenamiento}{28}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Archivos planos (CSV)}{28}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}PostgreSQL}{30}{subsection.3.6.2}%
+\contentsline {section}{\numberline {3.7}Evolución de los modelos de representación lingüística para NLP}{32}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Word2Vec y GloVe}{32}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}LSTM y GRU}{32}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}BERT}{33}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}Justificación de BETO frente a Modelos Multilingües (mBERT)}{33}{subsection.3.7.4}%
+\contentsline {subsection}{\numberline {3.7.5}Zero-Shot y su transición a clasificación escalonada}{33}{subsection.3.7.5}%
+\contentsline {subsection}{\numberline {3.7.6}Soberanía de datos y rechazo de APIs privativas}{35}{subsection.3.7.6}%
+\contentsline {subsection}{\numberline {3.7.7}Investigación profunda bajo demanda}{36}{subsection.3.7.7}%
+\contentsline {section}{\numberline {3.8}Técnicas de agrupamiento}{38}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}Métodos tradicionales}{38}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}DBSCAN}{38}{subsection.3.8.2}%
+\contentsline {subsection}{\numberline {3.8.3}BERTopic}{39}{subsection.3.8.3}%
+\contentsline {subsubsection}{UMAP}{40}{section*.10}%
+\contentsline {subsubsection}{HDBSCAN}{41}{section*.11}%
+\contentsline {subsubsection}{c-TF-IDF}{42}{section*.12}%
+\contentsline {subsection}{\numberline {3.8.4}Evolución comparativa de TT I a TT II de Léxico a Semántica}{43}{subsection.3.8.4}%
+\contentsline {section}{\numberline {3.9}Conclusión del capítulo}{44}{section.3.9}%
+\contentsline {chapter}{\numberline {4}Metodología de desarrollo}{46}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Metodología de desarrollo evolutivo}{46}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Cronograma general de evolución del proyecto}{47}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}Evolución metodológica de los prototipos}{47}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Fase TT-1 Prototipos exploratorios e ingesta sintáctica (P0-P2)}{47}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Fase TT-2 Arquitectura de aprendizaje profundo y clasificador escalonado (P3-P4)}{48}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Evolución del Stack Tecnológico (TT-1 $\rightarrow $ TT-2)}{49}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Arquitectura de microservicios, contenerización y gestión de recursos}{51}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Contenedor de base de datos \texttt {nna-postgres}}{51}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Contenedor del backend \texttt {nna-analyzer}}{51}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Contenedor de interfaz analítica y dashboard web \texttt {nna-webapp}}{52}{subsection.4.4.3}%
+\contentsline {section}{\numberline {4.5}Especificación de requerimientos}{52}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Requerimientos del sistema}{55}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Perfiles de usuario}{55}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Requerimientos Funcionales}{57}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Requerimientos No Funcionales}{59}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Modelado de Casos de Uso}{61}{section.5.4}%
+\contentsline {section}{\numberline {5.5}CU-01 Ejecutar flujo de recolección y procesamiento de noticias}{62}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Descripción completa}{62}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Atributos importantes}{62}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Trayectorias del Caso de Uso}{63}{subsection.5.5.3}%
+\contentsline {section}{\numberline {5.6}CU-02 Gestión del catálogo de fuentes de información}{65}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Descripción completa}{65}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}Atributos importantes}{65}{subsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.6.3}Trayectorias del Caso de Uso}{66}{subsection.5.6.3}%
+\contentsline {section}{\numberline {5.7}CU-03 Investigación profunda bajo demanda}{68}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}Descripción completa}{68}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}Atributos importantes}{68}{subsection.5.7.2}%
+\contentsline {subsection}{\numberline {5.7.3}Trayectorias del Caso de Uso}{69}{subsection.5.7.3}%
+\contentsline {section}{\numberline {5.8}CU-04 Identificación por enlace externo}{71}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}Descripción completa}{71}{subsection.5.8.1}%
+\contentsline {subsection}{\numberline {5.8.2}Atributos importantes}{71}{subsection.5.8.2}%
+\contentsline {subsection}{\numberline {5.8.3}Trayectorias del Caso de Uso}{72}{subsection.5.8.3}%
+\contentsline {section}{\numberline {5.9}CU-05 Gestión y exportación de seguimiento}{73}{section.5.9}%
+\contentsline {subsection}{\numberline {5.9.1}Descripción completa}{73}{subsection.5.9.1}%
+\contentsline {subsection}{\numberline {5.9.2}Atributos importantes}{73}{subsection.5.9.2}%
+\contentsline {subsection}{\numberline {5.9.3}Trayectorias del Caso de Uso}{74}{subsection.5.9.3}%
+\contentsline {section}{\numberline {5.10}CU-06 Iniciar sesión en el sistema}{75}{section.5.10}%
+\contentsline {subsection}{\numberline {5.10.1}Descripción completa}{75}{subsection.5.10.1}%
+\contentsline {subsection}{\numberline {5.10.2}Atributos importantes}{75}{subsection.5.10.2}%
+\contentsline {subsection}{\numberline {5.10.3}Trayectorias del Caso de Uso}{76}{subsection.5.10.3}%
+\contentsline {section}{\numberline {5.11}CU-07 Búsqueda y Filtrado de Noticias}{77}{section.5.11}%
+\contentsline {subsection}{\numberline {5.11.1}Descripción completa}{77}{subsection.5.11.1}%
+\contentsline {subsection}{\numberline {5.11.2}Atributos importantes}{77}{subsection.5.11.2}%
+\contentsline {subsection}{\numberline {5.11.3}Trayectorias del Caso de Uso}{78}{subsection.5.11.3}%
+\contentsline {section}{\numberline {5.12}Interfaces de Usuario}{79}{section.5.12}%
+\contentsline {section}{\numberline {5.13}IU-01 Dashboard principal de noticias}{79}{section.5.13}%
+\contentsline {subsection}{\numberline {5.13.1}Objetivo}{79}{subsection.5.13.1}%
+\contentsline {subsection}{\numberline {5.13.2}Diseño}{79}{subsection.5.13.2}%
+\contentsline {subsection}{\numberline {5.13.3}Salidas}{80}{subsection.5.13.3}%
+\contentsline {subsection}{\numberline {5.13.4}Entradas}{80}{subsection.5.13.4}%
+\contentsline {subsection}{\numberline {5.13.5}Comandos}{80}{subsection.5.13.5}%
+\contentsline {section}{\numberline {5.14}IU-02 Gestión de Fuentes de Información}{80}{section.5.14}%
+\contentsline {subsection}{\numberline {5.14.1}Objetivo}{80}{subsection.5.14.1}%
+\contentsline {subsection}{\numberline {5.14.2}Diseño}{80}{subsection.5.14.2}%
+\contentsline {subsection}{\numberline {5.14.3}Salidas}{81}{subsection.5.14.3}%
+\contentsline {subsection}{\numberline {5.14.4}Entradas}{81}{subsection.5.14.4}%
+\contentsline {subsection}{\numberline {5.14.5}Comandos}{82}{subsection.5.14.5}%
+\contentsline {section}{\numberline {5.15}IU-03 Módulo de investigación profunda}{82}{section.5.15}%
+\contentsline {subsection}{\numberline {5.15.1}Objetivo}{82}{subsection.5.15.1}%
+\contentsline {subsection}{\numberline {5.15.2}Diseño}{82}{subsection.5.15.2}%
+\contentsline {subsection}{\numberline {5.15.3}Salidas}{83}{subsection.5.15.3}%
+\contentsline {subsection}{\numberline {5.15.4}Entradas}{83}{subsection.5.15.4}%
+\contentsline {subsection}{\numberline {5.15.5}Comandos}{83}{subsection.5.15.5}%
+\contentsline {section}{\numberline {5.16}IU-04 Seguimiento de casos y exportación}{83}{section.5.16}%
+\contentsline {subsection}{\numberline {5.16.1}Objetivo}{83}{subsection.5.16.1}%
+\contentsline {subsection}{\numberline {5.16.2}Diseño}{83}{subsection.5.16.2}%
+\contentsline {subsection}{\numberline {5.16.3}Salidas}{83}{subsection.5.16.3}%
+\contentsline {subsection}{\numberline {5.16.4}Entradas}{84}{subsection.5.16.4}%
+\contentsline {subsection}{\numberline {5.16.5}Comandos}{84}{subsection.5.16.5}%
+\contentsline {section}{\numberline {5.17}IU-05 Pantalla de inicio de sesión}{84}{section.5.17}%
+\contentsline {subsection}{\numberline {5.17.1}Objetivo}{84}{subsection.5.17.1}%
+\contentsline {subsection}{\numberline {5.17.2}Diseño}{84}{subsection.5.17.2}%
+\contentsline {subsection}{\numberline {5.17.3}Salidas}{85}{subsection.5.17.3}%
+\contentsline {subsection}{\numberline {5.17.4}Entradas}{85}{subsection.5.17.4}%
+\contentsline {subsection}{\numberline {5.17.5}Comandos}{85}{subsection.5.17.5}%
+\contentsline {chapter}{\numberline {6}Desarrollo de Trabajo Terminal I}{86}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Prototipo 0 Scraping directo sobre HTML}{86}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Premisa y enfoque}{86}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Resultado}{86}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Decisión Técnica}{87}{subsection.6.1.3}%
+\contentsline {section}{\numberline {6.2}Prototipo 1 RSS + K-Means}{87}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Arquitectura implementada}{87}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Limitaciones identificadas}{87}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Prototipo 2 Triple Fuente + DBSCAN + FeminicideDetector}{88}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Evolución del sistema}{88}{subsection.6.3.1}%
+\contentsline {section}{\numberline {6.4}Limitaciones identificadas}{89}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Falsos positivos}{89}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Clustering léxico}{89}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}La poca escalabilidad del almacenamiento en CSV}{89}{subsection.6.4.3}%
+\contentsline {subsection}{\numberline {6.4.4}Síntesis}{92}{subsection.6.4.4}%
+\contentsline {chapter}{\numberline {7}Desarrollo de Trabajo Terminal II}{93}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Contexto: Limitaciones del Prototipo 2}{93}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Patrones arquitectónicos del flujo analítico}{94}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Patrón \textit {Repository} para la capa de persistencia}{94}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Patrón \textit {Pipeline} para el flujo analítico}{95}{subsection.7.2.2}%
+\contentsline {section}{\numberline {7.3}Prototipo 3 Motor semántico BETO y migración de persistencia}{95}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Migración de CSV a PostgreSQL}{95}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Arquitectura del motor BETO}{97}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}Clasificación \textit {Zero-Shot} y \textit {Temperature Scaling}}{97}{subsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.3.4}Evolución del recolector}{98}{subsection.7.3.4}%
+\contentsline {subsection}{\numberline {7.3.5}Deduplicación en cascada de cuatro fases}{99}{subsection.7.3.5}%
+\contentsline {section}{\numberline {7.4}Prototipo 4 Arquitectura híbrida de clasificación}{101}{section.7.4}%
+\contentsline {subsubsection}{Capa 0 Escudo Léxico}{101}{section*.13}%
+\contentsline {subsubsection}{Capa 1 Escudo temático}{101}{section*.14}%
+\contentsline {subsubsection}{Capa 2 Inferencia con BETO}{102}{section*.15}%
+\contentsline {subsubsection}{Capa 3 Post-filtro de validación}{102}{section*.16}%
+\contentsline {subsection}{\numberline {7.4.1}Por qué la IA sola no basta}{102}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Investigador profundo}{103}{subsection.7.4.2}%
+\contentsline {section}{\numberline {7.5}Sistema de clasificación escalonada}{106}{section.7.5}%
+\contentsline {chapter}{\numberline {8}Resultados y evaluación}{108}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Resultados de la recolección y deduplicación}{108}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}Volumen de ingesta}{108}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}Cascada de deduplicación}{108}{subsection.8.1.2}%
+\contentsline {section}{\numberline {8.2}Resultados de la clasificación semántica escalonada}{109}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Distribución del embudo analítico}{109}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Comportamiento por modo de inferencia}{111}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}Evaluación sobre conjunto de prueba etiquetado}{111}{subsection.8.2.3}%
+\contentsline {section}{\numberline {8.3}Resultados del agrupamiento semántico (BERTopic)}{113}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Resultados del módulo de investigación profunda (\textit {DeepInvestigator})}{113}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Evaluación comparativa TT I/TT II y cumplimiento de metas}{114}{section.8.5}%
+\contentsline {chapter}{CONCLUSIONES Y TRABAJO A FUTURO}{116}{chapter*.21}%
+\contentsline {section}{\numberline {8.6}Glosario y conceptos técnicos del sistema}{123}{section.8.6}%
+\contentsline {chapter}{Apéndice A: Índice de figuras}{127}{section.8.6}%
+\contentsline {chapter}{Apéndice B: Índice de tablas}{129}{appendix*.36}%

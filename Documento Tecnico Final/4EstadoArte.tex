@@ -332,13 +332,6 @@ transacciones concurrentes sobre la tabla \texttt{noticias}.
 El esquema relacional implementado en \texttt{models\_noticias.py} define cuatro
 tablas con relaciones explícitas:
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{images/bdarte.png}
-\caption{Esquema relacional}
-\label{fig:esquema_db}
-\end{figure}
-
 La restricción \texttt{ondelete="CASCADE"} garantiza que la eliminación de una
 noticia propague automáticamente la eliminación de sus detecciones y entidades
 asociadas lo que mantiene la integridad referencial sin lógica adicional en la
@@ -364,6 +357,13 @@ ACID en bases de datos NoSQL representa un riesgo. Elasticsearch
 aunque ofrece FTS de calidad comparable requiere un stack de infraestructura
 adicional (JVM, configuración de cluster) incompatible con las restricciones
 de recursos del entorno.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{images/bdarte.png}
+\caption{Esquema relacional}
+\label{fig:esquema_db}
+\end{figure}
 
 \clearpage
 

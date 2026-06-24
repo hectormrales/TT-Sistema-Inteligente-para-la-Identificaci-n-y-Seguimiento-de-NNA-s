@@ -1,0 +1,67 @@
+% ══════════════════════════════════════════════════════════════
+%  Código generado automáticamente por evaluate_classifier.py
+%  Insertar en 8Resultados.tex dentro de \section{Evaluación...}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Evaluación sobre conjunto de prueba etiquetado}
+\label{subsec:res_metricas_clasificador}
+
+Para validar el desempeño del clasificador escalonado sobre datos \textbf{no vistos
+durante el fine-tuning}, se construyó un conjunto de prueba de $n=41$ noticias
+seleccionadas aleatoriamente del corpus de producción, excluyendo explícitamente
+las instancias utilizadas en el entrenamiento del prototipo~4.
+Las noticias fueron etiquetadas de forma independiente por dos anotadores
+siguiendo un protocolo de codificación binaria:\
+etiqueta $1$ para casos fácticos de orfandad por feminicidio y etiqueta $0$
+para cualquier otro contenido.
+De los $43$ artículos originales, $2$ fueron excluidos por falta de acuerdo entre anotadores.
+El acuerdo inter-anotador se midió mediante el coeficiente $\kappa$ de
+Cohen~\cite{cohen1960coefficient}, obteniéndose $\kappa = 0.91$, valor
+que corresponde a un nivel de acuerdo \textit{casi perfecto} según la escala
+de Landis y Koch~\cite{landis1977measurement}.
+
+\vspace{0.5cm}
+\begin{table}[htbp]
+\centering
+\caption{Métricas de evaluación del clasificador BETO escalonado sobre el conjunto de prueba
+etiquetado ($n = 41$ noticias con consenso de anotadores)}
+\label{tab:metricas_clasificador}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|c|}
+\hline
+\rowcolor{black}
+\textcolor{white}{\textbf{Métrica}} & \textcolor{white}{\textbf{Valor}} \\
+\hline
+Precisión (VP / VP+FP) & 0.77 \\
+\hline
+Recall --- sensibilidad (VP / VP+FN) & 0.95 \\
+\hline
+F1-Score & 0.85 \\
+\hline
+Tasa de Falsos Positivos & 30.0\% \\
+\hline
+$\kappa$ de Cohen (acuerdo inter-anotador) & 0.91 \\
+\hline
+\end{tabular}
+\end{table}
+\vspace{0.4cm}
+
+\vspace{0.5cm}
+\begin{table}[htbp]
+\centering
+\caption{Matriz de confusión del clasificador BETO escalonado (conjunto de prueba, $n=41$)}
+\label{tab:confusion_matrix}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|c|c|}
+\hline
+\rowcolor{black}
+ & \textcolor{white}{\textbf{Predicción: No relevante}} &
+   \textcolor{white}{\textbf{Predicción: Alta relevancia}} \\
+\hline
+\textbf{Gold: No relevante} & 14 (Verdadero Negativo) & 6 (Falso Positivo) \\
+\hline
+\textbf{Gold: Alta relevancia} & 1 (Falso Negativo) & 20 (Verdadero Positivo) \\
+\hline
+\end{tabular}
+\end{table}
+\vspace{0.4cm}

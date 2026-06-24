@@ -157,15 +157,6 @@ sustanciales en las tres capas del flujo de procesamiento.
     casos individuales.
 \end{description}
 
-\vspace{0.5cm}
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.90\textwidth]{images/prototipo2.png}
-    \caption{Diagrama de flujo del prototipo 2.}
-    \label{fig:flujo_p2}
-\end{figure}
-\vspace{0.4cm}
-
 \section{Limitaciones identificadas}
 \label{sec:limitaciones_motivacion}
 
@@ -225,10 +216,14 @@ La persistencia en archivos CSV impone restricciones estructurales.
 \begin{itemize}
     \item \textbf{Ausencia de integridad referencial.} No existe mecanismo que
           garantice que una detección apunte a una noticia existente.
-    \item \textbf{Sin acceso concurrente.} La escritura por el worker y la
-          lectura por el dashboard desde el mismo archivo CSV generaban condiciones
-          de carrera lo que en el prototipo 2 se "solucionó" temporalmente mediante
-          escritura atómica por renombrado pero el problema no se eliminó.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\textwidth]{images/prototipo2.png}
+    \caption{Diagrama de flujo del prototipo 2.}
+    \label{fig:flujo_p2}
+\end{figure}
+
 \end{itemize}
 
 \clearpage
