@@ -19,13 +19,12 @@ from unittest.mock import MagicMock, patch
 @pytest.fixture
 def app():
     """Crea la app Flask en modo testing."""
+    pytest.importorskip("flask")
     import sys
     import os
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    # Parchear BD antes de importar la app
-    with patch("src.database.db_manager.init_db"), \
-         patch("app.extensions.db"):
+    with patch("app.extensions.db"):
         from app import create_app
         application = create_app()
         application.config["TESTING"] = True

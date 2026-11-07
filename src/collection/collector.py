@@ -39,7 +39,13 @@ from bs4 import BeautifulSoup
 from email.utils import parsedate_to_datetime
 
 import config
-from src.collection.scraper import DynamicScraper, StealthSession
+from src.collection.scraper import (
+    DynamicScraper,
+    StealthSession,
+    resolve_article_url,
+    extract_full_article,
+    extract_full_articles_batch,
+)
 from src.analysis.dedup import NewsDeduplicator
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
@@ -930,57 +936,80 @@ def score_relevance(title: str, content: str) -> dict:
 # Recolección RSS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def collect_news_from_duckduckgo(query: str, seen_urls: set, session: StealthSession) -> list[dict]:
-    """Scrapea DuckDuckGo HTML buscando menciones en redes sociales."""
-    url = f"https://html.duckduckgo.com/html/?q={query.replace(' ', '+')}"
+def collect_news_from_duckduckgo(
+    query: str,
+    seen_urls: set,
+    session: StealthSession,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> list[dict]:
+    """
+    Realiza búsqueda dirigida en DuckDuckGo HTML con soporte de región México (`kl=mx-es`)
+    y rango de fechas (`df=YYYY-MM-DD..YYYY-MM-DD`) usando `StealthSession` (`Scrapling` + `curl_cffi`).
+    """
+    params = {"q": query, "kl": "mx-es"}
+    if start_date or end_date:
+        s_str = start_date or "2020-01-01"
+        e_str = end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        params["df"] = f"{s_str}..{e_str}"
+
+    url = f"https://html.duckduckgo.com/html/?{urlencode(params)}"
     articles = []
     try:
         response = session.get(url, timeout=20)
-        if not response: return []
-        
+        if not response:
+            return []
+
         soup = BeautifulSoup(response.text, 'html.parser')
         results = soup.find_all('div', class_='result')
-        
+
         for res in results:
             title_elem = res.find('a', class_='result__a')
             snippet_elem = res.find('a', class_='result__snippet')
             link_elem = res.find('a', class_='result__url')
-            
-            if not title_elem or not link_elem:
-                continue
-                
-            title_text = title_elem.get_text(strip=True)
-            desc_text = snippet_elem.get_text(strip=True) if snippet_elem else ""
-            
-            enlace_text = link_elem.get('href', '')
-            if enlace_text.startswith('//duckduckgo.com/l/?'):
-                import urllib.parse
-                parsed = urllib.parse.urlparse(enlace_text)
-                qs = urllib.parse.parse_qs(parsed.query)
-                if 'uddg' in qs:
-                    enlace_text = qs['uddg'][0]
-            
-            if not enlace_text.startswith('http'):
-                enlace_text = 'https://' + link_elem.get_text(strip=True).strip()
 
-            if enlace_text in seen_urls:
+            if not title_elem:
                 continue
-                
+
+            title_text = title_elem.get_text(strip=True)
+            desc_text = snippet_elem.get_text(" ", strip=True) if snippet_elem else ""
+
+            raw_href = title_elem.get('href', '') or (link_elem.get('href', '') if link_elem else '')
+            enlace_text = resolve_article_url(raw_href, session=None)
+
+            if not enlace_text.startswith('http') and link_elem:
+                candidate_url = link_elem.get_text(strip=True).strip()
+                if candidate_url:
+                    enlace_text = 'https://' + candidate_url
+
+            if not enlace_text.startswith('http'):
+                continue
+
+            if enlace_text in seen_urls and not (start_date or end_date):
+                continue
+
+            if not _is_mexico_news(title_text, desc_text, enlace_text):
+                continue
+
             dt = datetime.now(timezone.utc)
             rel = score_relevance(title_text, desc_text)
-            
+            needs_fulltext_verify = False
+
             if rel['clasificacion'] == 'No relevante':
-                if 'facebook.com' in enlace_text or 'twitter.com' in enlace_text or 'x.com' in enlace_text:
+                if any(s in enlace_text for s in ('facebook.com', 'twitter.com', 'x.com', 'instagram.com')):
                     rel['score_compuesto'] = 0.35
                     rel['clasificacion'] = 'Media'
-                    rel['menores_identificados'] = 'Si' if 'niñ' in query or 'hijo' in query else 'No'
-                    rel['score_nna'] = 0.5
-                    rel['score_feminicidio'] = 0.5
+                    rel['menores_identificados'] = 'Si' if ('niñ' in query or 'hijo' in query or 'menor' in query) else 'No'
+                    rel['score_nna'] = max(rel['score_nna'], 0.45)
+                    rel['score_feminicidio'] = max(rel['score_feminicidio'], 0.45)
+                elif rel['score_feminicidio'] >= 0.30 and len(desc_text) < 300:
+                    # Candidata con señal de feminicidio en búsqueda dirigida: verificar cuerpo completo
+                    needs_fulltext_verify = True
                 else:
                     continue
 
             seen_urls.add(enlace_text)
-            
+
             articles.append({
                 'titulo': title_text,
                 'contenido': desc_text,
@@ -989,15 +1018,19 @@ def collect_news_from_duckduckgo(query: str, seen_urls: set, session: StealthSes
                 'fecha': dt.isoformat(),
                 'score_feminicidio': rel['score_feminicidio'],
                 'score_nna': rel['score_nna'],
+                'score_victima_indirecta': rel.get('score_victima_indirecta', 0.0),
+                'score_caso': rel.get('score_caso', 0.0),
                 'score_compuesto': rel['score_compuesto'],
                 'clasificacion': rel['clasificacion'],
                 'menores_identificados': rel['menores_identificados'],
+                'nna_victima_indirecta': rel.get('nna_victima_indirecta', 'No'),
                 'cluster': 0,
+                '_needs_fulltext_verify': needs_fulltext_verify,
             })
-            
+
     except Exception as e:
         logger.warning(f"Error DuckDuckGo ({query}): {e}")
-        
+
     return articles
 
 
@@ -1010,7 +1043,7 @@ def collect_news_from_rss(
     keep_all: bool = False,
 ) -> list[dict]:
     """
-    Recolecta noticias de un feed RSS específico.
+    Recolecta noticias de un feed RSS específico (medios mexicanos, Google News o Bing News).
     """
     if seen_urls is None:
         seen_urls = set()
@@ -1020,6 +1053,11 @@ def collect_news_from_rss(
     if session is None:
         session = StealthSession()
         _owns_session = True
+
+    is_targeted_search_feed = (
+        'news.google.com/rss/search' in rss_url
+        or 'bing.com/news/search' in rss_url
+    )
 
     try:
         response = session.get(rss_url, timeout=20)
@@ -1048,17 +1086,18 @@ def collect_news_from_rss(
             if not title_text:
                 continue
 
-            enlace_text = link.text.strip() if link else ''
+            raw_link = link.text.strip() if link else ''
+            # Desenvolver de forma instantánea URLs de Bing News / redirecciones simples
+            if raw_link and 'news.google.com' not in raw_link:
+                enlace_text = resolve_article_url(raw_link, session=None)
+            else:
+                enlace_text = raw_link
 
             # ── Filtro de URLs ya procesadas ────────────────
-            # v8.0: Si se especifica un rango de fechas, permitimos re-analizar URLs 'vistas'
-            # para darles una segunda oportunidad con el analizador mejorado,
-            # siempre que el Repositorio de DB se encargue de evitar duplicados finales.
             if enlace_text:
                 if enlace_text in seen_urls and not (start_date or end_date):
                     skipped_seen += 1
                     continue
-                # Verificación estricta contra la BD para búsquedas históricas (evita reprocesar en BETO)
                 if (start_date or end_date) and _is_url_in_db(enlace_text):
                     skipped_seen += 1
                     continue
@@ -1072,6 +1111,9 @@ def collect_news_from_rss(
                 desc_html = ''
 
             desc_text = BeautifulSoup(desc_html, 'html.parser').get_text(' ', strip=True)
+            # En Google News RSS, <description> solo repite el título; limpiarlo si es redundante
+            if 'news.google.com' in rss_url and len(desc_text) <= len(title_text) + 35:
+                desc_text = ''
 
             # Fecha
             dt = None
@@ -1104,11 +1146,20 @@ def collect_news_from_rss(
 
             # ── Scoring de relevancia ───────────────────────
             rel = score_relevance(title_text, desc_text)
+            needs_fulltext_verify = False
 
-            # ── Descarte temprano: sin señal mínima → no procesar ──
+            # ── Descarte temprano inteligente ───────────────
+            # Si viene de una búsqueda dirigida (Google News / Bing News) o tiene fuerte señal
+            # de feminicidio concreto pero el snippet RSS está vacío/corto, conservar como
+            # candidata para descargar el cuerpo completo con Scrapling antes de decidir.
             if rel['clasificacion'] == 'No relevante' and not keep_all:
-                skipped_irrelevant += 1
-                continue
+                if is_targeted_search_feed and rel['score_feminicidio'] >= 0.30 and len(desc_text) < 280:
+                    needs_fulltext_verify = True
+                elif rel['score_feminicidio'] >= 0.35 and rel.get('score_caso', 0.0) >= 0.25 and len(desc_text) < 280:
+                    needs_fulltext_verify = True
+                else:
+                    skipped_irrelevant += 1
+                    continue
 
             # ── Filtro geográfico: solo México ─────────────
             if not _is_mexico_news(title_text, desc_text, enlace_text or rss_url):
@@ -1127,10 +1178,14 @@ def collect_news_from_rss(
                 'fecha': dt.isoformat(),
                 'score_feminicidio': rel['score_feminicidio'],
                 'score_nna': rel['score_nna'],
+                'score_victima_indirecta': rel.get('score_victima_indirecta', 0.0),
+                'score_caso': rel.get('score_caso', 0.0),
                 'score_compuesto': rel['score_compuesto'],
                 'clasificacion': rel['clasificacion'],
                 'menores_identificados': rel['menores_identificados'],
+                'nna_victima_indirecta': rel.get('nna_victima_indirecta', 'No'),
                 'cluster': 0,
+                '_needs_fulltext_verify': needs_fulltext_verify,
             })
 
         if skipped_seen or skipped_old or skipped_geo or skipped_irrelevant:
@@ -1157,14 +1212,110 @@ def collect_news_from_rss(
             session.close_all()
 
 
+def enrich_candidates_with_full_text(
+    articles: list[dict],
+    max_articles: int | None = None,
+    max_workers: int = 8,
+    threshold: float | None = None,
+    keep_all: bool = False,
+) -> list[dict]:
+    """
+    Enriquece los artículos candidatos descargando su cuerpo periodístico completo
+    en paralelo mediante `Scrapling` + `Trafilatura` + `resolve_article_url`,
+    y recalcula `score_relevance(titulo, contenido_completo)`.
+
+    Esto resuelve dos problemas críticos del sistema anterior:
+      1. Los feeds RSS (especialmente Google News) solo entregan el titular o un
+         snippet de ~100 caracteres, ocultando los detalles de los NNA huérfanos
+         que están en el segundo o tercer párrafo de la nota.
+      2. Las URLs de Google News (`news.google.com/rss/articles/CBMi...`) quedan
+         resueltas al dominio real del periódico (`milenio.com`, `elpais.com`, etc.).
+    """
+    if not articles:
+        return []
+
+    if max_articles is None:
+        max_articles = getattr(config, 'MAX_FULLTEXT_ENRICH_ARTICLES', 40)
+    if threshold is None:
+        threshold = getattr(config, 'RELEVANCE_THRESHOLD', 0.25)
+
+    # Identificar artículos cuyo contenido es corto (< 450 chars) o enlace de Google News
+    candidates_idx = []
+    for idx, art in enumerate(articles):
+        enlace = str(art.get('enlace') or '')
+        contenido = str(art.get('contenido') or '')
+        if not enlace.startswith(('http://', 'https://')):
+            continue
+        if any(s in enlace for s in ('facebook.com', 'twitter.com', 'x.com', 'instagram.com')):
+            continue
+        if len(contenido) < 450 or 'news.google.com' in enlace or art.get('_needs_fulltext_verify'):
+            candidates_idx.append(idx)
+
+    # Ordenar por prioridad: mayor score_compuesto y score_feminicidio primero
+    candidates_idx.sort(
+        key=lambda i: (
+            float(articles[i].get('score_compuesto', 0.0)),
+            float(articles[i].get('score_feminicidio', 0.0)),
+        ),
+        reverse=True,
+    )
+    selected_idx = candidates_idx[:max_articles]
+
+    if selected_idx:
+        urls_to_fetch = [articles[i]['enlace'] for i in selected_idx]
+        print(
+            f"  ── Enriquecimiento Full-Text con Scrapling: "
+            f"descargando cuerpo de {len(urls_to_fetch)} notas candidatas ──"
+        )
+        extracted_map = extract_full_articles_batch(
+            urls_to_fetch,
+            max_workers=max_workers,
+            timeout=15,
+        )
+
+        enriched_count = 0
+        for idx in selected_idx:
+            art = articles[idx]
+            orig_url = art['enlace']
+            extracted = extracted_map.get(orig_url)
+            if extracted and extracted.get('contenido') and len(extracted['contenido']) > len(str(art.get('contenido') or '')):
+                art['contenido'] = extracted['contenido']
+                if extracted.get('enlace') and 'google.com' not in extracted['enlace']:
+                    art['enlace'] = extracted['enlace']
+                art['scrape_method'] = extracted.get('scrape_method', 'scrapling_fulltext')
+                # Re-evaluar relevancia con el cuerpo completo de la noticia
+                rel = score_relevance(art.get('titulo', ''), art['contenido'])
+                art.update(rel)
+                enriched_count += 1
+
+        print(f"  → Cuerpo completo extraído en {enriched_count}/{len(urls_to_fetch)} notas")
+
+    # Filtrar candidatos exploratorios (_needs_fulltext_verify) que tras leer el cuerpo
+    # completo siguen sin mencionar NNA / orfandad
+    final_articles = []
+    for art in articles:
+        needs_verify = art.pop('_needs_fulltext_verify', False)
+        if not keep_all:
+            if art.get('clasificacion') == 'No relevante' or float(art.get('score_compuesto', 0.0)) < threshold:
+                if needs_verify:
+                    continue
+        if not _is_mexico_news(art.get('titulo', ''), art.get('contenido', ''), art.get('enlace', '')):
+            continue
+        final_articles.append(art)
+
+    return final_articles
+
+
 def collect_all_news(
     keep_all: bool = False,
     start_date: str | None = None,
     end_date: str | None = None,
     scraper_type: str = 'all',  # 'all', 'google', 'custom'
+    enrich_full_text: bool = True,
 ) -> pd.DataFrame:
     """
-    Recolecta noticias de todas las fuentes activas.
+    Recolecta noticias de todas las fuentes activas, deduplica candidatos y
+    descarga el cuerpo completo con `Scrapling` + `Trafilatura` antes del filtrado final.
     """
     threshold = getattr(config, 'RELEVANCE_THRESHOLD', 0.25)
     all_articles = []
@@ -1173,39 +1324,52 @@ def collect_all_news(
     sources_ok = 0
     sources_error = 0
 
-    # v7.0: Crear UNA sesión stealth compartida para todo el ciclo.
-    shared_session = StealthSession(test_mode=False)
+    shared_session = StealthSession(test_mode=False, use_scrapling=True)
 
     try:
-        # ── 1. Fase General: Búsqueda en Google News (Siempre) ──
+        # ── 1. Fase General: Búsqueda Dirigida en Google News y Bing News ──
         if scraper_type in ['all', 'google']:
-            print("  ── Búsqueda General en Google News ──")
-            google_news_feeds = [f for f in config.RSS_FEEDS if 'news.google.com' in f]
-            for feed in google_news_feeds:
-                # Inyectar operadores de fecha para búsqueda histórica profunda
-                feed = _inject_date_operators(feed, start_date, end_date)
+            print("  ── Búsqueda Dirigida en Google News + Bing News ──")
+            search_feeds = [
+                f for f in config.RSS_FEEDS
+                if ('news.google.com' in f or 'bing.com/news' in f)
+            ]
+            for feed in search_feeds:
+                if 'news.google.com' in feed:
+                    feed = _inject_date_operators(feed, start_date, end_date)
                 feed_label = feed[:70] + '…' if len(feed) > 70 else feed
-                print(f"  Google News: {feed_label}")
+                print(f"  Search RSS: {feed_label}")
                 articles = collect_news_from_rss(
                     feed, seen_urls, session=shared_session,
                     start_date=start_date, end_date=end_date, keep_all=keep_all
                 )
                 if articles:
                     sources_ok += 1
+                source_name = 'Bing News Search' if 'bing.com' in feed else 'Google News Search'
                 for art in articles:
-                    art['fuente'] = 'Google News Search'
+                    art['fuente'] = source_name
                 all_articles.extend(articles)
 
-            # ── 1.5 Fase Redes Sociales: DuckDuckGo HTML para FB ──
-            print("  ── Búsqueda en Redes Sociales (DuckDuckGo) ──")
-            SOCIAL_QUERIES = [
-                'feminicidio mexico deja niño facebook',
-                'feminicidio orfandad facebook mexico',
-                'feminicidio "redes sociales" hijos mexico',
-            ]
-            for query in SOCIAL_QUERIES:
-                print(f"  Buscando: {query}")
-                articles = collect_news_from_duckduckgo(query, seen_urls, shared_session)
+            # ── 1.5 Fase Búsqueda Dirigida y Redes Sociales (DuckDuckGo con fechas) ──
+            print("  ── Búsqueda Dirigida y Redes Sociales (DuckDuckGo) ──")
+            ddg_queries = getattr(
+                config,
+                'TARGETED_SEARCH_QUERIES',
+                [
+                    'feminicidio mexico deja niño facebook',
+                    'feminicidio orfandad facebook mexico',
+                    'feminicidio "redes sociales" hijos mexico',
+                ],
+            )
+            for query in ddg_queries:
+                print(f"  Buscando DDG: {query}")
+                articles = collect_news_from_duckduckgo(
+                    query,
+                    seen_urls,
+                    shared_session,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
                 if articles:
                     sources_ok += 1
                 all_articles.extend(articles)
@@ -1228,8 +1392,9 @@ def collect_all_news(
                         if not _is_mexico_news(art['titulo'], art['contenido'], art['enlace']):
                             continue
                         rel = score_relevance(art['titulo'], art['contenido'])
-                        if keep_all or rel['score_compuesto'] >= threshold:
+                        if keep_all or rel['score_compuesto'] >= threshold or rel['score_feminicidio'] >= 0.45:
                             art.update(rel)
+                            art['_needs_fulltext_verify'] = rel['score_compuesto'] < threshold
                             valid_articles.append(art)
                             seen_urls.add(art['enlace'])
                     
@@ -1243,7 +1408,7 @@ def collect_all_news(
 
             if db_sources:
                 print(f"  ── {len(db_sources)} fuentes personalizadas desde DB ──")
-                scraper = DynamicScraper(respect_robots=True, default_delay=2.0)
+                scraper = DynamicScraper(respect_robots=True, default_delay=0.8)
 
                 for source in db_sources:
                     src_label = f"{source['name']} ({source['source_type']})"
@@ -1261,14 +1426,13 @@ def collect_all_news(
                             )
                             if not articles:
                                 print(f"    [!] RSS falló o vacío. Intentando fallback HTML automático...")
-                                from urllib.parse import urlparse
                                 parsed = urlparse(source['url'])
                                 base_url = f"{parsed.scheme}://{parsed.netloc}/"
                                 
                                 raw_articles = scraper.scrape_source(
                                     base_url,
                                     method='html',
-                                    max_articles=15, # Conservador para el fallback
+                                    max_articles=15,
                                     keywords=["feminicidio", "nna", "niñ", "menor", "huerfan", "hijo", "victima", "infant", "adolescente", "asesinat", "mujer", "violencia", "genero"]
                                 )
                                 for art in raw_articles:
@@ -1288,7 +1452,6 @@ def collect_all_news(
                                         seen_urls.add(enlace)
 
                             for art in articles:
-                                # Asegurar que tengan fuente asignada (por si vienen del rss o del fallback)
                                 art['fuente'] = source['name']
                             all_articles.extend(articles)
                             _update_db_source_status(
@@ -1308,7 +1471,6 @@ def collect_all_news(
                             accepted = 0
                             for art in raw_articles:
                                 enlace = art.get('enlace', source['url'])
-                                # v8.0: Bypass seen_urls if custom dates are provided
                                 if enlace in seen_urls and not (start_date or end_date):
                                     continue
                                 if (start_date or end_date) and _is_url_in_db(enlace):
@@ -1342,7 +1504,10 @@ def collect_all_news(
             else:
                 # ── Fallback: sin DB, usar el resto de config.RSS_FEEDS ─────────
                 print("  ── Fuentes RSS adicionales desde config (sin contexto DB) ──")
-                other_feeds = [f for f in config.RSS_FEEDS if 'news.google.com' not in f]
+                other_feeds = [
+                    f for f in config.RSS_FEEDS
+                    if 'news.google.com' not in f and 'bing.com/news' not in f
+                ]
                 for feed in other_feeds:
                     feed_label = feed[:70] + '…' if len(feed) > 70 else feed
                     print(f"  RSS: {feed_label}")
@@ -1385,7 +1550,7 @@ def collect_all_news(
 
     df = pd.DataFrame(all_articles)
 
-    # ── 3. Deduplicación avanzada (cross-site) ──────────────
+    # ── 3. Deduplicación temprana por título/contenido antes de descargar cuerpos ──
     print("  ── Deduplicación avanzada ──")
     pre_dedup = len(df)
 
@@ -1400,8 +1565,22 @@ def collect_all_news(
     removed = pre_dedup - post_dedup
     print(f"  Duplicados eliminados: {removed} ({pre_dedup} → {post_dedup})")
 
+    # ── 4. Enriquecimiento Full-Text con Scrapling + Trafilatura ──
+    if enrich_full_text and not df.empty:
+        records = df.to_dict(orient='records')
+        enriched_records = enrich_candidates_with_full_text(
+            records,
+            threshold=threshold,
+            keep_all=keep_all,
+        )
+        if not enriched_records:
+            return pd.DataFrame()
+        df = pd.DataFrame(enriched_records)
+        # Segunda pasada rápida de deduplicación por si dos enlaces distintos resolvieron a la misma nota
+        df = deduplicator.deduplicate(df, keep='best')
+
     total = len(df)
-    if not keep_all:
+    if not keep_all and not df.empty:
         df = df[df['score_compuesto'] >= threshold].copy()
 
     relevant = len(df)

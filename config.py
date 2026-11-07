@@ -82,7 +82,27 @@ RSS_FEEDS = [
     'https://news.google.com/rss/search?q=feminicidio+mexico+deja+ni%C3%B1o+facebook&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+orfandad+facebook+mexico&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=%22feminicidio%22+%22redes+sociales%22+hijos+mexico&hl=es-419&gl=MX&ceid=MX:es-419',
+    # ── Bing News RSS queries (URLs directas + snippets reales, México) ──
+    'https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&format=rss&cc=MX&setlang=es-MX',
+    'https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&format=rss&cc=MX&setlang=es-MX',
+    'https://www.bing.com/news/search?q=asesinan+mujer+frente+a+sus+hijos+Mexico&format=rss&cc=MX&setlang=es-MX',
+    'https://www.bing.com/news/search?q=feminicidio+DIF+resguardo+menores+Mexico&format=rss&cc=MX&setlang=es-MX',
+    'https://www.bing.com/news/search?q=mujer+asesinada+era+madre+de+hijos+Mexico&format=rss&cc=MX&setlang=es-MX',
 ]
+
+# Queries dirigidos para DuckDuckGo (soporta rango de fechas df=start..end y redes sociales)
+TARGETED_SEARCH_QUERIES = [
+    'feminicidio "dejó en orfandad" menor México',
+    'asesinan a mujer "frente a sus hijos" México',
+    'feminicidio "era madre de" hijos México',
+    'feminicidio "bajo resguardo del DIF" menor México',
+    'feminicidio mexico deja niño facebook',
+    'feminicidio orfandad hijos site:facebook.com mexico',
+    'feminicidio hijos orfandad site:x.com mexico',
+]
+
+# Máximo de artículos candidatos por ciclo a los que se les descarga el cuerpo completo en paralelo
+MAX_FULLTEXT_ENRICH_ARTICLES = int(os.environ.get('MAX_FULLTEXT_ENRICH_ARTICLES', '40'))
 
 HTTP_HEADERS = {
     'User-Agent': (

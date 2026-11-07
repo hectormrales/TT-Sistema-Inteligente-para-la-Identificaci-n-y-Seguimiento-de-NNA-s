@@ -252,6 +252,24 @@ class NoticiasRepository:
                     noticia = Noticia(**record)
                     db.session.add(noticia)
                     count += 1
+                else:
+                    # Actualizar campos enriquecidos si la noticia ya existía (ej. re-análisis LLM)
+                    if record.get("investigacion_json") and not existing.investigacion_json:
+                        existing.investigacion_json = record["investigacion_json"]
+                    if record.get("clasificacion_final"):
+                        existing.clasificacion_final = record["clasificacion_final"]
+                        existing.clasificacion = record["clasificacion_final"]
+                    if record.get("relevancia_final") is not None:
+                        existing.relevancia_final = record["relevancia_final"]
+                    if record.get("score_semantico") is not None:
+                        existing.score_semantico = record["score_semantico"]
+                    if record.get("menores_identificados"):
+                        existing.menores_identificados = record["menores_identificados"]
+                    if record.get("modo_deteccion"):
+                        existing.modo_deteccion = record["modo_deteccion"]
+                    if record.get("topic_id") is not None:
+                        existing.topic_id = record["topic_id"]
+                        existing.topic_description = record.get("topic_description")
 
             try:
                 db.session.commit()

@@ -19,8 +19,15 @@ from typing import Optional
 
 import pandas as pd
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    HAS_SKLEARN = True
+except ImportError:
+    TfidfVectorizer = None
+    cosine_similarity = None
+    HAS_SKLEARN = False
 
 logger = logging.getLogger(__name__)
 
@@ -288,6 +295,19 @@ class NewsDeduplicator:
             f"{titles_norm.iloc[i]} {contents_norm.iloc[i][:1000]}"
             for i in range(n)
         ]
+
+        if not HAS_SKLEARN:
+            # Fallback ligero sin scikit-learn: similitud Jaccard de contenido
+            for i in range(n):
+                if groups[i] != i:
+                    continue
+                for j in range(i + 1, n):
+                    if groups[j] != j or groups[i] == groups[j]:
+                        continue
+                    if jaccard_similarity(combined[i], combined[j]) >= self.content_threshold:
+                        groups[j] = groups[i]
+                        dupes += 1
+            return dupes
 
         try:
             vectorizer = TfidfVectorizer(

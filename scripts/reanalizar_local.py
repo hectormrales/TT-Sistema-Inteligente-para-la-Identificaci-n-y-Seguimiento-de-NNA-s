@@ -52,20 +52,10 @@ def reanalizar():
         
         try:
             analyzer.step_3_vectorize_text()
-            analyzer.step_4_topic_modeling(num_topics=6)
-            # step_5 (K-Means) desactivado: redundante con BERTopic
             analyzer.step_6_similarity_analysis()
-            analyzer.step_7_tfidf_rescore()
             analyzer.step_8_enhanced_search_setup()
-            
-            # BERTopic ANTES de BETO (necesita volumen, da contexto de clúster)
-            try:
-                analyzer.step_10_bertopic_clustering()
-            except Exception as e:
-                print(f"BERTopic omitido o falló: {e}")
-            
             analyzer.step_9_semantic_detection()
-                
+            analyzer.step_10_bertopic_clustering()
             analyzer.save_final_results()
             analyzer.step_11_persist_to_postgres()
             

@@ -1,17 +1,15 @@
-# Dockerfile para Sistema Inteligente NNA — TT2 v5.0
+# Dockerfile para Sistema Inteligente NNA — Producción v2026 (Ligero ~250MB)
 FROM python:3.11-slim
 
 LABEL maintainer="Sistema-NNA"
-LABEL description="Sistema Inteligente para Identificación y Seguimiento de NNA — TT2"
-LABEL version="5.0"
+LABEL description="Sistema Inteligente para Identificación y Seguimiento de NNA en Orfandad por Feminicidio"
+LABEL version="2026.1"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    WORKDIR=/app \
-    TRANSFORMERS_CACHE=/app/models/cache \
-    HF_HOME=/app/models/cache
+    WORKDIR=/app
 
 RUN groupadd -r appuser && useradd -r -g appuser -m appuser
 
@@ -25,27 +23,21 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR $WORKDIR
 
-# Instalar PyTorch CPU primero (más liviano para producción)
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Descargar el modelo de NLP en español para spaCy
-RUN pip install https://github.com/explosion/spacy-models/releases/download/es_core_news_lg-3.7.0/es_core_news_lg-3.7.0.tar.gz
 
 COPY . .
 
-RUN mkdir -p data logs models/cache && \
+RUN mkdir -p data logs && \
     chown -R appuser:appuser $WORKDIR
 
 USER appuser
 
 ENV PYTHONPATH=/app \
     DATA_DIR=/app/data \
-    LOGS_DIR=/app/logs \
-    MODELS_DIR=/app/models
+    LOGS_DIR=/app/logs
 
-RUN python -c "import pandas, sklearn, requests, bs4, flask_login, flask_sqlalchemy, argon2, torch, transformers, cloudscraper; print('Dependencias OK (cloudscraper v' + cloudscraper.__version__ + ')')"
+RUN python -c "import pandas, sklearn, requests, bs4, pydantic, flask_login, flask_sqlalchemy, argon2; print('Dependencias ligeras NNA Monitor OK')"
 
 EXPOSE 5000
 

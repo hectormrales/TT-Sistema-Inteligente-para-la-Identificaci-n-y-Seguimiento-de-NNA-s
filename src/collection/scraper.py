@@ -47,30 +47,188 @@ from typing import Optional
 from urllib.parse import urlparse, urljoin
 from urllib.robotparser import RobotFileParser
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
+import shutil
 import requests
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None
 
 import config
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Cloudscraper: bypass de Cloudflare + TLS fingerprint matching
+# Scrapling (v2026): Adaptive DOM Selector + curl_cffi TLS Impersonation
+# https://github.com/d4vinci/Scrapling
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# cloudscraper crea sesiones HTTP cuyo handshake TLS (JA3 hash)
-# coincide con el de un navegador real, evitando la detección
-# que servicios como Cloudflare, Akamai y PerimeterX realizan
-# comparando el User-Agent declarado vs el fingerprint TLS real.
+try:
+    from scrapling import Selector as ScraplingSelector
+    HAS_SCRAPLING_SELECTOR = True
+except ImportError:
+    ScraplingSelector = None
+    HAS_SCRAPLING_SELECTOR = False
+
+try:
+    from scrapling.fetchers import Fetcher as ScraplingFetcher
+    try:
+        from scrapling.fetchers import StealthyFetcher as ScraplingStealthyFetcher
+    except Exception:
+        ScraplingStealthyFetcher = None
+    try:
+        ScraplingFetcher.configure(adaptive=True)
+    except Exception:
+        pass
+    HAS_SCRAPLING_FETCHER = True
+except Exception:
+    ScraplingFetcher = None
+    ScraplingStealthyFetcher = None
+    HAS_SCRAPLING_FETCHER = False
+
+try:
+    import certifi
+    from curl_cffi import requests as cffi_requests
+    HAS_CURL_CFFI = True
+except ImportError:
+    certifi = None
+    cffi_requests = None
+    HAS_CURL_CFFI = False
+
+
+def _ensure_ascii_ca_bundle() -> str | bool:
+    """
+    Garantiza una ruta ASCII para `cacert.pem` en Windows cuando el nombre
+    de usuario contiene caracteres con acento (ej. `HéctorMorales`), evitando
+    el error `curl: (77) error adding trust anchors` de libcurl/curl_cffi.
+    """
+    if certifi is None:
+        return True
+    orig = certifi.where()
+    try:
+        orig.encode("ascii")
+        return orig
+    except UnicodeEncodeError:
+        try:
+            data_dir = getattr(config, "DATA_DIR", "data") if hasattr(config, "DATA_DIR") else "data"
+            os.makedirs(data_dir, exist_ok=True)
+            ascii_ca = os.path.abspath(os.path.join(data_dir, "cacert.pem"))
+            if not os.path.exists(ascii_ca):
+                shutil.copyfile(orig, ascii_ca)
+            return ascii_ca
+        except Exception:
+            return True
+
+
+_ASCII_CA_BUNDLE = _ensure_ascii_ca_bundle()
+HAS_SCRAPLING = HAS_SCRAPLING_SELECTOR or HAS_SCRAPLING_FETCHER or HAS_CURL_CFFI
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Cloudscraper: fallback de Cloudflare + TLS fingerprint matching
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 try:
     import cloudscraper
     HAS_CLOUDSCRAPER = True
 except ImportError:
     HAS_CLOUDSCRAPER = False
 
-# Trafilatura: extractor de texto de alta calidad (opcional)
+# Trafilatura: extractor de texto de artículos de alta calidad
 try:
     import trafilatura
     HAS_TRAFILATURA = True
 except ImportError:
     HAS_TRAFILATURA = False
+
+
+class ScraplingResponseAdapter:
+    """
+    Adaptador que envuelve la respuesta de `Scrapling` o `curl_cffi` + `Scrapling.Selector`,
+    exponiendo la misma interfaz que `requests.Response` (`.status_code`, `.text`, `.content`,
+    `.headers`, `.url`, `.raise_for_status()`) más `.scrapling_page` para selectores CSS adaptativos.
+    """
+
+    def __init__(
+        self,
+        page_or_resp,
+        requested_url: str = "",
+        *,
+        url: str = "",
+        status_code: int | None = None,
+    ):
+        eff_url = requested_url or url
+        self.status_code: int = int(
+            status_code
+            or getattr(page_or_resp, "status_code", None)
+            or getattr(page_or_resp, "status", None)
+            or 200
+        )
+        self.url: str = str(getattr(page_or_resp, "url", eff_url) or eff_url)
+
+        raw_headers = getattr(page_or_resp, "headers", None) or {}
+        try:
+            self.headers: dict = dict(raw_headers)
+        except Exception:
+            self.headers = {}
+
+        if isinstance(page_or_resp, bytes):
+            content_bytes = page_or_resp
+        else:
+            content_bytes = getattr(page_or_resp, "content", None)
+            if not isinstance(content_bytes, bytes):
+                body_bytes = getattr(page_or_resp, "body", None)
+                if isinstance(body_bytes, bytes):
+                    content_bytes = body_bytes
+
+        if isinstance(content_bytes, bytes):
+            self.content: bytes = content_bytes
+            text_attr = getattr(page_or_resp, "text", None)
+            if isinstance(text_attr, str) and text_attr:
+                self.text: str = text_attr
+            else:
+                encoding = getattr(page_or_resp, "encoding", None) or "utf-8"
+                try:
+                    self.text = content_bytes.decode(encoding, errors="replace")
+                except Exception:
+                    self.text = content_bytes.decode("utf-8", errors="replace")
+        else:
+            html_str = (
+                getattr(page_or_resp, "html_content", None)
+                or getattr(page_or_resp, "text", None)
+                or str(page_or_resp or "")
+            )
+            self.text = str(html_str)
+            self.content = self.text.encode("utf-8", errors="replace")
+
+        self._scrapling_page = (
+            page_or_resp
+            if (ScraplingSelector is not None and isinstance(page_or_resp, ScraplingSelector))
+            else None
+        )
+
+    @property
+    def scrapling_page(self):
+        """Devuelve el objeto `Scrapling.Selector` bajo demanda con `adaptive=True`."""
+        if self._scrapling_page is None and HAS_SCRAPLING_SELECTOR and self.content:
+            try:
+                self._scrapling_page = ScraplingSelector(
+                    self.content,
+                    url=self.url,
+                    adaptive=True,
+                )
+            except Exception:
+                try:
+                    self._scrapling_page = ScraplingSelector(
+                        self.content,
+                        url=self.url,
+                    )
+                except Exception:
+                    self._scrapling_page = None
+        return self._scrapling_page
+
+    def raise_for_status(self) -> None:
+        if self.status_code >= 400:
+            raise requests.HTTPError(
+                f"{self.status_code} HTTP Error for url: {self.url}"
+            )
 
 logger = logging.getLogger(__name__)
 
@@ -218,19 +376,19 @@ COMMON_RSS_PATHS = [
 # ── Firmas de páginas de bloqueo / CAPTCHA ────────────────
 
 BLOCK_SIGNATURES = [
-    # Cloudflare
-    'cf-browser-verification', 'cloudflare', 'cf_clearance',
-    'attention required', 'ddos protection',
-    # Generic captcha/block
-    'captcha', 'robot', 'are you human', 'access denied',
-    'forbidden', '403 forbidden', 'blocked',
-    # Paywall
-    'suscríbete', 'suscribete', 'subscríbete', 'subscribe to read',
-    'inicia sesión para leer', 'contenido exclusivo para suscriptores',
-    'iniciar sesi', 'regístrate para',
-    # JavaScript challenges
-    'enable javascript', 'javascript required', 'habilita javascript',
-    'necesitas javascript',
+    # Cloudflare challenges reales
+    'cf-browser-verification',
+    'attention required! | cloudflare',
+    'just a moment...',
+    'checking your browser before accessing',
+    'ddos protection by cloudflare',
+    # Generic captcha/block explícitos
+    'are you a human',
+    'verify you are human',
+    'access denied',
+    '403 forbidden',
+    # JavaScript challenges explícitos
+    'please enable javascript and cookies to continue',
 ]
 
 # ── Indicadores de sitio JS-heavy (SPA) ──────────────────
@@ -248,21 +406,25 @@ JS_HEAVY_INDICATORS = [
 
 def _is_block_page(resp: requests.Response) -> bool:
     """
-    Detecta si la respuesta es una página de bloqueo, CAPTCHA o paywall.
-    Returns True si el contenido parece ser un bloqueo.
+    Detecta si la respuesta es una página de bloqueo o CAPTCHA real.
+    Evita falsos positivos con `<meta name="robots">` o botones de "Iniciar sesión"
+    en el header de periódicos legítimos.
     """
-    # Código de estado
     if resp.status_code in (403, 429, 503, 401):
         return True
 
-    text_lower = resp.text.lower()[:5000]  # Solo los primeros 5k chars
-    for sig in BLOCK_SIGNATURES:
-        if sig.lower() in text_lower:
-            return True
-
-    # Si el response es extremadamente corto (< 500 chars) → probable bloqueo
-    if len(resp.text.strip()) < 300:
+    raw_text = (resp.text or '').strip()
+    # Si el response es extremadamente corto (< 300 chars) → probable bloqueo
+    if len(raw_text) < 300:
         return True
+
+    # Los challenges de Cloudflare/CAPTCHA suelen ser páginas cortas (< 15 KB)
+    # sin cuerpo de artículo real. Si la página tiene > 25 KB de HTML, no es un intersticial vacío.
+    if len(raw_text) < 25000:
+        text_lower = raw_text.lower()[:5000]
+        for sig in BLOCK_SIGNATURES:
+            if sig in text_lower:
+                return True
 
     return False
 
@@ -632,30 +794,31 @@ class StealthSession:
     # Esto es MUY diferente de uniform(8, 20) que tiene una moda "plana"
     # y nunca genera delays > 20s, algo que los WAFs pueden detectar.
 
-    # Producción – navegación normal
-    LOGNORMAL_MU = 2.5          # mediana ≈ 12.2s
-    LOGNORMAL_SIGMA = 0.7       # dispersión moderada
-    # Producción – sitio que nos ha bloqueado
-    BLOCKED_LOGNORMAL_MU = 3.2  # mediana ≈ 24.5s
-    BLOCKED_LOGNORMAL_SIGMA = 0.6
-    # Test – navegación normal
-    TEST_LOGNORMAL_MU = 1.2     # mediana ≈ 3.3s
-    TEST_LOGNORMAL_SIGMA = 0.6
+    # Producción – navegación ágil por dominio (Scrapling TLS impersonation)
+    LOGNORMAL_MU = -0.3         # mediana ≈ 0.74s entre peticiones al MISMO dominio
+    LOGNORMAL_SIGMA = 0.35
+    # Producción – sitio que nos ha bloqueado previamente
+    BLOCKED_LOGNORMAL_MU = 0.7  # mediana ≈ 2.0s
+    BLOCKED_LOGNORMAL_SIGMA = 0.4
+    # Test – navegación rápida
+    TEST_LOGNORMAL_MU = -2.0    # mediana ≈ 0.13s
+    TEST_LOGNORMAL_SIGMA = 0.2
     # Test – sitio bloqueado
-    TEST_BLOCKED_LOGNORMAL_MU = 1.8   # mediana ≈ 6s
-    TEST_BLOCKED_LOGNORMAL_SIGMA = 0.5
-    # Límites absolutos para evitar extremos absurdos
-    MIN_DELAY = 2.0
-    MAX_DELAY_CAP = 60.0
+    TEST_BLOCKED_LOGNORMAL_MU = -1.0
+    TEST_BLOCKED_LOGNORMAL_SIGMA = 0.2
+    # Límites absolutos
+    MIN_DELAY = 0.15
+    MAX_DELAY_CAP = 6.0
 
     # Soporte para rotación de proxies (tomado de config.py si existe)
     PROXIES = getattr(config, 'PROXIES', [])
 
-    def __init__(self, test_mode: bool = False):
+    def __init__(self, test_mode: bool = False, use_scrapling: bool = True):
         self._sessions: dict[str, requests.Session] = {}
         self._domain_ua: dict[str, str] = {}
         self._last_request: dict[str, float] = {}
         self.test_mode = test_mode
+        self.use_scrapling = use_scrapling and HAS_SCRAPLING
         # Circuit breaker compartido entre todas las sesiones
         self._circuit_breaker = DomainCircuitBreaker()
 
@@ -794,32 +957,91 @@ class StealthSession:
         headers['User-Agent'] = self._domain_ua.get(domain, _random_user_agent())
 
         for attempt in range(1, self.MAX_RETRIES + 1):
-            # Delay lognormal ANTES de cada request
+            # Delay lognormal ANTES de cada request al mismo dominio
             self._human_delay(domain, is_blocked_site)
+
+            # ── Nivel 1: Scrapling Fetcher / curl_cffi (TLS/HTTP2 Chrome Impersonation) ──
+            if self.use_scrapling:
+                if ScraplingFetcher is not None:
+                    try:
+                        page = ScraplingFetcher.get(
+                            url,
+                            stealthy_headers=True,
+                            follow_redirects=True,
+                            timeout=timeout,
+                        )
+                        adapted = ScraplingResponseAdapter(page, url)
+                        if adapted.status_code not in (403, 429, 503):
+                            adapted.raise_for_status()
+                            self._circuit_breaker.record_success(domain)
+                            return adapted
+                    except Exception as sc_err:
+                        logger.debug(
+                            "Scrapling Fetcher aviso en %s (intento %d): %s",
+                            url[:60],
+                            attempt,
+                            sc_err,
+                        )
+                elif cffi_requests is not None:
+                    try:
+                        cffi_resp = cffi_requests.get(
+                            url,
+                            impersonate="chrome",
+                            headers=headers,
+                            timeout=timeout,
+                            allow_redirects=True,
+                            verify=_ASCII_CA_BUNDLE,
+                        )
+                        adapted = ScraplingResponseAdapter(cffi_resp, url)
+                        if adapted.status_code not in (403, 429, 503):
+                            adapted.raise_for_status()
+                            self._circuit_breaker.record_success(domain)
+                            return adapted
+                    except Exception as cffi_err:
+                        logger.debug(
+                            "curl_cffi + Scrapling aviso en %s (intento %d): %s",
+                            url[:60],
+                            attempt,
+                            cffi_err,
+                        )
 
             try:
                 resp = session.get(url, headers=headers, timeout=timeout)
 
-                # Si recibimos 403/429/503 → backoff exponencial + rotar UA
+                # Si recibimos 403/429/503 → backoff corto + rotar UA
                 if resp.status_code in (403, 429, 503):
-                    # Backoff exponencial con full jitter (estilo Amazon)
-                    # cap = min(300, base * 2^attempt)
-                    # delay = random(0, cap)
-                    cap = min(300, 2 * (2 ** attempt))
+                    # Si es sitio bloqueado y tenemos StealthyFetcher de Scrapling, intentar rescate
+                    if (
+                        self.use_scrapling
+                        and ScraplingStealthyFetcher is not None
+                        and attempt == self.MAX_RETRIES
+                    ):
+                        try:
+                            stealth_page = ScraplingStealthyFetcher.fetch(
+                                url,
+                                headless=True,
+                                network_idle=True,
+                            )
+                            stealth_adapted = ScraplingResponseAdapter(stealth_page, url)
+                            if stealth_adapted.status_code == 200 and not _is_block_page(stealth_adapted):
+                                self._circuit_breaker.record_success(domain)
+                                return stealth_adapted
+                        except Exception as st_err:
+                            logger.debug("Scrapling StealthyFetcher no disponible: %s", st_err)
+
+                    cap = min(6, 1.5 * attempt)
                     backoff = random.uniform(cap * 0.5, cap)
                     logger.info(
                         f"HTTP {resp.status_code} en {url[:60]}… "
-                        f"Reintento {attempt}/{self.MAX_RETRIES} en {backoff:.0f}s"
+                        f"Reintento {attempt}/{self.MAX_RETRIES} en {backoff:.1f}s"
                     )
                     self._circuit_breaker.record_failure(domain)
                     time.sleep(backoff)
-                    # Rotar User-Agent para el reintento
                     headers['User-Agent'] = _random_user_agent()
                     self._domain_ua[domain] = headers['User-Agent']
                     continue
 
                 resp.raise_for_status()
-                # ── Éxito: registrar en circuit breaker ──
                 self._circuit_breaker.record_success(domain)
                 return resp
 
@@ -827,13 +1049,13 @@ class StealthSession:
                 logger.warning(f"Timeout en {url[:60]}… (intento {attempt})")
                 self._circuit_breaker.record_failure(domain)
                 if attempt < self.MAX_RETRIES:
-                    time.sleep(random.uniform(5, 10))
+                    time.sleep(random.uniform(1.0, 2.5))
                 continue
             except requests.ConnectionError as e:
                 logger.warning(f"Error conexión {url[:60]}…: {e}")
                 self._circuit_breaker.record_failure(domain)
                 if attempt < self.MAX_RETRIES:
-                    time.sleep(random.uniform(3, 7))
+                    time.sleep(random.uniform(1.0, 2.0))
                 continue
             except requests.RequestException as e:
                 logger.warning(f"Error HTTP en {url[:60]}…: {e}")
@@ -1612,7 +1834,36 @@ class DynamicScraper:
                 if not date_str and traf['date']:
                     date_str = traf['date']
 
-        # ── Nivel 3: Selectores CSS específicos ───────────
+        # ── Nivel 2.5: Scrapling Adaptive CSS Selector ────
+        scrapling_page = getattr(resp, 'scrapling_page', None)
+        if scrapling_page is not None and (not content or len(content) < 100):
+            try:
+                if not title:
+                    for sel in TITLE_SELECTORS:
+                        nodes = scrapling_page.css(sel)
+                        if nodes:
+                            t_cand = nodes[0].get_all_text(strip=True)
+                            if t_cand and len(t_cand) >= 10:
+                                title = str(t_cand)
+                                break
+                for sel in ARTICLE_SELECTORS:
+                    containers = scrapling_page.css(sel)
+                    if containers:
+                        p_nodes = containers[0].css('p')
+                        if p_nodes:
+                            p_texts = [
+                                str(p.get_all_text(strip=True))
+                                for p in p_nodes
+                                if len(str(p.get_all_text(strip=True))) > 30
+                            ]
+                            candidate = ' '.join(p_texts)
+                            if len(candidate) >= 100:
+                                content = candidate
+                                break
+            except Exception as sc_parse_err:
+                logger.debug(f"Scrapling CSS parse fallback: {sc_parse_err}")
+
+        # ── Nivel 3: Selectores CSS específicos (BeautifulSoup) ──
         if not title:
             for sel in TITLE_SELECTORS:
                 tag = soup.select_one(sel)
@@ -1694,11 +1945,11 @@ class DynamicScraper:
 
         return {
             'titulo': title,
-            'contenido': content[:4000],  # Limitar a 4000 chars
-            'enlace': url,
-            'fuente': urlparse(url).netloc,
+            'contenido': content[:8000],  # Limitar a 8000 chars (cuerpo completo)
+            'enlace': getattr(resp, 'url', url) or url,
+            'fuente': urlparse(getattr(resp, 'url', url) or url).netloc,
             'fecha': dt.isoformat() if dt else '',
-            'scrape_method': 'html',
+            'scrape_method': 'scrapling_html' if HAS_SCRAPLING else 'html',
         }
 
     # ── Utilidades ──────────────────────────────────────────
@@ -1716,3 +1967,272 @@ class DynamicScraper:
         """Genera un hash del contenido para detección de duplicados."""
         text = f"{title.strip().lower()}|{content.strip().lower()[:500]}"
         return hashlib.md5(text.encode('utf-8')).hexdigest()
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Resolución de URLs de Google News / Bing News / DuckDuckGo
+# y Extracción Full-Text con Scrapling + Trafilatura
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+_RESOLVED_URLS_CACHE: dict[str, str] = {}
+
+
+def _try_base64_google_news_decode(article_id: str) -> Optional[str]:
+    """Intenta decodificar IDs legacy de Google News codificados en Base64 directo."""
+    try:
+        import base64
+        padded = article_id + "=" * (-len(article_id) % 4)
+        raw = base64.urlsafe_b64decode(padded)
+        # En el formato legacy de protobuf, la URL suele empezar con http
+        idx = raw.find(b"http")
+        if idx != -1:
+            tail = raw[idx:]
+            # Cortar en el primer byte de control o delimitador protobuf
+            end = 0
+            for b in tail:
+                if 32 < b < 127:
+                    end += 1
+                else:
+                    break
+            candidate = tail[:end].decode("utf-8", errors="ignore")
+            if candidate.startswith(("http://", "https://")) and "google.com" not in candidate:
+                return candidate
+    except Exception:
+        pass
+    return None
+
+
+def resolve_google_news_url(
+    url: str,
+    session: Optional[StealthSession] = None,
+    timeout: int = 12,
+) -> str:
+    """
+    Resuelve un enlace ofuscado de Google News (`news.google.com/rss/articles/CBMi...`)
+    a la URL original del periódico (`milenio.com`, `elpais.com`, `infobae.com`, etc.).
+
+    Soporta:
+      1. Formato legacy Base64 (instantáneo, sin red).
+      2. Formato moderno `AU_yqL` (2024–2026) mediante extracción de `c-wiz[data-p]`
+         y consulta al endpoint interno `batchexecute` (`Fbv4je`) de Google News.
+    """
+    if not url or "news.google.com" not in url:
+        return url
+
+    if url in _RESOLVED_URLS_CACHE:
+        return _RESOLVED_URLS_CACHE[url]
+
+    # Extraer el article_id tras /articles/ o /read/
+    art_id = ""
+    for marker in ("/articles/", "/read/"):
+        if marker in url:
+            art_id = url.split(marker, 1)[1].split("?", 1)[0].split("/", 1)[0].strip()
+            break
+
+    if not art_id:
+        return url
+
+    # 1. Intentar decodificación Base64 directa (para enlaces sin prefijo AU_yqL)
+    direct = _try_base64_google_news_decode(art_id)
+    if direct:
+        _RESOLVED_URLS_CACHE[url] = direct
+        return direct
+
+    # 2. Resolver vía c-wiz[data-p] + batchexecute (Fbv4je)
+    owns_session = False
+    if session is None:
+        session = StealthSession(test_mode=True, use_scrapling=True)
+        owns_session = True
+
+    try:
+        from urllib.parse import quote as url_quote
+
+        article_page_url = f"https://news.google.com/rss/articles/{art_id}"
+        resp = session.get(article_page_url, timeout=timeout)
+        if resp is None or resp.status_code >= 400:
+            return url
+
+        # Si hubo redirección HTTP directa a un dominio externo
+        if resp.url and "google.com" not in resp.url and resp.url.startswith("http"):
+            _RESOLVED_URLS_CACHE[url] = resp.url
+            return resp.url
+
+        soup = BeautifulSoup(resp.text, "html.parser")
+        cwiz = soup.select_one("c-wiz[data-p]")
+        data_p = cwiz.get("data-p") if cwiz else None
+        if not data_p:
+            return url
+
+        obj = json.loads(data_p.replace("%.@.", '["garturlreq",'))
+        payload = [[["Fbv4je", json.dumps(obj[:-6] + obj[-2:]), "null", "generic"]]]
+        body_data = "f.req=" + url_quote(json.dumps(payload))
+        post_headers = {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "Referer": "https://news.google.com/",
+            "Origin": "https://news.google.com",
+        }
+
+        domain_session = session._get_session("news.google.com")
+        post_kwargs: dict = {
+            "headers": post_headers,
+            "data": body_data,
+            "timeout": timeout,
+        }
+        if HAS_CURL_CFFI and _ASCII_CA_BUNDLE and cffi_requests is not None and isinstance(domain_session, cffi_requests.Session):
+            post_kwargs["verify"] = _ASCII_CA_BUNDLE
+
+        batch_resp = domain_session.post(
+            "https://news.google.com/_/DotsSplashUi/data/batchexecute",
+            **post_kwargs,
+        )
+        if batch_resp is not None and batch_resp.status_code == 200 and batch_resp.text:
+            parts = batch_resp.text.split("\n\n")
+            for part in parts:
+                part_str = part.strip()
+                if not part_str.startswith("["):
+                    continue
+                try:
+                    parsed = json.loads(part_str)
+                    inner_str = parsed[0][2]
+                    if inner_str:
+                        inner = json.loads(inner_str)
+                        real_url = inner[1]
+                        if isinstance(real_url, str) and real_url.startswith(("http://", "https://")):
+                            _RESOLVED_URLS_CACHE[url] = real_url
+                            return real_url
+                except Exception:
+                    continue
+    except Exception as exc:
+        logger.debug("No se pudo resolver URL de Google News (%s): %s", url[:60], exc)
+    finally:
+        if owns_session:
+            session.close_all()
+
+    return url
+
+
+def resolve_article_url(
+    url: str,
+    session: Optional[StealthSession] = None,
+    timeout: int = 12,
+) -> str:
+    """
+    Desenvuelve enlaces intermedios de agregadores de noticias y buscadores:
+      - Bing News RSS (`bing.com/news/apiclick.aspx?...&url=...`)
+      - DuckDuckGo (`//duckduckgo.com/l/?uddg=...`)
+      - Google Search (`google.com/url?q=...`)
+      - Google News RSS (`news.google.com/rss/articles/...`)
+    """
+    if not url:
+        return ""
+
+    u = url.strip()
+    if u.startswith("//duckduckgo.com/l/?") or "duckduckgo.com/l/?" in u:
+        from urllib.parse import parse_qs, unquote
+        parsed = urlparse(u if u.startswith("http") else "https:" + u)
+        qs = parse_qs(parsed.query)
+        if "uddg" in qs and qs["uddg"]:
+            return unquote(qs["uddg"][0])
+
+    if "bing.com/news/apiclick.aspx" in u:
+        from urllib.parse import parse_qs, unquote
+        parsed = urlparse(u)
+        qs = parse_qs(parsed.query)
+        if "url" in qs and qs["url"]:
+            return unquote(qs["url"][0])
+
+    if "google.com/url?" in u or u.startswith("/url?q="):
+        from urllib.parse import parse_qs, unquote
+        parsed = urlparse(u if u.startswith("http") else "https://www.google.com" + u)
+        qs = parse_qs(parsed.query)
+        for key in ("q", "url"):
+            if key in qs and qs[key]:
+                return unquote(qs[key][0])
+
+    if "news.google.com" in u:
+        return resolve_google_news_url(u, session=session, timeout=timeout)
+
+    return u
+
+
+def extract_full_article(
+    url: str,
+    session: Optional[StealthSession] = None,
+    timeout: int = 15,
+) -> Optional[dict]:
+    """
+    Descarga y extrae el cuerpo completo de una noticia periodística usando
+    `Scrapling` (TLS/HTTP2 Chrome impersonation + Selector adaptativo) +
+    `Trafilatura` + `JSON-LD`.
+
+    Si la URL proviene de Google News, Bing News o DuckDuckGo, la resuelve
+    automáticamente a la URL real del medio antes de extraer el artículo.
+
+    Args:
+        url: URL del artículo (directa o de agregador).
+        session: Instancia reutilizable de `StealthSession` (opcional).
+        timeout: Tiempo máximo de espera por petición en segundos.
+
+    Returns:
+        dict con `titulo`, `contenido`, `enlace`, `fuente`, `fecha`, `scrape_method`,
+        o `None` si la URL no contiene un artículo válido.
+    """
+    if not url or not url.startswith(("http://", "https://", "//")):
+        return None
+
+    scraper = DynamicScraper(respect_robots=False, default_delay=0.2, test_mode=True)
+    if session is not None:
+        scraper._stealth = session
+
+    resolved_url = resolve_article_url(url, session=scraper._stealth, timeout=min(timeout, 12))
+    if not resolved_url or not resolved_url.startswith(("http://", "https://")):
+        return None
+
+    # Si sigue siendo un wrapper de Google News que no pudo resolverse, no extraer el intersticial
+    if "news.google.com/rss/articles/" in resolved_url or "news.google.com/articles/" in resolved_url:
+        return None
+
+    return scraper._extract_article(resolved_url, crawl_delay=0.1)
+
+
+def extract_full_articles_batch(
+    urls: list[str],
+    max_workers: int = 8,
+    timeout: int = 15,
+) -> dict[str, dict]:
+    """
+    Descarga y extrae en paralelo el cuerpo completo de múltiples URLs de noticias
+    usando un pool de hilos con `Scrapling` + `Trafilatura`.
+
+    Args:
+        urls: Lista de URLs de artículos a extraer.
+        max_workers: Número de hilos concurrentes (default: 8).
+        timeout: Timeout por artículo en segundos.
+
+    Returns:
+        Diccionario `{url_original: article_dict}` para todas las extracciones exitosas.
+    """
+    unique_urls = list(dict.fromkeys(u for u in urls if u and u.startswith(("http://", "https://"))))
+    if not unique_urls:
+        return {}
+
+    shared_session = StealthSession(test_mode=True, use_scrapling=True)
+    results: dict[str, dict] = {}
+
+    def _worker(target_url: str) -> tuple[str, Optional[dict]]:
+        try:
+            art = extract_full_article(target_url, session=shared_session, timeout=timeout)
+            return target_url, art
+        except Exception as exc:
+            logger.debug("Error extrayendo artículo %s: %s", target_url[:60], exc)
+            return target_url, None
+
+    with ThreadPoolExecutor(max_workers=max(1, min(max_workers, len(unique_urls)))) as pool:
+        futures = [pool.submit(_worker, u) for u in unique_urls]
+        for fut in as_completed(futures):
+            orig_url, data = fut.result()
+            if data and data.get("contenido") and len(data["contenido"]) >= 80:
+                results[orig_url] = data
+
+    return results
+

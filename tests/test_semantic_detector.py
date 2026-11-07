@@ -159,3 +159,43 @@ class TestPrepareTrainingData:
         """El DataFrame resultante no debe tener valores nulos."""
         resultado = detector_mock.prepare_training_data(df_noticias)
         assert resultado.isnull().sum().sum() == 0
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# GRUPO 3: Fachada SemanticDetector + LLMExtractor (5 candados)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class TestSemanticDetectorFacade:
+    """Verifica que SemanticDetector delegue a LLMExtractor sin requerir PyTorch."""
+
+    def test_predict_and_predict_batch_with_5_candados(self, monkeypatch):
+        from src.analysis.semantic_detector import SemanticDetector
+
+        monkeypatch.delenv("GROQ_API_KEY", raising=False)
+        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+        detector = SemanticDetector(provider="none", api_key="")
+        res_pos = detector.predict(
+            titulo="Feminicidio en Jalisco deja a dos niños en orfandad",
+            contenido=(
+                "Una mujer de 32 años fue asesinada por su expareja en Guadalajara, Jalisco. "
+                "Sus dos hijos menores de 5 y 8 años quedaron huérfanos bajo resguardo del DIF."
+            ),
+        )
+        assert res_pos["clasificacion_final"] in ("Alta", "Media")
+        assert res_pos["menores_identificados"] == "Si"
+        assert isinstance(res_pos["investigacion_json"], dict)
+
+        batch = detector.predict_batch(
+            titulos=[
+                "Feminicidio en Jalisco deja a dos niños en orfandad",
+                "Menor de 15 años asesina a su madre en discusión familiar en Monterrey",
+            ],
+            contenidos=[
+                "Una mujer fue asesinada en Guadalajara, Jalisco. Sus dos hijos quedaron huérfanos.",
+                "Un adolescente fue detenido tras privar de la vida a su madre en Nuevo León.",
+            ],
+        )
+        assert len(batch) == 2
+        assert batch[0]["clasificacion_final"] in ("Alta", "Media")
+        assert batch[1]["clasificacion_final"] == "No relevante"
+
