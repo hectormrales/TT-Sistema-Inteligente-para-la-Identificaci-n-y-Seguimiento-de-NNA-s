@@ -27,7 +27,10 @@ RSS_FEEDS = [
     'https://news.google.com/rss/search?q=feminicidio+%22era+madre+de%22+hijos+M%C3%A9xico&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico+menores+hijos&hl=es-419&gl=MX&ceid=MX:es-419',
     'https://news.google.com/rss/search?q=feminicidio+CDMX+Jalisco+Puebla+Veracruz+hijos+menores&hl=es-419&gl=MX&ceid=MX:es-419',
-    'https://news.google.com/rss/search?q=feminicidio+orfandad+redes+sociales+hijos+mexico&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Puebla+mujer&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Veracruz+mujer&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Nuevo+Leon+mujer&hl=es-419&gl=MX&ceid=MX:es-419',
+    'https://news.google.com/rss/search?q=feminicidio+Oaxaca+mujer&hl=es-419&gl=MX&ceid=MX:es-419',
     # ── Bing News RSS queries (URLs directas + snippets reales, México) ──
     'https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&format=rss&cc=MX&setlang=es-MX',
     'https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&format=rss&cc=MX&setlang=es-MX',
@@ -39,15 +42,15 @@ RSS_FEEDS = [
     'https://cimacnoticias.com.mx/feed/',
 ]
 
-# Queries dirigidos para DuckDuckGo (soporta rango de fechas df=start..end y redes sociales)
+# Queries dirigidos para DuckDuckGo (focalizados en notas de prensa regional)
 TARGETED_SEARCH_QUERIES = [
     'feminicidio "dejó en orfandad" menor México',
     'asesinan a mujer "frente a sus hijos" México',
     'feminicidio "era madre de" hijos México',
     'feminicidio "bajo resguardo del DIF" menor México',
-    'feminicidio mexico deja niño facebook',
-    'feminicidio orfandad hijos site:facebook.com mexico',
-    'feminicidio hijos orfandad site:x.com mexico',
+    'asesinan a mujer "hijos" Edomex OR Puebla OR Veracruz',
+    'feminicidio "dejó en orfandad" Jalisco OR Nuevo León OR Guanajuato',
+    'feminicidio "bajo resguardo del DIF" Oaxaca OR Chiapas OR Guerrero',
 ]
 
 # Máximo de artículos candidatos por ciclo a los que se les descarga el cuerpo completo en paralelo

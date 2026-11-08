@@ -20,6 +20,7 @@ from src.analysis.synonyms import SynonymDictionary
 from src.database.models_noticias import Noticia, ExpedienteCaso
 
 main_bp = Blueprint('main', __name__)
+logger = logging.getLogger(__name__)
 
 # ── Estado global de datos ──────────────────────────────────
 
@@ -220,7 +221,20 @@ def api_stats():
         _load_data()
     stats = _get_stats()
     if stats is None:
-        return jsonify({'error': 'No hay datos disponibles'}), 404
+        return jsonify({
+            'total_noticias': 0,
+            'noticias_nna': 0,
+            'alta_relevancia': 0,
+            'media_relevancia': 0,
+            'baja_relevancia': 0,
+            'clusters': 0,
+            'topics': 0,
+            'similitud_promedio': 0.0,
+            'ultima_actualizacion': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'total_expedientes': 0,
+            'expedientes_en_seguimiento': 0,
+            'data_source': 'empty'
+        }), 200
     stats['data_source'] = 'csv'
     return jsonify(stats)
 
@@ -859,33 +873,31 @@ def health_check():
 @main_bp.route('/api/history/clear', methods=['POST'])
 @login_required
 def api_clear_history():
-    """Borra todo el historial (DB, CSVs y cache de URLs)."""
-    # 1. Borrar DB
+    """Borra todo el historial (DB, CSVs, metadata y cache de URLs)."""
+    # 1. Borrar DB (SQLAlchemy unificado para SQLite y PostgreSQL)
     db_cleared = False
-    if _check_postgres():
+    try:
         from src.database.repository import NoticiasRepository
+        from app.models import SesionBusqueda, db
         db_cleared = NoticiasRepository.clear_history()
+        SesionBusqueda.query.delete()
+        db.session.commit()
+    except Exception as e:
+        logger.warning(f"Aviso limpiando base de datos: {e}")
     
-    # 2. Borrar CSVs
+    # 2. Borrar CSVs y JSONs de resultados en DATA_DIR
     import glob
-    csv_files = glob.glob(os.path.join(DATA_DIR, '*.csv'))
-    for f in csv_files:
-        try:
-            os.remove(f)
-        except Exception:
-            pass
+    for pattern in ('*.csv', 'noticias_*.json', 'seen_urls.json'):
+        for f in glob.glob(os.path.join(DATA_DIR, pattern)):
+            try:
+                os.remove(f)
+            except Exception:
+                pass
             
-    # 3. Borrar cache de URLs para que el scraper vuelva a bajar todo
-    seen_urls_path = os.path.join(DATA_DIR, 'seen_urls.json')
-    if os.path.exists(seen_urls_path):
-        try:
-            os.remove(seen_urls_path)
-        except Exception:
-            pass
-            
-    # 4. Resetear variable global
-    global _current_data
+    # 3. Resetear variables globales
+    global _current_data, _use_postgres
     _current_data = None
+    _use_postgres = False
     
     return jsonify({
         'status': 'success',

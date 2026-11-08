@@ -384,3 +384,725 @@ ninos_afectados.str
 2026-11-07 23:37:06,776 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/sessions HTTP/1.1" 200 -
 2026-11-07 23:37:18,569 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:18] "GET /api/seguimiento/casos?estado=todos HTTP/1.1" 200 -
 2026-11-07 23:37:51,642 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:51] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 00:17:46,927 - app - INFO - Esquema FTS inicializado
+2026-11-08 00:17:46,930 - root - INFO - Datos cargados: 15 noticias desde análisis
+2026-11-08 00:17:46,930 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-11-08 00:17:46,983 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.23:5000
+2026-11-08 00:17:46,983 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-11-08 00:19:01,092 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:01] "GET / HTTP/1.1" 200 -
+2026-11-08 00:19:01,194 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:01] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 00:19:01,257 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:01] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 00:19:01,289 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:01] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 00:19:01,361 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:01] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:19:01,406 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:01] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:19:10,694 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:10] "POST /api/history/clear HTTP/1.1" 200 -
+2026-11-08 00:19:11,716 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:11] "GET / HTTP/1.1" 200 -
+2026-11-08 00:19:11,801 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:11] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:19:11,813 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:11] "[33mGET /api/stats HTTP/1.1[0m" 404 -
+2026-11-08 00:19:11,814 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:11] "[33mGET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1[0m" 404 -
+2026-11-08 00:19:11,849 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:11] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:19:16,610 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:16] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
+2026-11-08 00:19:20,637 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:20] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:24,621 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:24] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:28,656 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:28] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:32,634 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:32] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:36,635 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:36] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:38,436 - src.analysis.dedup - INFO - Deduplicación: 23 noticias de entrada
+2026-11-08 00:19:38,440 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 1 duplicados
+2026-11-08 00:19:38,446 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
+2026-11-08 00:19:38,458 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 00:19:38,459 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 00:19:38,461 - src.analysis.dedup - INFO -   Resultado: 23 -> 21 únicos (2 duplicados eliminados)
+2026-11-08 00:19:40,627 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:40] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:42,313 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR
+2026-11-08 00:19:42,313 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/fatima-quintana-feminicidio-... Reintento 1/3 en 1.3s
+2026-11-08 00:19:42,808 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/videos/policia/asesinan-mujer-frente... Reintento 1/3 en 1.2s
+2026-11-08 00:19:43,831 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/fatima-quintana-feminicidio-... Reintento 2/3 en 1.7s
+2026-11-08 00:19:43,832 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 00:19:44,627 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:44] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:47,150 - src.analysis.dedup - INFO - Deduplicación: 20 noticias de entrada
+2026-11-08 00:19:47,159 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 00:19:47,163 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 00:19:47,199 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 00:19:47,206 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 00:19:47,208 - src.analysis.dedup - INFO -   Resultado: 20 -> 20 únicos (0 duplicados eliminados)
+2026-11-08 00:19:47,245 - src.analysis.dedup - INFO - Deduplicación: 19 noticias de entrada
+2026-11-08 00:19:47,253 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 00:19:47,274 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 00:19:47,365 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 00:19:47,367 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 00:19:47,369 - src.analysis.dedup - INFO -   Resultado: 19 -> 19 únicos (0 duplicados eliminados)
+2026-11-08 00:19:48,633 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:48] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:52,621 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:52] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:19:56,632 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:19:56] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:00,623 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:00] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:01,216 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:04,015 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:20:04,627 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:04] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:08,633 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:08] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:12,617 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:12] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:12,834 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:15,768 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:20:16,621 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:20,628 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:20] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:20,757 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:20:21,576 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:24,411 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:20:24,638 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:24] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:28,616 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:28] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:29,236 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:20:30,016 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:32,619 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:32] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:36,624 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:36] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:37,047 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:39,852 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:20:40,629 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:40] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:44,616 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:44] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:44,668 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:20:45,433 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:48,272 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:20:48,627 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:48] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:52,626 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:52] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:55,261 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 00:20:56,061 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:20:56,632 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:20:56] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:20:58,882 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:21:00,631 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:00] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:03,674 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:21:04,495 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:21:04,622 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:04] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:07,354 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:21:08,629 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:08] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:12,094 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:21:12,629 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:12] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:15,318 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 00:21:16,146 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:21:16,624 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:18,950 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:21:20,623 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:20] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:23,707 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:21:24,527 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:21:24,628 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:24] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:27,358 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:21:28,632 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:28] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:32,130 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:21:32,632 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:32] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:36,287 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-08 00:21:36,617 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:36] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:39,039 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-08 00:21:40,631 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:40] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:43,879 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:21:43,924 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 19 noticias procesado (7 llamadas a LLM, 12 filtradas por gatekeeper/presupuesto).
+2026-11-08 00:21:44,059 - src.database.repository - INFO - Batch insert: 19 noticias insertadas
+2026-11-08 00:21:44,077 - root - INFO - Datos cargados: 19 noticias desde análisis
+2026-11-08 00:21:44,080 - root - INFO - Análisis background completado exitosamente
+2026-11-08 00:21:44,635 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:44] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:21:45,862 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:45] "GET / HTTP/1.1" 200 -
+2026-11-08 00:21:45,953 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:45] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:21:45,969 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:45] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 00:21:46,002 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:46] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 00:21:46,004 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:46] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:21:46,065 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:21:46] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 00:22:17,413 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:22:17] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&clasificacion=Alta&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 00:34:19,609 - app - INFO - Esquema FTS inicializado
+2026-11-08 00:34:19,621 - root - INFO - Datos cargados: 19 noticias desde análisis
+2026-11-08 00:34:19,621 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-11-08 00:34:19,656 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.23:5000
+2026-11-08 00:34:19,656 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-11-08 00:34:22,282 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:22] "GET / HTTP/1.1" 200 -
+2026-11-08 00:34:22,503 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:22] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:34:22,568 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:22] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 00:34:22,592 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:22] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 00:34:22,662 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:22] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 00:34:22,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:22] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:34:26,395 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:26] "POST /api/history/clear HTTP/1.1" 200 -
+2026-11-08 00:34:27,438 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:27] "GET / HTTP/1.1" 200 -
+2026-11-08 00:34:27,503 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:27] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:34:27,504 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:27] "[33mGET /api/stats HTTP/1.1[0m" 404 -
+2026-11-08 00:34:27,506 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:27] "[33mGET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1[0m" 404 -
+2026-11-08 00:34:27,529 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:27] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:34:30,705 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:30] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
+2026-11-08 00:34:34,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:34] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:38,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:34:38,753 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:42,725 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:34:42,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:46,723 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:34:46,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:50,725 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:34:50,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:52,170 - src.analysis.dedup - INFO - Deduplicación: 26 noticias de entrada
+2026-11-08 00:34:52,174 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 1 duplicados
+2026-11-08 00:34:52,181 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 00:34:52,197 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 00:34:52,200 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 00:34:52,200 - src.analysis.dedup - INFO -   Resultado: 26 -> 25 únicos (1 duplicados eliminados)
+2026-11-08 00:34:54,911 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:34:55,035 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:55] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:57,581 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR
+2026-11-08 00:34:58,145 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/caso-camila-que-paso-con-los... Reintento 1/3 en 0.8s
+2026-11-08 00:34:58,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:34:58,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:34:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:34:59,049 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/caso-camila-que-paso-con-los... Reintento 2/3 en 2.4s
+2026-11-08 00:34:59,303 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/sofia-madai-que-sabemos-femi... Reintento 1/3 en 1.1s
+2026-11-08 00:34:59,303 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 00:35:01,757 - src.analysis.dedup - INFO - Deduplicación: 20 noticias de entrada
+2026-11-08 00:35:01,761 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 00:35:01,766 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 00:35:01,774 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 00:35:01,787 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 00:35:01,789 - src.analysis.dedup - INFO -   Resultado: 20 -> 20 únicos (0 duplicados eliminados)
+2026-11-08 00:35:01,824 - src.analysis.dedup - INFO - Deduplicación: 19 noticias de entrada
+2026-11-08 00:35:01,828 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 00:35:01,833 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 00:35:01,856 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 00:35:01,858 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 00:35:01,860 - src.analysis.dedup - INFO -   Resultado: 19 -> 19 únicos (0 duplicados eliminados)
+2026-11-08 00:35:02,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:02,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:06,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:06,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:10,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:10,757 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:14,720 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:14,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:18,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:18,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:20,685 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:35:22,742 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:22,769 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:26,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:26,753 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:28,381 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:35:30,715 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:30,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:34,073 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Error 400 en proveedor 'groq': {"error":{"message":"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.","type":"invalid_request_error","code":"json_validate_failed","failed_generation":"max completion tokens reached before generating a valid document"}}
+
+2026-11-08 00:35:34,077 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 00:35:34,719 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:34,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:34,954 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:35:38,228 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:35:38,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:38,751 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:42,748 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:42,765 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:44,028 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:35:44,859 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:35:46,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:46,755 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:48,206 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:35:50,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:50,744 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:54,725 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:54,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:58,730 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:35:58,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:35:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:35:59,163 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:02,434 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:36:02,715 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:02,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:06,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:06,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:08,203 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:36:08,971 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:10,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:10,744 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:14,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:14,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:16,896 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:18,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:18,757 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:20,204 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:36:22,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:22,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:26,051 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:36:26,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:26,729 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:26,871 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:30,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:30,749 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:34,695 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:34,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:34,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:38,158 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:36:38,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:38,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:42,722 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:42,744 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:46,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:46,747 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:48,564 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:50,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:50,753 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:51,915 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:36:54,718 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:54,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:36:57,736 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:36:58,492 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:36:58,730 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:36:58,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:36:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:02,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:02,751 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:05,444 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Error 400 en proveedor 'groq': {"error":{"message":"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.","type":"invalid_request_error","code":"json_validate_failed","failed_generation":""}}
+
+2026-11-08 00:37:05,446 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 00:37:06,251 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 00:37:06,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:06,753 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:09,514 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 00:37:10,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:10,755 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:14,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:14,726 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:15,389 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 00:37:15,393 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 19 noticias procesado (9 llamadas a LLM, 10 filtradas por gatekeeper/presupuesto).
+2026-11-08 00:37:15,538 - src.database.repository - INFO - Batch insert: 19 noticias insertadas
+2026-11-08 00:37:15,559 - root - INFO - Datos cargados: 19 noticias desde análisis
+2026-11-08 00:37:15,560 - root - INFO - Análisis background completado exitosamente
+2026-11-08 00:37:18,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:18,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:22,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:22,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:26,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:26,760 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:30,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:30,762 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:34,729 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:34,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:38,744 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:38,769 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:42,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:42,757 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:46,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:46,762 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:50,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:50,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:54,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:54,752 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:37:58,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:37:58,758 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:37:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:02,719 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:02,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:06,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:06,765 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:10,727 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:10,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:14,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:14,752 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:18,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:18,761 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:22,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:22,764 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:26,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:26,764 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:30,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:30,771 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:34,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:34,726 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:38,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:38,745 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:42,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:42,730 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:46,745 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:46,772 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:50,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:50,747 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:54,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:54,765 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:38:58,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:38:58,751 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:38:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:02,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:02,752 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:06,726 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:06,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:10,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:10,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:14,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:14,752 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:18,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:18,771 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:22,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:22,760 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:26,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:26,742 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:30,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:30,765 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:34,725 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:34,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:38,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:38,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:42,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:42,748 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:46,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:46,745 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:50,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:50,758 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:54,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:54,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:39:58,718 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:39:58,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:39:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:02,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:02,756 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:06,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:06,768 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:10,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:10,754 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:14,718 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:14,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:18,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:18,761 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:22,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:22,763 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:26,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:26,771 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:30,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:30,759 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:34,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:34,750 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:38,742 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:38,760 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:42,744 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:42,768 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:46,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:46,757 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:50,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:50,751 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:54,725 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:54,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:40:58,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:40:58,758 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:40:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:02,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:02,757 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:06,723 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:06,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:10,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:10,754 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:14,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:14,747 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:18,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:18,756 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:22,721 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:22,729 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:26,727 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:26,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:30,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:30,748 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:34,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:34,751 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:38,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:38,749 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:42,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:42,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:46,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:46,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:50,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:50,750 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:54,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:54,747 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:41:58,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:41:58,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:41:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:02,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:02,745 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:06,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:06,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:10,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:10,749 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:14,726 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:14,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:18,723 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:18,730 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:22,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:22,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:26,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:26,751 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:30,727 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:30,741 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:34,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:34,746 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:38,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:38,748 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:42,731 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:42,742 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:46,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:46,752 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:50,723 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:50,733 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:54,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:54,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:42:58,745 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:42:58,756 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:42:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:02,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:02,756 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:06,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:06,743 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:10,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:10,750 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:14,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:14] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:14,753 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:14] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:18,715 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:18] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:18,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:18] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:22,724 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:22] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:22,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:22] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:26,722 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:26] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:26,729 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:26] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:30,728 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:30] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:30,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:30] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:34,735 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:34] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:34,748 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:34] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:38,734 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:38] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:38,760 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:38] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:42,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:42] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:42,738 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:42] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:46,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:46] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:46,757 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:46] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:50,725 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:50] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:50,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:50] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:54,719 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:54] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:54,739 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:54] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:43:58,730 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:58] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:43:58,742 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:43:58] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:44:02,736 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:02] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:44:02,740 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:02] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:44:06,737 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:06] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:44:06,749 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:06] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:44:10,732 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:10] "[32mGET /api/analyze/status HTTP/1.1[0m" 302 -
+2026-11-08 00:44:10,755 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:10] "GET /login?next=/api/analyze/status HTTP/1.1" 200 -
+2026-11-08 00:44:13,231 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:13] "[32mGET / HTTP/1.1[0m" 302 -
+2026-11-08 00:44:13,249 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:13] "GET /login?next=/ HTTP/1.1" 200 -
+2026-11-08 00:44:13,328 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:13] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:44:13,394 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:13] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:44:46,786 - app - INFO - Login exitoso: admin desde 127.0.0.1
+2026-11-08 00:44:46,786 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:46] "[32mPOST /login?next=/ HTTP/1.1[0m" 302 -
+2026-11-08 00:44:46,795 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:46] "GET / HTTP/1.1" 200 -
+2026-11-08 00:44:46,853 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:46] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 00:44:46,866 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:46] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 00:44:46,881 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:46] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 00:44:47,061 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:44:47] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 00:45:10,928 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:45:10] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&clasificacion=Alta&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 00:45:24,115 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 00:45:24] "GET /api/noticias?page=1&per_page=12&only_nna=true&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 01:07:00,306 - app - INFO - Esquema FTS inicializado
+2026-11-08 01:07:00,325 - root - INFO - Datos cargados: 19 noticias desde análisis
+2026-11-08 01:07:00,325 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-11-08 01:07:00,381 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.23:5000
+2026-11-08 01:07:00,381 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-11-08 01:07:02,229 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:02] "GET / HTTP/1.1" 200 -
+2026-11-08 01:07:02,452 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:02] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:02,514 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:02] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 01:07:02,542 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:02] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:07:02,730 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:02] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 01:07:02,771 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:02] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:06,868 - app - ERROR - Exception on /api/history/clear [POST]
+Traceback (most recent call last):
+  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 868, in api_clear_history
+    from app import db
+ImportError: cannot import name 'db' from 'app' (C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\__init__.py)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 873, in api_clear_history
+    logger.warning(f"Aviso limpiando base de datos: {e}")
+    ^^^^^^
+NameError: name 'logger' is not defined
+2026-11-08 01:07:06,880 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:06] "[35m[1mPOST /api/history/clear HTTP/1.1[0m" 500 -
+2026-11-08 01:07:07,909 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:07] "GET / HTTP/1.1" 200 -
+2026-11-08 01:07:07,976 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:07] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:07,985 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:07] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 01:07:07,997 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:07] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:07:08,010 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:08] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:08,067 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:08] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 01:07:12,222 - app - ERROR - Exception on /api/history/clear [POST]
+Traceback (most recent call last):
+  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 868, in api_clear_history
+    from app import db
+ImportError: cannot import name 'db' from 'app' (C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\__init__.py)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 873, in api_clear_history
+    logger.warning(f"Aviso limpiando base de datos: {e}")
+    ^^^^^^
+NameError: name 'logger' is not defined
+2026-11-08 01:07:12,227 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:12] "[35m[1mPOST /api/history/clear HTTP/1.1[0m" 500 -
+2026-11-08 01:07:13,280 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:13] "GET / HTTP/1.1" 200 -
+2026-11-08 01:07:13,348 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:13] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:13,365 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:13] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 01:07:13,376 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:13] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:07:13,378 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:13] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:13,403 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:13] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 01:07:15,149 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:15] "GET / HTTP/1.1" 200 -
+2026-11-08 01:07:15,219 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:15] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:15,234 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:15] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 01:07:15,250 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:15] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:07:15,255 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:15] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:07:15,314 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:07:15] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 01:13:51,635 - app - INFO - Esquema FTS inicializado
+2026-11-08 01:13:51,638 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-11-08 01:13:51,749 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.23:5000
+2026-11-08 01:13:51,771 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-11-08 01:13:54,987 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:54] "GET / HTTP/1.1" 200 -
+2026-11-08 01:13:55,234 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:55] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:13:55,282 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:55] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:13:55,287 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:55] "[33mGET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1[0m" 404 -
+2026-11-08 01:13:55,429 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:55] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:13:58,571 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:58] "POST /api/history/clear HTTP/1.1" 200 -
+2026-11-08 01:13:59,617 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:59] "GET / HTTP/1.1" 200 -
+2026-11-08 01:13:59,683 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:59] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:13:59,683 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:59] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:13:59,686 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:59] "[33mGET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1[0m" 404 -
+2026-11-08 01:13:59,708 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:13:59] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:14:05,038 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:05] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
+2026-11-08 01:14:09,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:09] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:13,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:13] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:17,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:17] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:21,056 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:21] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:25,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:25] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:29,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:29] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:31,936 - src.analysis.dedup - INFO - Deduplicación: 22 noticias de entrada
+2026-11-08 01:14:31,940 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 01:14:31,945 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 01:14:31,958 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 01:14:31,961 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 01:14:31,962 - src.analysis.dedup - INFO -   Resultado: 22 -> 22 únicos (0 duplicados eliminados)
+2026-11-08 01:14:33,076 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:33] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:35,004 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/balacera-deja-a-madre-e-hija... Reintento 1/3 en 1.1s
+2026-11-08 01:14:35,967 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR
+2026-11-08 01:14:36,322 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/balacera-deja-a-madre-e-hija... Reintento 2/3 en 2.6s
+2026-11-08 01:14:36,679 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/videos/policia/asesinan-mujer-frente... Reintento 1/3 en 1.0s
+2026-11-08 01:14:36,679 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 01:14:37,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:37] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:41,063 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:41] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:42,339 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 1/3 en 1.1s
+2026-11-08 01:14:43,425 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
+2026-11-08 01:14:43,735 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 2/3 en 3.0s
+2026-11-08 01:14:45,050 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:45] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:45,832 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
+2026-11-08 01:14:47,033 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 3/3 en 3.2s
+2026-11-08 01:14:47,033 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 01:14:47,033 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud...
+2026-11-08 01:14:48,370 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
+2026-11-08 01:14:48,371 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariomarca.com.mx - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 01:14:48,371 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...
+2026-11-08 01:14:48,831 - src.analysis.dedup - INFO - Deduplicación: 14 noticias de entrada
+2026-11-08 01:14:48,831 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 01:14:48,831 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Resultado: 14 -> 14 únicos (0 duplicados eliminados)
+2026-11-08 01:14:48,884 - src.analysis.dedup - INFO - Deduplicación: 13 noticias de entrada
+2026-11-08 01:14:48,889 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 01:14:48,890 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 01:14:48,908 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 01:14:48,911 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 01:14:48,913 - src.analysis.dedup - INFO -   Resultado: 13 -> 13 únicos (0 duplicados eliminados)
+2026-11-08 01:14:49,052 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:49] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:53,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:53] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:57,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:57] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:01,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:01] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:05,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:05] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:09,062 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:09] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:12,832 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:13,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:13] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:16,193 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:15:17,048 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:17] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:21,059 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:21] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:23,601 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:15:24,389 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:15:25,058 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:25] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:27,717 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:29,052 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:29] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:32,812 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:15:33,061 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:33] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:33,622 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:15:36,932 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:37,053 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:37] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:40,200 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:15:41,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:41] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:45,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:45] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:46,022 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 01:15:49,060 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:49] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:51,176 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:15:52,028 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:15:53,054 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:53] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:55,323 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:57,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:57] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:58,670 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:16:01,069 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:01] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:05,060 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:05] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:06,190 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:16:07,244 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:16:09,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:09] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:10,565 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:16:13,053 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:13] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:13,844 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:16:17,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:17] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:21,062 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:21] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:24,484 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:16:25,051 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:25] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:27,769 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:16:29,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:29] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:33,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:33] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:33,556 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 01:16:33,570 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 13 noticias procesado (12 llamadas a LLM, 1 filtradas por gatekeeper/presupuesto).
+2026-11-08 01:16:33,692 - src.database.repository - INFO - Batch insert: 13 noticias insertadas
+2026-11-08 01:16:33,709 - root - INFO - Datos cargados: 13 noticias desde análisis
+2026-11-08 01:16:33,716 - root - INFO - Análisis background completado exitosamente
+2026-11-08 01:16:37,046 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:37] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:38,288 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET / HTTP/1.1" 200 -
+2026-11-08 01:16:38,369 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:16:38,418 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-08 01:16:38,425 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 01:16:38,476 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:16:38,545 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 01:16:40,303 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:40] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&clasificacion=Alta&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 01:17:01,415 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:17:01] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -

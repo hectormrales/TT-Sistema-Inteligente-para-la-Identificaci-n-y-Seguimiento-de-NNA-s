@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Futuro Con Derechos — Organización de la sociedad civil dedicada a la protección, visibilización y acompañamiento integral de niñas, niños y adolescentes en orfandad por feminicidio en México.">
+  <title>Futuro Con Derechos | Protección a Niñas, Niños y Adolescentes en Orfandad</title>
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Estilos del Sitio Institucional -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/png" href="img/logo_futuro_con_derechos.png">
+</head>
+<body>
+
+  <!-- ╔═══ HEADER / BARRA DE NAVEGACIÓN ═══╗ -->
+  <header class="header" id="header">
+    <div class="container navbar">
+      <a href="#hero" class="nav-brand">
+        <img src="img/logo_futuro_con_derechos.png" alt="Futuro Con Derechos Logo" class="nav-logo">
+        <div class="brand-text">
+          <span class="brand-title">FUTURO CON DERECHOS</span>
+          <span class="brand-subtitle">Asociación Civil · México</span>
+        </div>
+      </a>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#causa" class="nav-link">Nuestra Causa</a></li>
+        <li><a href="#ejes" class="nav-link">Acompañamiento</a></li>
+        <li><a href="#plataforma" class="nav-link">Sistema Inteligente NNA</a></li>
+        <li><a href="#redes" class="nav-link">Redes e Impacto</a></li>
+        <li><a href="#contacto" class="nav-link">Contacto</a></li>
+      </ul>
+
+      <div class="nav-cta">
+        <a href="/login" class="btn btn-primary" title="Acceso al sistema operativo NNA Monitor">
+          <i class="fas fa-shield-alt"></i> Acceso Plataforma
+        </a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ╔═══ HERO SECTION ═══╗ -->
+  <section class="hero" id="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-heart text-danger"></i> Visibilizando a las víctimas invisibles del feminicidio
+        </div>
+        <h1 class="hero-title">
+          Restituyendo el futuro de la <span>niñez y adolescencia</span> en orfandad.
+        </h1>
+        <p class="hero-desc">
+          En México, miles de hijas e hijos quedan en total desamparo tras el feminicidio de sus madres.
+          En <strong>Futuro Con Derechos</strong> combinamos acompañamiento jurídico, psicológico y tecnológico
+          para localizar, proteger y garantizar el proyecto de vida de cada niña, niño y adolescente.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#contacto" class="btn btn-gold">
+            <i class="fas fa-hand-holding-heart"></i> Solicitar Apoyo / Reportar Caso
+          </a>
+          <a href="#plataforma" class="btn btn-outline-primary">
+            <i class="fas fa-microchip"></i> Conoce la Tecnología NNA
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <h3>+5,000</h3>
+            <p>NNA en orfandad estimados en México sin censo unificado</p>
+          </div>
+          <div class="stat-item">
+            <h3>95%</h3>
+            <p>Familias y abuelas cuidadoras sin subsidio del Estado</p>
+          </div>
+          <div class="stat-item">
+            <h3>24 / 7</h3>
+            <p>Búsqueda activa y detección temprana multicanal con IA</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-card-preview">
+          <img src="img/logo_futuro_con_derechos.png" alt="Emblema Futuro Con Derechos" class="card-logo-center">
+          <h3>Protección Activa e Inmediata</h3>
+          <p>
+            No esperamos a que las familias enfrenten solas el duelo y el laberinto burocrático.
+            Rastreamos y canalizamos oportunamente a los órganos de protección de derechos.
+          </p>
+          <div style="display:flex; justify-content:center; gap: 0.8rem;">
+            <a href="https://www.tiktok.com/@futuro.con.derechos" target="_blank" rel="noopener noreferrer" class="btn btn-outline-white" style="font-size: 0.85rem; padding: 0.6rem 1.2rem;">
+              <i class="fab fa-tiktok"></i> @futuro.con.derechos
+            </a>
+            <a href="#plataforma" class="btn btn-gold" style="font-size: 0.85rem; padding: 0.6rem 1.2rem;">
+              <i class="fas fa-eye"></i> NNA Monitor
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══ SECCIÓN: NUESTRA CAUSA / QUIÉNES SOMOS ═══╗ -->
+  <section class="section section-alt" id="causa">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Nuestra Razón de Ser</span>
+        <h2 class="section-title">La Tragedia Detrás de la Tragedia</h2>
+        <p class="section-desc">
+          Cuando ocurre un feminicidio, el foco de la noticia suele extinguirse con el paso de los días.
+          Sin embargo, para sus hijas e hijos, ese día comienza una lucha silenciosa por sobrevivir.
+        </p>
+      </div>
+
+      <div class="support-grid">
+        <div class="support-card">
+          <div class="contact-icon" style="background: rgba(224, 93, 111, 0.12); color: var(--accent-coral); margin-bottom: 1.2rem;">
+            <i class="fas fa-hands-holding-child"></i>
+          </div>
+          <h3>Huérfanos Invisibles</h3>
+          <p>
+            En México, la gran mayoría de los menores en orfandad quedan bajo la custodia de abuelas o tías de escasos recursos.
+            Sin patria potestad formal, enfrentan impedimentos para inscribirlos a la escuela, tramitar su seguro médico o acceder al
+            Protocolo Nacional de Orfandad.
+          </p>
+          <p>
+            Nuestra misión es hacer visible cada caso, acompañar a las familias cuidadoras y exigir que los tres órdenes de gobierno
+            cumplan su obligación constitucional de restituirles sus derechos.
+          </p>
+        </div>
+
+        <div class="support-card">
+          <div class="contact-icon" style="background: rgba(197, 160, 89, 0.15); color: var(--accent-gold); margin-bottom: 1.2rem;">
+            <i class="fas fa-scale-balanced"></i>
+          </div>
+          <h3>Enfoque de Derechos y Género</h3>
+          <p>
+            No concebimos la asistencia social como caridad, sino como un acto de justicia y reparación integral.
+            Cada niña, niño y adolescente tiene derecho a un proyecto de vida con dignidad, educación de calidad,
+            atención psicológica especializada para trauma complejo y resguardo legal definitivo.
+          </p>
+          <p>
+            Promovemos alianzas con colectivos, comisiones de víctimas (CEAV), fiscalías especializadas y la academia para transformar
+            el marco de protección a nivel federal.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══ SECCIÓN: EJES DE ACOMPAÑAMIENTO ═══╗ -->
+  <section class="section" id="ejes">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Modelo de Atención 360°</span>
+        <h2 class="section-title">Ejes de Intervención Integral</h2>
+        <p class="section-desc">
+          Un abordaje interdisciplinario diseñado para estabilizar a la familia cuidadora y edificar un porvenir seguro para la niñez.
+        </p>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fas fa-gavel"></i>
+          </div>
+          <h3>Defensa y Asesoría Jurídica</h3>
+          <p>
+            Acompañamiento legal gratuito en juicios de pérdida o suspensión de patria potestad del agresor, guarda y custodia para abuelas cuidadoras, actas de defunción y representación victimal.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>Salud Mental y Trauma Complejo</h3>
+          <p>
+            Intervención tanatológica y psicoterapia clínica infantil especializada para superar el duelo violento y restablecer el apego seguro de las infancias en su nuevo entorno familiar.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h3>Educación y Proyecto de Vida</h3>
+          <p>
+            Gestión de becas escolares, vinculación comunitaria, reinserción escolar sin trabas administrativas y tutoría académica permanente para que ningún NNA abandone sus estudios.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+          <h3>Acceso a Programas Sociales</h3>
+          <p>
+            Canalización urgente para el cobro del subsidio mensual del Protocolo Nacional de Orfandad (SIPINNA / DIF) y apoyos alimentarios para familias ampliadas en situación de vulnerabilidad.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══ SECCIÓN: PLATAFORMA SISTEMA INTELIGENTE NNA ═══╗ -->
+  <section class="section section-alt" id="plataforma">
+    <div class="container">
+      <div class="platform-banner">
+        <div class="platform-grid">
+          <div class="platform-info">
+            <div class="platform-badge">
+              <i class="fas fa-robot"></i> Innovación Social Tecnológica
+            </div>
+            <h2>Sistema Inteligente de Detección y Seguimiento NNA</h2>
+            <p>
+              Desarrollado en colaboración con la <strong>Escuela Superior de Cómputo (ESCOM) del Instituto Politécnico Nacional</strong>,
+              nuestra plataforma opera como un radar nacional inteligente que analiza noticias locales, portales policiales y reportes
+              en tiempo real para detectar casos de orfandad antes de que caigan en el olvido.
+            </p>
+
+            <div class="platform-features">
+              <div class="feat-item">
+                <i class="fas fa-check-circle"></i>
+                <span>5 Candados Estrictos Anti-Falsos Positivos</span>
+              </div>
+              <div class="feat-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Extracción Automática de Ficha y Evidencia</span>
+              </div>
+              <div class="feat-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Agrupación Inteligente de Expedientes Únicos</span>
+              </div>
+              <div class="feat-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Expedientes en PDF y Bitácora de Casos</span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <a href="/login" class="btn btn-gold">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión en NNA Monitor
+              </a>
+              <a href="#contacto" class="btn btn-outline-white">
+                <i class="fas fa-envelope"></i> Solicitar Demostración Institucional
+              </a>
+            </div>
+          </div>
+
+          <div class="platform-visual">
+            <div class="platform-screen-preview">
+              <div class="screen-header">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-left: 0.5rem;">NNA Monitor v4.0 · Panel Operativo</span>
+              </div>
+
+              <div class="screen-card-mock">
+                <span class="screen-badge">ALTA RELEVANCIA · 5 CANDADOS OK</span>
+                <div style="font-weight: 700; color: #ffffff; margin-bottom: 0.3rem;">Pesquería, Nuevo León</div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 0.8rem; margin-bottom: 0.4rem;">
+                  Víctima: María "N" (28 años) · NNA en orfandad: 2 menores (3 y 5 años)
+                </div>
+                <div style="font-style: italic; font-size: 0.75rem; color: var(--accent-gold-light); background: rgba(0,0,0,0.25); padding: 0.4rem 0.6rem; border-radius: 4px;">
+                  "Vecinos reportan que los dos infantes quedaron bajo resguardo temporal de la abuela materna..."
+                </div>
+              </div>
+
+              <div class="screen-card-mock" style="margin-bottom: 0;">
+                <span class="screen-badge" style="background: rgba(59, 130, 246, 0.25); color: #60a5fa;">EXPEDIENTE VINCULADO #EXP-NL-042</span>
+                <div style="color: rgba(255,255,255,0.85); font-size: 0.78rem;">
+                  Estado del Caso: <strong>Identificado · En proceso de contacto</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══ SECCIÓN: REDES SOCIALES E IMPACTO ═══╗ -->
+  <section class="section" id="redes">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Comunidad Digital</span>
+        <h2 class="section-title">Voces que Transforman Realidades</h2>
+        <p class="section-desc">
+          A través de nuestras redes sociales sensibilizamos a la sociedad, rompemos el estigma de la orfandad y recibimos alertas directas de las comunidades.
+        </p>
+      </div>
+
+      <div class="support-grid">
+        <div class="support-card" style="text-align: center; border-top: 4px solid #000000;">
+          <div class="contact-icon" style="margin: 0 auto 1.2rem; background: rgba(0,0,0,0.06); color: #000000;">
+            <i class="fab fa-tiktok"></i>
+          </div>
+          <h3>Síguenos en TikTok</h3>
+          <p>
+            Conoce testimonios, análisis jurídico comprensible, campañas de visibilización y guías prácticas para cuidadores en nuestra cuenta oficial.
+          </p>
+          <div style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem;">
+            @futuro.con.derechos
+          </div>
+          <a href="https://www.tiktok.com/@futuro.con.derechos" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="background: #000000;">
+            <i class="fab fa-tiktok"></i> Ver Perfil de TikTok
+          </a>
+        </div>
+
+        <div class="support-card" style="text-align: center; border-top: 4px solid #25d366;">
+          <div class="contact-icon" style="margin: 0 auto 1.2rem; background: rgba(37, 211, 102, 0.12); color: #25d366;">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <h3>Canal de Ayuda y Alerta Inmediata</h3>
+          <p>
+            ¿Conoces un caso o eres familiar de una víctima que requiere apoyo legal o psicológico urgente? Escríbenos directamente a nuestra línea de atención.
+          </p>
+          <div style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem;">
+            Atención Confidencial y Humana
+          </div>
+          <a href="https://wa.me/525500000000?text=Hola,%20me%20comunico%20desde%20el%20sitio%20web%20de%20Futuro%20Con%20Derechos" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="background: #25d366;">
+            <i class="fab fa-whatsapp"></i> Mensaje por WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══ SECCIÓN: CONTACTO / BUZÓN DE REPORTE ═══╗ -->
+  <section class="section section-alt" id="contacto">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Buzón Comunitario</span>
+        <h2 class="section-title">Contáctanos o Reporta un Caso</h2>
+        <p class="section-desc">
+          Toda información proporcionada es tratada con estricta confidencialidad bajo los más altos estándares de protección de datos personales y de la niñez.
+        </p>
+      </div>
+
+      <div class="support-grid">
+        <div class="support-card">
+          <h3>Información Institucional</h3>
+          <p>
+            Estamos a tu disposición para colaboraciones con organismos públicos, donaciones, voluntariado o asesoría a familias afectadas.
+          </p>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">Correo Electrónico</div>
+              <div style="color: var(--text-muted);">contacto@futuroconderechos.org</div>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">Sede de Enlace</div>
+              <div style="color: var(--text-muted);">Ciudad de México · Cobertura en toda la República Mexicana</div>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-shield-halved"></i>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">Acceso para Operadores</div>
+              <div style="color: var(--text-muted);"><a href="/login" style="color: var(--primary); font-weight: 600;">Iniciar sesión en el Sistema NNA &rarr;</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="support-card">
+          <h3>Envíanos un Mensaje</h3>
+          <form id="contactForm" onsubmit="event.preventDefault(); handleFormSubmit();">
+            <div style="margin-bottom: 1.2rem;">
+              <label for="formNombre" style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-main);">Tu Nombre o Pseudónimo</label>
+              <input type="text" id="formNombre" required style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-card); font-size: 0.95rem; font-family: inherit;">
+            </div>
+
+            <div style="margin-bottom: 1.2rem;">
+              <label for="formContacto" style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-main);">Teléfono de Contacto o Correo</label>
+              <input type="text" id="formContacto" required placeholder="WhatsApp o email" style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-card); font-size: 0.95rem; font-family: inherit;">
+            </div>
+
+            <div style="margin-bottom: 1.2rem;">
+              <label for="formMensaje" style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-main);">Mensaje o Descripción del Caso</label>
+              <textarea id="formMensaje" rows="4" required placeholder="Describe brevemente la situación o solicitud..." style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-card); font-size: 0.95rem; font-family: inherit; resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" style="width: 100%;" id="btnSubmitForm">
+              <i class="fas fa-paper-plane"></i> Enviar Mensaje Seguro
+            </button>
+            <div id="formSuccess" style="display: none; margin-top: 1rem; padding: 0.8rem; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; border-radius: var(--radius-sm); font-size: 0.9rem; text-align: center;">
+              <i class="fas fa-check-circle me-1"></i> Gracias por tu mensaje. El equipo de Futuro Con Derechos se pondrá en contacto a la brevedad.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔═══ FOOTER ═══╗ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="img/logo_futuro_con_derechos.png" alt="Futuro Con Derechos" class="nav-logo" style="filter: brightness(0) invert(1);">
+          <div style="font-weight: 800; font-size: 1.1rem; color: #ffffff; margin-bottom: 0.5rem;">FUTURO CON DERECHOS A.C.</div>
+          <p>
+            Construyendo caminos de justicia, dignidad y restitución de derechos para las niñas, niños y adolescentes en condición de orfandad por feminicidio en México.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul class="footer-links">
+            <li><a href="#hero">Inicio</a></li>
+            <li><a href="#causa">Nuestra Causa</a></li>
+            <li><a href="#ejes">Acompañamiento</a></li>
+            <li><a href="#plataforma">Sistema Inteligente</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul class="footer-links">
+            <li><a href="/login">Acceso a Operadores</a></li>
+            <li><a href="/login">Monitoreo de Alertas</a></li>
+            <li><a href="/login">Tablero de Casos</a></li>
+            <li><a href="#plataforma">Colaboración ESCOM - IPN</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Redes Oficiales</h4>
+          <ul class="footer-links">
+            <li><a href="https://www.tiktok.com/@futuro.con.derechos" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok me-2"></i>TikTok Oficial</a></li>
+            <li><a href="https://wa.me/525500000000" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp me-2"></i>Línea de Ayuda</a></li>
+            <li><a href="#contacto"><i class="fas fa-envelope me-2"></i>Buzón Ciudadano</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; 2026 Futuro Con Derechos A.C. Todos los derechos reservados.
+        </div>
+        <div>
+          Desarrollado en colaboración con el <strong>Instituto Politécnico Nacional — ESCOM</strong>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script interactivo principal -->
+  <script src="js/main.js"></script>
+</body>
+</html>
+

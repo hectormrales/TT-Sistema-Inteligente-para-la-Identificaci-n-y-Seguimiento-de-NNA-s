@@ -1,149 +1,178 @@
-2026-11-07 23:34:17,037 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /fuentes/ HTTP/1.1" 302 -
-2026-11-07 23:34:17,069 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /login?next=/fuentes/ HTTP/1.1" 200 -
-2026-11-07 23:34:17,313 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-07 23:34:17,364 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-07 23:34:37,186 - app - INFO - Login exitoso: admin desde 127.0.0.1
-2026-11-07 23:34:37,189 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "POST /login?next=/fuentes/ HTTP/1.1" 302 -
-2026-11-07 23:34:37,218 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "GET /fuentes/ HTTP/1.1" 200 -
-2026-11-07 23:34:37,265 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-07 23:34:37,275 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "GET /fuentes/api/sources HTTP/1.1" 200 -
-2026-11-07 23:34:40,488 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET / HTTP/1.1" 200 -
-2026-11-07 23:34:40,540 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-07 23:34:40,591 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
-2026-11-07 23:34:40,648 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /api/stats HTTP/1.1" 200 -
-2026-11-07 23:34:40,665 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /api/sessions HTTP/1.1" 200 -
 ============================================================
   PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO
 ============================================================
-2026-11-07 23:34:44,012 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:44] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
-  Batch ID de ejecución: 20261107_233444
+2026-11-08 01:14:05,038 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:05] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
+  Batch ID de ejecución: 20261108_011405
 === PASO 1: RECOLECCIÓN DIRIGIDA + SCORING DE RELEVANCIA ===
   -- Búsqueda Dirigida en Google News + Bing News --
   Search RSS: https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+...
   Search RSS: https://news.google.com/rss/search?q=feminicidio+menores+orfandad+M%C3...
+2026-11-08 01:14:09,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:09] "GET /api/analyze/status HTTP/1.1" 200 -
   Search RSS: https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%...
   Search RSS: https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%...
   Search RSS: https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+fe...
-2026-11-07 23:34:48,596 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:48] "GET /api/analyze/status HTTP/1.1" 200 -
   Search RSS: https://news.google.com/rss/search?q=feminicidio+%22frente+a+sus+hijos...
   Search RSS: https://news.google.com/rss/search?q=feminicidio+%22era+madre+de%22+hi...
+2026-11-08 01:14:13,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:13] "GET /api/analyze/status HTTP/1.1" 200 -
   Search RSS: https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico...
   Search RSS: https://news.google.com/rss/search?q=feminicidio+CDMX+Jalisco+Puebla+V...
-  Search RSS: https://news.google.com/rss/search?q=feminicidio+orfandad+redes+social...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Puebla+mujer&hl=es-41...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Veracruz+mujer&hl=es-...
+2026-11-08 01:14:17,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:17] "GET /api/analyze/status HTTP/1.1" 200 -
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Nuevo+Leon+mujer&hl=e...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Oaxaca+mujer&hl=es-41...
   Search RSS: https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&f...
-2026-11-07 23:34:52,579 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:52] "GET /api/analyze/status HTTP/1.1" 200 -
   Search RSS: https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&f...
   Search RSS: https://www.bing.com/news/search?q=asesinan+mujer+frente+a+sus+hijos+M...
+2026-11-08 01:14:21,056 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:21] "GET /api/analyze/status HTTP/1.1" 200 -
   Search RSS: https://www.bing.com/news/search?q=feminicidio+DIF+resguardo+menores+M...
   Search RSS: https://www.bing.com/news/search?q=mujer+asesinada+era+madre+de+hijos+...
-2026-11-07 23:34:56,573 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:56] "GET /api/analyze/status HTTP/1.1" 200 -
   Search RSS: https://www.bing.com/news/search?q=feminicidio+victimas+indirectas+nin...
+2026-11-08 01:14:25,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:25] "GET /api/analyze/status HTTP/1.1" 200 -
   -- Búsqueda Dirigida y Redes Sociales (DuckDuckGo) --
   Buscando DDG: feminicidio "dejó en orfandad" menor México
   Buscando DDG: asesinan a mujer "frente a sus hijos" México
-2026-11-07 23:35:00,581 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:00] "GET /api/analyze/status HTTP/1.1" 200 -
   Buscando DDG: feminicidio "era madre de" hijos México
   Buscando DDG: feminicidio "bajo resguardo del DIF" menor México
-  Buscando DDG: feminicidio mexico deja niño facebook
-2026-11-07 23:35:04,584 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:04] "GET /api/analyze/status HTTP/1.1" 200 -
-  Buscando DDG: feminicidio orfandad hijos site:facebook.com mexico
-  Buscando DDG: feminicidio hijos orfandad site:x.com mexico
+  Buscando DDG: asesinan a mujer "hijos" Edomex OR Puebla OR Veracruz
+2026-11-08 01:14:29,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:29] "GET /api/analyze/status HTTP/1.1" 200 -
+  Buscando DDG: feminicidio "dejó en orfandad" Jalisco OR Nuevo León OR Guanajuato
+  Buscando DDG: feminicidio "bajo resguardo del DIF" Oaxaca OR Chiapas OR Guerrero
   -- 1 fuentes especializadas/personalizadas desde DB --
   [RSS] Cimacnoticias (rss)
-2026-11-07 23:35:08,570 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:08] "GET /api/analyze/status HTTP/1.1" 200 -
     -> 0 artículos relevantes
-  URLs: 0 previas + 21 nuevas = 21 total
+  URLs: 0 previas + 22 nuevas = 22 total
   -- Deduplicación avanzada --
-2026-11-07 23:35:09,504 - src.analysis.dedup - INFO - Deduplicación: 21 noticias de entrada
-2026-11-07 23:35:09,510 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 1 duplicados
-2026-11-07 23:35:09,513 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-07 23:35:09,526 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-07 23:35:09,526 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
-2026-11-07 23:35:09,537 - src.analysis.dedup - INFO -   Resultado: 21 -> 20 únicos (1 duplicados eliminados)
-  Duplicados eliminados: 1 (21 -> 20)
-  -- Enriquecimiento Full-Text con Scrapling: descargando cuerpo de 9 notas candidatas --
-2026-11-07 23:35:12,539 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/caso-camila-que-paso-con-los... Reintento 1/3 en 1.0s
-2026-11-07 23:35:12,560 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:12] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:12,627 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/sofia-madai-que-sabemos-femi... Reintento 1/3 en 1.1s
-2026-11-07 23:35:13,646 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/caso-camila-que-paso-con-los... Reintento 2/3 en 1.5s
-2026-11-07 23:35:13,646 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
-  -> Cuerpo completo extraído en 5/9 notas
-2026-11-07 23:35:16,287 - src.analysis.dedup - INFO - Deduplicación: 16 noticias de entrada
-2026-11-07 23:35:16,299 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-07 23:35:16,307 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-07 23:35:16,319 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-07 23:35:16,329 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
-2026-11-07 23:35:16,330 - src.analysis.dedup - INFO -   Resultado: 16 -> 16 únicos (0 duplicados eliminados)
-  Total recolectadas: 16
-  Relevantes (score >= 0.25): 15
-  Con mención a NNA: 14
-  15 noticias relevantes recolectadas
-   |-- Alta relevancia:  4
-   |-- Media relevancia: 9
-   |-- Baja relevancia:  2
-   +-- Mencionan NNA:    14
+2026-11-08 01:14:31,936 - src.analysis.dedup - INFO - Deduplicación: 22 noticias de entrada
+2026-11-08 01:14:31,940 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 01:14:31,945 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 01:14:31,958 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 01:14:31,961 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 01:14:31,962 - src.analysis.dedup - INFO -   Resultado: 22 -> 22 únicos (0 duplicados eliminados)       
+  Duplicados eliminados: 0 (22 -> 22)
+  -- Enriquecimiento Full-Text con Scrapling: descargando cuerpo de 22 notas candidatas --
+2026-11-08 01:14:33,076 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:33] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:35,004 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/balacera-deja-a-madre-e-hija... Reintento 1/3 en 1.1s
+2026-11-08 01:14:35,967 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR   
+2026-11-08 01:14:36,322 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/balacera-deja-a-madre-e-hija... Reintento 2/3 en 2.6s
+2026-11-08 01:14:36,679 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/videos/policia/asesinan-mujer-frente... Reintento 1/3 en 1.0s
+2026-11-08 01:14:36,679 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 01:14:37,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:37] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:41,063 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:41] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:42,339 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 1/3 en 1.1s
+2026-11-08 01:14:43,425 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
+2026-11-08 01:14:43,735 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 2/3 en 3.0s
+2026-11-08 01:14:45,050 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:45] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:45,832 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
+2026-11-08 01:14:47,033 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 3/3 en 3.2s
+2026-11-08 01:14:47,033 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 01:14:47,033 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud...
+2026-11-08 01:14:48,370 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
+2026-11-08 01:14:48,371 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariomarca.com.mx - 3 fallos consecutivos. Cooldown 600s
+2026-11-08 01:14:48,371 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...
+  -> Cuerpo completo extraído en 16/22 notas
+2026-11-08 01:14:48,831 - src.analysis.dedup - INFO - Deduplicación: 14 noticias de entrada
+2026-11-08 01:14:48,831 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 01:14:48,831 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Resultado: 14 -> 14 únicos (0 duplicados eliminados)       
+  Total recolectadas: 14
+  Relevantes (score >= 0.25): 13
+  Con mención a NNA: 13
+  13 noticias relevantes recolectadas
+   |-- Alta relevancia:  12
+   |-- Media relevancia: 1
+   |-- Baja relevancia:  0
+   +-- Mencionan NNA:    13
 === PASO 3: TF-IDF (domain-boosted) ===
-  Textos normalizados preparados: 15 documentos
+  Textos normalizados preparados: 13 documentos
 === PASO 6: SIMILITUD + DEDUPLICACIÓN ===
-  Similitud promedio: 0.183 | Pares > 0.5: 0
-2026-11-07 23:35:16,349 - src.analysis.dedup - INFO - Deduplicación: 15 noticias de entrada
-2026-11-07 23:35:16,363 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-07 23:35:16,368 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-07 23:35:16,390 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-07 23:35:16,390 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
-2026-11-07 23:35:16,394 - src.analysis.dedup - INFO -   Resultado: 15 -> 15 únicos (0 duplicados eliminados)
+  Similitud promedio: 0.173 | Pares > 0.5: 0
+2026-11-08 01:14:48,884 - src.analysis.dedup - INFO - Deduplicación: 13 noticias de entrada
+2026-11-08 01:14:48,889 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 01:14:48,890 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 01:14:48,908 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 01:14:48,911 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 01:14:48,913 - src.analysis.dedup - INFO -   Resultado: 13 -> 13 únicos (0 duplicados eliminados)       
 === PASO 8: BÚSQUEDA MEJORADA ===
   Diccionario guardado (170 términos)
 === PASO 9: DETECCIÓN Y EXTRACCIÓN CON 5 CANDADOS (LLMExtractor) ===
-2026-11-07 23:35:16,567 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:16] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:20,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:20] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:24,590 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:24] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:28,568 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:28] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:32,577 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:32] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:35,662 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
-2026-11-07 23:35:36,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:36] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:38,664 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
-2026-11-07 23:35:40,578 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:40] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:43,897 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
-2026-11-07 23:35:44,581 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:44] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:45,170 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
-2026-11-07 23:35:48,567 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:48] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:52,566 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:52] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:56,573 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:56] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:35:56,653 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
-2026-11-07 23:35:59,678 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
-2026-11-07 23:36:04,696 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
-2026-11-07 23:36:05,654 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
-2026-11-07 23:36:08,631 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
-2026-11-07 23:36:17,243 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
-2026-11-07 23:36:20,296 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
-2026-11-07 23:36:25,586 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:36:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:36:32,898 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
-2026-11-07 23:36:35,914 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
-2026-11-07 23:36:43,060 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 15 noticias procesado (10 llamadas a LLM, 5 filtradas por gatekeeper/presupuesto).
-  Score semántico promedio: 0.2707
-  15 noticias procesadas | Alta: 4 | Media: 0 | No relevante: 11
+2026-11-08 01:14:49,052 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:49] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:53,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:53] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:14:57,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:57] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:01,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:01] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:05,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:05] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:09,062 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:09] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:12,832 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:13,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:13] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:16,193 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:15:17,048 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:17] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:21,059 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:21] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:23,601 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:15:24,389 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:15:25,058 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:25] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:27,717 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:29,052 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:29] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:32,812 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:15:33,061 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:33] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:33,622 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:15:36,932 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:37,053 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:37] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:40,200 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:15:41,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:41] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:45,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:45] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:46,022 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 01:15:49,060 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:49] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:51,176 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:15:52,028 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:15:53,054 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:53] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:55,323 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:15:57,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:57] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:15:58,670 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:16:01,069 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:01] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:05,060 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:05] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:06,190 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
+2026-11-08 01:16:07,244 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
+2026-11-08 01:16:09,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:09] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:10,565 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:16:13,053 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:13] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:13,844 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:16:17,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:17] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:21,062 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:21] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:24,484 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
+2026-11-08 01:16:25,051 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:25] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:27,769 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
+2026-11-08 01:16:29,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:29] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:33,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:33] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:33,556 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-08 01:16:33,570 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 13 noticias procesado (12 llamadas a LLM, 1 filtradas por gatekeeper/presupuesto).
+  Score semántico promedio: 0.4292
+  13 noticias procesadas | Alta: 6 | Media: 0 | No relevante: 7
 === PASO 10: AGRUPACIÓN TEMÁTICA Y GEOGRÁFICA (OE-4, post-filtro) ===
-  Corpus relevante para agrupación: 4 noticias (Alta/Media)
-  Grupos temáticos/geográficos generados: 3
+  Corpus relevante para agrupación: 6 noticias (Alta/Media)
+  Grupos temáticos/geográficos generados: 6
 === GUARDANDO RESULTADOS ===
   CSV: data\noticias_analyzed_simplified.csv
   Metadatos: data\noticias_analyzed_simplified_metadata.json
-  Total: 15 | NNA: 4 | Alta: 4 | Media: 0
+  Total: 13 | NNA: 6 | Alta: 6 | Media: 0
 === PASO 11: PERSISTENCIA POSTGRESQL (OE-3) ===
-2026-11-07 23:36:43,210 - src.database.repository - INFO - Batch insert: 10 noticias insertadas
-  10 noticias persistidas en PostgreSQL
+2026-11-08 01:16:33,692 - src.database.repository - INFO - Batch insert: 13 noticias insertadas
+  13 noticias persistidas en PostgreSQL
 ============================================================
-  COMPLETADO — 15 noticias analizadas
+  COMPLETADO — 13 noticias analizadas
 ============================================================
-2026-11-07 23:36:43,232 - root - INFO - Datos cargados: 15 noticias desde análisis
-2026-11-07 23:36:43,233 - root - INFO - Análisis background completado exitosamente
-2026-11-07 23:37:05,281 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:05] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 23:37:06,516 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET / HTTP/1.1" 200 -
-2026-11-07 23:37:06,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-07 23:37:06,606 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-07 23:37:06,618 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
-2026-11-07 23:37:06,663 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/stats HTTP/1.1" 200 -
-2026-11-07 23:37:06,776 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/sessions HTTP/1.1" 200 -
-2026-11-07 23:37:18,569 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:18] "GET /api/seguimiento/casos?estado=todos HTTP/1.1" 200 -
-2026-11-07 23:37:51,642 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:51] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 01:16:33,709 - root - INFO - Datos cargados: 13 noticias desde análisis
+2026-11-08 01:16:33,716 - root - INFO - Análisis background completado exitosamente
+2026-11-08 01:16:37,046 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:37] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 01:16:38,288 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET / HTTP/1.1" 200 -
+2026-11-08 01:16:38,369 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-08 01:16:38,418 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-08 01:16:38,425 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 01:16:38,476 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 01:16:38,545 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 01:16:40,303 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:40] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&clasificacion=Alta&sesion_id=all HTTP/1.1" 200 -
+2026-11-08 01:17:01,415 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:17:01] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
+
+
+Admin_NNA_2026!

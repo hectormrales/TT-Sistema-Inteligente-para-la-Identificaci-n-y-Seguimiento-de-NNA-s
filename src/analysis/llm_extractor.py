@@ -422,7 +422,11 @@ _CLEAR_STATS_OR_LAW_TITLE = re.compile(
     r"congreso\s+(?:aprueba|discute|propone)|senado\s+aprueba|"
     r"cifras?\s+del?\s+(?:sesnsp|inegi|snsp)|estad[ií]sticas?\s+de\s+feminicidio|"
     r"informe\s+(?:anual|trimestral|nacional)|encuesta\s+nacional|"
-    r"convocan\s+a\s+marcha|marcha\s+del\s+8m"
+    r"convocan\s+a\s+marcha|marcha\s+del\s+8m|"
+    r"qui[eé]n\s+abraza\s+a\s+los\s+hijos|qu[eé]\s+pasa\s+con\s+los\s+hijos|"
+    r"m[aá]s\s+de\s+\d+\s+familias|sin\s+recibir\s+apoyo\s+estatal|"
+    r"no\s+sabe\s+cu[aá]ntas\s+infancias|hu[eé]rfanos\s+invisibles|"
+    r"#teexplico|infancias\s+quedan\s+a\s+la\s+deriva|v[ií]ctimas\s+infantiles\s+del\s+feminicidio"
     r")\b",
     re.IGNORECASE,
 )
@@ -697,7 +701,7 @@ class LLMExtractor:
             available.append({
                 "name": "groq",
                 "api_key": groq_key,
-                "model": os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"),
+                "model": os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b"),
                 "base_url": "https://api.groq.com/openai/v1/chat/completions",
             })
 
@@ -781,7 +785,7 @@ class LLMExtractor:
             f"--- DATOS DE LA NOTICIA ---\n"
             f"URL / Fuente: {source_url or 'No especificada'}\n"
             f"TÍTULO: {title}\n"
-            f"CONTENIDO COMPLETO:\n{(content or '')[:6000]}\n"
+            f"CONTENIDO COMPLETO:\n{(content or '')[:3500]}\n"
         )
 
     def _call_openai_compatible(
@@ -807,6 +811,7 @@ class LLMExtractor:
                 {"role": "user", "content": self._build_user_prompt(title, content, source_url)},
             ],
             "temperature": 0.0,
+            "max_tokens": 1500,
             "response_format": {"type": "json_object"},
         }
 
@@ -818,19 +823,37 @@ class LLMExtractor:
                 json=payload,
                 timeout=30,
             )
-            if resp.status_code == 429:
-                if attempt < max_retries:
-                    backoff = 2.0 * (attempt + 1)
-                    logger.warning(
-                        "[LLMExtractor] 429 Rate limit en proveedor '%s'. Reintentando en %.1fs (intento %d/%d)...",
-                        provider["name"],
-                        backoff,
-                        attempt + 1,
-                        max_retries,
+            if resp.status_code >= 400:
+                if resp.status_code == 429:
+                    if attempt < max_retries:
+                        backoff = 2.5 * (attempt + 1)
+                        logger.warning(
+                            "[LLMExtractor] 429 Rate limit en proveedor '%s'. Reintentando en %.1fs (intento %d/%d)...",
+                            provider["name"],
+                            backoff,
+                            attempt + 1,
+                            max_retries,
+                        )
+                        time.sleep(backoff)
+                        continue
+                    raise RuntimeError(f"Rate limit (429) persistente en proveedor {provider['name']}")
+                elif resp.status_code == 400 and "json_validate_failed" in resp.text:
+                    logger.warning("[LLMExtractor] 400 json_validate_failed en %s. Reintentando sin response_format estricto...", provider["name"])
+                    payload_no_rf = dict(payload)
+                    payload_no_rf.pop("response_format", None)
+                    resp = requests.post(
+                        provider["base_url"],
+                        headers=headers,
+                        json=payload_no_rf,
+                        timeout=30,
                     )
-                    time.sleep(backoff)
-                    continue
-                raise RuntimeError(f"Rate limit (429) persistente en proveedor {provider['name']}")
+                else:
+                    logger.warning(
+                        "[LLMExtractor] Error %d en proveedor '%s': %s",
+                        resp.status_code,
+                        provider["name"],
+                        resp.text[:300],
+                    )
             resp.raise_for_status()
             data = resp.json()
             raw_text = data["choices"][0]["message"]["content"]
@@ -941,12 +964,17 @@ class LLMExtractor:
         # Verificar filtro geográfico México
         is_mexico = is_mexico_context(title or "", content or "", source_url)
 
-        # Candado 1: ¿Es caso concreto y NO estadística/ley/opinión?
+        # Candado 1: ¿Es caso concreto y NO estadística/ley/opinión/reportaje macro?
         is_stats_or_law = bool(
             re.search(
-                r"\b(?:cifras?\s+de\s+feminicidio|estad[ií]sticas?\s+de|informe\s+anual|"
+                r"\b(?:"
+                r"cifras?\s+de\s+feminicidio|estad[ií]sticas?\s+de|informe\s+anual|reporte\s+anual|"
                 r"iniciativa\s+de\s+ley|ley\s+monz[oó]n|congreso\s+aprueba|senado\s+aprueba|"
-                r"entrega\s+de\s+becas|columna\s+de\s+opini[oó]n|editorial)\b",
+                r"protocolo\s+nacional|pol[ií]tica\s+p[uú]blica|legislaci[oó]n\s+alguna|"
+                r"en\s+m[eé]xico(?:,)?\s+hay\s+\d+|un\s+sinf[ií]n\s+de\s+tragedias|"
+                r"\b\d{2,4}\s+(?:niñas|niños|menores|hu[eé]rfanos?)\b|"
+                r"entrega\s+de\s+becas|columna\s+de\s+opini[oó]n|editorial|reportaje\s+especial"
+                r")\b",
                 full_text,
                 re.I,
             )
@@ -1012,6 +1040,53 @@ class LLMExtractor:
             else:
                 motivo = "No menciona hijos menores que hayan quedado en orfandad"
 
+        fallback_ubicacion = "No especificada"
+        fallback_estado = "No especificado"
+        fallback_municipio = "No especificado"
+        fallback_victimas = "No especificada"
+        fallback_ninos = 0
+
+        if all_ok:
+            # Extraer heurísticamente ubicación mexicana
+            mx_matches = _MEXICO_PATTERN.findall(full_text)
+            if mx_matches:
+                loc_terms = [
+                    m for m in mx_matches
+                    if len(m) >= 4 and m.lower() not in (
+                        "mexico", "mexicana", "mexicanas", "mexicano", "mexicanos",
+                        "dif", "fgjem", "inegi", "fgr", "semefo"
+                    )
+                ]
+                if loc_terms:
+                    loc_unique = list(dict.fromkeys(loc_terms))[:2]
+                    fallback_ubicacion = ", ".join(t.capitalize() for t in loc_unique)
+                    fallback_estado = loc_unique[-1].capitalize()
+                    fallback_municipio = loc_unique[0].capitalize()
+
+            # Estimar número de menores
+            num_match = re.search(
+                r"\b(\d+)\s+(?:hijos?|hijas?|menores?|ni[ñn][oa]s?|peque[ñn][oa]s?)\b",
+                cita_evidencia,
+                re.I,
+            )
+            if num_match:
+                fallback_ninos = int(num_match.group(1))
+            elif re.search(r"\b(?:dos|dos\s+hijos)\b", cita_evidencia, re.I):
+                fallback_ninos = 2
+            elif re.search(r"\b(?:tres|tres\s+hijos)\b", cita_evidencia, re.I):
+                fallback_ninos = 3
+            elif re.search(r"\b(?:un|una|su\s+hijo|su\s+hija|su\s+beb[eé])\b", cita_evidencia, re.I):
+                fallback_ninos = 1
+
+            # Víctima
+            vic_match = re.search(
+                r"\b(?:asesinan\s+a\s+(?:una\s+)?(?:mujer|maestra|joven|madre)|mujer\s+de\s+\d+\s+años)\b[^,\.;]{0,35}",
+                title or "",
+                re.I,
+            )
+            if vic_match:
+                fallback_victimas = vic_match.group(0).strip().capitalize()
+
         return CasoExtraidoSchema(
             candado_1_es_caso_concreto=c1_caso_concreto,
             candado_2_ocurrio_en_mexico=is_mexico,
@@ -1022,6 +1097,11 @@ class LLMExtractor:
             motivo_descarte=motivo,
             clasificacion="Alta" if all_ok else "No relevante",
             confianza=0.88 if all_ok else 0.05,
+            estado=fallback_estado,
+            municipio=fallback_municipio,
+            ubicacion=fallback_ubicacion,
+            victimas=fallback_victimas,
+            ninos_afectados=fallback_ninos,
             resumen=(title or "")[:200],
         )
 
@@ -1116,7 +1196,7 @@ class LLMExtractor:
         titles: list[str],
         contents: list[str],
         urls: Optional[list[str]] = None,
-        delay_between_llm_calls: float = 1.2,
+        delay_between_llm_calls: float = 2.5,
         max_llm_calls: int = 25,
     ) -> list[dict[str, Any]]:
         """
@@ -1142,7 +1222,8 @@ class LLMExtractor:
             )
             results.append(res)
 
-            if res.get("modo", "").startswith("llm_"):
+            # Pausar si la noticia requirió llamada a la API LLM (para recargar el token bucket de Groq)
+            if res.get("modo") != "admission_gate_rejected" and not force_fallback:
                 llm_calls += 1
                 if delay_between_llm_calls > 0 and idx < n - 1:
                     time.sleep(delay_between_llm_calls)
