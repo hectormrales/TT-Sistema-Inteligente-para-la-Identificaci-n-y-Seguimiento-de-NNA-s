@@ -65,6 +65,9 @@ def init_fts_schema():
       - Eliminación de acentos (víctima → victima para búsqueda)
       - Stop words en español
     """
+    if db.engine.dialect.name != "postgresql":
+        return
+
     statements = [
         # 1. Extensión unaccent
         "CREATE EXTENSION IF NOT EXISTS unaccent;",
@@ -251,11 +254,26 @@ class NoticiasRepository:
                 if not existing:
                     noticia = Noticia(**record)
                     db.session.add(noticia)
+                    db.session.flush()
+                    if (
+                        noticia.clasificacion_final in ("Alta", "Media")
+                        or noticia.investigacion_json
+                    ):
+                        try:
+                            NoticiasRepository.vincular_o_crear_expediente(noticia)
+                        except Exception as exp_err:
+                            logger.debug(f"No se pudo vincular expediente en crear_batch: {exp_err}")
                     count += 1
                 else:
                     # Actualizar campos enriquecidos si la noticia ya existía (ej. re-análisis LLM)
-                    if record.get("investigacion_json") and not existing.investigacion_json:
-                        existing.investigacion_json = record["investigacion_json"]
+                    if record.get("investigacion_json"):
+                        if not existing.investigacion_json:
+                            existing.investigacion_json = record["investigacion_json"]
+                        else:
+                            from src.database.models_noticias import consolidar_datos_expediente
+                            existing.investigacion_json = consolidar_datos_expediente(
+                                existing.investigacion_json, record["investigacion_json"]
+                            )
                     if record.get("clasificacion_final"):
                         existing.clasificacion_final = record["clasificacion_final"]
                         existing.clasificacion = record["clasificacion_final"]
@@ -270,6 +288,15 @@ class NoticiasRepository:
                     if record.get("topic_id") is not None:
                         existing.topic_id = record["topic_id"]
                         existing.topic_description = record.get("topic_description")
+
+                    if (
+                        existing.clasificacion_final in ("Alta", "Media")
+                        or existing.investigacion_json
+                    ):
+                        try:
+                            NoticiasRepository.vincular_o_crear_expediente(existing)
+                        except Exception as exp_err:
+                            logger.debug(f"No se pudo actualizar expediente en crear_batch: {exp_err}")
 
             try:
                 db.session.commit()
@@ -311,6 +338,11 @@ class NoticiasRepository:
         Returns:
             dict con resultados, total, y tiempo de ejecución.
         """
+        if db.engine.dialect.name != "postgresql":
+            return NoticiasRepository._buscar_fallback(
+                query, limit, offset, clasificacion, solo_nna, sesion_id
+            )
+
         start_time = time.time()
 
         # Construir tsquery: separar palabras con operador OR (|)
@@ -540,6 +572,19 @@ class NoticiasRepository:
             func.avg(Noticia.max_similarity)
         ).scalar() or 0
 
+        # Estadísticas de expedientes consolidados
+        total_expedientes = 0
+        expedientes_seguimiento = 0
+        try:
+            from src.database.models_noticias import ExpedienteCaso
+            q_exp = ExpedienteCaso.query
+            if sesion_id:
+                q_exp = q_exp.filter(ExpedienteCaso.sesion_id == sesion_id)
+            total_expedientes = q_exp.count()
+            expedientes_seguimiento = q_exp.filter(ExpedienteCaso.en_seguimiento.is_(True)).count()
+        except Exception:
+            pass
+
         elapsed_ms = (time.time() - start_time) * 1000
 
         return {
@@ -550,6 +595,8 @@ class NoticiasRepository:
             "baja_relevancia": baja,
             "clusters": clusters,
             "topics": topics,
+            "total_expedientes": total_expedientes,
+            "expedientes_en_seguimiento": expedientes_seguimiento,
             "similitud_promedio": round(float(avg_sim), 3),
             "ultima_actualizacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "tiempo_ms": round(elapsed_ms, 2),
@@ -620,6 +667,37 @@ class NoticiasRepository:
                 "menores_identificados": row.get("menores_identificados", "No"),
                 "scrape_method": row.get("scrape_method", "csv_import"),
             }
+            if record["clasificacion_final"] in ("Alta", "Media"):
+                try:
+                    import json as _json
+                    raw_inv = row.get("investigacion_json")
+                    if pd.notna(raw_inv) and raw_inv:
+                        record["investigacion_json"] = (
+                            _json.loads(raw_inv) if isinstance(raw_inv, str) else raw_inv
+                        )
+                    else:
+                        from src.analysis.llm_extractor import LLMExtractor, aplicar_candados_estrictos
+                        schema = LLMExtractor._deterministic_fallback_extract(
+                            titulo, contenido, str(row.get("enlace") or "")
+                        )
+                        audited = aplicar_candados_estrictos(
+                            schema,
+                            titulo,
+                            contenido,
+                        )
+                        if audited["clasificacion_final"] == "No relevante":
+                            record["clasificacion"] = "No relevante"
+                            record["clasificacion_final"] = "No relevante"
+                            record["menores_identificados"] = "No"
+                            record["relevancia_final"] = 0.05
+                            record["score_compuesto"] = 0.05
+                        else:
+                            record["clasificacion"] = audited["clasificacion_final"]
+                            record["clasificacion_final"] = audited["clasificacion_final"]
+                            record["menores_identificados"] = "Si"
+                            record["investigacion_json"] = audited.get("investigacion_json")
+                except Exception as inv_err:
+                    logger.debug(f"Error enriqueciendo fila CSV: {inv_err}")
             records.append(record)
 
         return NoticiasRepository.crear_batch(records)
@@ -639,10 +717,11 @@ class NoticiasRepository:
 
     @staticmethod
     def clear_history() -> bool:
-        """Elimina todos los registros de noticias de la base de datos."""
-        from src.database.models_noticias import Noticia
+        """Elimina todos los registros de noticias y expedientes de la base de datos."""
+        from src.database.models_noticias import Noticia, ExpedienteCaso
         try:
             Noticia.query.delete()
+            ExpedienteCaso.query.delete()
             db.session.commit()
             return True
         except Exception as e:
@@ -656,15 +735,188 @@ class NoticiasRepository:
         return Noticia.query.get(noticia_id)
 
     @staticmethod
+    def vincular_o_crear_expediente(
+        noticia: "Noticia",
+        investigacion: dict | None = None,
+        marcar_seguimiento: bool = False,
+    ) -> Optional["ExpedienteCaso"]:
+        """
+        Agrupa automáticamente una `Noticia` dentro de su `ExpedienteCaso` correspondiente.
+
+        Si ya existe un expediente para ese mismo feminicidio (misma víctima + estado,
+        o mismo municipio + mes), fusiona la información enriquecida y suma la fuente;
+        si no existe, crea un nuevo `ExpedienteCaso` con folio único.
+        """
+        import copy
+        import hashlib
+        from sqlalchemy.orm.attributes import flag_modified
+        from src.database.models_noticias import (
+            ExpedienteCaso,
+            generar_clave_expediente,
+            consolidar_datos_expediente,
+            _slugify_key,
+        )
+
+        raw_inv = investigacion if isinstance(investigacion, dict) else noticia.investigacion_json
+        inv = copy.deepcopy(raw_inv) if isinstance(raw_inv, dict) else {}
+        if marcar_seguimiento:
+            inv["en_seguimiento"] = True
+        if "nna_afectados" in inv and "ninos_afectados" not in inv:
+            inv["ninos_afectados"] = inv["nna_afectados"]
+        if "edades_nna" in inv and "edades" not in inv:
+            inv["edades"] = inv["edades_nna"]
+        if not inv:
+            inv = {
+                "ubicacion": "No especificada",
+                "estado": "No especificado",
+                "municipio": "No especificado",
+                "victimas": "No especificada",
+                "ninos_afectados": "No especificado",
+                "edades": "No especificadas",
+                "situacion_actual": "No especificada",
+                "medios_contacto": "DIF / Fiscalía Estatal",
+                "cita_textual_evidencia": "",
+                "resumen": (noticia.contenido or noticia.titulo or "")[:300],
+                "fuentes": [noticia.enlace] if noticia.enlace else [],
+            }
+
+        if noticia.enlace:
+            fuentes_list = list(inv.get("fuentes") or [])
+            if noticia.enlace not in fuentes_list:
+                fuentes_list.insert(0, noticia.enlace)
+            inv["fuentes"] = fuentes_list
+
+        clave_dedup = generar_clave_expediente(inv, noticia.titulo or "", noticia.fecha)
+        expediente = ExpedienteCaso.query.filter_by(clave_dedup=clave_dedup).first()
+
+        if expediente is None:
+            year_str = (
+                noticia.fecha.strftime("%Y")
+                if noticia.fecha
+                else datetime.now(timezone.utc).strftime("%Y")
+            )
+            estado_tag = (_slugify_key(str(inv.get("estado") or inv.get("ubicacion") or "mx"))[:8] or "mx").upper()
+            short_hash = hashlib.md5(clave_dedup.encode("utf-8")).hexdigest()[:6].upper()
+            folio = f"EXP-{year_str}-{estado_tag}-{short_hash}"
+            if ExpedienteCaso.query.filter_by(folio=folio).first():
+                folio = f"EXP-{year_str}-{estado_tag}-{hashlib.md5(clave_dedup.encode('utf-8')).hexdigest()[:8].upper()}"
+
+            en_seg = bool(inv.get("en_seguimiento", False))
+            est_seg = str(inv.get("estado_seguimiento") or ("en_verificacion" if en_seg else "detectado"))
+
+            expediente = ExpedienteCaso(
+                folio=folio,
+                clave_dedup=clave_dedup,
+                titulo_caso=(noticia.titulo or "Caso detectado")[:350],
+                ubicacion=str(inv.get("ubicacion") or "No especificada")[:200],
+                estado=str(inv.get("estado") or "No especificado")[:100],
+                municipio=str(inv.get("municipio") or "No especificado")[:100],
+                victimas=str(inv.get("victimas") or "No especificada")[:300],
+                ninos_afectados=str(inv.get("ninos_afectados") or "No especificado")[:50],
+                edades=str(inv.get("edades") or "No especificadas")[:150],
+                situacion_actual=str(inv.get("situacion_actual") or "No especificada")[:300],
+                medios_contacto=str(inv.get("medios_contacto") or "DIF / Fiscalía Estatal")[:500],
+                cita_textual_evidencia=str(inv.get("cita_textual_evidencia") or ""),
+                resumen=str(inv.get("resumen") or (noticia.titulo or "")),
+                estado_seguimiento=est_seg,
+                en_seguimiento=en_seg,
+                notas_seguimiento=list(inv.get("notas_seguimiento") or []),
+                num_noticias=1,
+                relevancia_maxima=float(noticia.relevancia_final or noticia.score_compuesto or 0.0),
+                clasificacion=noticia.clasificacion_final or noticia.clasificacion or "Alta",
+                fuentes_json=list(inv.get("fuentes") or []),
+                sesion_id=noticia.sesion_id,
+            )
+            db.session.add(expediente)
+            db.session.flush()
+        else:
+            # Fusionar datos del expediente existente con los de la nueva noticia
+            actual_dict = {
+                "ubicacion": expediente.ubicacion,
+                "estado": expediente.estado,
+                "municipio": expediente.municipio,
+                "victimas": expediente.victimas,
+                "ninos_afectados": expediente.ninos_afectados,
+                "edades": expediente.edades,
+                "situacion_actual": expediente.situacion_actual,
+                "medios_contacto": expediente.medios_contacto,
+                "cita_textual_evidencia": expediente.cita_textual_evidencia,
+                "resumen": expediente.resumen,
+                "fuentes": list(expediente.fuentes_json or []),
+            }
+            merged = consolidar_datos_expediente(actual_dict, inv)
+            expediente.ubicacion = str(merged.get("ubicacion") or expediente.ubicacion)[:200]
+            expediente.estado = str(merged.get("estado") or expediente.estado)[:100]
+            expediente.municipio = str(merged.get("municipio") or expediente.municipio)[:100]
+            expediente.victimas = str(merged.get("victimas") or expediente.victimas)[:300]
+            expediente.ninos_afectados = str(merged.get("ninos_afectados") or expediente.ninos_afectados)[:50]
+            expediente.edades = str(merged.get("edades") or expediente.edades)[:150]
+            expediente.situacion_actual = str(merged.get("situacion_actual") or expediente.situacion_actual)[:300]
+            expediente.medios_contacto = str(merged.get("medios_contacto") or expediente.medios_contacto)[:500]
+            expediente.cita_textual_evidencia = merged.get("cita_textual_evidencia") or expediente.cita_textual_evidencia
+            expediente.resumen = merged.get("resumen") or expediente.resumen
+            expediente.fuentes_json = list(merged.get("fuentes") or [])
+            flag_modified(expediente, "fuentes_json")
+
+            if inv.get("en_seguimiento"):
+                expediente.en_seguimiento = True
+                if expediente.estado_seguimiento == "detectado":
+                    expediente.estado_seguimiento = "en_verificacion"
+
+            rel_actual = float(noticia.relevancia_final or noticia.score_compuesto or 0.0)
+            if rel_actual > float(expediente.relevancia_maxima or 0.0):
+                expediente.relevancia_maxima = rel_actual
+            if noticia.clasificacion_final == "Alta":
+                expediente.clasificacion = "Alta"
+
+        # Vincular noticia y sincronizar metadatos del expediente en investigacion_json
+        noticia.expediente_id = expediente.id
+        inv.update({
+            "expediente_id": expediente.id,
+            "folio_expediente": expediente.folio,
+            "ubicacion": expediente.ubicacion,
+            "estado": expediente.estado,
+            "municipio": expediente.municipio,
+            "victimas": expediente.victimas,
+            "ninos_afectados": expediente.ninos_afectados,
+            "edades": expediente.edades,
+            "situacion_actual": expediente.situacion_actual,
+            "medios_contacto": expediente.medios_contacto,
+            "cita_textual_evidencia": expediente.cita_textual_evidencia,
+            "resumen": expediente.resumen,
+            "fuentes": list(expediente.fuentes_json or []),
+            "en_seguimiento": expediente.en_seguimiento,
+            "estado_seguimiento": expediente.estado_seguimiento,
+            "notas_seguimiento": list(expediente.notas_seguimiento or []),
+        })
+        noticia.investigacion_json = inv
+        flag_modified(noticia, "investigacion_json")
+
+        # Actualizar conteo de noticias vinculadas al expediente
+        try:
+            from src.database.models_noticias import Noticia as _NoticiaModel
+            count_linked = _NoticiaModel.query.filter_by(expediente_id=expediente.id).count()
+            expediente.num_noticias = max(1, count_linked, len(expediente.fuentes_json or []))
+        except Exception:
+            expediente.num_noticias = max(1, len(expediente.fuentes_json or []))
+
+        return expediente
+
+    @staticmethod
     def save_investigation(noticia_id: int, result: dict) -> bool:
         from src.database.models_noticias import Noticia
         try:
             noticia = Noticia.query.get(noticia_id)
             if noticia:
-                # Mantener el flag de seguimiento si ya existía
                 if noticia.investigacion_json and noticia.investigacion_json.get('en_seguimiento'):
                     result['en_seguimiento'] = True
+                if noticia.investigacion_json and noticia.investigacion_json.get('estado_seguimiento'):
+                    result.setdefault('estado_seguimiento', noticia.investigacion_json['estado_seguimiento'])
                 noticia.investigacion_json = result
+                try:
+                    NoticiasRepository.vincular_o_crear_expediente(noticia)
+                except Exception as exp_err:
+                    logger.debug(f"No se pudo vincular expediente en save_investigation: {exp_err}")
                 db.session.commit()
                 return True
             return False
@@ -674,22 +926,199 @@ class NoticiasRepository:
             return False
 
     @staticmethod
-    def add_to_seguimiento(noticia_id: int) -> bool:
-        from src.database.models_noticias import Noticia
+    def add_to_seguimiento(
+        noticia_id: int,
+        estado_seguimiento: str = "en_verificacion",
+        nota: str | None = None,
+        usuario: str = "Operador ONG",
+    ) -> bool:
+        """
+        Activa el seguimiento para una noticia y su `ExpedienteCaso` asociado.
+        Funciona incluso si el usuario no había presionado antes "Investigar",
+        extrayendo automáticamente la ficha con `LLMExtractor` si `investigacion_json` es nulo.
+        """
+        from src.database.models_noticias import Noticia, ESTADOS_SEGUIMIENTO_VALIDOS
         from sqlalchemy.orm.attributes import flag_modified
+        import copy
+
         try:
             noticia = Noticia.query.get(noticia_id)
-            if noticia and noticia.investigacion_json:
-                # Modificar el JSON
-                import copy
-                new_json = copy.deepcopy(noticia.investigacion_json)
-                new_json['en_seguimiento'] = True
-                noticia.investigacion_json = new_json
-                flag_modified(noticia, "investigacion_json")
-                db.session.commit()
-                return True
-            return False
+            if not noticia:
+                return False
+
+            if not noticia.investigacion_json:
+                try:
+                    from src.analysis.llm_extractor import LLMExtractor
+                    extractor = LLMExtractor()
+                    analyzed = extractor.analyze_article(
+                        title=noticia.titulo or "",
+                        content=noticia.contenido or "",
+                        source_url=noticia.enlace or "",
+                    )
+                    noticia.investigacion_json = analyzed.get("investigacion_json") or {}
+                except Exception:
+                    noticia.investigacion_json = {
+                        "ubicacion": "No especificada",
+                        "victimas": "No especificada",
+                        "ninos_afectados": "No especificado",
+                        "edades": "No especificadas",
+                        "situacion_actual": "No especificada",
+                        "medios_contacto": "DIF / Fiscalía Estatal",
+                        "resumen": noticia.titulo or "",
+                        "fuentes": [noticia.enlace] if noticia.enlace else [],
+                    }
+
+            new_json = copy.deepcopy(noticia.investigacion_json)
+            new_json["en_seguimiento"] = True
+            if estado_seguimiento in ESTADOS_SEGUIMIENTO_VALIDOS:
+                new_json["estado_seguimiento"] = estado_seguimiento
+            else:
+                new_json.setdefault("estado_seguimiento", "en_verificacion")
+
+            if nota:
+                notas = list(new_json.get("notas_seguimiento") or [])
+                notas.append({
+                    "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                    "usuario": usuario,
+                    "estado": new_json["estado_seguimiento"],
+                    "nota": nota.strip(),
+                })
+                new_json["notas_seguimiento"] = notas
+
+            noticia.investigacion_json = new_json
+            flag_modified(noticia, "investigacion_json")
+
+            try:
+                expediente = NoticiasRepository.vincular_o_crear_expediente(noticia)
+                if expediente is not None:
+                    expediente.en_seguimiento = True
+                    expediente.estado_seguimiento = new_json["estado_seguimiento"]
+                    if nota:
+                        expediente.notas_seguimiento = list(new_json.get("notas_seguimiento") or [])
+                        flag_modified(expediente, "notas_seguimiento")
+                    # Sincronizar todas las noticias hermanas del mismo expediente
+                    for n_hermana in Noticia.query.filter_by(expediente_id=expediente.id).all():
+                        if n_hermana.id == noticia.id:
+                            continue
+                        h_json = copy.deepcopy(n_hermana.investigacion_json or new_json)
+                        h_json["en_seguimiento"] = True
+                        h_json["estado_seguimiento"] = expediente.estado_seguimiento
+                        h_json["notas_seguimiento"] = list(expediente.notas_seguimiento or [])
+                        n_hermana.investigacion_json = h_json
+                        flag_modified(n_hermana, "investigacion_json")
+            except Exception as exp_err:
+                logger.debug(f"Seguimiento guardado en noticia sin tabla expedientes: {exp_err}")
+
+            db.session.commit()
+            return True
         except Exception as e:
             db.session.rollback()
             logger.error(f"Error en add_to_seguimiento: {e}")
             return False
+
+    @staticmethod
+    def get_expediente(expediente_id: int) -> Optional["ExpedienteCaso"]:
+        from src.database.models_noticias import ExpedienteCaso
+        return ExpedienteCaso.query.get(expediente_id)
+
+    @staticmethod
+    def listar_expedientes(
+        solo_en_seguimiento: bool = False,
+        estado_seguimiento: str | None = None,
+        estado_republica: str | None = None,
+        sesion_id: int | None = None,
+    ) -> list[dict]:
+        """Lista los expedientes consolidados de casos ordenados por relevancia y actualización."""
+        from src.database.models_noticias import ExpedienteCaso
+
+        q = ExpedienteCaso.query
+        if sesion_id:
+            q = q.filter(ExpedienteCaso.sesion_id == sesion_id)
+        if solo_en_seguimiento:
+            q = q.filter(ExpedienteCaso.en_seguimiento.is_(True))
+        if estado_seguimiento:
+            q = q.filter(ExpedienteCaso.estado_seguimiento == estado_seguimiento)
+        if estado_republica:
+            q = q.filter(ExpedienteCaso.estado.ilike(f"%{estado_republica}%"))
+
+        expedientes = q.order_by(
+            desc(ExpedienteCaso.en_seguimiento),
+            desc(ExpedienteCaso.relevancia_maxima),
+            desc(ExpedienteCaso.updated_at),
+        ).all()
+        return [e.to_dict() for e in expedientes]
+
+    @staticmethod
+    def actualizar_seguimiento_expediente(
+        expediente_id: int,
+        estado_seguimiento: str | None = None,
+        nota: str | None = None,
+        usuario: str = "Operador ONG",
+        autor: str | None = None,
+        en_seguimiento: bool | None = None,
+    ) -> Optional[dict]:
+        """
+        Actualiza el estado del flujo de trabajo de un `ExpedienteCaso`
+        (`detectado` → `en_verificacion` → `contacto_dif_fiscalia` → `en_acompanamiento` → `archivado`),
+        registra una nota en la bitácora y sincroniza las noticias asociadas.
+        """
+        import copy
+        from sqlalchemy.orm.attributes import flag_modified
+        from src.database.models_noticias import (
+            ExpedienteCaso,
+            Noticia,
+            ESTADOS_SEGUIMIENTO_VALIDOS,
+        )
+
+        autor_final = autor or usuario or "Operador ONG"
+
+        try:
+            expediente = ExpedienteCaso.query.get(expediente_id)
+            if not expediente:
+                return None
+
+            target_estado = estado_seguimiento or expediente.estado_seguimiento or "detectado"
+            if target_estado not in ESTADOS_SEGUIMIENTO_VALIDOS:
+                raise ValueError(
+                    f"Estado '{target_estado}' inválido. Opciones: {ESTADOS_SEGUIMIENTO_VALIDOS}"
+                )
+
+            expediente.estado_seguimiento = target_estado
+            if en_seguimiento is not None:
+                expediente.en_seguimiento = en_seguimiento
+            else:
+                expediente.en_seguimiento = target_estado != "detectado"
+
+            notas = list(expediente.notas_seguimiento or [])
+            if nota and nota.strip():
+                texto_limpio = nota.strip()
+                notas.append({
+                    "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                    "usuario": autor_final,
+                    "autor": autor_final,
+                    "estado": target_estado,
+                    "nota": texto_limpio,
+                    "texto": texto_limpio,
+                })
+                expediente.notas_seguimiento = notas
+                flag_modified(expediente, "notas_seguimiento")
+
+            # Sincronizar noticias vinculadas
+            for n in Noticia.query.filter_by(expediente_id=expediente.id).all():
+                inv = copy.deepcopy(n.investigacion_json or {})
+                inv["en_seguimiento"] = expediente.en_seguimiento
+                inv["estado_seguimiento"] = expediente.estado_seguimiento
+                inv["notas_seguimiento"] = notas
+                inv["folio_expediente"] = expediente.folio
+                inv["expediente_id"] = expediente.id
+                n.investigacion_json = inv
+                flag_modified(n, "investigacion_json")
+
+            db.session.commit()
+            return expediente.to_dict()
+        except ValueError:
+            raise
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error actualizando seguimiento de expediente {expediente_id}: {e}")
+            return None

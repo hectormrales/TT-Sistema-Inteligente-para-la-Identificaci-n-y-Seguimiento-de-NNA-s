@@ -4,49 +4,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión — Sistema NNA</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Iniciar Sesión — Futuro Con Derechos | Plataforma NNA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_sistema.png') }}" type="image/x-icon">
     <style>
         body {
-            background: linear-gradient(135deg, #ec6060 0%, #476edb 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top left, #31207a 0%, #170f3c 65%, #0f0a28 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         .login-card {
-            background: white;
+            background: #ffffff;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
             overflow: hidden;
-            max-width: 420px;
+            max-width: 430px;
             width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .login-header {
-            background: linear-gradient(135deg, #ec6060 0%, #476edb 100%);
+            background: linear-gradient(135deg, #170f3c 0%, #261863 60%, #3b288f 100%);
             color: white;
-            padding: 30px;
+            padding: 32px 28px 26px;
             text-align: center;
+            border-bottom: 3px solid #949157;
         }
 
         .login-header .logo-wrapper {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 15px;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 14px;
+            background: #ffffff;
+            border-radius: 50%;
+            border: 3px solid #949157;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 5px;
+            padding: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
         .login-header .logo-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .login-header h4 {
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+        }
+
+        .login-header p {
+            font-size: 12.5px;
+            color: rgba(255, 255, 255, 0.78);
+            margin-bottom: 0;
         }
 
         .login-body {
@@ -56,35 +79,39 @@
         .form-control {
             border-radius: 10px;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            transition: border-color 0.3s;
+            border: 1.5px solid #cbd5e1;
+            font-size: 14px;
+            transition: all 0.2s;
         }
 
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #3f2b96;
+            box-shadow: 0 0 0 3px rgba(63, 43, 150, 0.15);
         }
 
         .btn-login {
-            background: linear-gradient(135deg, #ec6060 0%, #476edb 100%);
+            background: linear-gradient(135deg, #261863 0%, #3f2b96 100%);
             border: none;
             border-radius: 10px;
             padding: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.02em;
             width: 100%;
+            color: white;
+            transition: all 0.2s;
         }
 
         .btn-login:hover {
-            opacity: 0.9;
+            filter: brightness(1.1);
             transform: translateY(-1px);
+            color: white;
         }
 
         .input-group-text {
-            background: transparent;
-            border-right: none;
+            background: #f8fafc;
             border-radius: 10px 0 0 10px;
-            border: 2px solid #e0e0e0;
+            border: 1.5px solid #cbd5e1;
             border-right: none;
         }
 
@@ -95,7 +122,7 @@
 
         .alert {
             border-radius: 10px;
-            font-size: 0.9rem;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -104,13 +131,12 @@
     <div class="login-card">
         <div class="login-header">
             <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='img/logo_sistema.png') }}" alt="Logo">
+                <img src="{{ url_for('static', filename='img/logo_sistema.png') }}" alt="Futuro Con Derechos">
             </div>
-            <h4 class="mb-1">SISTEMA INTELIGENTE NNA</h4>
-            <p class="mb-0 opacity-75">Identificación y seguimiento</p>
+            <h4>FUTURO CON DERECHOS</h4>
+            <p>Sistema Inteligente de Identificación y Seguimiento de NNA</p>
         </div>
         <div class="login-body">
-            <!-- Mensajes flash -->
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             {% for category, message in messages %}
@@ -126,13 +152,12 @@
                 {{ form.hidden_tag() }}
 
                 <div class="mb-3">
-                    <label for="username" class="form-label fw-semibold">
-                        <i class="fas fa-user me-1"></i> Usuario
+                    <label for="username" class="form-label fw-semibold" style="font-size:13px;">
+                        <i class="fas fa-user me-1 text-secondary"></i> Usuario
                     </label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
-                        {{ form.username(class="form-control", placeholder="Tu nombre de usuario",
-                        autocomplete="username") }}
+                        {{ form.username(class="form-control", placeholder="Ingresa tu usuario", autocomplete="username") }}
                     </div>
                     {% if form.username.errors %}
                     <div class="text-danger small mt-1">
@@ -142,13 +167,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label fw-semibold">
-                        <i class="fas fa-lock me-1"></i> Contraseña
+                    <label for="password" class="form-label fw-semibold" style="font-size:13px;">
+                        <i class="fas fa-lock me-1 text-secondary"></i> Contraseña
                     </label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
-                        {{ form.password(class="form-control", placeholder="Tu contraseña",
-                        autocomplete="current-password") }}
+                        {{ form.password(class="form-control", placeholder="Ingresa tu contraseña", autocomplete="current-password") }}
                     </div>
                     {% if form.password.errors %}
                     <div class="text-danger small mt-1">
@@ -157,20 +181,19 @@
                     {% endif %}
                 </div>
 
-                <div class="mb-3 form-check">
+                <div class="mb-4 form-check">
                     {{ form.remember_me(class="form-check-input") }}
-                    <label class="form-check-label" for="remember_me">Recordarme</label>
+                    <label class="form-check-label" for="remember_me" style="font-size:13px;">Mantener sesión iniciada</label>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-login">
-                    <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i> Acceder a la Plataforma
                 </button>
             </form>
-
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

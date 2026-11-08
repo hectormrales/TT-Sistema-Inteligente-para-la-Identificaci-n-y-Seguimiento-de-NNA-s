@@ -24,12 +24,15 @@ def app():
     import os
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    with patch("app.extensions.db"):
+    from config import Config
+    with patch.object(Config, "SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:"), \
+         patch.object(Config, "SQLALCHEMY_ENGINE_OPTIONS", {}), \
+         patch("app._init_database"):
         from app import create_app
         application = create_app()
         application.config["TESTING"] = True
+        application.config["LOGIN_DISABLED"] = True
         application.config["WTF_CSRF_ENABLED"] = False  # Deshabilitar CSRF en tests
-        application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         yield application
 
 
@@ -163,3 +166,108 @@ class TestStatsEndpoint:
 
         response = client.get("/api/stats")
         assert response.status_code in (200, 302)  # 302 si requiere login
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# GRUPO 3: Endpoints de Expedientes y Seguimiento (Subfase 3.2)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class TestSeguimientoExpedientesEndpoints:
+    """Pruebas de integración para el flujo de expedientes y bitácora en app/main/routes.py."""
+
+    def _seed_db_with_expediente(self):
+        from app.models import db
+        from src.database.models_noticias import ExpedienteCaso, Noticia
+        from src.database.repository import NoticiasRepository
+
+        db.create_all()
+
+        noticia = Noticia(
+            titulo="Feminicidio de Elena en Cuautitlán deja a dos menores en orfandad",
+            contenido="Elena Gómez fue asesinada en Cuautitlán, Estado de México. Sus dos hijos de 4 y 8 años quedaron bajo resguardo del DIF.",
+            enlace="https://eluniversal.com.mx/edomex/caso-elena",
+            fuente="El Universal",
+            score_feminicidio=0.95,
+            score_nna=0.92,
+            score_compuesto=0.94,
+            relevancia_final=0.94,
+            clasificacion="Alta",
+            clasificacion_final="Alta",
+            menores_identificados="Si",
+            investigacion_json={
+                "ubicacion": "Cuautitlán, Estado de México",
+                "estado": "Estado de México",
+                "municipio": "Cuautitlán",
+                "victimas": "Elena Gómez",
+                "nna_afectados": "2",
+                "edades_nna": "4 y 8 años",
+                "situacion_actual": "Bajo resguardo del DIF municipal",
+                "cita_textual_evidencia": "Sus dos hijos de 4 y 8 años quedaron bajo resguardo del DIF.",
+                "medios_contacto": "DIF Cuautitlán / FGJEM",
+                "resumen": "Caso confirmado de feminicidio con dos menores en orfandad.",
+                "en_seguimiento": True,
+            },
+        )
+        db.session.add(noticia)
+        db.session.flush()
+        exp = NoticiasRepository.vincular_o_crear_expediente(
+            noticia,
+            investigacion=noticia.investigacion_json,
+            marcar_seguimiento=True,
+        )
+        db.session.commit()
+        return exp, noticia
+
+    def test_get_seguimiento_casos_devuelve_expedientes_y_conteos(self, client):
+        exp, _ = self._seed_db_with_expediente()
+
+        resp = client.get("/api/seguimiento/casos")
+        assert resp.status_code == 200
+        data = json.loads(resp.data)
+        assert "casos" in data
+        assert "conteo_estados" in data
+        assert len(data["casos"]) == 1
+        caso = data["casos"][0]
+        assert caso["expediente_id"] == exp.id
+        assert caso["victimas"] == "Elena Gómez"
+        assert "Sus dos hijos de 4 y 8 años" in caso["cita_textual_evidencia"]
+
+    def test_post_update_expediente_status_y_bitacora(self, client):
+        exp, _ = self._seed_db_with_expediente()
+
+        resp = client.post(
+            f"/api/seguimiento/expediente/{exp.id}/status",
+            data=json.dumps({
+                "estado_seguimiento": "contacto_dif_fiscalia",
+                "nota": "Se envió solicitud de información a Procuraduría de Protección de NNA",
+            }),
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+        data = json.loads(resp.data)
+        assert data["status"] == "success"
+        assert data["expediente"]["estado_seguimiento"] == "contacto_dif_fiscalia"
+        notas = data["expediente"]["notas_seguimiento"]
+        assert len(notas) == 1
+        assert "Procuraduría de Protección" in notas[0]["texto"]
+
+    def test_export_seguimiento_csv_incluye_cita_y_estado(self, client):
+        self._seed_db_with_expediente()
+
+        resp = client.get("/api/seguimiento/export/csv")
+        assert resp.status_code == 200
+        csv_text = resp.data.decode("utf-8-sig")
+        assert "Cita Textual de Evidencia" in csv_text
+        assert "Elena Gómez" in csv_text
+        assert "Sus dos hijos de 4 y 8 años quedaron bajo resguardo del DIF." in csv_text
+
+    def test_export_seguimiento_pdf_renderiza_ficha_oficial(self, client):
+        exp, _ = self._seed_db_with_expediente()
+
+        resp = client.get(f"/api/seguimiento/export/pdf/{exp.id}?tipo=expediente")
+        assert resp.status_code == 200
+        html = resp.data.decode("utf-8")
+        assert "Futuro Con Derechos" in html
+        assert "Elena Gómez" in html
+        assert "Sus dos hijos de 4 y 8 años quedaron bajo resguardo del DIF." in html
+

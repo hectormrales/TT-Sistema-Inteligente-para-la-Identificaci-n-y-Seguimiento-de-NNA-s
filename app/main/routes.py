@@ -15,7 +15,9 @@ from flask import Blueprint, render_template, jsonify, request, send_file
 from flask_login import login_required
 
 from src.analysis.analyzer import SimplifiedNewsAnalyzer
+from src.analysis.investigator import DeepInvestigator
 from src.analysis.synonyms import SynonymDictionary
+from src.database.models_noticias import Noticia, ExpedienteCaso
 
 main_bp = Blueprint('main', __name__)
 
@@ -31,15 +33,23 @@ DATA_FILE = os.path.join(DATA_DIR, 'noticias_analyzed_simplified.csv')
 
 
 def _check_postgres() -> bool:
-    """Verifica si hay datos en PostgreSQL para usar FTS."""
+    """Verifica si hay datos en la base de datos relacional para listados/estadísticas."""
     global _use_postgres
     try:
-        from src.database.models_noticias import Noticia
         count = Noticia.query.count()
         _use_postgres = count > 0
         return _use_postgres
     except Exception:
         _use_postgres = False
+        return False
+
+
+def _db_is_ready() -> bool:
+    """Verifica si las tablas relacionales (`noticias` / `expedientes_casos`) están operativas."""
+    try:
+        Noticia.query.limit(1).all()
+        return True
+    except Exception:
         return False
 
 
@@ -99,6 +109,7 @@ def _get_stats() -> dict | None:
 
 def _row_to_dict(idx, row) -> dict:
     """Convierte una fila del DataFrame a diccionario para la API."""
+    import json
     import pandas as pd
     
     def safe_int(val, default=-1):
@@ -110,10 +121,21 @@ def _row_to_dict(idx, row) -> dict:
             return default
             
     contenido = str(row.get('contenido', ''))
+    inv_raw = row.get('investigacion_json', None)
+    inv_dict = None
+    if isinstance(inv_raw, dict):
+        inv_dict = inv_raw
+    elif isinstance(inv_raw, str) and inv_raw.strip().startswith('{'):
+        try:
+            inv_dict = json.loads(inv_raw)
+        except Exception:
+            inv_dict = None
+
+    clasificacion_final = row.get('clasificacion_final', row.get('clasificacion', 'No relevante'))
     return {
         'id': int(idx),
         'titulo': row.get('titulo', ''),
-        'contenido': contenido[:200] + '...' if len(contenido) > 200 else contenido,
+        'contenido': contenido[:280] + '...' if len(contenido) > 280 else contenido,
         'fecha': row.get('fecha', ''),
         'fuente': row.get('fuente', ''),
         'enlace': row.get('enlace', ''),
@@ -125,7 +147,9 @@ def _row_to_dict(idx, row) -> dict:
         'score_nna': float(row.get('score_nna', 0)) if not pd.isna(row.get('score_nna')) else 0.0,
         'score_compuesto': float(row.get('score_compuesto', 0)) if not pd.isna(row.get('score_compuesto')) else 0.0,
         'relevancia_final': float(row.get('relevancia_final', row.get('score_compuesto', 0))) if not pd.isna(row.get('relevancia_final')) else 0.0,
-        'clasificacion': row.get('clasificacion_final', row.get('clasificacion', 'No relevante')),
+        'clasificacion': clasificacion_final,
+        'clasificacion_final': clasificacion_final,
+        'investigacion_json': inv_dict,
     }
 
 
@@ -179,6 +203,12 @@ def api_stats():
                     sesion_id = None
                 
             stats = NoticiasRepository.estadisticas(sesion_id=sesion_id)
+            try:
+                stats['total_expedientes'] = ExpedienteCaso.query.count()
+                stats['expedientes_en_seguimiento'] = ExpedienteCaso.query.filter_by(en_seguimiento=True).count()
+            except Exception:
+                stats['total_expedientes'] = 0
+                stats['expedientes_en_seguimiento'] = 0
             stats['data_source'] = 'postgresql'
             stats['current_sesion_id'] = sesion_id or 'all'
             return jsonify(stats)
@@ -534,10 +564,8 @@ def api_charts_temporal():
     """Datos para gráfico temporal filtrado (Alta vs Media)."""
     if _check_postgres():
         try:
-            from src.database.models_noticias import Noticia
-            from sqlalchemy import func
             sesion_id = request.args.get('sesion_id')
-            q = Noticia.query
+            q = Noticia.query.filter(Noticia.fecha.isnot(None))
             if sesion_id and sesion_id != 'all':
                 if sesion_id == 'latest':
                     from app.models import SesionBusqueda
@@ -549,26 +577,24 @@ def api_charts_temporal():
                         q = q.filter(Noticia.sesion_id == int(sesion_id))
                     except ValueError:
                         pass
-            
-            results = (
-                q.with_entities(
-                    func.to_char(Noticia.fecha, 'YYYY-MM').label('mes'),
-                    Noticia.clasificacion,
-                    func.count().label('count'),
-                )
-                .filter(Noticia.fecha.isnot(None))
-                .group_by(func.to_char(Noticia.fecha, 'YYYY-MM'), Noticia.clasificacion)
-                .order_by(func.to_char(Noticia.fecha, 'YYYY-MM'))
-                .all()
-            )
-            
+
+            rows = q.with_entities(
+                Noticia.fecha,
+                Noticia.clasificacion_final,
+                Noticia.clasificacion,
+            ).all()
+
             data = {}
-            for r in results:
-                if r.mes not in data:
-                    data[r.mes] = {'Alta': 0, 'Media': 0, 'Baja': 0, 'No relevante': 0}
-                data[r.mes][r.clasificacion] = r.count
-                
-            labels = list(data.keys())
+            for r in rows:
+                if not r.fecha:
+                    continue
+                mes = r.fecha.strftime('%Y-%m')
+                cls = r.clasificacion_final or r.clasificacion or 'No relevante'
+                if mes not in data:
+                    data[mes] = {'Alta': 0, 'Media': 0, 'Baja': 0, 'No relevante': 0}
+                data[mes][cls] = data[mes].get(cls, 0) + 1
+
+            labels = sorted(data.keys())
             return jsonify({
                 'labels': labels,
                 'alta': [data[m].get('Alta', 0) for m in labels],
@@ -612,7 +638,7 @@ def api_charts_relevancia():
 @main_bp.route('/api/charts/topics')
 @login_required
 def api_charts_topics():
-    """Datos para gráfico de burbujas BERTopic."""
+    """Datos para agrupación semántica por Entidad y Situación de NNA."""
     if _check_postgres():
         try:
             from src.database.models_noticias import ClusterSemantico
@@ -639,10 +665,34 @@ def api_charts_topics():
                     terms = [t[0] for t in terms]
                 data.append({
                     'id': c.id,
-                    'label': c.etiqueta or f"Tópico {c.id}",
+                    'label': c.etiqueta or f"Grupo Semántico {c.id}",
                     'size': c.num_documentos,
                     'terms': terms[:5]
                 })
+
+            # Si no hay registros en ClusterSemantico, construir dinámicamente desde ExpedienteCaso / Noticia
+            if not data:
+                expedientes = ExpedienteCaso.query.all()
+                grupos = {}
+                for exp in expedientes:
+                    estado = exp.estado or "Ubicación por confirmar"
+                    situacion = (exp.situacion_actual or "Situación por verificar")[:55]
+                    label = f"{estado} — {situacion}"
+                    if label not in grupos:
+                        grupos[label] = {'count': 0, 'terms': set()}
+                    grupos[label]['count'] += max(1, exp.num_fuentes or 1)
+                    if exp.municipio and exp.municipio != 'No especificado':
+                        grupos[label]['terms'].add(exp.municipio)
+                    if exp.victimas and exp.victimas != 'No especificada':
+                        grupos[label]['terms'].add(exp.victimas[:35])
+                for idx, (lbl, info) in enumerate(sorted(grupos.items(), key=lambda x: x[1]['count'], reverse=True), start=1):
+                    data.append({
+                        'id': idx,
+                        'label': lbl,
+                        'size': info['count'],
+                        'terms': list(info['terms'])[:5] or ['Caso detectado por IA']
+                    })
+
             return jsonify({'topics': data})
         except Exception as e:
             logging.warning(f"Charts topics PG error: {e}")
@@ -850,7 +900,6 @@ _active_investigations = {}
 _investigation_lock = threading.Lock()
 
 def _run_investigation_bg(noticia_id, title, content, app):
-    from src.analysis.investigator import DeepInvestigator
     from src.database.repository import NoticiasRepository
     with app.app_context():
         try:
@@ -919,18 +968,18 @@ def api_investigate_status(noticia_id):
 @login_required
 def api_identify_link():
     """Identifica un caso a partir de un link externo, investigando en la web."""
-    data = request.json
+    data = request.json or {}
     url = data.get('url', '').strip()
     if not url:
         return jsonify({'error': 'URL requerida'}), 400
         
-    from src.analysis.investigator import DeepInvestigator
     try:
         investigator = DeepInvestigator()
         result = investigator.investigate_url(url)
         
-        if 'error' not in result and _check_postgres():
-            from src.database.models_noticias import Noticia, db
+        if 'error' not in result and _db_is_ready():
+            from src.database.models_noticias import db
+            from src.database.repository import NoticiasRepository
             from datetime import datetime
             
             # Obtener el título, o usar el resumen/URL si no está disponible
@@ -947,13 +996,23 @@ def api_identify_link():
                 score_feminicidio=1.0,
                 score_nna=1.0,
                 score_compuesto=1.0,
+                relevancia_final=1.0,
                 clasificacion='Alta',
+                clasificacion_final='Alta',
+                menores_identificados='Si',
                 investigacion_json=result
             )
             db.session.add(nueva_noticia)
+            db.session.flush()
+            try:
+                NoticiasRepository.vincular_o_crear_expediente(nueva_noticia, investigacion=result)
+            except Exception as exp_err:
+                logging.warning(f"No se pudo vincular expediente en identify-link: {exp_err}")
             db.session.commit()
             
             result['noticia_id'] = nueva_noticia.id
+            if getattr(nueva_noticia, 'expediente_id', None):
+                result['expediente_id'] = nueva_noticia.expediente_id
 
         return jsonify(result)
     except Exception as e:
@@ -963,133 +1022,310 @@ def api_identify_link():
 @main_bp.route('/api/seguimiento/casos', methods=['GET'])
 @login_required
 def api_seguimiento_casos():
-    """Obtiene todos los casos que han sido agregados a seguimiento."""
-    if _check_postgres():
+    """Obtiene los expedientes consolidados de casos y sus bitácoras de seguimiento."""
+    if _db_is_ready():
         try:
-            from src.database.models_noticias import Noticia
-            from sqlalchemy import desc, text
-            
-            # Filtrar en Python para evitar problemas de compatibilidad de dialectos SQL con JSON
-            noticias_raw = Noticia.query.filter(
-                Noticia.investigacion_json.isnot(None)
+            from src.database.models_noticias import ESTADOS_SEGUIMIENTO_VALIDOS, db
+            from src.database.repository import NoticiasRepository
+            from sqlalchemy import desc
+
+            # Auto-vincular noticias heredadas con investigacion_json que aún no tengan expediente_id
+            noticias_huerfanas = Noticia.query.filter(
+                Noticia.investigacion_json.isnot(None),
+                Noticia.expediente_id.is_(None),
             ).order_by(desc(Noticia.fecha)).all()
-            
-            resultados = []
-            for n in noticias_raw:
-                inv = n.investigacion_json
-                if inv and inv.get('en_seguimiento') is True:
-                    dict_n = n.to_dict()
-                    dict_n['investigacion_json'] = inv
-                    resultados.append(dict_n)
-                
-            return jsonify({'casos': resultados})
+
+            dirty = False
+            for n in noticias_huerfanas:
+                inv = n.investigacion_json or {}
+                es_seg = bool(inv.get('en_seguimiento'))
+                es_alta = (n.clasificacion_final or n.clasificacion) == 'Alta'
+                if es_seg or es_alta:
+                    exp = NoticiasRepository.vincular_o_crear_expediente(
+                        n,
+                        investigacion=inv,
+                        marcar_seguimiento=es_seg,
+                    )
+                    if exp:
+                        dirty = True
+            if dirty:
+                db.session.commit()
+
+            estado_filtro = request.args.get('estado', 'todos').strip().lower()
+            solo_seguimiento = request.args.get('solo_seguimiento', 'false').lower() == 'true'
+
+            todos_expedientes = NoticiasRepository.listar_expedientes(
+                solo_en_seguimiento=False,
+                estado_seguimiento=None,
+            )
+
+            conteo_estados = {
+                'todos': len(todos_expedientes),
+                'en_seguimiento': sum(1 for c in todos_expedientes if c.get('en_seguimiento')),
+            }
+            for est in ESTADOS_SEGUIMIENTO_VALIDOS:
+                conteo_estados[est] = sum(
+                    1 for c in todos_expedientes if c.get('estado_seguimiento') == est
+                )
+
+            if estado_filtro == 'en_seguimiento' or solo_seguimiento:
+                casos_filtrados = [c for c in todos_expedientes if c.get('en_seguimiento')]
+            elif estado_filtro in ESTADOS_SEGUIMIENTO_VALIDOS:
+                casos_filtrados = [
+                    c for c in todos_expedientes if c.get('estado_seguimiento') == estado_filtro
+                ]
+            else:
+                casos_filtrados = todos_expedientes
+
+            return jsonify({
+                'casos': casos_filtrados,
+                'conteo_estados': conteo_estados,
+                'estados_validos': list(ESTADOS_SEGUIMIENTO_VALIDOS),
+            })
         except Exception as e:
             logging.error(f"Error fetching seguimiento casos: {e}")
             return jsonify({'error': str(e)}), 500
     else:
-        # Fallback a un mock o vacío si no hay DB
-        return jsonify({'casos': []})
+        return jsonify({
+            'casos': [],
+            'conteo_estados': {'todos': 0, 'en_seguimiento': 0},
+            'estados_validos': [
+                'detectado', 'en_verificacion', 'contacto_dif_fiscalia',
+                'en_acompanamiento', 'archivado',
+            ],
+        })
+
 
 @main_bp.route('/api/seguimiento/add/<int:noticia_id>', methods=['POST'])
 @login_required
 def api_add_to_seguimiento(noticia_id):
-    """Agrega un caso investigado a la lista de seguimiento."""
-    if _check_postgres():
+    """Agrega un caso investigado a la lista de seguimiento y vincula su expediente."""
+    if _db_is_ready():
         from src.database.repository import NoticiasRepository
         success = NoticiasRepository.add_to_seguimiento(noticia_id)
         if success:
-            return jsonify({'status': 'success'})
-        return jsonify({'error': 'No se pudo agregar a seguimiento. Verifique que el caso exista y esté investigado.'}), 400
+            noticia = NoticiasRepository.get_noticia(noticia_id)
+            return jsonify({
+                'status': 'success',
+                'noticia_id': noticia_id,
+                'expediente_id': getattr(noticia, 'expediente_id', None),
+            })
+        return jsonify({
+            'error': 'No se pudo agregar a seguimiento. Verifique que el caso exista y esté investigado.'
+        }), 400
     return jsonify({'error': 'La base de datos no está activa.'}), 500
+
+
+@main_bp.route('/api/seguimiento/expediente/<int:expediente_id>/status', methods=['POST'])
+@main_bp.route('/api/seguimiento/update-status', methods=['POST'])
+@login_required
+def api_update_seguimiento_status(expediente_id=None):
+    """Actualiza el estado de seguimiento de un expediente y/o registra una nota en la bitácora."""
+    if not _db_is_ready():
+        return jsonify({'error': 'La base de datos no está activa.'}), 500
+
+    data = request.get_json(silent=True) or {}
+    target_id = expediente_id or data.get('expediente_id') or data.get('id')
+    if not target_id:
+        return jsonify({'error': 'ID de expediente requerido'}), 400
+
+    try:
+        target_id = int(target_id)
+    except (ValueError, TypeError):
+        return jsonify({'error': 'ID de expediente inválido'}), 400
+
+    estado_seguimiento = data.get('estado_seguimiento')
+    nota = data.get('nota')
+    en_seguimiento = data.get('en_seguimiento')
+
+    from flask_login import current_user
+    autor = data.get('autor') or getattr(current_user, 'username', None) or 'Analista ONG'
+
+    from src.database.repository import NoticiasRepository
+    try:
+        expediente_dict = NoticiasRepository.actualizar_seguimiento_expediente(
+            expediente_id=target_id,
+            estado_seguimiento=estado_seguimiento,
+            nota=nota,
+            autor=autor,
+            en_seguimiento=en_seguimiento,
+        )
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+
+    if not expediente_dict:
+        return jsonify({'error': 'No se pudo actualizar el expediente (ID o estado inválido)'}), 400
+
+    if hasattr(expediente_dict, 'to_dict'):
+        expediente_dict = expediente_dict.to_dict()
+
+    return jsonify({
+        'status': 'success',
+        'expediente': expediente_dict,
+    })
+
 
 @main_bp.route('/api/seguimiento/export/csv', methods=['GET'])
 @login_required
 def api_export_seguimiento_csv():
-    """Exporta los casos en seguimiento a CSV con las columnas limpias e información de investigación."""
-    if not _check_postgres():
+    """Exporta los expedientes de casos a CSV (UTF-8 con BOM para Excel)."""
+    if not _db_is_ready():
         return jsonify({'error': 'La base de datos no está activa.'}), 500
-        
+
     try:
-        from src.database.models_noticias import Noticia
-        from sqlalchemy import desc
+        from src.database.repository import NoticiasRepository
         import csv
         import io
         from flask import make_response
-        
-        noticias_raw = Noticia.query.filter(
-            Noticia.investigacion_json.isnot(None)
-        ).order_by(desc(Noticia.fecha)).all()
-        
-        noticias = [n for n in noticias_raw if n.investigacion_json and n.investigacion_json.get('en_seguimiento') is True]
-        
+
+        solo_seg = request.args.get('solo_seguimiento', 'false').lower() == 'true'
+        estado_filtro = request.args.get('estado', '').strip().lower() or None
+        if estado_filtro == 'todos':
+            estado_filtro = None
+
+        expedientes = NoticiasRepository.listar_expedientes(
+            solo_en_seguimiento=solo_seg,
+            estado_seguimiento=estado_filtro,
+        )
+
         output = io.StringIO()
         output.write('\ufeff')  # BOM para Excel (utf-8-sig)
         writer = csv.writer(output)
-        
-        # Headers
+
         writer.writerow([
-            'ID Noticia', 'Fecha', 'Título', 'Ubicación (IA)', 'Víctimas Directas (IA)', 
-            'NNA Afectados (IA)', 'Edades NNA (IA)', 'Situación Actual NNA (IA)', 
-            'Score Feminicidio', 'Score NNA', 'Score Compuesto', 'Enlace Original', 'Resumen (IA)'
+            'ID Expediente',
+            'Estado de Seguimiento',
+            'En Seguimiento Activo',
+            'Fecha Detección',
+            'Título del Caso',
+            'Entidad Federativa',
+            'Municipio / Alcaldía',
+            'Ubicación Completa (IA)',
+            'Víctima(s) Directa(s)',
+            'NNA Afectados',
+            'Edades NNA',
+            'Situación Actual NNA',
+            'Cita Textual de Evidencia',
+            'Medios de Contacto Sugeridos',
+            'Núm. Fuentes Vinculadas',
+            'Fuentes / Enlaces',
+            'Última Nota de Bitácora',
+            'Resumen Ejecutivo (IA)',
         ])
-        
-        for n in noticias:
-            inv = n.investigacion_json or {}
-            
-            # Limpiar eded_nna
-            edades = inv.get('edades_nna', inv.get('edades', 'No especificada'))
-            if isinstance(edades, list):
-                edades = ', '.join(map(str, edades))
-            elif isinstance(edades, dict):
-                edades = ', '.join(map(str, edades.values()))
-                
-            victimas = inv.get('victimas', 'No especificadas')
-            if isinstance(victimas, list):
-                victimas = ', '.join(map(str, victimas))
-                
+
+        etiquetas_estado = {
+            'detectado': 'Detectado',
+            'en_verificacion': 'En verificación',
+            'contacto_dif_fiscalia': 'Contacto DIF / Fiscalía',
+            'en_acompanamiento': 'En acompañamiento',
+            'archivado': 'Archivado',
+        }
+
+        for exp in expedientes:
+            inv = exp.get('investigacion_json') or {}
+            notas = exp.get('notas_seguimiento') or []
+            ultima_nota = ''
+            if isinstance(notas, list) and notas:
+                last = notas[-1]
+                if isinstance(last, dict):
+                    ultima_nota = f"[{last.get('fecha', '')[:10]} - {last.get('autor', '')}] {last.get('texto', '')}"
+                else:
+                    ultima_nota = str(last)
+
+            fuentes = exp.get('fuentes_json') or inv.get('fuentes') or []
+            if isinstance(fuentes, list):
+                fuentes_str = ' | '.join(str(f) for f in fuentes if f)
+            else:
+                fuentes_str = str(fuentes)
+
+            fecha_str = (exp.get('fecha') or '')[:16].replace('T', ' ') or 'Desconocida'
+            estado_raw = exp.get('estado_seguimiento', 'detectado')
+
             writer.writerow([
-                n.id,
-                n.fecha.strftime('%Y-%m-%d %H:%M') if n.fecha else 'Desconocida',
-                n.titulo,
-                inv.get('ubicacion', 'No especificada'),
-                victimas,
-                inv.get('nna_afectados', inv.get('ninos_afectados', 0)),
-                edades,
-                inv.get('situacion_actual', 'No especificada'),
-                round(n.score_feminicidio * 100, 1) if n.score_feminicidio else 0,
-                round(n.score_nna * 100, 1) if n.score_nna else 0,
-                round(n.score_compuesto * 100, 1) if n.score_compuesto else 0,
-                n.enlace,
-                inv.get('resumen_abstracto', inv.get('resumen', ''))
+                f"EXP-{exp.get('id')}",
+                etiquetas_estado.get(estado_raw, estado_raw),
+                'Sí' if exp.get('en_seguimiento') else 'No',
+                fecha_str,
+                exp.get('titulo', ''),
+                exp.get('estado', 'No especificado'),
+                exp.get('municipio', 'No especificado'),
+                exp.get('ubicacion', inv.get('ubicacion', 'No especificada')),
+                exp.get('victimas', inv.get('victimas', 'No especificada')),
+                exp.get('nna_afectados', inv.get('nna_afectados', 0)),
+                exp.get('edades_nna', inv.get('edades_nna', 'No especificada')),
+                exp.get('situacion_actual', inv.get('situacion_actual', 'No especificada')),
+                exp.get('cita_textual_evidencia', inv.get('cita_textual_evidencia', '')),
+                exp.get('medios_contacto', inv.get('medios_contacto', '')),
+                exp.get('num_fuentes', 1),
+                fuentes_str or exp.get('enlace', ''),
+                ultima_nota,
+                exp.get('resumen', inv.get('resumen', '')),
             ])
-            
+
         response = make_response(output.getvalue())
-        response.headers['Content-Disposition'] = 'attachment; filename=seguimiento_casos_nna.csv'
+        response.headers['Content-Disposition'] = 'attachment; filename=expedientes_seguimiento_nna.csv'
         response.headers['Content-type'] = 'text/csv; charset=utf-8'
         return response
     except Exception as e:
         logging.error(f"Error exportando seguimiento a CSV: {e}")
         return jsonify({'error': str(e)}), 500
 
+
 @main_bp.route('/api/seguimiento/export/pdf/<int:noticia_id>', methods=['GET'])
 @login_required
 def api_export_seguimiento_pdf(noticia_id):
     """Renderiza una vista optimizada para imprimir como PDF el expediente del caso."""
-    if not _check_postgres():
+    if not _db_is_ready():
         return "La base de datos no está activa.", 500
-        
+
     try:
-        from src.database.models_noticias import Noticia
         from datetime import datetime
-        noticia = Noticia.query.get(noticia_id)
-        
+        tipo = request.args.get('tipo', '').lower()
+
+        expediente = None
+        noticia = None
+
+        if tipo == 'expediente':
+            expediente = ExpedienteCaso.query.get(noticia_id)
+        else:
+            noticia = Noticia.query.get(noticia_id)
+            if noticia and noticia.expediente_id:
+                expediente = ExpedienteCaso.query.get(noticia.expediente_id)
+            elif not noticia:
+                expediente = ExpedienteCaso.query.get(noticia_id)
+
+        if expediente:
+            exp_dict = expediente.to_dict()
+            inv = exp_dict.get('investigacion_json') or {}
+            if not noticia:
+                # Objeto ligero compatible con la plantilla PDF
+                class _CasoView:
+                    pass
+                noticia = _CasoView()
+                noticia.id = expediente.id
+                noticia.titulo = expediente.titulo_caso
+                noticia.fuente = f"{getattr(expediente, 'num_noticias', 1) or 1} fuente(s) verificada(s)"
+                noticia.fecha = getattr(expediente, 'created_at', None)
+                noticia.clasificacion = "Alta Relevancia — Expediente Consolidado"
+                noticia.enlace = (expediente.fuentes_json or [''])[0] if expediente.fuentes_json else ''
+            return render_template(
+                'admin/pdf_case.html',
+                noticia=noticia,
+                expediente=expediente,
+                inv=inv,
+                datetime=datetime,
+            )
+
         if not noticia or not noticia.investigacion_json:
             return "Caso no encontrado o sin investigación.", 404
-            
-        return render_template('admin/pdf_case.html', 
-                             noticia=noticia, 
-                             inv=noticia.investigacion_json,
-                             datetime=datetime)
+
+        return render_template(
+            'admin/pdf_case.html',
+            noticia=noticia,
+            expediente=None,
+            inv=noticia.investigacion_json,
+            datetime=datetime,
+        )
     except Exception as e:
         logging.error(f"Error generando vista de PDF: {e}")
         return str(e), 500

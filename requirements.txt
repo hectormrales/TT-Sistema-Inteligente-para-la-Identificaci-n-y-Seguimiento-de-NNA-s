@@ -2,10 +2,9 @@
 # NNA Monitor — Dependencias de Producción (v2026 Ligero)
 # ============================================================
 
-# Análisis de Datos y Deduplicación Vectorial
+# Análisis de Datos y Validación Estructurada
 pandas>=2.2.2
 numpy>=1.24.0
-scikit-learn>=1.4.2
 pydantic>=2.7.0
 
 # Web Scraping Moderno y Búsqueda Dirigida (Fase 2)

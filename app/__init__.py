@@ -109,7 +109,7 @@ def _init_database(app: Flask) -> None:
     # Importar modelos de noticias para que SQLAlchemy los registre
     try:
         from src.database.models_noticias import (
-            Noticia, Deteccion, ClusterSemantico, Entidad,
+            ExpedienteCaso, Noticia, Deteccion, ClusterSemantico, Entidad,
         )
     except ImportError:
         app.logger.warning("Modelos de noticias no disponibles")
@@ -119,7 +119,7 @@ def _init_database(app: Flask) -> None:
     except Exception as e:
         app.logger.warning(f"Error en create_all (posible concurrencia): {e}")
 
-    # ── Migración: agregar columna is_predefined si no existe ──
+    # ── Migración: agregar columnas nuevas si no existen ──
     try:
         inspector = inspect(db.engine)
         if inspector.has_table('news_sources'):
@@ -141,6 +141,13 @@ def _init_database(app: Flask) -> None:
                 ))
                 db.session.commit()
                 app.logger.info("Columna 'investigacion_json' agregada a noticias")
+            if 'expediente_id' not in columns:
+                db.session.execute(text(
+                    'ALTER TABLE noticias '
+                    'ADD COLUMN expediente_id INTEGER REFERENCES expedientes_casos(id) ON DELETE SET NULL'
+                ))
+                db.session.commit()
+                app.logger.info("Columna 'expediente_id' agregada a noticias")
 
     except Exception as e:
         db.session.rollback()
@@ -168,11 +175,21 @@ def _init_database(app: Flask) -> None:
 
     # ── Esquema FTS para noticias (OE-3) ──
     try:
-        from src.database.repository import init_fts_schema
+        from src.database.repository import init_fts_schema, NoticiasRepository
         init_fts_schema()
         app.logger.info("Esquema FTS inicializado")
+        is_test_env = (
+            app.config.get("TESTING")
+            or bool(os.environ.get("PYTEST_CURRENT_TEST"))
+            or ":memory:" in str(app.config.get("SQLALCHEMY_DATABASE_URI", ""))
+        )
+        if not is_test_env and Noticia.query.count() == 0:
+            csv_path = app.config.get("DATA_PATH")
+            if csv_path and os.path.exists(csv_path):
+                imported = NoticiasRepository.importar_desde_csv(csv_path)
+                app.logger.info(f"Base de datos inicializada con {imported} noticias y expedientes desde CSV")
     except Exception as e:
-        app.logger.warning(f"FTS no inicializado (normal en primer arranque): {e}")
+        app.logger.warning(f"FTS/Seed no inicializado (normal en primer arranque): {e}")
 
 
 def _seed_predefined_sources(app: Flask) -> None:

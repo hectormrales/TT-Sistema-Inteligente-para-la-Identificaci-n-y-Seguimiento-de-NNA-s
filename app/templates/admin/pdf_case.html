@@ -4,85 +4,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expediente de Caso - {{ noticia.id }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Expediente Oficial de Caso #{{ expediente.id if expediente else noticia.id }} | Futuro Con Derechos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_sistema.png') }}" type="image/x-icon">
     <style>
         :root {
-            --navy: #1a3a6b;
-            --navy-lt: #2a5298;
-            --gray-bg: #f8f9fa;
-            --text-main: #2d3748;
-            --text-muted: #718096;
+            --brand-indigo: #261863;
+            --brand-indigo-lt: #3b288f;
+            --brand-olive: #7a7846;
+            --brand-olive-bg: #f6f5ec;
+            --crimson: #b02a37;
+            --teal: #0f766e;
+            --gray-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             --border: #e2e8f0;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            background: #fff;
+            background: #f1f5f9;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px;
+        .page-sheet {
+            max-width: 840px;
+            margin: 28px auto;
+            padding: 44px 48px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid var(--navy);
+            border-bottom: 3px solid var(--brand-indigo);
             padding-bottom: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 26px;
+            gap: 20px;
         }
 
         .logo-box {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
+        }
+
+        .logo-box img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: contain;
+            border: 2px solid var(--brand-olive);
+            background: #fff;
         }
 
         .logo-text h1 {
             margin: 0;
-            font-size: 24px;
-            color: var(--navy);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--brand-indigo);
+            letter-spacing: 0.02em;
             text-transform: uppercase;
-            letter-spacing: 1px;
+        }
+
+        .logo-text .org-sub {
+            margin: 3px 0 0;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--brand-olive);
         }
 
         .logo-text p {
-            margin: 5px 0 0;
-            font-size: 12px;
+            margin: 2px 0 0;
+            font-size: 11.5px;
             color: var(--text-muted);
         }
 
         .case-meta {
             text-align: right;
-            font-size: 13px;
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
-        .case-meta strong {
-            display: block;
-            font-size: 16px;
-            color: var(--navy-lt);
-            margin-bottom: 5px;
+        .case-meta .folio {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--brand-indigo);
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 4px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: var(--brand-olive-bg);
+            color: var(--brand-indigo);
+            border: 1px solid var(--brand-olive);
         }
 
         .title-box {
             background: var(--gray-bg);
-            padding: 20px;
-            border-left: 4px solid var(--navy-lt);
-            border-radius: 4px;
-            margin-bottom: 30px;
+            padding: 18px 22px;
+            border-left: 5px solid var(--brand-indigo);
+            border-radius: 8px;
+            margin-bottom: 24px;
         }
 
         .title-box h2 {
-            margin: 0 0 10px;
-            font-size: 18px;
-            line-height: 1.4;
+            margin: 0 0 8px;
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.45;
+            color: var(--text-main);
         }
 
         .title-box .source {
@@ -90,198 +142,317 @@
             color: var(--text-muted);
         }
 
+        .quote-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 5px solid #d97706;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .quote-box .quote-label {
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #92400e;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .quote-box blockquote {
+            margin: 0;
+            font-size: 13.5px;
+            font-style: italic;
+            color: #78350f;
+            line-height: 1.55;
+        }
+
         .grid-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .info-card {
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 14px 16px;
+            background: #fff;
         }
 
         .info-label {
-            font-size: 11px;
+            font-size: 10.5px;
+            font-weight: 700;
             text-transform: uppercase;
             color: var(--text-muted);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
             margin-bottom: 5px;
             display: block;
         }
 
         .info-value {
-            font-size: 15px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
         }
 
         .info-value.highlight {
-            color: #b03030;
-            font-weight: 600;
+            color: var(--crimson);
+            font-size: 18px;
+            font-weight: 800;
         }
 
         .summary-box {
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            background: #fff;
         }
 
         .summary-box h3 {
-            margin: 0 0 15px;
-            font-size: 14px;
-            color: var(--navy);
+            margin: 0 0 12px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--brand-indigo);
             text-transform: uppercase;
+            letter-spacing: 0.05em;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .summary-box p {
             margin: 0;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 13.5px;
+            line-height: 1.65;
             text-align: justify;
         }
 
+        .notes-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notes-list li {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12.5px;
+        }
+
+        .notes-list li:last-child {
+            border-bottom: none;
+        }
+
+        .sources-list {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sources-list li {
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
         .footer {
-            margin-top: 50px;
+            margin-top: 32px;
             text-align: center;
             font-size: 11px;
             color: var(--text-muted);
             border-top: 1px solid var(--border);
-            padding-top: 20px;
+            padding-top: 16px;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 24px auto 0;
         }
 
         .btn-print {
-            display: block;
-            width: 200px;
-            margin: 30px auto;
-            padding: 12px;
-            background: var(--navy);
+            padding: 11px 24px;
+            background: var(--brand-indigo);
             color: white;
             text-align: center;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
             border: none;
         }
 
         @media print {
-            .btn-print {
-                display: none !important;
-            }
-
             body {
+                background: #fff;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
-            .container {
-                padding: 0;
+            .page-sheet {
+                margin: 0;
+                padding: 16px;
+                box-shadow: none;
+            }
+
+            .actions-bar {
+                display: none !important;
             }
         }
     </style>
 </head>
 
 <body>
+    {% set estado_labels = {
+        'detectado': 'Detectado (Pendiente de Verificación)',
+        'en_verificacion': 'En Verificación Operativa',
+        'contacto_dif_fiscalia': 'Contacto con DIF / Fiscalía',
+        'en_acompanamiento': 'En Acompañamiento Integral',
+        'archivado': 'Archivado'
+    } %}
+    {% set raw_estado = expediente.estado_seguimiento if expediente else inv.get('estado_seguimiento', 'detectado') %}
+    {% set cita = expediente.cita_textual_evidencia if (expediente and expediente.cita_textual_evidencia) else inv.get('cita_textual_evidencia', '') %}
 
-    <div class="container">
+    <div class="page-sheet">
         <div class="header">
             <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo_sistema.png') }}" alt="Futuro Con Derechos">
                 <div class="logo-text">
-                    <h1>Plataforma NNA</h1>
-                    <p>Sistema Inteligente de Seguimiento a Víctimas Indirectas</p>
+                    <h1>Futuro Con Derechos</h1>
+                    <div class="org-sub">Observatorio y Acompañamiento de NNA en Orfandad por Feminicidio</div>
+                    <p>Ficha Técnica de Caso — Uso Institucional y Gestión de Derechos Humanos</p>
                 </div>
             </div>
             <div class="case-meta">
-                <strong>Expediente Oficial</strong>
-                <div>ID de Caso: #{{ noticia.id }}</div>
-                <div>Generado el: {{ datetime.now().strftime('%d/%m/%Y %H:%M') }}</div>
+                <div class="folio">EXPEDIENTE #{{ expediente.id if expediente else noticia.id }}</div>
+                <div>Emitido: {{ datetime.now().strftime('%d/%m/%Y %H:%M') }}</div>
+                <div class="status-pill">{{ estado_labels.get(raw_estado, raw_estado) }}</div>
             </div>
         </div>
 
         <div class="title-box">
-            <h2>{{ noticia.titulo }}</h2>
+            <h2>{{ expediente.titulo_caso if expediente else noticia.titulo }}</h2>
             <div class="source">
-                <strong>Fuente:</strong> {{ noticia.fuente }} &nbsp;|&nbsp;
-                <strong>Fecha original:</strong> {{ noticia.fecha.strftime('%d/%m/%Y') if noticia.fecha else
-                'Desconocida' }} &nbsp;|&nbsp;
-                <strong>Clasificación:</strong> {{ noticia.clasificacion }}
+                <strong>Fuente(s):</strong> {{ (expediente.num_noticias ~ ' medio(s) periodístico(s)') if expediente else noticia.fuente }} &nbsp;|&nbsp;
+                <strong>Fecha registrada:</strong>
+                {% if expediente and expediente.created_at %}
+                    {{ expediente.created_at.strftime('%d/%m/%Y') }}
+                {% elif noticia.fecha %}
+                    {{ noticia.fecha.strftime('%d/%m/%Y') }}
+                {% else %}
+                    Por confirmar
+                {% endif %}
+                &nbsp;|&nbsp;
+                <strong>Prioridad:</strong> {{ noticia.clasificacion or 'Alta' }}
             </div>
         </div>
+
+        {% if cita %}
+        <div class="quote-box">
+            <span class="quote-label">Cita Textual de Evidencia (Extraída de la Fuente Periodística)</span>
+            <blockquote>«{{ cita }}»</blockquote>
+        </div>
+        {% endif %}
 
         <div class="grid-info">
             <div class="info-card">
                 <span class="info-label">Ubicación de los Hechos</span>
-                <div class="info-value">{{ inv.get('ubicacion', 'No especificada') }}</div>
+                <div class="info-value">{{ expediente.ubicacion if (expediente and expediente.ubicacion) else inv.get('ubicacion', 'No especificada') }}</div>
             </div>
             <div class="info-card">
-                <span class="info-label">Víctima(s) Directa(s)</span>
+                <span class="info-label">Víctima(s) Directa(s) (Madre)</span>
                 <div class="info-value">
-                    {% if inv.get('victimas') is string %}
-                    {{ inv.get('victimas') }}
+                    {% if expediente and expediente.victimas %}
+                        {{ expediente.victimas }}
+                    {% elif inv.get('victimas') is string %}
+                        {{ inv.get('victimas') }}
                     {% elif inv.get('victimas') is iterable %}
-                    {{ inv.get('victimas') | join(', ') }}
+                        {{ inv.get('victimas') | join(', ') }}
                     {% else %}
-                    No especificadas
+                        No especificada
                     {% endif %}
                 </div>
             </div>
             <div class="info-card">
-                <span class="info-label">NNA Afectados (Niñas, Niños y Adolescentes)</span>
-                <div class="info-value highlight">{{ inv.get('nna_afectados', inv.get('ninos_afectados', 'No
-                    especificado')) }}</div>
+                <span class="info-label">Niñas, Niños y Adolescentes (NNA) Afectados</span>
+                <div class="info-value highlight">
+                    {{ expediente.ninos_afectados if (expediente and expediente.ninos_afectados) else inv.get('nna_afectados', inv.get('ninos_afectados', 'Por confirmar')) }}
+                </div>
             </div>
             <div class="info-card">
                 <span class="info-label">Edades Identificadas</span>
                 <div class="info-value">
-                    {% set edades = inv.get('edades_nna', inv.get('edades', 'No especificada')) %}
+                    {% set edades = expediente.edades if (expediente and expediente.edades) else inv.get('edades_nna', inv.get('edades', 'No especificada')) %}
                     {% if edades is string %}
-                    {{ edades }}
+                        {{ edades }}
                     {% elif edades is mapping %}
-                    {{ edades.values() | join(', ') }}
+                        {{ edades.values() | join(', ') }}
                     {% elif edades is iterable %}
-                    {{ edades | join(', ') }}
+                        {{ edades | join(', ') }}
                     {% else %}
-                    No especificada
+                        No especificada
                     {% endif %}
                 </div>
             </div>
             <div class="info-card" style="grid-column: 1 / -1; background: #fef9e7; border-color: #f9e79f;">
-                <span class="info-label" style="color: #b7950b;">Situación Actual de los Menores</span>
-                <div class="info-value">{{ inv.get('situacion_actual', 'No especificada') }}</div>
+                <span class="info-label" style="color: #92400e;">Situación Actual / Resguardo de los Menores</span>
+                <div class="info-value">{{ expediente.situacion_actual if (expediente and expediente.situacion_actual) else inv.get('situacion_actual', 'No especificada') }}</div>
             </div>
             <div class="info-card" style="grid-column: 1 / -1;">
-                <span class="info-label">Medios de Contacto Sugeridos</span>
-                <div class="info-value">{{ inv.get('medios_contacto', 'No identificados') }}</div>
+                <span class="info-label">Instituciones y Medios de Contacto Sugeridos</span>
+                <div class="info-value">{{ expediente.medios_contacto if (expediente and expediente.medios_contacto) else inv.get('medios_contacto', 'Fiscalía Especializada en Feminicidios / Procuraduría de Protección de NNA (DIF)') }}</div>
             </div>
         </div>
 
         <div class="summary-box">
-            <h3>Resumen Ejecutivo del Caso (Análisis IA)</h3>
-            <p>{{ inv.get('resumen_abstracto', inv.get('resumen', 'Sin resumen disponible.')) }}</p>
+            <h3>Resumen Ejecutivo Consolidado</h3>
+            <p>{{ expediente.resumen if (expediente and expediente.resumen) else inv.get('resumen_abstracto', inv.get('resumen', 'Sin resumen disponible.')) }}</p>
         </div>
+
+        {% set notas = expediente.notas_seguimiento if (expediente and expediente.notas_seguimiento) else [] %}
+        {% if notas %}
+        <div class="summary-box">
+            <h3>Bitácora de Seguimiento Institucional</h3>
+            <ul class="notes-list">
+                {% for nota in notas %}
+                <li>
+                    <strong>{{ (nota.get('fecha', '')[:16].replace('T', ' ')) if nota is mapping else '' }}</strong>
+                    {% if nota is mapping and nota.get('autor') %} ({{ nota.get('autor') }}){% endif %}:
+                    {{ nota.get('texto', '') if nota is mapping else nota }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% set fuentes = expediente.fuentes_json if (expediente and expediente.fuentes_json) else inv.get('fuentes', []) %}
+        {% if fuentes %}
+        <div class="summary-box">
+            <h3>Fuentes Periodísticas Vinculadas al Expediente</h3>
+            <ul class="sources-list">
+                {% for f in fuentes %}
+                <li>{{ f }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
         <div class="footer">
-            <p>Documento generado automáticamente por el Sistema Inteligente de Identificación y Seguimiento de NNA.<br>
-                Uso exclusivo para fines de investigación y gestión de derechos humanos.</p>
+            <strong>Futuro Con Derechos · Sistema Inteligente de Identificación y Seguimiento de NNA</strong><br>
+            Documento para gestión jurídica, psicosocial y canalización interinstitucional (DIF / Fiscalías / CEAV).
         </div>
 
-        <button class="btn-print" onclick="window.print()">
-            <svg style="width:16px;height:16px;margin-right:8px;vertical-align:middle;" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
-                </path>
-            </svg>
-            Imprimir a PDF
-        </button>
-
+        <div class="actions-bar">
+            <button class="btn-print" onclick="window.print()">Imprimir / Guardar como PDF</button>
+        </div>
     </div>
-
 </body>
 
 </html>

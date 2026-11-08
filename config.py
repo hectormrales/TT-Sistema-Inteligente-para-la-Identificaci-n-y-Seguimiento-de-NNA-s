@@ -136,28 +136,60 @@ TFIDF_MAX_FEATURES = 5000
 # Configuración Flask + Seguridad
 # ============================================================
 
+def _resolve_database_uri() -> str:
+    """
+    Determina la URI de base de datos:
+    1. Si existe DATABASE_URL en el entorno, la utiliza directamente.
+    2. Si corre dentro de Docker (/.dockerenv) o si PostgreSQL responde en el host configurado, usa PostgreSQL.
+    3. En ejecución local directa (sin Docker ni PostgreSQL local encendido), usa SQLite en data/nna_local.db
+       para permitir pruebas inmediatas sin fricción.
+    """
+    explicit_url = os.environ.get('DATABASE_URL', '').strip()
+    if explicit_url:
+        return explicit_url
+
+    pg_user = os.environ.get('POSTGRES_USER', 'nna_admin')
+    pg_pass = quote_plus(os.environ.get('POSTGRES_PASSWORD', ''))
+    pg_host = os.environ.get('POSTGRES_HOST', 'nna-postgres')
+    pg_port = os.environ.get('POSTGRES_PORT', '5432')
+    pg_db = os.environ.get('POSTGRES_DB', 'nna_auth_db')
+    pg_uri = f"postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}"
+
+    # Si estamos dentro de un contenedor Docker, usar siempre PostgreSQL
+    if os.path.exists('/.dockerenv'):
+        return pg_uri
+
+    # Fuera de Docker: verificar conectividad rápida al puerto de PostgreSQL
+    import socket
+    check_host = '127.0.0.1' if pg_host == 'nna-postgres' else pg_host
+    try:
+        with socket.create_connection((check_host, int(pg_port)), timeout=0.6):
+            return f"postgresql://{pg_user}:{pg_pass}@{check_host}:{pg_port}/{pg_db}"
+    except OSError:
+        base_dir = os.path.abspath(os.path.dirname(__file__))
+        data_dir = os.path.join(base_dir, 'data')
+        os.makedirs(data_dir, exist_ok=True)
+        sqlite_path = os.path.join(data_dir, 'nna_local.db').replace('\\', '/')
+        return f"sqlite:///{sqlite_path}"
+
+
 class Config:
     """Configuración base para la aplicación Flask."""
 
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(32).hex()
 
-    # --- PostgreSQL ---
-    _PG_USER = os.environ.get('POSTGRES_USER', 'nna_admin')
-    _PG_PASS = quote_plus(os.environ.get('POSTGRES_PASSWORD', ''))
-    _PG_HOST = os.environ.get('POSTGRES_HOST', 'nna-postgres')
-    _PG_PORT = os.environ.get('POSTGRES_PORT', '5432')
-    _PG_DB   = os.environ.get('POSTGRES_DB', 'nna_auth_db')
-
-    SQLALCHEMY_DATABASE_URI = (
-        f"postgresql://{_PG_USER}:{_PG_PASS}@{_PG_HOST}:{_PG_PORT}/{_PG_DB}"
-    )
+    SQLALCHEMY_DATABASE_URI = _resolve_database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 300,
-        'pool_size': 5,
-        'max_overflow': 10,
-    }
+    SQLALCHEMY_ENGINE_OPTIONS = (
+        {'pool_pre_ping': True}
+        if SQLALCHEMY_DATABASE_URI.startswith('sqlite')
+        else {
+            'pool_pre_ping': True,
+            'pool_recycle': 300,
+            'pool_size': 5,
+            'max_overflow': 10,
+        }
+    )
 
     # --- Sesiones ---
     SESSION_COOKIE_HTTPONLY = True
@@ -174,3 +206,8 @@ class Config:
 
     # --- Otras ---
     JSON_AS_ASCII = False
+    DATA_PATH = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        "data",
+        "noticias_analyzed_simplified.csv",
+    )

@@ -1,5 +1,5 @@
 services:
-  # ── Base de datos PostgreSQL ──────────────────────────────
+  # ── 1. Base de datos PostgreSQL 16 ─────────────────────────
   nna-postgres:
     image: postgres:16-alpine
     container_name: nna-postgres
@@ -20,7 +20,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── Servicio de análisis programado ───────────────────────
+  # ── 2. Servicio de recolección y análisis programado ───────
   nna-analyzer:
     build: .
     container_name: nna-analyzer
@@ -43,7 +43,7 @@ services:
         condition: service_healthy
     command: [ "python", "scheduler.py", "schedule" ]
 
-  # ── Aplicación web Flask ──────────────────────────────────
+  # ── 3. Aplicación Web NNA Monitor (Flask + Gunicorn) ───────
   nna-webapp:
     build: .
     container_name: nna-webapp
@@ -70,6 +70,11 @@ services:
         condition: service_healthy
       nna-analyzer:
         condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:5000/health || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     command: [ "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "300", "wsgi:app" ]
 
 networks:

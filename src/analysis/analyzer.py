@@ -10,12 +10,19 @@ from typing import Dict, Tuple, Optional
 
 import pandas as pd
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    HAS_SKLEARN = True
+except ImportError:
+    TfidfVectorizer = None
+    cosine_similarity = None
+    HAS_SKLEARN = False
 
 from src.collection.collector import collect_all_news, detect_children_mentions
 from src.analysis.synonyms import SynonymDictionary, enhanced_search
-from src.analysis.dedup import NewsDeduplicator
+from src.analysis.dedup import NewsDeduplicator, jaccard_similarity
 
 logger = logging.getLogger(__name__)
 
@@ -145,46 +152,62 @@ class SimplifiedNewsAnalyzer:
 
         texts = self.df_processed['texto_combinado'].fillna('').astype(str).tolist()
 
-        # Inyectar vocabulario de dominio como documentos artificiales
-        domain_docs = [' '.join(DOMAIN_TERMS)] * 2
-        all_texts = texts + domain_docs
+        if HAS_SKLEARN and TfidfVectorizer is not None:
+            domain_docs = [' '.join(DOMAIN_TERMS)] * 2
+            all_texts = texts + domain_docs
+            self.vectorizer = TfidfVectorizer(
+                max_features=5000,
+                ngram_range=(1, 3),
+                min_df=1,
+                max_df=0.85,
+                stop_words=SPANISH_STOP_WORDS,
+                sublinear_tf=True,
+            )
+            full_matrix = self.vectorizer.fit_transform(all_texts)
+            self.tfidf_matrix = full_matrix[:len(texts)]
+            print(f"  Matriz TF-IDF: {self.tfidf_matrix.shape}")
+        else:
+            self.tfidf_matrix = texts
+            print(f"  Textos normalizados preparados: {len(texts)} documentos")
 
-        self.vectorizer = TfidfVectorizer(
-            max_features=5000,
-            ngram_range=(1, 3),       # unigramas, bigramas, trigramas
-            min_df=1,                 # min_df=1 para no perder terms raros pero relevantes
-            max_df=0.85,
-            stop_words=SPANISH_STOP_WORDS,
-            sublinear_tf=True,        # log(1 + tf) — atenúa frecuencias muy altas
-        )
-        full_matrix = self.vectorizer.fit_transform(all_texts)
-
-        # Descartar las filas artificiales del vocabulario inyectado
-        self.tfidf_matrix = full_matrix[:len(texts)]
-
-        print(f"  Matriz TF-IDF: {self.tfidf_matrix.shape}")
-        print(f"  Vocabulario: {len(self.vectorizer.get_feature_names_out())} términos")
         return self.df_processed
 
     def step_6_similarity_analysis(self) -> pd.DataFrame:
-        """Análisis de similitud coseno entre documentos + deduplicación semántica."""
-        print("=== PASO 6: SIMILITUD COSENO + DEDUPLICACIÓN ===")
-        assert self.tfidf_matrix is not None, "Ejecute step_3 primero"
+        """Análisis de similitud entre documentos + deduplicación semántica."""
+        print("=== PASO 6: SIMILITUD + DEDUPLICACIÓN ===")
+        assert self.df_processed is not None, "Ejecute step_3 primero"
 
         try:
-            sim_matrix = cosine_similarity(self.tfidf_matrix)
+            texts = self.df_processed['texto_combinado'].fillna('').astype(str).tolist()
+            n_docs = len(texts)
             most_similar_idx = []
             max_sims = []
-            for i in range(len(self.df_processed)):
-                sims = sim_matrix[i].copy()
-                sims[i] = 0  # excluir auto-similitud
-                most_similar_idx.append(int(sims.argmax()) if sims.max() > 0 else -1)
-                max_sims.append(float(sims.max()))
+
+            if HAS_SKLEARN and cosine_similarity is not None and not isinstance(self.tfidf_matrix, list):
+                sim_matrix = cosine_similarity(self.tfidf_matrix)
+                for i in range(n_docs):
+                    sims = sim_matrix[i].copy()
+                    sims[i] = 0
+                    most_similar_idx.append(int(sims.argmax()) if sims.max() > 0 else -1)
+                    max_sims.append(float(sims.max()))
+            else:
+                for i in range(n_docs):
+                    best_j = -1
+                    best_sim = 0.0
+                    for j in range(n_docs):
+                        if i == j:
+                            continue
+                        sim = jaccard_similarity(texts[i], texts[j])
+                        if sim > best_sim:
+                            best_sim = sim
+                            best_j = j
+                    most_similar_idx.append(best_j)
+                    max_sims.append(round(best_sim, 4))
 
             self.df_processed['most_similar_doc_idx'] = most_similar_idx
             self.df_processed['max_similarity'] = max_sims
 
-            avg = np.mean(max_sims)
+            avg = np.mean(max_sims) if max_sims else 0.0
             high = sum(1 for s in max_sims if s > 0.5)
             print(f"  Similitud promedio: {avg:.3f} | Pares > 0.5: {high}")
 
@@ -200,12 +223,6 @@ class SimplifiedNewsAnalyzer:
             )
             post = len(self.df_processed)
             if pre > post:
-                # Reconstruir TF-IDF matrix para los docs restantes
-                texts = self.df_processed['texto_combinado'].fillna('').astype(str).tolist()
-                domain_docs = [' '.join(DOMAIN_TERMS)] * 2
-                all_texts = texts + domain_docs
-                full_matrix = self.vectorizer.fit_transform(all_texts)
-                self.tfidf_matrix = full_matrix[:len(texts)]
                 print(f"  Duplicados semánticos eliminados: {pre - post}")
         except Exception as e:
             print(f"  Error similitud/dedup: {e}")
