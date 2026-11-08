@@ -202,6 +202,118 @@ class CasoExtraidoSchema(BaseModel):
     )
 
 
+def _sanitize_llm_json(raw_dict: Any) -> dict[str, Any]:
+    """
+    Sanitiza y normaliza las respuestas crudas de cualquier LLM (Groq, Gemini, etc.)
+    antes de pasar por `CasoExtraidoSchema.model_validate`.
+
+    Resuelve discrepancias comunes como:
+      - `clasificacion: "Baja"` -> Mapeado a "Media" o "No relevante".
+      - `clasificacion: null` -> Inferido a partir del estado de los 5 candados.
+      - `ninos_afectados: null` -> Normalizado a 0.
+      - Valores `null` en cadenas -> Convertidos a cadenas vacías o textos por defecto.
+      - Valores booleanos representados como texto ("true", "si", "1") o enteros.
+    """
+    if not isinstance(raw_dict, dict):
+        return {}
+
+    d = dict(raw_dict)
+
+    # 1. Sanitizar candados booleanos
+    for bool_field in [
+        "candado_1_es_caso_concreto",
+        "candado_2_ocurrio_en_mexico",
+        "candado_3_victima_mortal_es_mujer_madre",
+        "candado_4_menor_no_es_el_agresor",
+        "candado_5_hay_nna_huerfanos_o_sobrevivientes",
+    ]:
+        val = d.get(bool_field)
+        if isinstance(val, bool):
+            continue
+        if isinstance(val, str):
+            d[bool_field] = val.strip().lower() in ("true", "1", "si", "sí", "yes")
+        elif isinstance(val, (int, float)):
+            d[bool_field] = bool(val)
+        else:
+            d[bool_field] = False
+
+    # 2. Sanitizar clasificacion (Literal['Alta', 'Media', 'No relevante'])
+    clasif = d.get("clasificacion")
+    c1 = d.get("candado_1_es_caso_concreto", False)
+    c2 = d.get("candado_2_ocurrio_en_mexico", False)
+    c3 = d.get("candado_3_victima_mortal_es_mujer_madre", False)
+    c4 = d.get("candado_4_menor_no_es_el_agresor", False)
+    c5 = d.get("candado_5_hay_nna_huerfanos_o_sobrevivientes", False)
+
+    if not isinstance(clasif, str) or not clasif.strip():
+        if c1 and c2 and c3 and c4:
+            d["clasificacion"] = "Alta" if c5 else "Media"
+        else:
+            d["clasificacion"] = "No relevante"
+    else:
+        norm = clasif.strip()
+        low = norm.lower()
+        if low in ("alta", "alto"):
+            d["clasificacion"] = "Alta"
+        elif low in ("media", "medio"):
+            d["clasificacion"] = "Media"
+        elif low in ("baja", "bajo", "media baja", "baja media"):
+            # Si el modelo clasifica 'Baja', si cumple candados es Media; si no, No relevante
+            d["clasificacion"] = "Media" if (c1 and c2 and c3 and c4 and c5) else "No relevante"
+        elif "no" in low or "descart" in low:
+            d["clasificacion"] = "No relevante"
+        else:
+            d["clasificacion"] = "No relevante"
+
+    # 3. Sanitizar ninos_afectados (int | str, nunca None)
+    na = d.get("ninos_afectados")
+    if na is None or na == "":
+        d["ninos_afectados"] = 0
+    elif isinstance(na, (int, float)):
+        d["ninos_afectados"] = int(na)
+    elif isinstance(na, str):
+        na_str = na.strip()
+        if na_str.isdigit():
+            d["ninos_afectados"] = int(na_str)
+        else:
+            m = re.search(r"\d+", na_str)
+            d["ninos_afectados"] = int(m.group(0)) if m else na_str
+
+    # 4. Sanitizar confianza (float [0.0, 1.0])
+    conf = d.get("confianza")
+    try:
+        if conf is None or conf == "":
+            d["confianza"] = 0.88 if d.get("clasificacion") in ("Alta", "Media") else 0.05
+        else:
+            d["confianza"] = max(0.0, min(1.0, float(conf)))
+    except (ValueError, TypeError):
+        d["confianza"] = 0.50
+
+    # 5. Sanitizar campos de texto (reemplazar None con valores seguros)
+    text_defaults = [
+        ("cita_textual_evidencia", ""),
+        ("motivo_descarte", None),
+        ("estado", "No especificado"),
+        ("municipio", "No especificado"),
+        ("ubicacion", "No especificada"),
+        ("victimas", "No especificada"),
+        ("edades", "No especificada"),
+        ("situacion_actual", "No especificada"),
+        ("medios_contacto", "No especificado"),
+        ("resumen", ""),
+    ]
+    for field_name, default_val in text_defaults:
+        val = d.get(field_name)
+        if val is None:
+            d[field_name] = default_val
+        elif not isinstance(val, str):
+            d[field_name] = str(val).strip()
+        else:
+            d[field_name] = val.strip()
+
+    return d
+
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 2. PRE-FILTRO DE ADMISIÓN RÁPIDO (GATEKEEPER LÉXICO SOBRE TEXTO COMPLETO)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -698,19 +810,33 @@ class LLMExtractor:
             "response_format": {"type": "json_object"},
         }
 
-        resp = requests.post(
-            provider["base_url"],
-            headers=headers,
-            json=payload,
-            timeout=30,
-        )
-        if resp.status_code == 429:
-            raise RuntimeError(f"Rate limit (429) en proveedor {provider['name']}")
-        resp.raise_for_status()
+        max_retries = 2
+        for attempt in range(max_retries + 1):
+            resp = requests.post(
+                provider["base_url"],
+                headers=headers,
+                json=payload,
+                timeout=30,
+            )
+            if resp.status_code == 429:
+                if attempt < max_retries:
+                    backoff = 2.0 * (attempt + 1)
+                    logger.warning(
+                        "[LLMExtractor] 429 Rate limit en proveedor '%s'. Reintentando en %.1fs (intento %d/%d)...",
+                        provider["name"],
+                        backoff,
+                        attempt + 1,
+                        max_retries,
+                    )
+                    time.sleep(backoff)
+                    continue
+                raise RuntimeError(f"Rate limit (429) persistente en proveedor {provider['name']}")
+            resp.raise_for_status()
+            data = resp.json()
+            raw_text = data["choices"][0]["message"]["content"]
+            return self._parse_json_response(raw_text)
 
-        data = resp.json()
-        raw_text = data["choices"][0]["message"]["content"]
-        return self._parse_json_response(raw_text)
+        raise RuntimeError(f"Fallo de conexión tras reintentos con {provider['name']}")
 
     def _call_gemini(
         self,
@@ -741,10 +867,33 @@ class LLMExtractor:
                 "responseMimeType": "application/json",
             },
         }
-        resp = requests.post(url, json=payload, timeout=30)
-        if resp.status_code == 429:
-            raise RuntimeError("Rate limit (429) en proveedor gemini")
-        resp.raise_for_status()
+
+        max_retries = 2
+        for attempt in range(max_retries + 1):
+            resp = requests.post(url, json=payload, timeout=30)
+            if resp.status_code == 429:
+                if attempt < max_retries:
+                    backoff = 2.0 * (attempt + 1)
+                    logger.warning(
+                        "[LLMExtractor] 429 Rate limit en proveedor gemini. Reintentando en %.1fs (intento %d/%d)...",
+                        backoff,
+                        attempt + 1,
+                        max_retries,
+                    )
+                    time.sleep(backoff)
+                    continue
+                raise RuntimeError("Rate limit (429) persistente en proveedor gemini")
+            resp.raise_for_status()
+            data = resp.json()
+            raw_text = (
+                data.get("candidates", [{}])[0]
+                .get("content", {})
+                .get("parts", [{}])[0]
+                .get("text", "{}")
+            )
+            return self._parse_json_response(raw_text)
+
+        raise RuntimeError("Fallo de conexión tras reintentos con gemini")
 
         data = resp.json()
         raw_text = (
@@ -883,6 +1032,7 @@ class LLMExtractor:
         title: str,
         content: str,
         source_url: str = "",
+        force_fallback: bool = False,
     ) -> dict[str, Any]:
         """
         Analiza una noticia completa aplicando:
@@ -927,26 +1077,30 @@ class LLMExtractor:
         extracted_schema: Optional[CasoExtraidoSchema] = None
         provider_used = "deterministic_fallback"
 
-        for provider in self.providers:
-            try:
-                if provider["name"] == "gemini":
-                    raw_dict = self._call_gemini(provider, title_str, content_str, source_url)
-                else:
-                    raw_dict = self._call_openai_compatible(provider, title_str, content_str, source_url)
+        if not force_fallback:
+            for provider in self.providers:
+                try:
+                    if provider["name"] == "gemini":
+                        raw_dict = self._call_gemini(provider, title_str, content_str, source_url)
+                    else:
+                        raw_dict = self._call_openai_compatible(provider, title_str, content_str, source_url)
 
-                extracted_schema = CasoExtraidoSchema.model_validate(raw_dict)
-                provider_used = f"llm_{provider['name']}:{provider['model']}"
-                break
-            except Exception as exc:
-                logger.warning(
-                    "[LLMExtractor] Proveedor '%s' falló (%s). Probando siguiente proveedor...",
-                    provider["name"],
-                    exc,
-                )
-                continue
+                    sanitized = _sanitize_llm_json(raw_dict)
+                    extracted_schema = CasoExtraidoSchema.model_validate(sanitized)
+                    provider_used = f"llm_{provider['name']}:{provider['model']}"
+                    break
+                except Exception as exc:
+                    logger.warning(
+                        "[LLMExtractor] Proveedor '%s' falló (%s). Probando siguiente proveedor...",
+                        provider["name"],
+                        exc,
+                    )
+                    continue
 
         if extracted_schema is None:
             extracted_schema = self._deterministic_fallback_extract(title_str, content_str, source_url)
+            if force_fallback:
+                provider_used = "deterministic_fallback_budget_reached"
 
         # ── Etapa 3: Validación Determinista de los 5 Candados en Python ────
         final_result = aplicar_candados_estrictos(extracted_schema, title_str, content_str)
@@ -962,11 +1116,14 @@ class LLMExtractor:
         titles: list[str],
         contents: list[str],
         urls: Optional[list[str]] = None,
-        delay_between_llm_calls: float = 0.2,
+        delay_between_llm_calls: float = 1.2,
+        max_llm_calls: int = 25,
     ) -> list[dict[str, Any]]:
         """
-        Analiza un lote de noticias.
-        Solo las noticias que pasan `passes_admission_gate()` consumen llamadas al LLM.
+        Analiza un lote de noticias aplicando:
+          1. Gatekeeper ultra-rápido (< 1 ms).
+          2. Presupuesto de llamadas LLM (max_llm_calls) para respetar límites de cuota gratuita.
+          3. Pausa adaptativa entre llamadas consecutivas a Groq/Gemini para evitar HTTP 429.
         """
         n = len(titles)
         if urls is None:
@@ -976,7 +1133,13 @@ class LLMExtractor:
         llm_calls = 0
 
         for idx in range(n):
-            res = self.analyze_article(titles[idx], contents[idx], urls[idx])
+            force_fallback = (llm_calls >= max_llm_calls)
+            res = self.analyze_article(
+                titles[idx],
+                contents[idx],
+                urls[idx],
+                force_fallback=force_fallback,
+            )
             results.append(res)
 
             if res.get("modo", "").startswith("llm_"):
@@ -985,7 +1148,7 @@ class LLMExtractor:
                     time.sleep(delay_between_llm_calls)
 
         logger.info(
-            "[LLMExtractor] Lote de %d noticias procesado (%d llamadas a LLM, %d filtradas por gatekeeper).",
+            "[LLMExtractor] Lote de %d noticias procesado (%d llamadas a LLM, %d filtradas por gatekeeper/presupuesto).",
             n,
             llm_calls,
             n - llm_calls,

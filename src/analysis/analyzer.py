@@ -98,9 +98,9 @@ class SimplifiedNewsAnalyzer:
     # ── Pasos del pipeline ──────────────────────────────────
 
     def step_1_collect_data(self, start_date: str | None = None, end_date: str | None = None, scraper_type: str = 'all') -> pd.DataFrame:
-        """Recolección de datos desde RSS feeds con filtrado de relevancia."""
-        print("=== PASO 1: RECOLECCIÓN + SCORING DE RELEVANCIA ===")
-        self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
+        """Recolección de datos mediante búsqueda dirigida y filtrado temprano con Scrapling."""
+        print("=== PASO 1: RECOLECCIÓN DIRIGIDA + SCORING DE RELEVANCIA ===")
+        self.df_original = collect_all_news(keep_all=False, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
 
         if self.df_original.empty:
             print("  No se recolectaron noticias relevantes.")
@@ -113,10 +113,10 @@ class SimplifiedNewsAnalyzer:
         baja = (self.df_original['clasificacion'] == 'Baja').sum()
 
         print(f"  {total} noticias relevantes recolectadas")
-        print(f"   ├── Alta relevancia:  {alta}")
-        print(f"   ├── Media relevancia: {media}")
-        print(f"   ├── Baja relevancia:  {baja}")
-        print(f"   └── Mencionan NNA:    {nna}")
+        print(f"   |-- Alta relevancia:  {alta}")
+        print(f"   |-- Media relevancia: {media}")
+        print(f"   |-- Baja relevancia:  {baja}")
+        print(f"   +-- Mencionan NNA:    {nna}")
         return self.df_original
 
     def step_2_save_initial_data(self, filepath: str | None = None):
@@ -191,13 +191,25 @@ class SimplifiedNewsAnalyzer:
                     most_similar_idx.append(int(sims.argmax()) if sims.max() > 0 else -1)
                     max_sims.append(float(sims.max()))
             else:
+                token_sets = [set(t.split()) for t in texts]
                 for i in range(n_docs):
                     best_j = -1
                     best_sim = 0.0
+                    set_i = token_sets[i]
+                    if not set_i:
+                        most_similar_idx.append(-1)
+                        max_sims.append(0.0)
+                        continue
                     for j in range(n_docs):
                         if i == j:
                             continue
-                        sim = jaccard_similarity(texts[i], texts[j])
+                        set_j = token_sets[j]
+                        if not set_j:
+                            continue
+                        inter = len(set_i & set_j)
+                        if inter == 0:
+                            continue
+                        sim = inter / len(set_i | set_j)
                         if sim > best_sim:
                             best_sim = sim
                             best_j = j
@@ -733,12 +745,11 @@ class SimplifiedNewsAnalyzer:
                         from src.database.models_noticias import ClusterSemantico, db
                         for item in self._topic_clusters_summary:
                             cluster_row = ClusterSemantico(
-                                topic_id=item["topic_id"],
-                                etiqueta=item["label"],
+                                etiqueta=item.get("label", f"Cluster {item.get('topic_id', '')}"),
+                                descripcion=f"Tópico {item.get('topic_id', '')}: {item.get('label', '')}",
                                 terminos_principales=item.get("terms", []),
-                                num_documentos=item["count"],
-                                es_outlier=False,
-                                batch_id=self.current_batch_id,
+                                num_documentos=item.get("count", 0),
+                                es_outlier=bool(item.get("topic_id", 0) == -1),
                                 sesion_id=sesion_id,
                             )
                             db.session.add(cluster_row)

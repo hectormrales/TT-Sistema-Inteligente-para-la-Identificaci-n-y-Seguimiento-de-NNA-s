@@ -859,7 +859,10 @@ def score_relevance(title: str, content: str) -> dict:
                 score_comp = min(1.0, score_comp * 1.30)
             if score_caso > 0.15:
                 score_comp = min(1.0, score_comp * 1.25)
-        logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")
+        logger.debug(
+            f"  [*] Keywords de Oro detectadas - pre-gatekeeper activo "
+            f"(score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})"
+        )
 
     # ── Penalización: Menor como agresor, no como víctima indirecta ──
     # Evita que noticias de "menor de edad comete feminicidio" sumen al eje NNA
@@ -1093,12 +1096,9 @@ def collect_news_from_rss(
             else:
                 enlace_text = raw_link
 
-            # ── Filtro de URLs ya procesadas ────────────────
+            # ── Filtro de URLs ya procesadas en este ciclo o ya en BD ──
             if enlace_text:
-                if enlace_text in seen_urls and not (start_date or end_date):
-                    skipped_seen += 1
-                    continue
-                if (start_date or end_date) and _is_url_in_db(enlace_text):
+                if enlace_text in seen_urls or _is_url_in_db(enlace_text):
                     skipped_seen += 1
                     continue
 
@@ -1264,8 +1264,8 @@ def enrich_candidates_with_full_text(
     if selected_idx:
         urls_to_fetch = [articles[i]['enlace'] for i in selected_idx]
         print(
-            f"  ── Enriquecimiento Full-Text con Scrapling: "
-            f"descargando cuerpo de {len(urls_to_fetch)} notas candidatas ──"
+            f"  -- Enriquecimiento Full-Text con Scrapling: "
+            f"descargando cuerpo de {len(urls_to_fetch)} notas candidatas --"
         )
         extracted_map = extract_full_articles_batch(
             urls_to_fetch,
@@ -1288,7 +1288,7 @@ def enrich_candidates_with_full_text(
                 art.update(rel)
                 enriched_count += 1
 
-        print(f"  → Cuerpo completo extraído en {enriched_count}/{len(urls_to_fetch)} notas")
+        print(f"  -> Cuerpo completo extraído en {enriched_count}/{len(urls_to_fetch)} notas")
 
     # Filtrar candidatos exploratorios (_needs_fulltext_verify) que tras leer el cuerpo
     # completo siguen sin mencionar NNA / orfandad
@@ -1319,25 +1319,30 @@ def collect_all_news(
     """
     threshold = getattr(config, 'RELEVANCE_THRESHOLD', 0.25)
     all_articles = []
-    seen_urls = _load_seen_urls()
-    initial_seen = len(seen_urls)
+    # Deduplicación en memoria para el ciclo actual (la BD verifica persistencia real vía _is_url_in_db)
+    seen_urls: set[str] = set()
+    initial_seen = 0
     sources_ok = 0
     sources_error = 0
+    executed_feed_urls: set[str] = set()
 
     shared_session = StealthSession(test_mode=False, use_scrapling=True)
 
     try:
         # ── 1. Fase General: Búsqueda Dirigida en Google News y Bing News ──
         if scraper_type in ['all', 'google']:
-            print("  ── Búsqueda Dirigida en Google News + Bing News ──")
+            print("  -- Búsqueda Dirigida en Google News + Bing News --")
             search_feeds = [
                 f for f in config.RSS_FEEDS
                 if ('news.google.com' in f or 'bing.com/news' in f)
             ]
-            for feed in search_feeds:
+            for raw_feed in search_feeds:
+                executed_feed_urls.add(raw_feed)
+                feed = raw_feed
                 if 'news.google.com' in feed:
                     feed = _inject_date_operators(feed, start_date, end_date)
-                feed_label = feed[:70] + '…' if len(feed) > 70 else feed
+                executed_feed_urls.add(feed)
+                feed_label = feed[:70] + '...' if len(feed) > 70 else feed
                 print(f"  Search RSS: {feed_label}")
                 articles = collect_news_from_rss(
                     feed, seen_urls, session=shared_session,
@@ -1351,7 +1356,7 @@ def collect_all_news(
                 all_articles.extend(articles)
 
             # ── 1.5 Fase Búsqueda Dirigida y Redes Sociales (DuckDuckGo con fechas) ──
-            print("  ── Búsqueda Dirigida y Redes Sociales (DuckDuckGo) ──")
+            print("  -- Búsqueda Dirigida y Redes Sociales (DuckDuckGo) --")
             ddg_queries = getattr(
                 config,
                 'TARGETED_SEARCH_QUERIES',
@@ -1376,7 +1381,7 @@ def collect_all_news(
 
             # ── 1.8 Fase Histórica: Google Search HTML ──
             if scraper_type in ['all', 'google'] and (start_date or end_date):
-                print("  ── Búsqueda en Google Search (Fallback Histórico HTML) ──")
+                print("  -- Búsqueda en Google Search (Fallback Histórico HTML) --")
                 historico_queries = [
                     'feminicidio "víctimas indirectas" niños méxico',
                     'huérfanos feminicidio méxico',
@@ -1402,13 +1407,26 @@ def collect_all_news(
                         sources_ok += 1
                     all_articles.extend(valid_articles)
 
-        # ── 2. Fase Específica: Fuentes configuradas por el usuario ──
+        # ── 2. Fase Específica: Fuentes adicionales no ejecutadas en Fase 1 ──
         if scraper_type in ['all', 'custom']:
-            db_sources = _get_db_sources()
+            raw_db_sources = _get_db_sources()
+            # Evitar doble ejecución de feeds de Google News / Bing News que ya corrieron en Fase 1
+            db_sources = [
+                s for s in raw_db_sources
+                if s['url'] not in executed_feed_urls
+                and not (
+                    scraper_type == 'all'
+                    and ('news.google.com/rss/search' in s['url'] or 'bing.com/news/search' in s['url'])
+                )
+            ]
 
             if db_sources:
-                print(f"  ── {len(db_sources)} fuentes personalizadas desde DB ──")
-                scraper = DynamicScraper(respect_robots=True, default_delay=0.8)
+                print(f"  -- {len(db_sources)} fuentes especializadas/personalizadas desde DB --")
+                scraper = DynamicScraper(
+                    respect_robots=True,
+                    default_delay=0.8,
+                    session=shared_session,
+                )
 
                 for source in db_sources:
                     src_label = f"{source['name']} ({source['source_type']})"
@@ -1424,33 +1442,6 @@ def collect_all_news(
                                 end_date=end_date,
                                 keep_all=keep_all
                             )
-                            if not articles:
-                                print(f"    [!] RSS falló o vacío. Intentando fallback HTML automático...")
-                                parsed = urlparse(source['url'])
-                                base_url = f"{parsed.scheme}://{parsed.netloc}/"
-                                
-                                raw_articles = scraper.scrape_source(
-                                    base_url,
-                                    method='html',
-                                    max_articles=15,
-                                    keywords=["feminicidio", "nna", "niñ", "menor", "huerfan", "hijo", "victima", "infant", "adolescente", "asesinat", "mujer", "violencia", "genero"]
-                                )
-                                for art in raw_articles:
-                                    enlace = art.get('enlace', base_url)
-                                    if enlace in seen_urls and not (start_date or end_date):
-                                        continue
-                                    if (start_date or end_date) and _is_url_in_db(enlace):
-                                        continue
-                                    if not _is_mexico_news(art.get('titulo', ''), art.get('contenido', ''), enlace):
-                                        continue
-                                    rel = score_relevance(art['titulo'], art['contenido'])
-                                    art.update(rel)
-                                    art['fuente'] = source['name']
-                                    art['scrape_method'] = 'html_fallback'
-                                    articles.append(art)
-                                    if enlace:
-                                        seen_urls.add(enlace)
-
                             for art in articles:
                                 art['fuente'] = source['name']
                             all_articles.extend(articles)
@@ -1458,22 +1449,21 @@ def collect_all_news(
                                 source['id'], 'ok', len(articles)
                             )
                             sources_ok += 1
-                            if any(a.get('scrape_method') == 'html_fallback' for a in articles):
-                                print(f"    → {len(articles)} artículos (vía Fallback HTML)")
-                            else:
-                                print(f"    → {len(articles)} artículos")
+                            print(f"    -> {len(articles)} artículos relevantes")
                         else:
                             raw_articles = scraper.scrape_source(
                                 source['url'],
                                 method=source['source_type'],
-                                max_articles=30,
+                                max_articles=20,
+                                keywords=[
+                                    "feminicidio", "nna", "niñ", "menor", "huerfan",
+                                    "orfandad", "hijo", "victima", "dif",
+                                ],
                             )
                             accepted = 0
                             for art in raw_articles:
                                 enlace = art.get('enlace', source['url'])
-                                if enlace in seen_urls and not (start_date or end_date):
-                                    continue
-                                if (start_date or end_date) and _is_url_in_db(enlace):
+                                if enlace in seen_urls or _is_url_in_db(enlace):
                                     continue
                                 if not _is_mexico_news(
                                     art.get('titulo', ''),
@@ -1482,6 +1472,8 @@ def collect_all_news(
                                 ):
                                     continue
                                 rel = score_relevance(art['titulo'], art['contenido'])
+                                if not keep_all and rel['clasificacion'] == 'No relevante':
+                                    continue
                                 art.update(rel)
                                 art['fuente'] = source['name']
                                 art.setdefault('cluster', 0)
@@ -1493,7 +1485,7 @@ def collect_all_news(
                                 source['id'], 'ok', accepted
                             )
                             sources_ok += 1
-                            print(f"    → {accepted} artículos aceptados")
+                            print(f"    -> {accepted} artículos aceptados")
 
                     except Exception as e:
                         sources_error += 1
@@ -1501,23 +1493,26 @@ def collect_all_news(
                         _update_db_source_status(
                             source['id'], 'error', 0, str(e)[:200]
                         )
-            else:
+            elif not raw_db_sources:
                 # ── Fallback: sin DB, usar el resto de config.RSS_FEEDS ─────────
-                print("  ── Fuentes RSS adicionales desde config (sin contexto DB) ──")
                 other_feeds = [
                     f for f in config.RSS_FEEDS
-                    if 'news.google.com' not in f and 'bing.com/news' not in f
+                    if f not in executed_feed_urls
+                    and 'news.google.com' not in f
+                    and 'bing.com/news' not in f
                 ]
-                for feed in other_feeds:
-                    feed_label = feed[:70] + '…' if len(feed) > 70 else feed
-                    print(f"  RSS: {feed_label}")
-                    articles = collect_news_from_rss(
-                        feed, seen_urls, session=shared_session,
-                        start_date=start_date, end_date=end_date, keep_all=keep_all
-                    )
-                    if articles:
-                        sources_ok += 1
-                    all_articles.extend(articles)
+                if other_feeds:
+                    print("  -- Fuentes RSS especializadas desde config --")
+                    for feed in other_feeds:
+                        feed_label = feed[:70] + '...' if len(feed) > 70 else feed
+                        print(f"  RSS: {feed_label}")
+                        articles = collect_news_from_rss(
+                            feed, seen_urls, session=shared_session,
+                            start_date=start_date, end_date=end_date, keep_all=keep_all
+                        )
+                        if articles:
+                            sources_ok += 1
+                        all_articles.extend(articles)
 
         # v7.0: Diagnóstico del circuit breaker al final del ciclo
         cb_status = shared_session.get_circuit_breaker_status()
@@ -1527,7 +1522,7 @@ def collect_all_news(
                 if info['state'] != 'closed'
             }
             if open_circuits:
-                print(f"  ⚠ Circuit breaker — dominios en cooldown: {list(open_circuits.keys())}")
+                print(f"  [!] Circuit breaker - dominios en cooldown: {list(open_circuits.keys())}")
                 for domain, info in open_circuits.items():
                     logger.warning(
                         f"Circuit breaker {info['state'].upper()} para {domain}: "
@@ -1551,7 +1546,7 @@ def collect_all_news(
     df = pd.DataFrame(all_articles)
 
     # ── 3. Deduplicación temprana por título/contenido antes de descargar cuerpos ──
-    print("  ── Deduplicación avanzada ──")
+    print("  -- Deduplicación avanzada --")
     pre_dedup = len(df)
 
     deduplicator = NewsDeduplicator(
@@ -1563,7 +1558,7 @@ def collect_all_news(
 
     post_dedup = len(df)
     removed = pre_dedup - post_dedup
-    print(f"  Duplicados eliminados: {removed} ({pre_dedup} → {post_dedup})")
+    print(f"  Duplicados eliminados: {removed} ({pre_dedup} -> {post_dedup})")
 
     # ── 4. Enriquecimiento Full-Text con Scrapling + Trafilatura ──
     if enrich_full_text and not df.empty:

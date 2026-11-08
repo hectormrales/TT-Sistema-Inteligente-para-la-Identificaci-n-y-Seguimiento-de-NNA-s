@@ -500,7 +500,7 @@ class WaybackHistorical:
         for domain in domains:
             logger.info(f"Wayback Machine: buscando en {domain}")
             urls = self.search_domain(domain, start, end, max_per_domain)
-            logger.info(f"  → {len(urls)} URLs encontradas")
+            logger.info(f"  -> {len(urls)} URLs encontradas")
 
             for url in urls:
                 article = self.extract_from_archive(url)
@@ -515,7 +515,7 @@ class WaybackHistorical:
 
                 time.sleep(random.uniform(2, 5))
 
-            logger.info(f"  → {len(all_articles)} artículos relevantes acumulados")
+            logger.info(f"  -> {len(all_articles)} artículos relevantes acumulados")
 
         if all_articles:
             return pd.DataFrame(all_articles)
@@ -857,7 +857,7 @@ class HistoricalCollector:
 
         # Estrategia 1: Google News
         if "google_news" in strategies:
-            logger.info("── Estrategia 1: Google News Archive ──")
+            logger.info("-- Estrategia 1: Google News Archive --")
             df_google = self.google.collect_all_periods()
             if not df_google.empty:
                 logger.info(
@@ -868,7 +868,7 @@ class HistoricalCollector:
 
         # Estrategia 2: Wayback Machine
         if "wayback_machine" in strategies:
-            logger.info("── Estrategia 2: Wayback Machine ──")
+            logger.info("-- Estrategia 2: Wayback Machine --")
             df_wayback = self.wayback.collect_all()
             if not df_wayback.empty:
                 logger.info(
@@ -892,7 +892,7 @@ class HistoricalCollector:
         pre = len(df)
         df = dedup.deduplicate(df, keep="best")
         post = len(df)
-        logger.info(f"Deduplicación: {pre} → {post} ({pre - post} eliminados)")
+        logger.info(f"Deduplicación: {pre} -> {post} ({pre - post} eliminados)")
 
         # Filtrar solo relevantes
         if "score_compuesto" in df.columns:

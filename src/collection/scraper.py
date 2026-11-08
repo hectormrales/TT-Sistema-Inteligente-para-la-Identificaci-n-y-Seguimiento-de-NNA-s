@@ -63,6 +63,44 @@ import config
 # https://github.com/d4vinci/Scrapling
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 try:
+    import certifi
+except ImportError:
+    certifi = None
+
+
+def _ensure_ascii_ca_bundle() -> str | bool:
+    """
+    Garantiza una ruta ASCII para `cacert.pem` en Windows cuando el nombre
+    de usuario contiene caracteres con acento (ej. `HéctorMorales`), evitando
+    el error `curl: (77) error adding trust anchors` de libcurl/curl_cffi
+    y configurando las variables de entorno antes de inicializar Scrapling.
+    """
+    if certifi is None:
+        return True
+    orig = certifi.where()
+    try:
+        orig.encode("ascii")
+        ascii_path = orig
+    except UnicodeEncodeError:
+        try:
+            data_dir = getattr(config, "DATA_DIR", "data") if hasattr(config, "DATA_DIR") else "data"
+            os.makedirs(data_dir, exist_ok=True)
+            ascii_ca = os.path.abspath(os.path.join(data_dir, "cacert.pem"))
+            if not os.path.exists(ascii_ca):
+                shutil.copyfile(orig, ascii_ca)
+            ascii_path = ascii_ca
+        except Exception:
+            return True
+
+    os.environ["CURL_CA_BUNDLE"] = ascii_path
+    os.environ["SSL_CERT_FILE"] = ascii_path
+    os.environ["REQUESTS_CA_BUNDLE"] = ascii_path
+    return ascii_path
+
+
+_ASCII_CA_BUNDLE = _ensure_ascii_ca_bundle()
+
+try:
     from scrapling import Selector as ScraplingSelector
     HAS_SCRAPLING_SELECTOR = True
 except ImportError:
@@ -86,40 +124,12 @@ except Exception:
     HAS_SCRAPLING_FETCHER = False
 
 try:
-    import certifi
     from curl_cffi import requests as cffi_requests
     HAS_CURL_CFFI = True
 except ImportError:
-    certifi = None
     cffi_requests = None
     HAS_CURL_CFFI = False
 
-
-def _ensure_ascii_ca_bundle() -> str | bool:
-    """
-    Garantiza una ruta ASCII para `cacert.pem` en Windows cuando el nombre
-    de usuario contiene caracteres con acento (ej. `HéctorMorales`), evitando
-    el error `curl: (77) error adding trust anchors` de libcurl/curl_cffi.
-    """
-    if certifi is None:
-        return True
-    orig = certifi.where()
-    try:
-        orig.encode("ascii")
-        return orig
-    except UnicodeEncodeError:
-        try:
-            data_dir = getattr(config, "DATA_DIR", "data") if hasattr(config, "DATA_DIR") else "data"
-            os.makedirs(data_dir, exist_ok=True)
-            ascii_ca = os.path.abspath(os.path.join(data_dir, "cacert.pem"))
-            if not os.path.exists(ascii_ca):
-                shutil.copyfile(orig, ascii_ca)
-            return ascii_ca
-        except Exception:
-            return True
-
-
-_ASCII_CA_BUNDLE = _ensure_ascii_ca_bundle()
 HAS_SCRAPLING = HAS_SCRAPLING_SELECTOR or HAS_SCRAPLING_FETCHER or HAS_CURL_CFFI
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -637,14 +647,15 @@ class DomainCircuitBreaker:
             )
             return
 
-        # Si alcanzó el threshold → abrir
+        # Si alcanzó el threshold -> abrir (solo registrar log en la transición)
         if self._failures[domain] >= self.FAILURE_THRESHOLD:
             self._state[domain] = 'open'
-            logger.warning(
-                f"Circuit breaker ABIERTO para {domain} — "
-                f"{self._failures[domain]} fallos consecutivos. "
-                f"Cooldown {self.COOLDOWN_SECONDS}s"
-            )
+            if current_state != 'open':
+                logger.warning(
+                    f"Circuit breaker ABIERTO para {domain} - "
+                    f"{self._failures[domain]} fallos consecutivos. "
+                    f"Cooldown {self.COOLDOWN_SECONDS}s"
+                )
 
     def get_status(self) -> dict:
         """Retorna el estado de todos los circuitos para diagnóstico."""
@@ -812,15 +823,22 @@ class StealthSession:
 
     # Soporte para rotación de proxies (tomado de config.py si existe)
     PROXIES = getattr(config, 'PROXIES', [])
+    CFFI_IMPERSONATE_PROFILES = ("chrome131", "chrome124", "chrome120", "edge101")
+    _SHARED_CIRCUIT_BREAKER = DomainCircuitBreaker()
 
-    def __init__(self, test_mode: bool = False, use_scrapling: bool = True):
+    def __init__(
+        self,
+        test_mode: bool = False,
+        use_scrapling: bool = True,
+        circuit_breaker: DomainCircuitBreaker | None = None,
+    ):
         self._sessions: dict[str, requests.Session] = {}
         self._domain_ua: dict[str, str] = {}
         self._last_request: dict[str, float] = {}
         self.test_mode = test_mode
         self.use_scrapling = use_scrapling and HAS_SCRAPLING
-        # Circuit breaker compartido entre todas las sesiones
-        self._circuit_breaker = DomainCircuitBreaker()
+        # Circuit breaker compartido entre todas las sesiones y scrapers
+        self._circuit_breaker = circuit_breaker or self._SHARED_CIRCUIT_BREAKER
 
     def _get_session(self, domain: str) -> requests.Session:
         """
@@ -947,7 +965,7 @@ class StealthSession:
         # ── Circuit breaker: verificar si el dominio está en cooldown ──
         if not self._circuit_breaker.can_request(domain):
             logger.debug(
-                f"Circuit breaker ABIERTO para {domain} — saltando request"
+                f"Circuit breaker ABIERTO para {domain} - saltando request"
             )
             return None
 
@@ -957,11 +975,18 @@ class StealthSession:
         headers['User-Agent'] = self._domain_ua.get(domain, _random_user_agent())
 
         for attempt in range(1, self.MAX_RETRIES + 1):
+            if not self._circuit_breaker.can_request(domain):
+                logger.debug(
+                    f"Circuit breaker ABIERTO para {domain} - cortando reintentos"
+                )
+                return None
+
             # Delay lognormal ANTES de cada request al mismo dominio
             self._human_delay(domain, is_blocked_site)
 
-            # ── Nivel 1: Scrapling Fetcher / curl_cffi (TLS/HTTP2 Chrome Impersonation) ──
+            # ── Nivel 1: Scrapling Fetcher + curl_cffi (TLS/HTTP2 Chrome Impersonation) ──
             if self.use_scrapling:
+                scrapling_adapted = None
                 if ScraplingFetcher is not None:
                     try:
                         page = ScraplingFetcher.get(
@@ -970,11 +995,7 @@ class StealthSession:
                             follow_redirects=True,
                             timeout=timeout,
                         )
-                        adapted = ScraplingResponseAdapter(page, url)
-                        if adapted.status_code not in (403, 429, 503):
-                            adapted.raise_for_status()
-                            self._circuit_breaker.record_success(domain)
-                            return adapted
+                        scrapling_adapted = ScraplingResponseAdapter(page, url)
                     except Exception as sc_err:
                         logger.debug(
                             "Scrapling Fetcher aviso en %s (intento %d): %s",
@@ -982,21 +1003,31 @@ class StealthSession:
                             attempt,
                             sc_err,
                         )
-                elif cffi_requests is not None:
+
+                if scrapling_adapted is None and cffi_requests is not None:
                     try:
+                        profile = self.CFFI_IMPERSONATE_PROFILES[
+                            (attempt - 1) % len(self.CFFI_IMPERSONATE_PROFILES)
+                        ]
+                        cffi_headers = {
+                            "Accept": (
+                                "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                                "image/avif,image/webp,*/*;q=0.8"
+                            ),
+                            "Accept-Language": "es-MX,es;q=0.9,en-US;q=0.8,en;q=0.7",
+                            "Upgrade-Insecure-Requests": "1",
+                        }
+                        if referer:
+                            cffi_headers["Referer"] = referer
                         cffi_resp = cffi_requests.get(
                             url,
-                            impersonate="chrome",
-                            headers=headers,
+                            impersonate=profile,
+                            headers=cffi_headers,
                             timeout=timeout,
                             allow_redirects=True,
                             verify=_ASCII_CA_BUNDLE,
                         )
-                        adapted = ScraplingResponseAdapter(cffi_resp, url)
-                        if adapted.status_code not in (403, 429, 503):
-                            adapted.raise_for_status()
-                            self._circuit_breaker.record_success(domain)
-                            return adapted
+                        scrapling_adapted = ScraplingResponseAdapter(cffi_resp, url)
                     except Exception as cffi_err:
                         logger.debug(
                             "curl_cffi + Scrapling aviso en %s (intento %d): %s",
@@ -1004,6 +1035,24 @@ class StealthSession:
                             attempt,
                             cffi_err,
                         )
+
+                if scrapling_adapted is not None:
+                    if scrapling_adapted.status_code not in (403, 429, 503):
+                        scrapling_adapted.raise_for_status()
+                        self._circuit_breaker.record_success(domain)
+                        return scrapling_adapted
+
+                    # Recibió 403/429/503 en transporte TLS nativo: registrar fallo y evaluar cortocircuito
+                    cap = min(6, 1.5 * attempt)
+                    backoff = random.uniform(cap * 0.5, cap)
+                    logger.info(
+                        f"HTTP {scrapling_adapted.status_code} en {url[:60]}... "
+                        f"Reintento {attempt}/{self.MAX_RETRIES} en {backoff:.1f}s"
+                    )
+                    self._circuit_breaker.record_failure(domain)
+                    if attempt < self.MAX_RETRIES and self._circuit_breaker.can_request(domain):
+                        time.sleep(backoff)
+                    continue
 
             try:
                 resp = session.get(url, headers=headers, timeout=timeout)
@@ -1032,13 +1081,14 @@ class StealthSession:
                     cap = min(6, 1.5 * attempt)
                     backoff = random.uniform(cap * 0.5, cap)
                     logger.info(
-                        f"HTTP {resp.status_code} en {url[:60]}… "
+                        f"HTTP {resp.status_code} en {url[:60]}... "
                         f"Reintento {attempt}/{self.MAX_RETRIES} en {backoff:.1f}s"
                     )
                     self._circuit_breaker.record_failure(domain)
-                    time.sleep(backoff)
-                    headers['User-Agent'] = _random_user_agent()
-                    self._domain_ua[domain] = headers['User-Agent']
+                    if attempt < self.MAX_RETRIES and self._circuit_breaker.can_request(domain):
+                        time.sleep(backoff)
+                        headers['User-Agent'] = _random_user_agent()
+                        self._domain_ua[domain] = headers['User-Agent']
                     continue
 
                 resp.raise_for_status()
@@ -1046,23 +1096,23 @@ class StealthSession:
                 return resp
 
             except requests.Timeout:
-                logger.warning(f"Timeout en {url[:60]}… (intento {attempt})")
+                logger.warning(f"Timeout en {url[:60]}... (intento {attempt})")
                 self._circuit_breaker.record_failure(domain)
-                if attempt < self.MAX_RETRIES:
+                if attempt < self.MAX_RETRIES and self._circuit_breaker.can_request(domain):
                     time.sleep(random.uniform(1.0, 2.5))
                 continue
             except requests.ConnectionError as e:
-                logger.warning(f"Error conexión {url[:60]}…: {e}")
+                logger.warning(f"Error conexion {url[:60]}...: {e}")
                 self._circuit_breaker.record_failure(domain)
-                if attempt < self.MAX_RETRIES:
+                if attempt < self.MAX_RETRIES and self._circuit_breaker.can_request(domain):
                     time.sleep(random.uniform(1.0, 2.0))
                 continue
             except requests.RequestException as e:
-                logger.warning(f"Error HTTP en {url[:60]}…: {e}")
+                logger.warning(f"Error HTTP en {url[:60]}...: {e}")
                 self._circuit_breaker.record_failure(domain)
                 return None
 
-        logger.warning(f"Agotados {self.MAX_RETRIES} reintentos para {url[:60]}…")
+        logger.warning(f"Agotados {self.MAX_RETRIES} reintentos para {url[:60]}...")
         return None
 
     def get_circuit_breaker_status(self) -> dict:
@@ -1092,12 +1142,18 @@ class DynamicScraper:
       • Cascada de fallback: RSS → Sitemap → HTML → Google Cache
     """
 
-    def __init__(self, respect_robots: bool = True, default_delay: float = 1.5, test_mode: bool = False):
+    def __init__(
+        self,
+        respect_robots: bool = True,
+        default_delay: float = 1.5,
+        test_mode: bool = False,
+        session: StealthSession | None = None,
+    ):
         self.respect_robots = respect_robots
         self.default_delay = default_delay
         self.test_mode = test_mode
         self._last_request_time: dict[str, float] = {}
-        self._stealth = StealthSession(test_mode=test_mode)
+        self._stealth = session or StealthSession(test_mode=test_mode)
         # Dominios donde se activó modo stealth (bloqueados por robots.txt)
         self._stealth_domains: set[str] = set()
 
@@ -1401,7 +1457,7 @@ class DynamicScraper:
 
             if stealth:
                 logger.info(
-                    f"Modo stealth activo para {url[:60]}… "
+                    f"Modo stealth activo para {url[:60]}... "
                     f"(cloudscraper + delays lognormales + UA rotation)"
                 )
         else:
@@ -1422,14 +1478,14 @@ class DynamicScraper:
         if not articles and method in ('sitemap', 'rss'):
             # Si RSS no trajo nada o el método es sitemap, intentar sitemap
             if 'sitemap' not in methods_tried:
-                logger.info(f"Método {method} sin resultados, intentando sitemap: {url[:60]}…")
+                logger.info(f"Método {method} sin resultados, intentando sitemap: {url[:60]}...")
                 articles = self._scrape_sitemap(url, max_articles, crawl_delay)
                 methods_tried.append('sitemap')
 
         if not articles and method != 'html':
             # Último recurso: HTML scraping directo
             if 'html' not in methods_tried:
-                logger.info(f"Métodos {methods_tried} sin resultados, intentando HTML: {url[:60]}…")
+                logger.info(f"Métodos {methods_tried} sin resultados, intentando HTML: {url[:60]}...")
                 articles = self._scrape_html_listing(url, max_articles, crawl_delay, keywords)
                 methods_tried.append('html')
 
@@ -1439,7 +1495,7 @@ class DynamicScraper:
 
         if not articles:
             logger.warning(
-                f"No se encontraron artículos en {url[:60]}… "
+                f"No se encontraron artículos en {url[:60]}... "
                 f"(métodos intentados: {methods_tried})"
             )
 
@@ -1699,7 +1755,7 @@ class DynamicScraper:
                 seen.add(u)
                 unique_urls.append((u, t))
 
-        logger.info(f"HTML listing: {len(unique_urls)} enlaces (después del filtrado) en {url[:60]}…")
+        logger.info(f"HTML listing: {len(unique_urls)} enlaces (después del filtrado) en {url[:60]}...")
 
         # Extraer contenido de cada artículo
         for article_url, _ in unique_urls[:max_articles]:

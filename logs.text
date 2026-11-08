@@ -1,815 +1,149 @@
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1366, in collect_all_news
-    articles = collect_news_from_duckduckgo(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 995, in collect_news_from_duckduckgo
-    rel = score_relevance(title_text, desc_text)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)'
-Arguments: ()
-2026-11-07 22:34:51,605 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)  
+2026-11-07 23:34:17,037 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /fuentes/ HTTP/1.1" 302 -
+2026-11-07 23:34:17,069 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /login?next=/fuentes/ HTTP/1.1" 200 -
+2026-11-07 23:34:17,313 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-07 23:34:17,364 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:17] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-07 23:34:37,186 - app - INFO - Login exitoso: admin desde 127.0.0.1
+2026-11-07 23:34:37,189 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "POST /login?next=/fuentes/ HTTP/1.1" 302 -
+2026-11-07 23:34:37,218 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "GET /fuentes/ HTTP/1.1" 200 -
+2026-11-07 23:34:37,265 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-07 23:34:37,275 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:37] "GET /fuentes/api/sources HTTP/1.1" 200 -
+2026-11-07 23:34:40,488 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET / HTTP/1.1" 200 -
+2026-11-07 23:34:40,540 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-07 23:34:40,591 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-07 23:34:40,648 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /api/stats HTTP/1.1" 200 -
+2026-11-07 23:34:40,665 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:40] "GET /api/sessions HTTP/1.1" 200 -
+============================================================
+  PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO
+============================================================
+2026-11-07 23:34:44,012 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:44] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
+  Batch ID de ejecución: 20261107_233444
+=== PASO 1: RECOLECCIÓN DIRIGIDA + SCORING DE RELEVANCIA ===
+  -- Búsqueda Dirigida en Google News + Bing News --
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+menores+orfandad+M%C3...
+  Search RSS: https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%...
+  Search RSS: https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%...
+  Search RSS: https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+fe...
+2026-11-07 23:34:48,596 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:48] "GET /api/analyze/status HTTP/1.1" 200 -
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+%22frente+a+sus+hijos...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+%22era+madre+de%22+hi...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+CDMX+Jalisco+Puebla+V...
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+orfandad+redes+social...
+  Search RSS: https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&f...
+2026-11-07 23:34:52,579 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:52] "GET /api/analyze/status HTTP/1.1" 200 -
+  Search RSS: https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&f...
+  Search RSS: https://www.bing.com/news/search?q=asesinan+mujer+frente+a+sus+hijos+M...
+  Search RSS: https://www.bing.com/news/search?q=feminicidio+DIF+resguardo+menores+M...
+  Search RSS: https://www.bing.com/news/search?q=mujer+asesinada+era+madre+de+hijos+...
+2026-11-07 23:34:56,573 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:34:56] "GET /api/analyze/status HTTP/1.1" 200 -
+  Search RSS: https://www.bing.com/news/search?q=feminicidio+victimas+indirectas+nin...
+  -- Búsqueda Dirigida y Redes Sociales (DuckDuckGo) --
+  Buscando DDG: feminicidio "dejó en orfandad" menor México
+  Buscando DDG: asesinan a mujer "frente a sus hijos" México
+2026-11-07 23:35:00,581 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:00] "GET /api/analyze/status HTTP/1.1" 200 -
   Buscando DDG: feminicidio "era madre de" hijos México
   Buscando DDG: feminicidio "bajo resguardo del DIF" menor México
   Buscando DDG: feminicidio mexico deja niño facebook
+2026-11-07 23:35:04,584 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:04] "GET /api/analyze/status HTTP/1.1" 200 -
   Buscando DDG: feminicidio orfandad hijos site:facebook.com mexico
   Buscando DDG: feminicidio hijos orfandad site:x.com mexico
-2026-11-07 22:34:54,421 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:34:54] "GET /api/analyze/status HTTP/1.1" 200 -
-  ── 47 fuentes personalizadas desde DB ──
-  [RSS] La Jornada (Política) (rss)
-    → 25 artículos
-  [RSS] La Jornada (Estados) (rss)
-    → 9 artículos
-  [RSS] La Jornada (Sociedad) (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:34:56,539 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.jornada.com.mx/…
-2026-11-07 22:34:58,417 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:34:58] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 3 artículos (vía Fallback HTML)
-  [RSS] Proceso (rss)
-2026-11-07 22:35:02,404 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:02] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:03,801 - src.collection.scraper - INFO - HTTP 403 en https://www.proceso.com.mx/rss… Reintento 1/3 en 1.0s
-2026-11-07 22:35:04,937 - src.collection.scraper - INFO - HTTP 403 en https://www.proceso.com.mx/rss… Reintento 2/3 en 2.6s
-2026-11-07 22:35:06,404 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:06] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:07,718 - src.collection.scraper - INFO - HTTP 403 en https://www.proceso.com.mx/rss… Reintento 3/3 en 4.4s
-2026-11-07 22:35:07,722 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.proceso.com.mx — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:35:10,576 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:10] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:12,151 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.proceso.com.mx/rss…
-2026-11-07 22:35:12,151 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.proceso.com.mx/rss (Circuito abierto o fallo de conexión)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:35:12,729 - src.collection.scraper - INFO - HTML listing: 7 enlaces (después del filtrado) en https://www.proceso.com.mx/…
-2026-11-07 22:35:14,572 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:14] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:18,587 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:18] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 7 artículos (vía Fallback HTML)
-  [RSS] El Sol de México (rss)
-2026-11-07 22:35:22,706 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:22] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 91 artículos
-  [RSS] El Financiero (rss)
-2026-11-07 22:35:26,639 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:26] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:30,696 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:30] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:34,655 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:34] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 78 artículos
-  [RSS] Excélsior (Nacional) (rss)
-    → 20 artículos
-  [RSS] Pie de Página (rss)
-2026-11-07 22:35:38,573 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:38] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 9 artículos
-  [RSS] Contralínea (rss)
-2026-11-07 22:35:42,576 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:42] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 6 artículos
-  [RSS] La Razón (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:35:46,694 - src.collection.scraper - INFO - HTML listing: 5 enlaces (después del filtrado) en https://www.razon.com.mx/…
-2026-11-07 22:35:46,696 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:46] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:50,585 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:50] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:35:54,588 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:54] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 3 artículos (vía Fallback HTML)
-  [RSS] El Informador (rss)
-    → 49 artículos
-  [RSS] La Jornada de Oriente (rss)
-2026-11-07 22:35:58,684 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:35:58] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 17 artículos
+  -- 1 fuentes especializadas/personalizadas desde DB --
   [RSS] Cimacnoticias (rss)
-    → 10 artículos
-  [RSS] Luchadoras (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:36:02,581 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:36:02] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:36:04,372 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://luchadoras.mx/…
-2026-11-07 22:36:06,588 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:36:06] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:36:10,574 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:36:10] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 2 artículos (vía Fallback HTML)
-  [RSS] El Economista (rss)
-2026-11-07 22:36:14,584 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:36:14] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:36:16,144 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 1/3 en 0.9s
-2026-11-07 22:36:17,435 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 2/3 en 2.5s
-2026-11-07 22:36:18,578 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:36:18] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:36:20,284 - src.collection.scraper - INFO - HTTP 403 en https://www.eleconomista.com.mx/rss/… Reintento 3/3 en 3.4s
-2026-11-07 22:36:20,285 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.eleconomista.com.mx — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:36:23,668 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.eleconomista.com.mx/rss/…
-2026-11-07 22:36:23,668 - src.collection.collector - WARNING -   [!] No se pudo obtener respuesta de https://www.eleconomista.com.mx/rss/ (Circuito abierto o fallo de conexión)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:36:24,264 - src.collection.scraper - INFO - HTML listing: 2 enlaces (después del filtrado) en https://www.eleconomista.com.mx/…
-2026-11-07 22:36:25,581 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:36:25] "GET /api/analyze/status HTTP/1.1" 200 -
-    → 1 artículos (vía Fallback HTML)
-  [RSS] feeds.elpais.com (rss)
-    → 15 artículos
-  [RSS] feeds.bbci.co.uk (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:36:35,020 - src.collection.scraper - WARNING - Error HTTP en https://feeds.bbci.co.uk/…: 404 Client Error: Not Found for url: https://feeds.bbci.co.uk/
-2026-11-07 22:36:35,020 - src.collection.scraper - WARNING - No se encontraron artículos en https://feeds.bbci.co.uk/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] El Sol de Toluca (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:36:39,677 - src.collection.scraper - INFO - HTTP 403 en https://www.elsoldetoluca.com.mx/… Reintento 1/3 en 0.8s
-2026-11-07 22:36:41,070 - src.collection.scraper - INFO - HTTP 403 en https://www.elsoldetoluca.com.mx/… Reintento 2/3 en 1.7s
-2026-11-07 22:36:43,379 - src.collection.scraper - INFO - HTTP 403 en https://www.elsoldetoluca.com.mx/… Reintento 3/3 en 2.7s
-2026-11-07 22:36:43,379 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.elsoldetoluca.com.mx — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:36:46,071 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.elsoldetoluca.com.mx/…
-2026-11-07 22:36:46,071 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elsoldetoluca.com.mx/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] El Sol de Puebla (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:36:50,049 - src.collection.scraper - INFO - HTTP 403 en https://www.elsoldepuebla.com.mx/… Reintento 1/3 en 1.0s
-2026-11-07 22:36:51,608 - src.collection.scraper - INFO - HTTP 403 en https://www.elsoldepuebla.com.mx/… Reintento 2/3 en 2.8s
-2026-11-07 22:36:57,443 - src.collection.scraper - INFO - HTTP 403 en https://www.elsoldepuebla.com.mx/… Reintento 3/3 en 2.3s
-2026-11-07 22:36:57,444 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.elsoldepuebla.com.mx — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:36:59,697 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.elsoldepuebla.com.mx/…
-2026-11-07 22:36:59,702 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.elsoldepuebla.com.mx/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Diario de Xalapa (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:05,693 - src.collection.scraper - INFO - HTTP 403 en https://www.diariodexalapa.com.mx/… Reintento 1/3 en 1.1s
-2026-11-07 22:37:07,359 - src.collection.scraper - INFO - HTTP 403 en https://www.diariodexalapa.com.mx/… Reintento 2/3 en 1.8s
-2026-11-07 22:37:09,585 - src.collection.scraper - INFO - HTTP 403 en https://www.diariodexalapa.com.mx/… Reintento 3/3 en 4.4s
-2026-11-07 22:37:09,586 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariodexalapa.com.mx — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:37:13,994 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.diariodexalapa.com.mx/…
-2026-11-07 22:37:13,995 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.diariodexalapa.com.mx/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Noroeste (rss)
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1419, in collect_all_news
-    articles = collect_news_from_rss(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1148, in collect_news_from_rss
-    rel = score_relevance(title_text, desc_text)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)'
-Arguments: ()
-2026-11-07 22:37:15,556 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.38)  
-    → 25 artículos
-  [RSS] Google News: feminicidio México location:México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:18,406 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:20,209 - src.collection.scraper - INFO - Activando stealth mid-scrape para news.google.com
-2026-11-07 22:37:21,291 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: feminicidio hijos huérfanos México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:24,975 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:25,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:37:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:37:25,812 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: feminicidio niños niñas México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:29,286 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:32,403 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: orfandad feminicidio menores México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:34,878 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:39,101 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: "víctimas indirectas" feminicidio México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:41,415 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:44,054 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: feminicidio menores huérfanos México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:45,698 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:48,491 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: feminicidio hijos menores México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:50,987 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:53,347 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: "violencia feminicida" niños México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:37:55,249 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:37:58,490 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: asesinato mujer hijos quedaron México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:00,752 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:02,490 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: "alerta de género" menores México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:04,212 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:05,802 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: orfandad violencia genero México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:07,464 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:10,225 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: DIF custodia feminicidio hijos México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:11,715 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:14,488 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: "violencia contra la mujer" menores huérfanos México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:17,335 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:19,379 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: feminicidio NNA victimas indirectas México (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:22,700 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:23,852 - trafilatura.core - WARNING - discarding data: https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0dHZmw4TzFJMWMtNFZIVF9UQm1od3Q3NUJSNlJSMjFrd3NEdS1RSnd6V1ZwaGQybHNEamdkeGhuLUZ6alRZMWREVmJMcDN3aWl5RnA4SFNPRno0c0pVa3Nna2JxcW5fVWUzQmlwLVJLRHdBZnVQZkoxZDd4ZFVEYk5YcQ?hl=es-419&gl=MX&ceid=MX%3Aes-419
-    → 0 artículos
-  [RSS] Google News: feminicidio CDMX hijos menores (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:25,095 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:26,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:26] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:30,578 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:30] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:30,830 - src.collection.scraper - INFO - HTML listing: 1 enlaces (después del filtrado) en https://news.google.com/…
-2026-11-07 22:38:34,577 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:34] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:36,435 - src.collection.scraper - INFO - HTTP 429 en https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0d… Reintento 1/3 en 1.0s
-2026-11-07 22:38:38,568 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:38] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:38,839 - src.collection.scraper - INFO - HTTP 429 en https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0d… Reintento 2/3 en 2.5s
-2026-11-07 22:38:42,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:42] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:42,642 - src.collection.scraper - INFO - HTTP 429 en https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0d… Reintento 3/3 en 3.8s
-2026-11-07 22:38:42,642 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para news.google.com — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:38:46,475 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://news.google.com/read/CBMijAFBVV95cUxQWTR5OTJTa28ta0d…
-2026-11-07 22:38:46,475 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Jalisco NNA huérfanos (rss)
-2026-11-07 22:38:46,578 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:46] "GET /api/analyze/status HTTP/1.1" 200 -
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:47,018 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Estado de México menores (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:48,293 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Veracruz hijos (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:49,405 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Chihuahua menores (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:50,507 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Nuevo León niños (rss)
-2026-11-07 22:38:50,600 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:50] "GET /api/analyze/status HTTP/1.1" 200 -
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:53,303 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Guerrero NNA huérfanos (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:53,775 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio Puebla menores hijos (rss)
-2026-11-07 22:38:54,570 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:54] "GET /api/analyze/status HTTP/1.1" 200 -
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:54,680 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio mexico deja niño facebook (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:55,348 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: feminicidio orfandad facebook mexico (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:55,985 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] Google News: "feminicidio" "redes sociales" hijos mexico (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:57,567 - src.collection.scraper - WARNING - No se encontraron artículos en https://news.google.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  [RSS] bing.com (rss)
-    [!] RSS falló o vacío. Intentando fallback HTML automático...
-2026-11-07 22:38:58,338 - src.collection.scraper - INFO - HTML listing: 0 enlaces (después del filtrado) en https://www.bing.com/…
-2026-11-07 22:38:58,339 - src.collection.scraper - WARNING - No se encontraron artículos en https://www.bing.com/… (métodos intentados: ['html'])
-    → 0 artículos
-  ⚠ Circuit breaker — dominios en cooldown: ['www.eleconomista.com.mx', 'www.proceso.com.mx']
-2026-11-07 22:38:58,362 - src.collection.collector - WARNING - Circuit breaker OPEN para www.eleconomista.com.mx: 3 fallos consecutivos     
-2026-11-07 22:38:58,363 - src.collection.collector - WARNING - Circuit breaker OPEN para www.proceso.com.mx: 3 fallos consecutivos
-  URLs: 0 previas + 403 nuevas = 403 total
-  ── Deduplicación avanzada ──
-2026-11-07 22:38:58,398 - src.analysis.dedup - INFO - Deduplicación: 403 noticias de entrada
-2026-11-07 22:38:58,543 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-07 22:38:58,640 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:38:58] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:38:58,781 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 1 duplicados
-2026-11-07 22:38:59,524 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 27 duplicados
-2026-11-07 22:39:02,669 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:02] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:06,667 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:06] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:10,623 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:10] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:14,634 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:14] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:17,414 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 1 duplicados
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 71: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1562, in collect_all_news
-    df = deduplicator.deduplicate(df, keep='best')
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\dedup.py", line 257, in deduplicate
-    logger.info(
-Message: '  Resultado: 403 → 374 únicos (29 duplicados eliminados)'
-Arguments: ()
-2026-11-07 22:39:17,422 - src.analysis.dedup - INFO -   Resultado: 403 → 374 únicos (29 duplicados eliminados)
-  Duplicados eliminados: 29 (403 → 374)
-  ── Enriquecimiento Full-Text con Scrapling: descargando cuerpo de 40 notas candidatas ──
-2026-11-07 22:39:18,756 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:18] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:18,901 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR
-2026-11-07 22:39:22,597 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:22] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:26,710 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:39:26] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:39:29,474 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud… Reintento 1/3 en 0.8s
-2026-11-07 22:39:29,510 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
-2026-11-07 22:39:29,513 - trafilatura.core - ERROR - empty HTML tree: None
-2026-11-07 22:39:29,515 - trafilatura.core - WARNING - discarding data: https://comunicadores.mx/2026/11/05/edomex-incorpora-a-32-personas-a-programas-de-apoyo-para-victimas/
-2026-11-07 22:39:30,485 - src.collection.scraper - INFO - HTTP 403 en https://www.jornada.com.mx/noticia/2026/11/06/sociedad/oms-s… Reintento 1/3 en 1.1s
-2026-11-07 22:39:31,007 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud… Reintento 2/3 en 2.0s
-2026-11-07 22:39:31,578 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elheraldodechihuahua/local/dif-municipal-… Reintento 1/3 en 1.2s
-2026-11-07 22:39:31,602 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx — 3 fallos consecutivos. Cooldown 600s
-2026-11-07 22:39:32,149 - trafilatura.utils - ERROR - parsed tree length: 1, wrong data type or not valid HTML
-2026-11-07 22:39:32,151 - trafilatura.core - ERROR - empty HTML tree: None
-2026-11-07 22:39:32,151 - trafilatura.core - WARNING - discarding data: https://www.yucatan.com.mx/mexico/2026/11/03/matan-a-balazos-a-una-madre-y-su-hijo-de-4-anos-cuando-pedian-calaverita-en-tepito.html
-2026-11-07 22:39:33,438 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elheraldodechihuahua/local/dif-municipal-… Reintento 2/3 en 2.5s
-2026-11-07 22:39:33,438 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx — 4 fallos consecutivos. Cooldown 600s
-2026-11-07 22:39:35,279 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud… Reintento 3/3 en 3.2s
-2026-11-07 22:39:35,279 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx — 5 fallos consecutivos. Cooldown 600s
-2026-11-07 22:39:36,468 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elheraldodechihuahua/local/dif-municipal-… Reintento 3/3 en 4.3s
-2026-11-07 22:39:36,472 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx — 6 fallos consecutivos. Cooldown 600s
-2026-11-07 22:39:38,485 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud…
-2026-11-07 22:39:40,800 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://oem.com.mx/elheraldodechihuahua/local/dif-municipal-…
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)'
-Arguments: ()
-2026-11-07 22:39:40,926 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)  
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)'
-Arguments: ()
-2026-11-07 22:39:41,143 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)  
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)'
-Arguments: ()
-2026-11-07 22:39:41,400 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)'
-Arguments: ()
-2026-11-07 22:39:41,561 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)  
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)'
-Arguments: ()
-2026-11-07 22:39:41,716 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.95)  
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.61)'
-Arguments: ()
-2026-11-07 22:39:41,839 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.61)  
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.49)'
-Arguments: ()
-2026-11-07 22:39:42,501 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=0.49)
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)'
-Arguments: ()
-2026-11-07 22:39:42,683 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)  
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 62: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1571, in collect_all_news
-    enriched_records = enrich_candidates_with_full_text(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1287, in enrich_candidates_with_full_text
-    rel = score_relevance(art.get('titulo', ''), art['contenido'])
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 862, in score_relevance
-    logger.info(f"  ★ Keywords de Oro detectadas — inmunidad activada (score_vi={score_victima_indirecta:.2f}, comp={score_comp:.2f})")     
-Message: '  ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)'
-Arguments: ()
-2026-11-07 22:39:42,907 - src.collection.collector - INFO -   ★ Keywords de Oro detectadas — inmunidad activada (score_vi=0.85, comp=1.00)  
-  → Cuerpo completo extraído en 21/40 notas
-2026-11-07 22:39:51,847 - src.analysis.dedup - INFO - Deduplicación: 374 noticias de entrada
-2026-11-07 22:39:52,000 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-07 22:39:52,178 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-07 22:39:52,901 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 10 duplicados
-2026-11-07 22:40:10,523 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 71: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 352, in run_complete_analysis
-    self.step_1_collect_data(start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 103, in step_1_collect_data
-    self.df_original = collect_all_news(keep_all=True, start_date=start_date, end_date=end_date, scraper_type=scraper_type)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\collection\collector.py", line 1580, in collect_all_news
-    df = deduplicator.deduplicate(df, keep='best')
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\dedup.py", line 257, in deduplicate
-    logger.info(
-Message: '  Resultado: 374 → 364 únicos (10 duplicados eliminados)'
-Arguments: ()
-2026-11-07 22:40:10,524 - src.analysis.dedup - INFO -   Resultado: 374 → 364 únicos (10 duplicados eliminados)
-  Total recolectadas: 364
-  Relevantes (score >= 0.25): 364
-  Con mención a NNA: 54
-  364 noticias relevantes recolectadas
-   ├── Alta relevancia:  13
-   ├── Media relevancia: 6
-   ├── Baja relevancia:  3
-   └── Mencionan NNA:    54
+2026-11-07 23:35:08,570 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:08] "GET /api/analyze/status HTTP/1.1" 200 -
+    -> 0 artículos relevantes
+  URLs: 0 previas + 21 nuevas = 21 total
+  -- Deduplicación avanzada --
+2026-11-07 23:35:09,504 - src.analysis.dedup - INFO - Deduplicación: 21 noticias de entrada
+2026-11-07 23:35:09,510 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 1 duplicados
+2026-11-07 23:35:09,513 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-07 23:35:09,526 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-07 23:35:09,526 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-07 23:35:09,537 - src.analysis.dedup - INFO -   Resultado: 21 -> 20 únicos (1 duplicados eliminados)
+  Duplicados eliminados: 1 (21 -> 20)
+  -- Enriquecimiento Full-Text con Scrapling: descargando cuerpo de 9 notas candidatas --
+2026-11-07 23:35:12,539 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/caso-camila-que-paso-con-los... Reintento 1/3 en 1.0s
+2026-11-07 23:35:12,560 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:12] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:12,627 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/sofia-madai-que-sabemos-femi... Reintento 1/3 en 1.1s
+2026-11-07 23:35:13,646 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/caso-camila-que-paso-con-los... Reintento 2/3 en 1.5s
+2026-11-07 23:35:13,646 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
+  -> Cuerpo completo extraído en 5/9 notas
+2026-11-07 23:35:16,287 - src.analysis.dedup - INFO - Deduplicación: 16 noticias de entrada
+2026-11-07 23:35:16,299 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-07 23:35:16,307 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-07 23:35:16,319 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-07 23:35:16,329 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-07 23:35:16,330 - src.analysis.dedup - INFO -   Resultado: 16 -> 16 únicos (0 duplicados eliminados)
+  Total recolectadas: 16
+  Relevantes (score >= 0.25): 15
+  Con mención a NNA: 14
+  15 noticias relevantes recolectadas
+   |-- Alta relevancia:  4
+   |-- Media relevancia: 9
+   |-- Baja relevancia:  2
+   +-- Mencionan NNA:    14
 === PASO 3: TF-IDF (domain-boosted) ===
-  Textos normalizados preparados: 364 documentos
+  Textos normalizados preparados: 15 documentos
 === PASO 6: SIMILITUD + DEDUPLICACIÓN ===
-2026-11-07 22:40:25,658 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:40:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:25,650 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:33,817 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:33] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:34,501 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:34] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:38,540 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:38] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:42,510 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:42] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:46,498 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:46] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:50,500 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:50] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:54,640 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:54] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:41:58,762 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:41:58] "GET /api/analyze/status HTTP/1.1" 200 -
-  Similitud promedio: 0.193 | Pares > 0.5: 5
-2026-11-07 22:42:01,935 - src.analysis.dedup - INFO - Deduplicación: 364 noticias de entrada
-2026-11-07 22:42:02,103 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-07 22:42:02,315 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-07 22:42:02,626 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:02] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:03,345 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-07 22:42:06,648 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:06] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:10,693 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:10] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:14,686 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:14] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:18,700 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:18] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:22,658 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:22] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:26,642 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:26] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:30,693 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:30] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:30,795 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
---- Logging error ---
-Traceback (most recent call last):
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1163, in emit
-    stream.write(msg + self.terminator)
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 71: character maps to <undefined>
-Call stack:
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032, in _bootstrap
-    self._bootstrap_inner()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\HéctorMorales\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\app\main\routes.py", line 417, in _run_analysis_background
-    analyzer.run_complete_analysis(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 366, in run_complete_analysis
-    self.step_6_similarity_analysis()
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\analyzer.py", line 221, in step_6_similarity_analysis
-    self.df_processed = dedup.deduplicate(
-  File "C:\Proyectos\Servicio\TT-Sistema-Inteligente-para-la-Identificaci-n-y-Seguimiento-de-NNA-s\src\analysis\dedup.py", line 257, in deduplicate
-    logger.info(
-Message: '  Resultado: 364 → 364 únicos (0 duplicados eliminados)'
-Arguments: ()
-2026-11-07 22:42:30,800 - src.analysis.dedup - INFO -   Resultado: 364 → 364 únicos (0 duplicados eliminados)
+  Similitud promedio: 0.183 | Pares > 0.5: 0
+2026-11-07 23:35:16,349 - src.analysis.dedup - INFO - Deduplicación: 15 noticias de entrada
+2026-11-07 23:35:16,363 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-07 23:35:16,368 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-07 23:35:16,390 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-07 23:35:16,390 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-07 23:35:16,394 - src.analysis.dedup - INFO -   Resultado: 15 -> 15 únicos (0 duplicados eliminados)
 === PASO 8: BÚSQUEDA MEJORADA ===
   Diccionario guardado (170 términos)
 === PASO 9: DETECCIÓN Y EXTRACCIÓN CON 5 CANDADOS (LLMExtractor) ===
-2026-11-07 22:42:34,570 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:34] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:38,579 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:38] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:42,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:42] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:46,572 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:46] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:48,944 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (1 validation error for CasoExtraidoSchema
-clasificacion
-  Input should be 'Alta', 'Media' or 'No relevante' [type=literal_error, input_value='Baja', input_type=str]
-    For further information visit https://errors.pydantic.dev/2.14/v/literal_error). Probando siguiente proveedor...
-2026-11-07 22:42:50,571 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:42:50] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:42:51,184 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:42:53,695 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:42:55,877 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:42:57,828 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:42:59,749 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:01,660 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:06,026 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (1 validation error for CasoExtraidoSchema
-clasificacion
-  Input should be 'Alta', 'Media' or 'No relevante' [type=literal_error, input_value=None, input_type=NoneType]
-    For further information visit https://errors.pydantic.dev/2.14/v/literal_error). Probando siguiente proveedor...
-2026-11-07 22:43:07,718 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:09,091 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:10,731 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:12,529 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:14,046 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:15,625 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:17,211 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:18,902 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:20,505 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:22,265 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:23,901 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:25,508 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:25,728 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:43:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:43:30,307 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (2 validation errors for CasoExtraidoSchema
-ninos_afectados.int
-  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
-    For further information visit https://errors.pydantic.dev/2.14/v/int_type
-ninos_afectados.str
-  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
-    For further information visit https://errors.pydantic.dev/2.14/v/string_type). Probando siguiente proveedor...
-2026-11-07 22:43:31,880 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:33,394 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:34,778 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:36,642 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:38,077 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:39,565 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:41,374 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:42,955 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:47,996 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:49,950 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) en proveedor groq). Probando siguiente proveedor...
-2026-11-07 22:43:49,995 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 364 noticias procesado (4 llamadas a LLM, 360 filtradas por gatekeeper).
-  Score semántico promedio: 0.0322
-  364 noticias procesadas | Alta: 12 | Media: 0 | No relevante: 352
+2026-11-07 23:35:16,567 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:20,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:20] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:24,590 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:24] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:28,568 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:28] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:32,577 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:32] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:35,662 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-07 23:35:36,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:36] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:38,664 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-07 23:35:40,578 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:40] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:43,897 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-07 23:35:44,581 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:44] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:45,170 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-07 23:35:48,567 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:48] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:52,566 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:52] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:56,573 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:35:56] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:35:56,653 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-07 23:35:59,678 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-07 23:36:04,696 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
+2026-11-07 23:36:05,654 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-07 23:36:08,631 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-07 23:36:17,243 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-07 23:36:20,296 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-07 23:36:25,586 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:36:25] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:36:32,898 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.0s (intento 1/2)...
+2026-11-07 23:36:35,914 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 4.0s (intento 2/2)...
+2026-11-07 23:36:43,060 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 15 noticias procesado (10 llamadas a LLM, 5 filtradas por gatekeeper/presupuesto).
+  Score semántico promedio: 0.2707
+  15 noticias procesadas | Alta: 4 | Media: 0 | No relevante: 11
 === PASO 10: AGRUPACIÓN TEMÁTICA Y GEOGRÁFICA (OE-4, post-filtro) ===
-  Corpus relevante para agrupación: 12 noticias (Alta/Media)
-  Grupos temáticos/geográficos generados: 1
+  Corpus relevante para agrupación: 4 noticias (Alta/Media)
+  Grupos temáticos/geográficos generados: 3
 === GUARDANDO RESULTADOS ===
   CSV: data\noticias_analyzed_simplified.csv
   Metadatos: data\noticias_analyzed_simplified_metadata.json
-  Total: 364 | NNA: 12 | Alta: 12 | Media: 0
+  Total: 15 | NNA: 4 | Alta: 4 | Media: 0
 === PASO 11: PERSISTENCIA POSTGRESQL (OE-3) ===
-2026-11-07 22:43:52,478 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 22:43:52] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-07 22:43:52,762 - src.database.repository - INFO - Batch insert: 364 noticias insertadas
-  364 noticias persistidas en PostgreSQL
-2026-11-07 22:43:52,765 - src.analysis.analyzer - WARNING - Error guardando clusters en DB: 'topic_id' is an invalid keyword argument for ClusterSemantico
+2026-11-07 23:36:43,210 - src.database.repository - INFO - Batch insert: 10 noticias insertadas
+  10 noticias persistidas en PostgreSQL
 ============================================================
-  COMPLETADO — 364 noticias analizadas
+  COMPLETADO — 15 noticias analizadas
 ============================================================
-2026-11-07 22:43:52,879 - root - INFO - Datos cargados: 364 noticias desde análisis
+2026-11-07 23:36:43,232 - root - INFO - Datos cargados: 15 noticias desde análisis
+2026-11-07 23:36:43,233 - root - INFO - Análisis background completado exitosamente
+2026-11-07 23:37:05,281 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:05] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-07 23:37:06,516 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET / HTTP/1.1" 200 -
+2026-11-07 23:37:06,582 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-07 23:37:06,606 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-07 23:37:06,618 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-07 23:37:06,663 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/stats HTTP/1.1" 200 -
+2026-11-07 23:37:06,776 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:06] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-07 23:37:18,569 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:18] "GET /api/seguimiento/casos?estado=todos HTTP/1.1" 200 -
+2026-11-07 23:37:51,642 - werkzeug - INFO - 127.0.0.1 - - [07/Nov/2026 23:37:51] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -

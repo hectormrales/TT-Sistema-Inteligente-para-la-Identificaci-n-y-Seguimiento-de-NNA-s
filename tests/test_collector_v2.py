@@ -19,6 +19,7 @@ from src.collection.scraper import (
 )
 from src.collection.collector import (
     _inject_date_operators,
+    collect_all_news,
     collect_news_from_duckduckgo,
     collect_news_from_rss,
     enrich_candidates_with_full_text,
@@ -200,4 +201,33 @@ class TestFullTextEnrichment:
         assert "dos hijos menores" in surviving["contenido"]
         assert surviving["clasificacion"] == "Alta"
         assert surviving["menores_identificados"] == "Si"
+
+    def test_collect_all_news_skips_duplicate_db_sources_and_no_html_fallback(self):
+        feed_url = "https://news.google.com/rss/search?q=feminicidio+hijos+huerfanos+Mexico"
+        mock_db_source = {
+            "id": 1,
+            "url": feed_url,
+            "name": "Google News: feminicidio hijos huerfanos",
+            "source_type": "rss",
+        }
+        custom_rss_source = {
+            "id": 2,
+            "url": "https://cimacnoticias.com.mx/feed/",
+            "name": "Cimacnoticias",
+            "source_type": "rss",
+        }
+
+        with patch("src.collection.collector.config.RSS_FEEDS", [feed_url]), \
+             patch("src.collection.collector.config.TARGETED_SEARCH_QUERIES", []), \
+             patch("src.collection.collector._get_db_sources", return_value=[mock_db_source, custom_rss_source]), \
+             patch("src.collection.collector._update_db_source_status"), \
+             patch("src.collection.collector.collect_news_from_rss", return_value=[]) as mock_rss, \
+             patch("src.collection.collector.DynamicScraper.scrape_source") as mock_html_scrape, \
+             patch("src.collection.collector.enrich_candidates_with_full_text", side_effect=lambda x, **kw: x):
+            collect_all_news(keep_all=False)
+            # 1 call for feed_url in Phase 1 + 1 call for custom_rss_source in Phase 2 (mock_db_source skipped!)
+            assert mock_rss.call_count == 2
+            # 0 calls to HTML fallback when RSS returns 0 articles
+            assert mock_html_scrape.call_count == 0
+
 

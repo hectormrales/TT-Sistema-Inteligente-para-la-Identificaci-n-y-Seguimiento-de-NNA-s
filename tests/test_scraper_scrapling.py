@@ -151,3 +151,36 @@ class TestFullArticleExtraction:
         assert "orfandad" in batch_res["https://medio1.mx/nota/caso-1"]["contenido"]
         assert "orfandad" in batch_res["https://medio2.mx/nota/caso-2"]["contenido"]
 
+
+class TestWindowsTlsAndSharedCircuitBreaker:
+    """Verifica el certificado ASCII para Windows y el Circuit Breaker compartido (Paso A)."""
+
+    def test_ascii_ca_bundle_configured_in_env(self):
+        import os
+        from src.collection.scraper import _ASCII_CA_BUNDLE
+        if isinstance(_ASCII_CA_BUNDLE, str):
+            # Debe ser 100% ASCII para que libcurl/curl_cffi no falle con rutas con tilde
+            _ASCII_CA_BUNDLE.encode("ascii")
+            assert os.environ.get("CURL_CA_BUNDLE") == _ASCII_CA_BUNDLE
+            assert os.environ.get("SSL_CERT_FILE") == _ASCII_CA_BUNDLE
+
+    def test_shared_circuit_breaker_between_stealth_session_and_dynamic_scraper(self):
+        from src.collection.scraper import DomainCircuitBreaker
+        cb = DomainCircuitBreaker()
+        s1 = StealthSession(test_mode=True, circuit_breaker=cb)
+        scraper = DynamicScraper(respect_robots=False, test_mode=True, session=s1)
+
+        domain = "sitio-bloqueado-test.mx"
+        assert cb.can_request(domain) is True
+
+        # Simular 3 fallos consecutivos en StealthSession
+        cb.record_failure(domain)
+        cb.record_failure(domain)
+        cb.record_failure(domain)
+
+        # Tanto StealthSession como DynamicScraper deben ver el circuito ABIERTO inmediatamente
+        assert cb.can_request(domain) is False
+        assert scraper._stealth._circuit_breaker.can_request(domain) is False
+        assert s1.get(f"https://{domain}/rss") is None
+
+

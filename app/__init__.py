@@ -193,13 +193,19 @@ def _init_database(app: Flask) -> None:
 
 
 def _seed_predefined_sources(app: Flask) -> None:
-    """Inserta las fuentes predeterminadas de config.py en la base de datos."""
+    """Sincroniza las fuentes predeterminadas de config.py en la base de datos y purga las obsoletas."""
     from app.models import db, NewsSource
     from config import RSS_FEEDS
     from urllib.parse import urlparse, parse_qs, unquote
 
-    # Obtener fuentes existentes por URL y por Nombre para mapeo
-    existing_sources = {s.url: s for s in NewsSource.query.all()}
+    valid_urls = set(RSS_FEEDS)
+    removed = 0
+    for old_src in NewsSource.query.filter_by(is_predefined=True).all():
+        if old_src.url not in valid_urls:
+            db.session.delete(old_src)
+            removed += 1
+
+    existing_sources = {s.url: s for s in NewsSource.query.all() if s.url in valid_urls}
 
     added = 0
     updated = 0
@@ -207,11 +213,15 @@ def _seed_predefined_sources(app: Flask) -> None:
         parsed = urlparse(url)
         domain = parsed.netloc.replace('www.', '')
 
-        # Determinar nombre
+        # Determinar nombre descriptivo
         if 'news.google.com' in domain:
             qs = parse_qs(parsed.query)
             query = unquote(qs.get('q', ['búsqueda'])[0])
             name = f'Google News: {query}'
+        elif 'bing.com' in domain:
+            qs = parse_qs(parsed.query)
+            query = unquote(qs.get('q', ['búsqueda'])[0])
+            name = f'Bing News: {query}'
         else:
             name = DOMAIN_NAMES.get(domain, domain)
             for path_key, suffix in SECTION_SUFFIXES.items():
@@ -220,22 +230,12 @@ def _seed_predefined_sources(app: Flask) -> None:
                     break
 
         if url in existing_sources:
-            # Si ya existe pero el nombre cambió, actualizamos
             source = existing_sources[url]
             if source.name != name:
                 source.name = name
                 updated += 1
             continue
-        
-        # Si la URL es nueva, verificar si es una actualización de una fuente por dominio
-        # (Especial para Proceso/Excelsior que cambiaron URL)
-        source_by_name = NewsSource.query.filter_by(name=name, is_predefined=True).first()
-        if source_by_name:
-            source_by_name.url = url
-            updated += 1
-            continue
 
-        # Es una fuente totalmente nueva
         source = NewsSource(
             name=name,
             url=url,
@@ -247,11 +247,11 @@ def _seed_predefined_sources(app: Flask) -> None:
         db.session.add(source)
         added += 1
 
-    if added or updated:
+    if added or updated or removed:
         try:
             db.session.commit()
             app.logger.info(
-                f"Fuentes predeterminadas: {added} nuevas, {updated} actualizadas"
+                f"Fuentes predeterminadas: {added} nuevas, {updated} actualizadas, {removed} obsoletas eliminadas"
             )
         except Exception as e:
             db.session.rollback()

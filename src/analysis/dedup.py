@@ -255,7 +255,7 @@ class NewsDeduplicator:
         n_duplicates = n - n_groups
 
         logger.info(
-            f"  Resultado: {n} → {n_groups} únicos "
+            f"  Resultado: {n} -> {n_groups} únicos "
             f"({n_duplicates} duplicados eliminados)"
         )
 
@@ -297,14 +297,22 @@ class NewsDeduplicator:
         ]
 
         if not HAS_SKLEARN:
-            # Fallback ligero sin scikit-learn: similitud Jaccard de contenido
+            # Fallback ligero sin scikit-learn: similitud Jaccard pre-tokenizada O(1) por par
+            token_sets = [set(text.split()) for text in combined]
             for i in range(n):
                 if groups[i] != i:
+                    continue
+                set_i = token_sets[i]
+                if not set_i:
                     continue
                 for j in range(i + 1, n):
                     if groups[j] != j or groups[i] == groups[j]:
                         continue
-                    if jaccard_similarity(combined[i], combined[j]) >= self.content_threshold:
+                    set_j = token_sets[j]
+                    if not set_j:
+                        continue
+                    inter = len(set_i & set_j)
+                    if inter and (inter / len(set_i | set_j)) >= self.content_threshold:
                         groups[j] = groups[i]
                         dupes += 1
             return dupes

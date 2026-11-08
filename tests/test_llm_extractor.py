@@ -14,9 +14,10 @@ import pytest
 from src.analysis.llm_extractor import (
     CasoExtraidoSchema,
     LLMExtractor,
-    passes_admission_gate,
-    aplicar_candados_estrictos,
+    _sanitize_llm_json,
     _verify_quote_in_text,
+    aplicar_candados_estrictos,
+    passes_admission_gate,
 )
 
 
@@ -292,3 +293,111 @@ class TestLLMExtractorFlow:
         assert result["modo"].startswith("llm_gemini:")
         assert result["investigacion_json"]["ubicacion"] == "Xalapa, Veracruz"
         assert result["investigacion_json"]["ninos_afectados"] == 3
+
+
+class TestSanitizeLLMJson:
+    """Verifica la sanitización de anomalías JSON devueltas por modelos LLM."""
+
+    def test_normalizes_clasificacion_baja_and_none(self):
+        raw_baja = {
+            "candado_1_es_caso_concreto": True,
+            "candado_2_ocurrio_en_mexico": True,
+            "candado_3_victima_mortal_es_mujer_madre": True,
+            "candado_4_menor_no_es_el_agresor": True,
+            "candado_5_hay_nna_huerfanos_o_sobrevivientes": True,
+            "clasificacion": "Baja",
+        }
+        sanitized = _sanitize_llm_json(raw_baja)
+        assert sanitized["clasificacion"] == "Media"
+
+        raw_none = {
+            "candado_1_es_caso_concreto": False,
+            "clasificacion": None,
+        }
+        sanitized_none = _sanitize_llm_json(raw_none)
+        assert sanitized_none["clasificacion"] == "No relevante"
+
+    def test_normalizes_none_fields_and_ninos_afectados(self):
+        raw_with_nones = {
+            "candado_1_es_caso_concreto": "true",
+            "candado_2_ocurrio_en_mexico": 1,
+            "ninos_afectados": None,
+            "resumen": None,
+            "cita_textual_evidencia": None,
+            "estado": None,
+            "clasificacion": "Alta",
+        }
+        sanitized = _sanitize_llm_json(raw_with_nones)
+        assert sanitized["candado_1_es_caso_concreto"] is True
+        assert sanitized["candado_2_ocurrio_en_mexico"] is True
+        assert sanitized["ninos_afectados"] == 0
+        assert sanitized["resumen"] == ""
+        assert sanitized["cita_textual_evidencia"] == ""
+        assert sanitized["estado"] == "No especificado"
+
+        # Debe validar contra Pydantic sin lanzar ValidationError
+        schema = CasoExtraidoSchema.model_validate(sanitized)
+        assert schema.ninos_afectados == 0
+        assert schema.estado == "No especificado"
+
+
+class TestRateLimitAndBudget:
+    """Verifica backoff en HTTP 429 y límite de presupuesto de llamadas LLM en batch."""
+
+    def test_retry_backoff_on_429_succeeds_on_second_try(self):
+        extractor = LLMExtractor()
+        provider = {
+            "name": "groq",
+            "api_key": "dummy-key",
+            "model": "dummy-model",
+            "base_url": "https://api.groq.com/openai/v1/chat/completions",
+        }
+        resp_429 = MagicMock()
+        resp_429.status_code = 429
+
+        resp_200 = MagicMock()
+        resp_200.status_code = 200
+        resp_200.json.return_value = {
+            "choices": [{"message": {"content": '{"candado_1_es_caso_concreto": true, "clasificacion": "Alta"}'}}]
+        }
+
+        with patch("src.analysis.llm_extractor.requests.post", side_effect=[resp_429, resp_200]) as mock_post, \
+             patch("src.analysis.llm_extractor.time.sleep") as mock_sleep:
+            parsed = extractor._call_openai_compatible(provider, "Titulo", "Contenido")
+
+        assert mock_post.call_count == 2
+        assert mock_sleep.call_count == 1
+        assert parsed["candado_1_es_caso_concreto"] is True
+
+    def test_analyze_batch_respects_max_llm_calls_budget(self):
+        extractor = LLMExtractor()
+        titles = [
+            f"Feminicidio en Ecatepec {i}: asesinan a madre frente a sus dos hijos"
+            for i in range(5)
+        ]
+        contents = [
+            f"Una mujer de 30 años fue asesinada en Ecatepec, Estado de México. "
+            f"Sus dos hijos menores quedaron en orfandad bajo resguardo del DIF #{i}."
+            for i in range(5)
+        ]
+
+        # max_llm_calls = 2: Las primeras 2 van al LLM (mocked), las siguientes 3 al fallback determinista
+        with patch.object(
+            extractor,
+            "analyze_article",
+            side_effect=lambda t, c, u="", force_fallback=False: {
+                "clasificacion_final": "Alta",
+                "modo": "llm_groq:test" if not force_fallback else "deterministic_fallback_budget_reached",
+            },
+        ) as mock_analyze:
+            results = extractor.analyze_batch(
+                titles, contents, delay_between_llm_calls=0.0, max_llm_calls=2
+            )
+
+        assert len(results) == 5
+        assert results[0]["modo"] == "llm_groq:test"
+        assert results[1]["modo"] == "llm_groq:test"
+        assert results[2]["modo"] == "deterministic_fallback_budget_reached"
+        assert results[3]["modo"] == "deterministic_fallback_budget_reached"
+        assert results[4]["modo"] == "deterministic_fallback_budget_reached"
+
