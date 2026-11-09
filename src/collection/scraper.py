@@ -989,12 +989,15 @@ class StealthSession:
                 scrapling_adapted = None
                 if ScraplingFetcher is not None:
                     try:
-                        page = ScraplingFetcher.get(
-                            url,
-                            stealthy_headers=True,
-                            follow_redirects=True,
-                            timeout=timeout,
-                        )
+                        fetch_kwargs = {
+                            "stealthy_headers": True,
+                            "follow_redirects": True,
+                            "timeout": timeout,
+                            "impersonate": "chrome",
+                        }
+                        if _ASCII_CA_BUNDLE:
+                            fetch_kwargs["verify"] = _ASCII_CA_BUNDLE
+                        page = ScraplingFetcher.get(url, **fetch_kwargs)
                         scrapling_adapted = ScraplingResponseAdapter(page, url)
                     except Exception as sc_err:
                         logger.debug(
@@ -1038,9 +1041,14 @@ class StealthSession:
 
                 if scrapling_adapted is not None:
                     if scrapling_adapted.status_code not in (403, 429, 503):
-                        scrapling_adapted.raise_for_status()
-                        self._circuit_breaker.record_success(domain)
-                        return scrapling_adapted
+                        try:
+                            scrapling_adapted.raise_for_status()
+                            self._circuit_breaker.record_success(domain)
+                            return scrapling_adapted
+                        except requests.RequestException as exc:
+                            logger.warning(f"Error HTTP Scrapling en {url[:60]}...: {exc}")
+                            self._circuit_breaker.record_failure(domain)
+                            return None
 
                     # Recibió 403/429/503 en transporte TLS nativo: registrar fallo y evaluar cortocircuito
                     cap = min(6, 1.5 * attempt)

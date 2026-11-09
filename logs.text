@@ -1,178 +1,344 @@
 ============================================================
   PIPELINE DE ANÁLISIS v5.0 — TT2 SEMÁNTICO
 ============================================================
-2026-11-08 01:14:05,038 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:05] "GET /api/analyze?postgres=true&semantic=true&scraper=all HTTP/1.1" 200 -
-  Batch ID de ejecución: 20261108_011405
+  Batch ID de ejecución: 20261108_215858
+2026-11-08 21:58:58,334 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:58:58] "GET /api/analyze?postgres=true&semantic=true&start_date=2025-11-08&end_date=2026-11-08&scraper=all HTTP/1.1" 200 -
 === PASO 1: RECOLECCIÓN DIRIGIDA + SCORING DE RELEVANCIA ===
   -- Búsqueda Dirigida en Google News + Bing News --
   Search RSS: https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+...
+[2026-11-08 21:58:59] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:58:59,650 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+hijos+hu%C3%A9rfanos+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=feminicidio+menores+orfandad+M%C3...
-2026-11-08 01:14:09,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:09] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:00] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+menores+orfandad+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:00,432 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+menores+orfandad+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%...
+[2026-11-08 21:59:01] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:01,183 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=asesinato+mujer+hijos+quedaron+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%...
+[2026-11-08 21:59:01] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:01,857 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=DIF+custodia+feminicidio+hijos+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+fe...
+2026-11-08 21:59:02,364 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:02] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:02] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+feminicidio+ni%C3%B1os+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:02,735 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=%22v%C3%ADctimas+indirectas%22+feminicidio+ni%C3%B1os+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=feminicidio+%22frente+a+sus+hijos...
+[2026-11-08 21:59:03] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+%22frente+a+sus+hijos%22+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:03,419 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+%22frente+a+sus+hijos%22+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=feminicidio+%22era+madre+de%22+hi...
-2026-11-08 01:14:13,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:13] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:04] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+%22era+madre+de%22+hijos+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:04,310 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+%22era+madre+de%22+hijos+M%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico...
+[2026-11-08 21:59:05] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico+menores+hijos+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:05,234 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Estado+de+M%C3%A9xico+menores+hijos+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://news.google.com/rss/search?q=feminicidio+CDMX+Jalisco+Puebla+V...
-  Search RSS: https://news.google.com/rss/search?q=feminicidio+Puebla+mujer&hl=es-41...
-  Search RSS: https://news.google.com/rss/search?q=feminicidio+Veracruz+mujer&hl=es-...
-2026-11-08 01:14:17,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:17] "GET /api/analyze/status HTTP/1.1" 200 -
-  Search RSS: https://news.google.com/rss/search?q=feminicidio+Nuevo+Leon+mujer&hl=e...
-  Search RSS: https://news.google.com/rss/search?q=feminicidio+Oaxaca+mujer&hl=es-41...
+[2026-11-08 21:59:05] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+CDMX+Jalisco+Puebla+Veracruz+hijos+menores+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:05,939 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+CDMX+Jalisco+Puebla+Veracruz+hijos+menores+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Puebla+mujer+after%3A...
+2026-11-08 21:59:06,471 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:06] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:06] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Puebla+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:06,675 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Puebla+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Veracruz+mujer+after%...
+[2026-11-08 21:59:07] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Veracruz+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:07,683 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Veracruz+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Nuevo+Leon+mujer+afte...
+2026-11-08 21:59:10,453 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:10] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:10] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Nuevo+Leon+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:10,771 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Nuevo+Leon+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+  Search RSS: https://news.google.com/rss/search?q=feminicidio+Oaxaca+mujer+after%3A...
+[2026-11-08 21:59:11] INFO: Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Oaxaca+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
+2026-11-08 21:59:11,381 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/search?q=feminicidio+Oaxaca+mujer+after%3A2025-11-08+before%3A2026-11-08&hl=es-419&gl=MX&ceid=MX%3Aes-419> (referer: https://www.google.com/)
   Search RSS: https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&f...
+[2026-11-08 21:59:13] INFO: Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
+2026-11-08 21:59:13,097 - scrapling - INFO - Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+hijos+orfandad+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
   Search RSS: https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&f...
+[2026-11-08 21:59:14] INFO: Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
+2026-11-08 21:59:14,345 - scrapling - INFO - Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+menor+huerfano+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
   Search RSS: https://www.bing.com/news/search?q=asesinan+mujer+frente+a+sus+hijos+M...
-2026-11-08 01:14:21,056 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:21] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 21:59:14,460 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:14] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:15] INFO: Fetched (200) <GET https://www.bing.com/news/search?q=asesinan+mujer+frente+a+sus+hijos+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
+2026-11-08 21:59:15,113 - scrapling - INFO - Fetched (200) <GET https://www.bing.com/news/search?q=asesinan+mujer+frente+a+sus+hijos+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
   Search RSS: https://www.bing.com/news/search?q=feminicidio+DIF+resguardo+menores+M...
+[2026-11-08 21:59:15] INFO: Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+DIF+resguardo+menores+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
+2026-11-08 21:59:15,753 - scrapling - INFO - Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+DIF+resguardo+menores+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
   Search RSS: https://www.bing.com/news/search?q=mujer+asesinada+era+madre+de+hijos+...
+[2026-11-08 21:59:16] INFO: Fetched (200) <GET https://www.bing.com/news/search?q=mujer+asesinada+era+madre+de+hijos+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
+2026-11-08 21:59:16,511 - scrapling - INFO - Fetched (200) <GET https://www.bing.com/news/search?q=mujer+asesinada+era+madre+de+hijos+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
   Search RSS: https://www.bing.com/news/search?q=feminicidio+victimas+indirectas+nin...
-2026-11-08 01:14:25,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:25] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:17] INFO: Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+victimas+indirectas+ninos+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
+2026-11-08 21:59:17,511 - scrapling - INFO - Fetched (200) <GET https://www.bing.com/news/search?q=feminicidio+victimas+indirectas+ninos+Mexico&format=rss&cc=MX&setlang=es-MX> (referer: https://www.google.com/)
   -- Búsqueda Dirigida y Redes Sociales (DuckDuckGo) --
   Buscando DDG: feminicidio "dejó en orfandad" menor México
+2026-11-08 21:59:18,457 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:18] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:18] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22dej%C3%B3+en+orfandad%22+menor+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+2026-11-08 21:59:18,514 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22dej%C3%B3+en+orfandad%22+menor+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)  
   Buscando DDG: asesinan a mujer "frente a sus hijos" México
+[2026-11-08 21:59:19] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=asesinan+a+mujer+%22frente+a+sus+hijos%22+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+2026-11-08 21:59:19,355 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=asesinan+a+mujer+%22frente+a+sus+hijos%22+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)      
   Buscando DDG: feminicidio "era madre de" hijos México
+[2026-11-08 21:59:20] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22era+madre+de%22+hijos+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+2026-11-08 21:59:20,388 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22era+madre+de%22+hijos+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
   Buscando DDG: feminicidio "bajo resguardo del DIF" menor México
+[2026-11-08 21:59:21] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22bajo+resguardo+del+DIF%22+menor+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+2026-11-08 21:59:21,427 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22bajo+resguardo+del+DIF%22+menor+M%C3%A9xico&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/) 
   Buscando DDG: asesinan a mujer "hijos" Edomex OR Puebla OR Veracruz
-2026-11-08 01:14:29,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:29] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:22] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=asesinan+a+mujer+%22hijos%22+Edomex+OR+Puebla+OR+Veracruz&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+2026-11-08 21:59:22,280 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=asesinan+a+mujer+%22hijos%22+Edomex+OR+Puebla+OR+Veracruz&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)  
   Buscando DDG: feminicidio "dejó en orfandad" Jalisco OR Nuevo León OR Guanajuato
+2026-11-08 21:59:22,455 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:22] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:22] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22dej%C3%B3+en+orfandad%22+Jalisco+OR+Nuevo+Le%C3%B3n+OR+Guanajuato&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+2026-11-08 21:59:22,671 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22dej%C3%B3+en+orfandad%22+Jalisco+OR+Nuevo+Le%C3%B3n+OR+Guanajuato&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
   Buscando DDG: feminicidio "bajo resguardo del DIF" Oaxaca OR Chiapas OR Guerrero
+[2026-11-08 21:59:23] INFO: Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22bajo+resguardo+del+DIF%22+Oaxaca+OR+Chiapas+OR+Guerrero&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)      
+2026-11-08 21:59:23,813 - scrapling - INFO - Fetched (202) <GET https://html.duckduckgo.com/html/?q=feminicidio+%22bajo+resguardo+del+DIF%22+Oaxaca+OR+Chiapas+OR+Guerrero&kl=mx-es&df=2025-11-08..2026-11-08> (referer: https://www.google.com/)
+  -- Búsqueda en Google Search (Fallback Histórico HTML) --
+  Buscando en Google HTML: feminicidio "víctimas indirectas" niños méxico
+2026-11-08 21:59:23,823 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX
+[2026-11-08 21:59:25] INFO: Fetched (200) <GET https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX> (referer: https://www.google.com/)
+2026-11-08 21:59:25,128 - scrapling - INFO - Fetched (200) <GET https://www.google.com/search?q=feminicidio+%22v%C3%ADctimas+indirectas%22+ni%C3%B1os+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX> (referer: https://www.google.com/)
+  Buscando en Google HTML: huérfanos feminicidio méxico
+2026-11-08 21:59:25,132 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX   
+[2026-11-08 21:59:25] INFO: Fetched (200) <GET https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX> (referer: https://www.google.com/)
+2026-11-08 21:59:25,873 - scrapling - INFO - Fetched (200) <GET https://www.google.com/search?q=hu%C3%A9rfanos+feminicidio+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX> (referer: https://www.google.com/)
+  Buscando en Google HTML: niños "hijos" asesinan mujer méxico
+2026-11-08 21:59:25,877 - src.collection.collector - INFO - Scraping Google Search Histórico: https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX
+[2026-11-08 21:59:26] INFO: Fetched (200) <GET https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX> (referer: https://www.google.com/)   
+2026-11-08 21:59:26,405 - scrapling - INFO - Fetched (200) <GET https://www.google.com/search?q=ni%C3%B1os+%22hijos%22+asesinan+mujer+m%C3%A9xico+after%3A2025-11-08+before%3A2026-11-08&tbm=nws&hl=es-419&gl=MX> (referer: https://www.google.com/)
   -- 1 fuentes especializadas/personalizadas desde DB --
   [RSS] Cimacnoticias (rss)
+2026-11-08 21:59:26,459 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:26] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:27] INFO: Fetched (200) <GET https://cimacnoticias.com.mx/feed/> (referer: https://www.google.com/)
+2026-11-08 21:59:27,691 - scrapling - INFO - Fetched (200) <GET https://cimacnoticias.com.mx/feed/> (referer: https://www.google.com/)
     -> 0 artículos relevantes
-  URLs: 0 previas + 22 nuevas = 22 total
+  [!] Circuit breaker - dominios en cooldown: ['oem.com.mx']
+2026-11-08 21:59:27,750 - src.collection.collector - WARNING - Circuit breaker OPEN para oem.com.mx: 3 fallos consecutivos
+  URLs: 0 previas + 161 nuevas = 161 total
   -- Deduplicación avanzada --
-2026-11-08 01:14:31,936 - src.analysis.dedup - INFO - Deduplicación: 22 noticias de entrada
-2026-11-08 01:14:31,940 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-08 01:14:31,945 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-08 01:14:31,958 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-08 01:14:31,961 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
-2026-11-08 01:14:31,962 - src.analysis.dedup - INFO -   Resultado: 22 -> 22 únicos (0 duplicados eliminados)       
-  Duplicados eliminados: 0 (22 -> 22)
-  -- Enriquecimiento Full-Text con Scrapling: descargando cuerpo de 22 notas candidatas --
-2026-11-08 01:14:33,076 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:33] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:14:35,004 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/balacera-deja-a-madre-e-hija... Reintento 1/3 en 1.1s
-2026-11-08 01:14:35,967 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR   
-2026-11-08 01:14:36,322 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/policia/balacera-deja-a-madre-e-hija... Reintento 2/3 en 2.6s
-2026-11-08 01:14:36,679 - src.collection.scraper - INFO - HTTP 403 en https://www.milenio.com/videos/policia/asesinan-mujer-frente... Reintento 1/3 en 1.0s
-2026-11-08 01:14:36,679 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.milenio.com - 3 fallos consecutivos. Cooldown 600s
-2026-11-08 01:14:37,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:37] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:14:41,063 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:41] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:14:42,339 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 1/3 en 1.1s
-2026-11-08 01:14:43,425 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
-2026-11-08 01:14:43,735 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 2/3 en 3.0s
-2026-11-08 01:14:45,050 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:45] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:14:45,832 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
-2026-11-08 01:14:47,033 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud... Reintento 3/3 en 3.2s
-2026-11-08 01:14:47,033 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para oem.com.mx - 3 fallos consecutivos. Cooldown 600s
-2026-11-08 01:14:47,033 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://oem.com.mx/elsoldemexico/mexico/feminicidio-de-estud...
-2026-11-08 01:14:48,370 - src.collection.scraper - WARNING - Error conexion https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...: HTTPSConnectionPool(host='www.diariomarca.com.mx', port=443): Max retries exceeded with url: /2026/11/feminicidio-de-marbeli-reaviva-exigencia-de-justicia-para-las-mujeres-en-oaxaca/ (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)')))
-2026-11-08 01:14:48,371 - src.collection.scraper - WARNING - Circuit breaker ABIERTO para www.diariomarca.com.mx - 3 fallos consecutivos. Cooldown 600s
-2026-11-08 01:14:48,371 - src.collection.scraper - WARNING - Agotados 3 reintentos para https://www.diariomarca.com.mx/2026/11/feminicidio-de-marbel...
-  -> Cuerpo completo extraído en 16/22 notas
-2026-11-08 01:14:48,831 - src.analysis.dedup - INFO - Deduplicación: 14 noticias de entrada
-2026-11-08 01:14:48,831 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-08 01:14:48,831 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
-2026-11-08 01:14:48,858 - src.analysis.dedup - INFO -   Resultado: 14 -> 14 únicos (0 duplicados eliminados)       
-  Total recolectadas: 14
-  Relevantes (score >= 0.25): 13
-  Con mención a NNA: 13
-  13 noticias relevantes recolectadas
-   |-- Alta relevancia:  12
-   |-- Media relevancia: 1
-   |-- Baja relevancia:  0
-   +-- Mencionan NNA:    13
+2026-11-08 21:59:27,766 - src.analysis.dedup - INFO - Deduplicación: 161 noticias de entrada
+2026-11-08 21:59:27,771 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 21:59:27,826 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 21:59:27,912 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 2 duplicados
+2026-11-08 21:59:27,949 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 21:59:27,951 - src.analysis.dedup - INFO -   Resultado: 161 -> 159 únicos (2 duplicados eliminados)
+  Duplicados eliminados: 2 (161 -> 159)
+  -- Enriquecimiento Full-Text con Scrapling: descargando cuerpo de 40 notas candidatas --
+2026-11-08 21:59:30,463 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:30] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:30] INFO: Fetched (200) <GET https://www.elsiglodetorreon.com.mx/noticia/2026/pronnif-acompana-a-155-victimas-indirectas-de-feminicidio-en-coahuila.html> (referer: https://www.google.com/)
+2026-11-08 21:59:30,636 - scrapling - INFO - Fetched (200) <GET https://www.elsiglodetorreon.com.mx/noticia/2026/pronnif-acompana-a-155-victimas-indirectas-de-feminicidio-en-coahuila.html> (referer: https://www.google.com/)       
+[2026-11-08 21:59:30] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi9AFBVV95cUxOMVNtR3JVcmVyZEZuQ3FtU0I5MWZmS3FuT0xselRrM01lRlhrUWlVbmo4MFhWTUtiV0N0dFd3VG8wX2cyekcwTklOYUwyMDlORjFudEVISHlhQldwS2M5M2l6VkRGdXNGVVltWEp2SW9vX1l6R1N2RU4zeHhwSmZlUHd0eFZEN1M1V0FUNGFJbGpfYzlPakRUM1VNOEs4b0lRZ1B1QzczR2ctcl9pc21ZQ2pjdVd4TTkwc21ZYXo5X0tlN2tGdlRxTmg2TF9xemowUVJvQ0h5dktDZl94UHNhYVZrWWZkODlDRHJFQUtLTU94R2Jt0gGPAkFVX3lxTE5oMFVsaFVxS1d2VXRxajBocXhKN0o2T0FVbmZ0YnJXaTdxLTVlYmM3aUh4dW1IWlpXbTlIVEZZTHJXMWJ2UkRPWGRzV3QzMk9Cb3VFcjBSSE04TUYtcVNiX2xQQV9OUWhGLWpBTFZVc3NOMGRVNXRKRUpXbW9NRzNGVGFlVG44SVQ3cWw0akpWY1czQkJLV0FkMjh0SUlVQlVGemEzVUdueTFLcHlQTHBkNGtKRE9hM1lBX2dfLVVULUlGRXFGTGVkZWhHWlhDRW1BMFdkbGJqbnN6c2tfV2ZIemQ0dElrRUdjU0s3aElacUo0bjlVQjVFaEZwVHg5ZGtZRXZCS1N0WHZwQ01OY0k?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:30,724 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi9AFBVV95cUxOMVNtR3JVcmVyZEZuQ3FtU0I5MWZmS3FuT0xselRrM01lRlhrUWlVbmo4MFhWTUtiV0N0dFd3VG8wX2cyekcwTklOYUwyMDlORjFudEVISHlhQldwS2M5M2l6VkRGdXNGVVltWEp2SW9vX1l6R1N2RU4zeHhwSmZlUHd0eFZEN1M1V0FUNGFJbGpfYzlPakRUM1VNOEs4b0lRZ1B1QzczR2ctcl9pc21ZQ2pjdVd4TTkwc21ZYXo5X0tlN2tGdlRxTmg2TF9xemowUVJvQ0h5dktDZl94UHNhYVZrWWZkODlDRHJFQUtLTU94R2Jt0gGPAkFVX3lxTE5oMFVsaFVxS1d2VXRxajBocXhKN0o2T0FVbmZ0YnJXaTdxLTVlYmM3aUh4dW1IWlpXbTlIVEZZTHJXMWJ2UkRPWGRzV3QzMk9Cb3VFcjBSSE04TUYtcVNiX2xQQV9OUWhGLWpBTFZVc3NOMGRVNXRKRUpXbW9NRzNGVGFlVG44SVQ3cWw0akpWY1czQkJLV0FkMjh0SUlVQlVGemEzVUdueTFLcHlQTHBkNGtKRE9hM1lBX2dfLVVULUlGRXFGTGVkZWhHWlhDRW1BMFdkbGJqbnN6c2tfV2ZIemQ0dElrRUdjU0s3aElacUo0bjlVQjVFaEZwVHg5ZGtZRXZCS1N0WHZwQ01OY0k?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:31] INFO: Fetched (200) <GET https://www.milenio.com/policia/joven-asesinada-frente-hijos-pesqueria-nuevo-leon-presunta-ex-pareja> (referer: https://www.google.com/)
+2026-11-08 21:59:31,018 - scrapling - INFO - Fetched (200) <GET https://www.milenio.com/policia/joven-asesinada-frente-hijos-pesqueria-nuevo-leon-presunta-ex-pareja> (referer: https://www.google.com/)
+[2026-11-08 21:59:31] INFO: Fetched (200) <GET https://www.debate.com.mx/policiacas/ataque-directo-en-periferico-norte-asesinan-a-mujer-frente-a-su-hijo-de-cinco-anos-20260409-0121.html> (referer: https://www.google.com/)
+2026-11-08 21:59:31,356 - scrapling - INFO - Fetched (200) <GET https://www.debate.com.mx/policiacas/ataque-directo-en-periferico-norte-asesinan-a-mujer-frente-a-su-hijo-de-cinco-anos-20260409-0121.html> (referer: https://www.google.com/)
+[2026-11-08 21:59:31] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi_gFBVV95cUxQNk53OFhNNWJDVnhHcmQtRkNFbDVyRmpyV2xZY25CSkRydmtwd085Qk9uZDVCbnZYQTdEY3oydVBSQVp0M0hiV0ViZWdwTElNX2htTVpFNTRvbWxCcGRqNU0wejFnY05TYUp0ek5KMERYVnl5UVRUUEcyd3UxbVpHNkgxVEJzVnJONlhCRE45NWJqMmZnWUo4VndvbXB5ckhfVVZKOFBESUF0MW1jd05GS05uaHZBR0JmVzFoY28xb09KajdvV2JOcGQ2TF9ZZ1Nzb1ZhSEc1QzZyN3g0OGduMGJDU2RVejBjVlhzQUVVUnF4OGxoTkZZcDZuZ2x6UdIBmAJBVV95cUxOaHh6d0NFYUxLU2pJb0prN0xZN1AyWmNabFNjdmYzRWhLS2lDQ1FjQWtxQXFZeElNNDluMHh3M3oxX2JnZGlFcEExaXU4NTR4dEpubXNpWXFoTE9NdXpNLWtKTnZKNFA0cm1rd3FJM2xtbEpNdmZSTjZtMjcxUWpBbUFKcklzSjJfUTQySjdEdUZuY1J5WEk0N0EtUEJpZnhMZ2UxZUtmSHJmRjdrWEdJNnlZNXZPR3kxeERzSmZqQncwLW9FOHV0TDQyTV92aUN4WHQ4MWlqcWJMc2ZuaUNXUzlWV3NNRURxRUEzOTh0RFNLVjhaVlV0dXV2WXpkakp0WUUxVkFfczI5V3NDMGRUREpuSllINmNR?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:31,446 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi_gFBVV95cUxQNk53OFhNNWJDVnhHcmQtRkNFbDVyRmpyV2xZY25CSkRydmtwd085Qk9uZDVCbnZYQTdEY3oydVBSQVp0M0hiV0ViZWdwTElNX2htTVpFNTRvbWxCcGRqNU0wejFnY05TYUp0ek5KMERYVnl5UVRUUEcyd3UxbVpHNkgxVEJzVnJONlhCRE45NWJqMmZnWUo4VndvbXB5ckhfVVZKOFBESUF0MW1jd05GS05uaHZBR0JmVzFoY28xb09KajdvV2JOcGQ2TF9ZZ1Nzb1ZhSEc1QzZyN3g0OGduMGJDU2RVejBjVlhzQUVVUnF4OGxoTkZZcDZuZ2x6UdIBmAJBVV95cUxOaHh6d0NFYUxLU2pJb0prN0xZN1AyWmNabFNjdmYzRWhLS2lDQ1FjQWtxQXFZeElNNDluMHh3M3oxX2JnZGlFcEExaXU4NTR4dEpubXNpWXFoTE9NdXpNLWtKTnZKNFA0cm1rd3FJM2xtbEpNdmZSTjZtMjcxUWpBbUFKcklzSjJfUTQySjdEdUZuY1J5WEk0N0EtUEJpZnhMZ2UxZUtmSHJmRjdrWEdJNnlZNXZPR3kxeERzSmZqQncwLW9FOHV0TDQyTV92aUN4WHQ4MWlqcWJMc2ZuaUNXUzlWV3NNRURxRUEzOTh0RFNLVjhaVlV0dXV2WXpkakp0WUUxVkFfczI5V3NDMGRUREpuSllINmNR?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:31] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMiqgFBVV95cUxOWUZQd0FTRXdEckt5M0p2VWFNZWFMVGxPN3cyV0lxX2lPQ0xiYWx6ZDdvNlh0eU8zUEhaYnd3VjE0blRxWk1sMHJtdFFfQ0JTZ0dkMEtmeGNUQll3aWN0V2VWUzVjRHV5WmlIUkZQWlJBejVmYWRJS09rUVdoTDFEbEJuWEItUU5ub3dVTVFTdXViNlZrREpUanJndUFvb1oxRlhlSl9VRkhuQQ?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:31,573 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMiqgFBVV95cUxOWUZQd0FTRXdEckt5M0p2VWFNZWFMVGxPN3cyV0lxX2lPQ0xiYWx6ZDdvNlh0eU8zUEhaYnd3VjE0blRxWk1sMHJtdFFfQ0JTZ0dkMEtmeGNUQll3aWN0V2VWUzVjRHV5WmlIUkZQWlJBejVmYWRJS09rUVdoTDFEbEJuWEItUU5ub3dVTVFTdXViNlZrREpUanJndUFvb1oxRlhlSl9VRkhuQQ?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:31] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMivgFBVV95cUxQUEx5VUN5cHFkZUJXcnBrNnZ5ZUtkRlhMRUhDTk5uV2IyUGoxenEybURjVnk1NkVmQWprdkMtR3M2RzNEZEtjZ3c5NXZST3d5Q042U2tTRVJiYmp2ejk2LWwxdHB5TWdIalBJRHpISXBOVFh5ZEZSeHljRzlWSktNSzlFNDI1SDF4eHhOc0wwTUJPc0ZlY3VCeHVzb2NZSU1yX296Nk9jalZXandqbjh1Qk1NYjk0b09zRHNiRUZ3?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:31,905 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMivgFBVV95cUxQUEx5VUN5cHFkZUJXcnBrNnZ5ZUtkRlhMRUhDTk5uV2IyUGoxenEybURjVnk1NkVmQWprdkMtR3M2RzNEZEtjZ3c5NXZST3d5Q042U2tTRVJiYmp2ejk2LWwxdHB5TWdIalBJRHpISXBOVFh5ZEZSeHljRzlWSktNSzlFNDI1SDF4eHhOc0wwTUJPc0ZlY3VCeHVzb2NZSU1yX296Nk9jalZXandqbjh1Qk1NYjk0b09zRHNiRUZ3?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:32] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMiowFBVV95cUxOOWlkUEFYVndEZERtOW9kMjJpcVJCNm1vaDIzazNzTl92eERVREtmdEpYeWdpOWo2VWNpRzJaRnc4RFEzWVJuS29Jbjh0dGJXUlVBUHNpQ19xQjl5NFFvUFBseVlmUzhSYXF1SzlsbVlJbVE3alZveGlhcGJuemp6bnFzQzQ1Ql80SkNQR2hqYWxQVGYzUFZDQmdvNGhxZ1hyOWVj?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:32,035 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMiowFBVV95cUxOOWlkUEFYVndEZERtOW9kMjJpcVJCNm1vaDIzazNzTl92eERVREtmdEpYeWdpOWo2VWNpRzJaRnc4RFEzWVJuS29Jbjh0dGJXUlVBUHNpQ19xQjl5NFFvUFBseVlmUzhSYXF1SzlsbVlJbVE3alZveGlhcGJuemp6bnFzQzQ1Ql80SkNQR2hqYWxQVGYzUFZDQmdvNGhxZ1hyOWVj?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:33] INFO: Fetched (200) <GET https://www.milenio.com/estados/coahuila-cuantos-ninos-y-jovenes-huerfanos-por-feminicidio> (referer: https://www.google.com/)
+2026-11-08 21:59:33,141 - scrapling - INFO - Fetched (200) <GET https://www.milenio.com/estados/coahuila-cuantos-ninos-y-jovenes-huerfanos-por-feminicidio> (referer: https://www.google.com/)
+[2026-11-08 21:59:33] INFO: Fetched (200) <GET https://www.cronica.com.mx/nacional/2026/03/14/dif-instala-mesa-interinstitucional-para-registro-de-menores-en-situacion-de-orfandad-por-feminicidio/> (referer: https://www.google.com/)
+2026-11-08 21:59:33,852 - scrapling - INFO - Fetched (200) <GET https://www.cronica.com.mx/nacional/2026/03/14/dif-instala-mesa-interinstitucional-para-registro-de-menores-en-situacion-de-orfandad-por-feminicidio/> (referer: https://www.google.com/)
+2026-11-08 21:59:34,471 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:34] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:35] INFO: Fetched (200) <GET https://www.zocalo.com.mx/proponen-registro-nacional-de-ninas-y-ninos-en-orfandad-por-feminicidio/> (referer: https://www.google.com/)
+2026-11-08 21:59:35,708 - scrapling - INFO - Fetched (200) <GET https://www.zocalo.com.mx/proponen-registro-nacional-de-ninas-y-ninos-en-orfandad-por-feminicidio/> (referer: https://www.google.com/)
+[2026-11-08 21:59:35] INFO: Fetched (200) <GET https://www.infobae.com/mexico/2026/07/15/gobierno-de-mexico-anuncia-creacion-de-registro-nacional-para-proteger-a-infancias-y-adolescencias-en-orfandad-por-feminicidio/> (referer: https://www.google.com/)
+2026-11-08 21:59:35,837 - scrapling - INFO - Fetched (200) <GET https://www.infobae.com/mexico/2026/07/15/gobierno-de-mexico-anuncia-creacion-de-registro-nacional-para-proteger-a-infancias-y-adolescencias-en-orfandad-por-feminicidio/> (referer: https://www.google.com/)
+[2026-11-08 21:59:35] INFO: Fetched (200) <GET https://cimacnoticias.com.mx/2026/01/28/mexico-debera-atender-infancias-en-orfandad-por-feminicidio-tras-sentencia-coidh/> (referer: https://www.google.com/)
+2026-11-08 21:59:35,938 - scrapling - INFO - Fetched (200) <GET https://cimacnoticias.com.mx/2026/01/28/mexico-debera-atender-infancias-en-orfandad-por-feminicidio-tras-sentencia-coidh/> (referer: https://www.google.com/)
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://grupoanimal.mx/explicaciones/clara-brugada-no-cumple-con-apoyo-menores-en-orfandad-por-feminicidio> (referer: https://www.google.com/)
+2026-11-08 21:59:36,167 - scrapling - INFO - Fetched (200) <GET https://grupoanimal.mx/explicaciones/clara-brugada-no-cumple-con-apoyo-menores-en-orfandad-por-feminicidio> (referer: https://www.google.com/)
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://www.reporteindigo.com/nacional/scjn-busca-reforzar-proteccion-de-menores-en-orfandad-por-feminicidio-20261029-0077.html> (referer: https://www.google.com/)
+2026-11-08 21:59:36,203 - scrapling - INFO - Fetched (200) <GET https://www.reporteindigo.com/nacional/scjn-busca-reforzar-proteccion-de-menores-en-orfandad-por-feminicidio-20261029-0077.html> (referer: https://www.google.com/)   
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMijwFBVV95cUxPeGd5TTVjN2JRT2ExUVdwMWI1LVhqNm40cTRiNENfSUdBaUtaYmdPUzhoU0ZTRkVJc2FLLWZkeWdGMjM0bHlCZU8zOHVBOExEbVlZSVc4YXFLcHdOc01RSmczMkd0ZXRwSExEMlZVdWF1SEREVlZEb3BjSXdvTkVFaGIwcE1kODgzZGZNa2pxNNIBjwFBVV95cUxQdnNuWW45VUdtVmtaaDNTdy1vZmF6aW1xS1dTQXVlZGQ1XzEwaU1FZS1TVXJOZGZHcFpyT2dlZ2ZaT2xnWThyVnd6d0ZDUUF0U2NhQks2bTZ5MkUtQklJSmZIOVlDQkRPcy1Ja1hFVlRsTzlrdDU5dVJKNWtTYzV3d2RPLUVaamNvTzRJREh1QQ?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:36,420 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMijwFBVV95cUxPeGd5TTVjN2JRT2ExUVdwMWI1LVhqNm40cTRiNENfSUdBaUtaYmdPUzhoU0ZTRkVJc2FLLWZkeWdGMjM0bHlCZU8zOHVBOExEbVlZSVc4YXFLcHdOc01RSmczMkd0ZXRwSExEMlZVdWF1SEREVlZEb3BjSXdvTkVFaGIwcE1kODgzZGZNa2pxNNIBjwFBVV95cUxQdnNuWW45VUdtVmtaaDNTdy1vZmF6aW1xS1dTQXVlZGQ1XzEwaU1FZS1TVXJOZGZHcFpyT2dlZ2ZaT2xnWThyVnd6d0ZDUUF0U2NhQks2bTZ5MkUtQklJSmZIOVlDQkRPcy1Ja1hFVlRsTzlrdDU5dVJKNWtTYzV3d2RPLUVaamNvTzRJREh1QQ?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://www.milenio.com/policia/feminicidio-ivonne-mujer-asesinada-pareja-tampico> (referer: https://www.google.com/)
+2026-11-08 21:59:36,502 - scrapling - INFO - Fetched (200) <GET https://www.milenio.com/policia/feminicidio-ivonne-mujer-asesinada-pareja-tampico> (referer: https://www.google.com/)
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://www.reporteindigo.com/monterrey/mujer-es-asesinada-frente-a-sus-pequenos-hijos-por-su-expareja-en-pesqueria-nl-20261005-0011.html> (referer: https://www.google.com/)
+2026-11-08 21:59:36,709 - scrapling - INFO - Fetched (200) <GET https://www.reporteindigo.com/monterrey/mujer-es-asesinada-frente-a-sus-pequenos-hijos-por-su-expareja-en-pesqueria-nl-20261005-0011.html> (referer: https://www.google.com/)
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi4wFBVV95cUxPb21LWnpoeThHMjJFck5pbzBwWmNFVzg5WjJaX2IxLUZHeHRWY0tkOGZhQXdNUUUwdGRJRVN2SmRkaFVFSlc5QkU4eFllU0J0YVZRR1hqeFlCREMwclM5VDEwRjZhZlp0NGdycG1Pb0NEaVU5MW5Va3BPMVdBeDlnWFZBbnloU3VRdkV4aTFhd25HWWFVQXVpelRnblo1TW1ZdGkwMFVyZ29xRkgxaUpHbE1FR2ozNk4xb00zVUJZbGhIWENaelZJOVMyT1JiaGhmTy1ReXhfNW9FeUhQalNHcGRzdw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)    
+2026-11-08 21:59:36,899 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi4wFBVV95cUxPb21LWnpoeThHMjJFck5pbzBwWmNFVzg5WjJaX2IxLUZHeHRWY0tkOGZhQXdNUUUwdGRJRVN2SmRkaFVFSlc5QkU4eFllU0J0YVZRR1hqeFlCREMwclM5VDEwRjZhZlp0NGdycG1Pb0NEaVU5MW5Va3BPMVdBeDlnWFZBbnloU3VRdkV4aTFhd25HWWFVQXVpelRnblo1TW1ZdGkwMFVyZ29xRkgxaUpHbE1FR2ozNk4xb00zVUJZbGhIWENaelZJOVMyT1JiaGhmTy1ReXhfNW9FeUhQalNHcGRzdw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:36] INFO: Fetched (200) <GET https://www.ladobe.com.mx/2025/12/orfandad-por-feminicidio-30-anos-de-una-deuda-que-empezo-en-juarez/> (referer: https://www.google.com/)
+2026-11-08 21:59:36,926 - scrapling - INFO - Fetched (200) <GET https://www.ladobe.com.mx/2025/12/orfandad-por-feminicidio-30-anos-de-una-deuda-que-empezo-en-juarez/> (referer: https://www.google.com/)
+2026-11-08 21:59:37,213 - src.collection.scraper - INFO - Circuit breaker HALF-OPEN para oem.com.mx (probando con 1 request)
+[2026-11-08 21:59:37] INFO: Fetched (200) <GET https://www.milenio.com/politica/yasmin-esquivel-propone-apoyos-a-hijos-de-victimas-de-feminicidio> (referer: https://www.google.com/)
+2026-11-08 21:59:37,321 - scrapling - INFO - Fetched (200) <GET https://www.milenio.com/politica/yasmin-esquivel-propone-apoyos-a-hijos-de-victimas-de-feminicidio> (referer: https://www.google.com/)
+[2026-11-08 21:59:37] INFO: Fetched (200) <GET https://www.elimparcial.com/mexico/2026/09/03/naomi-maestra-en-colima-fue-asesinada-en-su-vehiculo-frente-a-sus-hijos-fiscalia-investiga-el-caso-como-feminicidio/> (referer: https://www.google.com/)
+2026-11-08 21:59:37,531 - scrapling - INFO - Fetched (200) <GET https://www.elimparcial.com/mexico/2026/09/03/naomi-maestra-en-colima-fue-asesinada-en-su-vehiculo-frente-a-sus-hijos-fiscalia-investiga-el-caso-como-feminicidio/> (referer: https://www.google.com/)
+[2026-11-08 21:59:38] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi1wFBVV95cUxQdmhQMU1Ed09BUkplSkZsT3ZPa1hpS2gyNGg1QWpreFVQY0lRWmR2Zk0wMlZsT3pDaVJPWnhEalJ0THpSX2ZpU2hhX1gxTVJsZXUzNnNDRUJ0ckpLb0toZHRlWkMzYzZGemRIRjhxNEprVXJaQWpYQUdYVUI5dXZfMGdXY3pzUEtHejllaUZDNjFqal83WXk3OGV3cTc5UHJiOThkNGo1VUhRS3RWNDFfYk51MW1fc2RVeVlHLTl2NzBlejJWdlBuM1ZkVG9VNHZScFZrQ2lGZw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:38,252 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi1wFBVV95cUxQdmhQMU1Ed09BUkplSkZsT3ZPa1hpS2gyNGg1QWpreFVQY0lRWmR2Zk0wMlZsT3pDaVJPWnhEalJ0THpSX2ZpU2hhX1gxTVJsZXUzNnNDRUJ0ckpLb0toZHRlWkMzYzZGemRIRjhxNEprVXJaQWpYQUdYVUI5dXZfMGdXY3pzUEtHejllaUZDNjFqal83WXk3OGV3cTc5UHJiOThkNGo1VUhRS3RWNDFfYk51MW1fc2RVeVlHLTl2NzBlejJWdlBuM1ZkVG9VNHZScFZrQ2lGZw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)   
+[2026-11-08 21:59:38] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMijAFBVV95cUxOVXN1X201N1dQazRVbFRpOTREcG9XYjg3LXI5Sm5FOU9WbUF6cjFYNVBxblFjR3dQdC01eDJPSkZzQWk5M3hrc3JyU3l4QjRFejNmbFVXeEFrd3kyRVBHbVRaaE5vd0N3bmtNZHlqbHRBaGpTZXlZN3VlQmU1WjFabUVNVXVhQ1ljNzQza9IBjAFBVV95cUxNcVExT19mVmtCVm5sd09ldVdPd3BMT1AxZjBHTW5ycnI5TXJOZ3FENGdNNmpoTm9HOEYzM0JiQ0RFUk9YVk1WMXNUSEhGREJkbnVlSENFSHc4dkJOOTdTV0lPajlqMkVrSS1BNHZSMlU4WnRvUWlCS3JveDJ4YUdJMEpUZ0hXbmNvTmYzNg?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:38,443 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMijAFBVV95cUxOVXN1X201N1dQazRVbFRpOTREcG9XYjg3LXI5Sm5FOU9WbUF6cjFYNVBxblFjR3dQdC01eDJPSkZzQWk5M3hrc3JyU3l4QjRFejNmbFVXeEFrd3kyRVBHbVRaaE5vd0N3bmtNZHlqbHRBaGpTZXlZN3VlQmU1WjFabUVNVXVhQ1ljNzQza9IBjAFBVV95cUxNcVExT19mVmtCVm5sd09ldVdPd3BMT1AxZjBHTW5ycnI5TXJOZ3FENGdNNmpoTm9HOEYzM0JiQ0RFUk9YVk1WMXNUSEhGREJkbnVlSENFSHc4dkJOOTdTV0lPajlqMkVrSS1BNHZSMlU4WnRvUWlCS3JveDJ4YUdJMEpUZ0hXbmNvTmYzNg?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:38,458 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:38] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:38] INFO: Fetched (200) <GET https://www.msn.com/es-mx/noticias/otras/qui%C3%A9n-era-sharon-n-alias-la-pelos-de-la-uni%C3%B3n-mujer-asesinada-con-su-hijo-de-3-a%C3%B1os-en-la-morelos-cdmx/ar-AA2gBKGR> (referer: https://www.google.com/)
+2026-11-08 21:59:38,535 - scrapling - INFO - Fetched (200) <GET https://www.msn.com/es-mx/noticias/otras/qui%C3%A9n-era-sharon-n-alias-la-pelos-de-la-uni%C3%B3n-mujer-asesinada-con-su-hijo-de-3-a%C3%B1os-en-la-morelos-cdmx/ar-AA2gBKGR> (referer: https://www.google.com/)
+2026-11-08 21:59:38,553 - trafilatura.core - WARNING - discarding data: https://www.msn.com/es-mx/noticias/otras/quién-era-sharon-n-alias-la-pelos-de-la-unión-mujer-asesinada-con-su-hijo-de-3-años-en-la-morelos-cdmx/ar-AA2gBKGR   
+[2026-11-08 21:59:38] INFO: Fetched (200) <GET https://www.telediario.mx/nacional/tampico-tamaulipas-mujer-es-asesinada-por-su-pareja> (referer: https://www.google.com/)
+2026-11-08 21:59:38,639 - scrapling - INFO - Fetched (200) <GET https://www.telediario.mx/nacional/tampico-tamaulipas-mujer-es-asesinada-por-su-pareja> (referer: https://www.google.com/)
+[2026-11-08 21:59:39] INFO: Fetched (403) <GET https://oem.com.mx/elsoldetampico/local/piden-que-muerte-de-ivon-denisse-sea-tipificada-como-feminicidio-dejo-en-orfandad-a-sus-cuatro-hijos-31650236> (referer: https://www.google.com/)
+2026-11-08 21:59:39,015 - scrapling - INFO - Fetched (403) <GET https://oem.com.mx/elsoldetampico/local/piden-que-muerte-de-ivon-denisse-sea-tipificada-como-feminicidio-dejo-en-orfandad-a-sus-cuatro-hijos-31650236> (referer: https://www.google.com/)
+2026-11-08 21:59:39,017 - src.collection.scraper - INFO - HTTP 403 en https://oem.com.mx/elsoldetampico/local/piden-que-muerte-de-... Reintento 1/3 en 1.5s
+2026-11-08 21:59:39,018 - src.collection.scraper - WARNING - Circuit breaker RE-ABIERTO para oem.com.mx (request de prueba falló). Cooldown 600s
+[2026-11-08 21:59:39] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMiwAFBVV95cUxPVHNRc09mRzVVSy16N00wT0U1VHJHNUNyb0pxWU8tdUM3UlpONHRRcWFCQWhGUzJLVTFHem8xZVB1dVVWdHRKT2NuVWVpZXYwQW80UzI3bEd2Vl9wVTU4UHJrOERDbnJwNmdLOGtkVlZ1MmFuTVdtZ0lYSGhWMV9NRzl2a3lfZDFGNDJFRWpSSldPTjFMZUpyOWIyUkV4RTlwUUtrYVRxRWloSWdacGI3R0pmejk1YUJPMVphV0RfRzM?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:39,071 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMiwAFBVV95cUxPVHNRc09mRzVVSy16N00wT0U1VHJHNUNyb0pxWU8tdUM3UlpONHRRcWFCQWhGUzJLVTFHem8xZVB1dVVWdHRKT2NuVWVpZXYwQW80UzI3bEd2Vl9wVTU4UHJrOERDbnJwNmdLOGtkVlZ1MmFuTVdtZ0lYSGhWMV9NRzl2a3lfZDFGNDJFRWpSSldPTjFMZUpyOWIyUkV4RTlwUUtrYVRxRWloSWdacGI3R0pmejk1YUJPMVphV0RfRzM?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:39] INFO: Fetched (200) <GET https://www.milenio.com/policia/procesan-madre-por-feminicidio-hijas-almoloya-edomex> (referer: https://www.google.com/)
+2026-11-08 21:59:39,099 - scrapling - INFO - Fetched (200) <GET https://www.milenio.com/policia/procesan-madre-por-feminicidio-hijas-almoloya-edomex> (referer: https://www.google.com/)
+[2026-11-08 21:59:39] INFO: Fetched (200) <GET https://www.elsiglodetorreon.com.mx/noticia/2026/95-de-los-feminicidios-en-mexico-sigue-impune-revela-ministra.html> (referer: https://www.google.com/)
+2026-11-08 21:59:39,349 - scrapling - INFO - Fetched (200) <GET https://www.elsiglodetorreon.com.mx/noticia/2026/95-de-los-feminicidios-en-mexico-sigue-impune-revela-ministra.html> (referer: https://www.google.com/)
+[2026-11-08 21:59:39] INFO: Fetched (200) <GET https://tn.com.ar/internacional/2026/09/04/el-caso-de-marisela-escobedo-la-mujer-que-persiguio-al-femicida-de-su-hija-y-fue-asesinada-mientras-reclamaba-justicia-en-mexico/> (referer: https://www.google.com/)
+2026-11-08 21:59:39,350 - scrapling - INFO - Fetched (200) <GET https://tn.com.ar/internacional/2026/09/04/el-caso-de-marisela-escobedo-la-mujer-que-persiguio-al-femicida-de-su-hija-y-fue-asesinada-mientras-reclamaba-justicia-en-mexico/> (referer: https://www.google.com/)
+[2026-11-08 21:59:39] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMivwFBVV95cUxQUl9vQ2RIamtGQlYzM0pSLVNURlBSWVBiLTdUR0tiV0NlWERXMEZTVjJHNlpaV1M1V1YtZ2lkaEJuRXA4SXJqUHdrZFlpY28zZUh5cm1KMGo5OVhkOGxlQlYxQUNHbVhRU2hNM2htUl80Unl0VlozXzZwTFRCUTNJcGtHUGRVM0tFZW5MdEllVVdvWUU1U2F6VDhuYlpYUU82M1o3MTNNaDRibGE2N0NVcVV0cFlIejZzYjlmT2g3c9IBzAFBVV95cUxPS1RyaldSbFJGeUxqSkJTV0M2UlBOa1ZGS1JTMkNYVkMydVBIUjBGY3NKR0l0dW5JZS0wVDlLTW9zU2RDU0NpRUc0akx0a3U5VnpHMWF1b0gweVQ0dURVTks3MTlmS2YwMW1HUm5DRC0wQXc3N3NQcDJDcDl6dml1OXAwU2RGNlc2WUdVTDJUNHBQTEcxNTNpTEJGelpRaTRqUHdaMVBWSmotN0FkNkc3TGd0YzdKclpRQTJXaThTWVhEd2FKaTRjSGgyQ04?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)     
+2026-11-08 21:59:39,767 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMivwFBVV95cUxQUl9vQ2RIamtGQlYzM0pSLVNURlBSWVBiLTdUR0tiV0NlWERXMEZTVjJHNlpaV1M1V1YtZ2lkaEJuRXA4SXJqUHdrZFlpY28zZUh5cm1KMGo5OVhkOGxlQlYxQUNHbVhRU2hNM2htUl80Unl0VlozXzZwTFRCUTNJcGtHUGRVM0tFZW5MdEllVVdvWUU1U2F6VDhuYlpYUU82M1o3MTNNaDRibGE2N0NVcVV0cFlIejZzYjlmT2g3c9IBzAFBVV95cUxPS1RyaldSbFJGeUxqSkJTV0M2UlBOa1ZGS1JTMkNYVkMydVBIUjBGY3NKR0l0dW5JZS0wVDlLTW9zU2RDU0NpRUc0akx0a3U5VnpHMWF1b0gweVQ0dURVTks3MTlmS2YwMW1HUm5DRC0wQXc3N3NQcDJDcDl6dml1OXAwU2RGNlc2WUdVTDJUNHBQTEcxNTNpTEJGelpRaTRqUHdaMVBWSmotN0FkNkc3TGd0YzdKclpRQTJXaThTWVhEd2FKaTRjSGgyQ04?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:40] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMivwFBVV95cUxQT1pFd21SWU41OWFuVjNJMXRPMnJzcmFFQlZCYjBaTDFWUmwwM1B3Ym1Gd2RMcll6V2U1cmlNS3J5QlU5T285aTVabWVWLUJfUDdWZTBmYmw2X3dWY2tzSEFXUl9PSGdMckVLV2dtSGVsTlpNdVlmV2g0a01pSk1sSVY4bzk2WmkyVGJRUFVXTXRTcnF6YnVJTHZnYWVfMXNJdmE4RVJkZV8wRDNMX2JxY0lqYWl0UXR2c3haVXVVRQ?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:40,012 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMivwFBVV95cUxQT1pFd21SWU41OWFuVjNJMXRPMnJzcmFFQlZCYjBaTDFWUmwwM1B3Ym1Gd2RMcll6V2U1cmlNS3J5QlU5T285aTVabWVWLUJfUDdWZTBmYmw2X3dWY2tzSEFXUl9PSGdMckVLV2dtSGVsTlpNdVlmV2g0a01pSk1sSVY4bzk2WmkyVGJRUFVXTXRTcnF6YnVJTHZnYWVfMXNJdmE4RVJkZV8wRDNMX2JxY0lqYWl0UXR2c3haVXVVRQ?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:40] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMipAFBVV95cUxNSmNEV01vUlRxejBGUGR3bDNfNXNoXzdWUkV6VTV0WjBGSURjd3JnRkV3X2FPNUtEbHNQbkctQ2VvWVNuWk9NNTlucTJ4RHNNbFpaeUp1ZThhNHAwZHNqZDZxVkxmWVduZ0pfeWsyUzRzaGFaQXBQQUZfTzRHa1FZaHFqeXRoUWdMZm9JQmtfdWM3bGxjOVRLYUhuQjctZFRkdVpBbw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:40,141 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMipAFBVV95cUxNSmNEV01vUlRxejBGUGR3bDNfNXNoXzdWUkV6VTV0WjBGSURjd3JnRkV3X2FPNUtEbHNQbkctQ2VvWVNuWk9NNTlucTJ4RHNNbFpaeUp1ZThhNHAwZHNqZDZxVkxmWVduZ0pfeWsyUzRzaGFaQXBQQUZfTzRHa1FZaHFqeXRoUWdMZm9JQmtfdWM3bGxjOVRLYUhuQjctZFRkdVpBbw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:40] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMiiAFBVV95cUxOQUYyaVpKeHFMOENTSlVBb1JXSHBTdFZrOFY1cHlTZHkwYVJVTTlyUzhDMXVsRUlPelpNNEliTTk5R0hlaTlGNmhTVFo2cFFoSFFYcDVyd0Q2clF3eVd1NmVKZlBGUnI5M0tFc3hUai1GOHlldFQ3S1JoQW1COFhKU1R2dGx4bkVL0gGIAUFVX3lxTFBBQTNJVk1iNDlST0hEbWZzcWVHY0NvVm1IU2pKbUI3TGlqaG5CZDdYWmg2QzNNRTZKbUhuMTRhQ1F3djFSaWxTbDVwcjFKV1ExSkF6WHZNMVZWVGdfdUN2OVBBcHdEb0xLY21NcU9aQmhiX0FOam1EME9oT2djWkcySzJlZXpxaTA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:40,220 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMiiAFBVV95cUxOQUYyaVpKeHFMOENTSlVBb1JXSHBTdFZrOFY1cHlTZHkwYVJVTTlyUzhDMXVsRUlPelpNNEliTTk5R0hlaTlGNmhTVFo2cFFoSFFYcDVyd0Q2clF3eVd1NmVKZlBGUnI5M0tFc3hUai1GOHlldFQ3S1JoQW1COFhKU1R2dGx4bkVL0gGIAUFVX3lxTFBBQTNJVk1iNDlST0hEbWZzcWVHY0NvVm1IU2pKbUI3TGlqaG5CZDdYWmg2QzNNRTZKbUhuMTRhQ1F3djFSaWxTbDVwcjFKV1ExSkF6WHZNMVZWVGdfdUN2OVBBcHdEb0xLY21NcU9aQmhiX0FOam1EME9oT2djWkcySzJlZXpxaTA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:40] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi7gFBVV95cUxPbkhOZXRsZnBETkYwN0Q4NkNfTkluTnBiMlNNVnJVWHg5a3Z2T0dLMUtKeFlLMHl1TmxQb3NMU2RxT3lEaV9kd0E3cUxOWWZhamI0WFFhRGVnOE92S2xNbEpoTGdpMm9CUG9pckhHT1o1NzJOcFJHRm0ySDZndzVIcGk0MHJUMVpIOHlNUm1GYWRESDJVMnBtX0FPMVlnRzFwWmJwcnJVcVZScDFsUGgzY0RfVXNfYjQ0RWxzdWdVUUVFaVRIV3RUVzVFbG52cVlsdzlLN0pidnRPUWVBV19fZWZ1SXRObnA5andReDln?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:40,386 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi7gFBVV95cUxPbkhOZXRsZnBETkYwN0Q4NkNfTkluTnBiMlNNVnJVWHg5a3Z2T0dLMUtKeFlLMHl1TmxQb3NMU2RxT3lEaV9kd0E3cUxOWWZhamI0WFFhRGVnOE92S2xNbEpoTGdpMm9CUG9pckhHT1o1NzJOcFJHRm0ySDZndzVIcGk0MHJUMVpIOHlNUm1GYWRESDJVMnBtX0FPMVlnRzFwWmJwcnJVcVZScDFsUGgzY0RfVXNfYjQ0RWxzdWdVUUVFaVRIV3RUVzVFbG52cVlsdzlLN0pidnRPUWVBV19fZWZ1SXRObnA5andReDln?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:40] INFO: Fetched (200) <GET https://www.excelsior.com.mx/nacional/hasta-50-mil-ninos-ano-quedan-orfandad-por-violencia-mexico> (referer: https://www.google.com/)
+2026-11-08 21:59:40,623 - scrapling - INFO - Fetched (200) <GET https://www.excelsior.com.mx/nacional/hasta-50-mil-ninos-ano-quedan-orfandad-por-violencia-mexico> (referer: https://www.google.com/)
+[2026-11-08 21:59:40] INFO: Fetched (200) <GET https://www.ladobe.com.mx/2025/12/mexico-es-responsable-por-el-feminicidio-de-lilia-alejandra-hija-de-norma-andrade-coidh/> (referer: https://www.google.com/)
+2026-11-08 21:59:40,932 - scrapling - INFO - Fetched (200) <GET https://www.ladobe.com.mx/2025/12/mexico-es-responsable-por-el-feminicidio-de-lilia-alejandra-hija-de-norma-andrade-coidh/> (referer: https://www.google.com/)        
+[2026-11-08 21:59:41] INFO: Fetched (200) <GET https://www.milenio.com/comunidad/jalisco-ley-proteger-hijos-victimas-feminicidio> (referer: https://www.google.com/)
+2026-11-08 21:59:41,052 - scrapling - INFO - Fetched (200) <GET https://www.milenio.com/comunidad/jalisco-ley-proteger-hijos-victimas-feminicidio> (referer: https://www.google.com/)
+[2026-11-08 21:59:41] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi7wFBVV95cUxNM2lLNjgzRzRDS2JIdFcwemM3dS1GWW05VTdKbUUyRmhZRlhNeFBIZm52ZWtlTnl4Y2hha1FZcVQ4LVpRZGJ5bEItcVBjbTdyMGc4UlVpclNxWmtCRXBUS2pNR0psVXJ2ckdzNmxDQ2VrU2xxcm84WXR1blU2WFFWcmhJUHdnaGpOdlFsSnd4QnRlSkw4WTZuMFZCcDFPOEVodWFkMDkzVlZWWGpEcGduUW44TDMtbXUzTF9OMm1OeWtIMllBQ0wxcnJHVTE4OUNua0NQdGN1Q1M1WGJMU0lVMGlfOEdRYjN6TlFQM3FUNA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:41,482 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi7wFBVV95cUxNM2lLNjgzRzRDS2JIdFcwemM3dS1GWW05VTdKbUUyRmhZRlhNeFBIZm52ZWtlTnl4Y2hha1FZcVQ4LVpRZGJ5bEItcVBjbTdyMGc4UlVpclNxWmtCRXBUS2pNR0psVXJ2ckdzNmxDQ2VrU2xxcm84WXR1blU2WFFWcmhJUHdnaGpOdlFsSnd4QnRlSkw4WTZuMFZCcDFPOEVodWFkMDkzVlZWWGpEcGduUW44TDMtbXUzTF9OMm1OeWtIMllBQ0wxcnJHVTE4OUNua0NQdGN1Q1M1WGJMU0lVMGlfOEdRYjN6TlFQM3FUNA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:41] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMipgFBVV95cUxNdTNSSms1Z0d5elFLcExnZHB4QV8xM09ZLVFHWUhPcXdDVVpIOXM4NUp4TVBOMDRwQ3gwTEdJUEI2ZXdwdGd0TFA1cXd3blg2b0J0V0tuVDFQRWtBT0RqZ1MwZEw1MXVHWVpGdTRuWl9BODlmZjVKLXR5YW5Oby1UTGlMV2hRZ2N3enFubmdoU2JpR2FsbjRVd0JpYVVtd1JjaVl5czJR?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:41,819 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMipgFBVV95cUxNdTNSSms1Z0d5elFLcExnZHB4QV8xM09ZLVFHWUhPcXdDVVpIOXM4NUp4TVBOMDRwQ3gwTEdJUEI2ZXdwdGd0TFA1cXd3blg2b0J0V0tuVDFQRWtBT0RqZ1MwZEw1MXVHWVpGdTRuWl9BODlmZjVKLXR5YW5Oby1UTGlMV2hRZ2N3enFubmdoU2JpR2FsbjRVd0JpYVVtd1JjaVl5czJR?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:41] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi2wFBVV95cUxQdUF6czZDanBqTDRWQ2x0cTBEODBlXzhDbXpjejdEMzBDNVhRMmJYejJISUFTdE9qX1NvUFZUc2ZqZjczX0FMWlZrN3gxOW5QVzc1M09LbVpmVVZUYnNCdUVzWkpOeU9RUzE3WHlmSmw2R3h2a3VOU2M3dWxuVl9GcWJzTWg0czV5WFFrR3FVVFc5d3F3V0hlbkY5eFVPUjFIZi02aml6RFViMHVIbmYzeHdtM1NkbEZMcGtsTTBieWtsQTZQbDJYLXZscE81ajN6ZTRIMkozOTlTQ28?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:41,980 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi2wFBVV95cUxQdUF6czZDanBqTDRWQ2x0cTBEODBlXzhDbXpjejdEMzBDNVhRMmJYejJISUFTdE9qX1NvUFZUc2ZqZjczX0FMWlZrN3gxOW5QVzc1M09LbVpmVVZUYnNCdUVzWkpOeU9RUzE3WHlmSmw2R3h2a3VOU2M3dWxuVl9GcWJzTWg0czV5WFFrR3FVVFc5d3F3V0hlbkY5eFVPUjFIZi02aml6RFViMHVIbmYzeHdtM1NkbEZMcGtsTTBieWtsQTZQbDJYLXZscE81ajN6ZTRIMkozOTlTQ28?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:42] INFO: Fetched (200) <GET https://quintafuerza.mx/mexico/muere-mujer-acuchillada-expareja-frente-sus-hijos-pesqueria-nuevo-leon/> (referer: https://www.google.com/)
+2026-11-08 21:59:42,153 - scrapling - INFO - Fetched (200) <GET https://quintafuerza.mx/mexico/muere-mujer-acuchillada-expareja-frente-sus-hijos-pesqueria-nuevo-leon/> (referer: https://www.google.com/)
+2026-11-08 21:59:42,452 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:42] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:42] INFO: Fetched (200) <GET https://www.tvazteca.com/aztecanoticias/orfandad-por-feminicidio-en-mexico-ninos-y-ninas-enfrentan-abandono-institucional/> (referer: https://www.google.com/)
+2026-11-08 21:59:42,519 - scrapling - INFO - Fetched (200) <GET https://www.tvazteca.com/aztecanoticias/orfandad-por-feminicidio-en-mexico-ninos-y-ninas-enfrentan-abandono-institucional/> (referer: https://www.google.com/)        
+[2026-11-08 21:59:42] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi4AFBVV95cUxPaTB3QmNWQ1RCRTBnN3NkcklhQVVSUHBvYlJqZWh2bFNPYnRaV3NfTUpXNWhpUG5sWTZZYlF3WEhlNmYyT0NLdEcyd2dsZzB3S0lFU3pFSGQ4cThCMTFZRGZ3N2E1SFEwMEozUk0yQzN3UTVWWnRqZllfaWtWalBGVjE1RUZMczN0SHNLbHFBOXllYllka2VBUVJhUE5nMVFQN1huZmZ1WThPVEp0WG80OFN1SjBRQS1pamQySnJIay1BNmFoSktVdEFzcXZFZHVhbG9RVVF5WGo4VlczSjBwSdIB-wFBVV95cUxPd0VpTnZxYmk1Ujk5dm5oM0VVeTVKT0R2YVBFLTAyVXl5cHdESXFDWS01Sm1ITU5OVVFCVVh6UDNjejhRWlRHb1NNNkVPR1U5a2J4Q0xiQm40LVYtemt6ZnpwLTJLNGxHX1kyX05VdG1fUzlSbXIyQUc2Y1Z1UjVhR21XZkdoZUhFVmVBclZjQ1g2WVZsUEZXdDJ6clo3OE44OU52WjBuWmhaUUM3T2dIUXVuYVlUdWtxaXRJX21pZGE0MXFxeEJxWXNDY0psMTFLLTY0V3EyTEpMZko0YThrbm1teDhnVHh0bjg3MklDbE1UbnFldDhkcFd5cw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:42,765 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi4AFBVV95cUxPaTB3QmNWQ1RCRTBnN3NkcklhQVVSUHBvYlJqZWh2bFNPYnRaV3NfTUpXNWhpUG5sWTZZYlF3WEhlNmYyT0NLdEcyd2dsZzB3S0lFU3pFSGQ4cThCMTFZRGZ3N2E1SFEwMEozUk0yQzN3UTVWWnRqZllfaWtWalBGVjE1RUZMczN0SHNLbHFBOXllYllka2VBUVJhUE5nMVFQN1huZmZ1WThPVEp0WG80OFN1SjBRQS1pamQySnJIay1BNmFoSktVdEFzcXZFZHVhbG9RVVF5WGo4VlczSjBwSdIB-wFBVV95cUxPd0VpTnZxYmk1Ujk5dm5oM0VVeTVKT0R2YVBFLTAyVXl5cHdESXFDWS01Sm1ITU5OVVFCVVh6UDNjejhRWlRHb1NNNkVPR1U5a2J4Q0xiQm40LVYtemt6ZnpwLTJLNGxHX1kyX05VdG1fUzlSbXIyQUc2Y1Z1UjVhR21XZkdoZUhFVmVBclZjQ1g2WVZsUEZXdDJ6clo3OE44OU52WjBuWmhaUUM3T2dIUXVuYVlUdWtxaXRJX21pZGE0MXFxeEJxWXNDY0psMTFLLTY0V3EyTEpMZko0YThrbm1teDhnVHh0bjg3MklDbE1UbnFldDhkcFd5cw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:42] INFO: Fetched (200) <GET https://www.proceso.com.mx/nacional/estados/2026/3/24/colectivas-activistas-reclaman-justicia-por-el-feminicidio-de-felix-sus-dos-hijas-en-puebla-368764.html> (referer: https://www.google.com/)
+2026-11-08 21:59:42,789 - scrapling - INFO - Fetched (200) <GET https://www.proceso.com.mx/nacional/estados/2026/3/24/colectivas-activistas-reclaman-justicia-por-el-feminicidio-de-felix-sus-dos-hijas-en-puebla-368764.html> (referer: https://www.google.com/)
+[2026-11-08 21:59:42] INFO: Fetched (200) <GET https://www.tvazteca.com/aztecanoticias/iniciativa-congreso-cdmx-busca-que-hombres-condenados-feminicidio-pierdan-custodia/> (referer: https://www.google.com/)
+2026-11-08 21:59:42,937 - scrapling - INFO - Fetched (200) <GET https://www.tvazteca.com/aztecanoticias/iniciativa-congreso-cdmx-busca-que-hombres-condenados-feminicidio-pierdan-custodia/> (referer: https://www.google.com/)       
+[2026-11-08 21:59:43] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMiywFBVV95cUxQLUgzcTRzNXVhVUxIUnZHWTRuLTJLWHE3bEs4RDhfTVVLY282VWxmOEZzTnZHMHdaWEZROEZRZWJ4d1V4U25CRHdwM3ZFVGxRZWFWckNwa3d1RjJ3eWI1UUV4WG9wRC1EU2hwaEtudDUwNmhnZFNvM1M1MXhpT1BpZzVzNnNGUkp5Y2RTbW9qLTBKLUZuUFNhbVZydzBhNW81UXR5UDBWRjh6OTExSWRMVUNrQ3BBWlpJdmsxcjBVZ1gzYTdHdWc3NWhhOA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:43,247 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMiywFBVV95cUxQLUgzcTRzNXVhVUxIUnZHWTRuLTJLWHE3bEs4RDhfTVVLY282VWxmOEZzTnZHMHdaWEZROEZRZWJ4d1V4U25CRHdwM3ZFVGxRZWFWckNwa3d1RjJ3eWI1UUV4WG9wRC1EU2hwaEtudDUwNmhnZFNvM1M1MXhpT1BpZzVzNnNGUkp5Y2RTbW9qLTBKLUZuUFNhbVZydzBhNW81UXR5UDBWRjh6OTExSWRMVUNrQ3BBWlpJdmsxcjBVZ1gzYTdHdWc3NWhhOA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:43] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi7AFBVV95cUxPNkZpS1N5RTZvNHg1WVVtTWZpU0tMR2VxLS1SMFJmaXZ5Q21Qb1M1NEpFU3ZSM3pySWJ3NWxNSDgzVVdNd1pNOE91Z3dNZ01JVmFRdTBreG1PTkNiQlVfM0NMUXZZM2xMMzVOWDRONWZFd2VmNnRmV1JpaXFkSnVEMnVDMmlxb2FjZ1FmQkpCc0g0RkRwTUxJcjhwdlpDZ1FRQW9WYXZmY3pRdGdJZlEzZm5pSFJEaThwUHpsSDBuLXJEcFhPNkpJcTlKaDI0Rmo2T3IzY0JoTFUzdUE4V1BxelRUX2FxNGN3d1VpZtIBhwJBVV95cUxQdEl4WDlIX2RBRkRSS3FZNW1hNlJKOHduM0gwNzlwMzdScWl5alROQkVUdWEtMEQ2YUpQLXZicUh4N0UwYVlQSFFVcWpab01ob0R3OGhOYnFZUVNhWmZWbXBiTFhMTGJkQWFUV25Td2hpVW5tQjBRYmQtdXdqbHNWSnVseHd6enBSeUQzUnRHeVVVWDJoWElOaTAwaHQ1YXQxaHoySS10dHRtM2NtQUZ2X0o0RkhZTkVSbE43WW1vbGMwSWVPVnZnQmdKMmxDdHhySnhRZ2ZDaHEzRFdiT2pmX2ZuR1dqdDgwWFF1QXNITU5jeUxnWUY1YUEwckJnSi1Sd1lxVER4Yw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:43,380 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi7AFBVV95cUxPNkZpS1N5RTZvNHg1WVVtTWZpU0tMR2VxLS1SMFJmaXZ5Q21Qb1M1NEpFU3ZSM3pySWJ3NWxNSDgzVVdNd1pNOE91Z3dNZ01JVmFRdTBreG1PTkNiQlVfM0NMUXZZM2xMMzVOWDRONWZFd2VmNnRmV1JpaXFkSnVEMnVDMmlxb2FjZ1FmQkpCc0g0RkRwTUxJcjhwdlpDZ1FRQW9WYXZmY3pRdGdJZlEzZm5pSFJEaThwUHpsSDBuLXJEcFhPNkpJcTlKaDI0Rmo2T3IzY0JoTFUzdUE4V1BxelRUX2FxNGN3d1VpZtIBhwJBVV95cUxQdEl4WDlIX2RBRkRSS3FZNW1hNlJKOHduM0gwNzlwMzdScWl5alROQkVUdWEtMEQ2YUpQLXZicUh4N0UwYVlQSFFVcWpab01ob0R3OGhOYnFZUVNhWmZWbXBiTFhMTGJkQWFUV25Td2hpVW5tQjBRYmQtdXdqbHNWSnVseHd6enBSeUQzUnRHeVVVWDJoWElOaTAwaHQ1YXQxaHoySS10dHRtM2NtQUZ2X0o0RkhZTkVSbE43WW1vbGMwSWVPVnZnQmdKMmxDdHhySnhRZ2ZDaHEzRFdiT2pmX2ZuR1dqdDgwWFF1QXNITU5jeUxnWUY1YUEwckJnSi1Sd1lxVER4Yw?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:43] INFO: Fetched (200) <GET https://www.infobae.com/mexico/2025/12/06/triple-feminicidio-en-una-familia-en-tlapacoyan-veracruz-madre-hija-y-abuela-fallecen-tras-ataque-armado/> (referer: https://www.google.com/)
+2026-11-08 21:59:43,594 - scrapling - INFO - Fetched (200) <GET https://www.infobae.com/mexico/2025/12/06/triple-feminicidio-en-una-familia-en-tlapacoyan-veracruz-madre-hija-y-abuela-fallecen-tras-ataque-armado/> (referer: https://www.google.com/)
+[2026-11-08 21:59:43] INFO: Fetched (200) <GET https://www.proceso.com.mx/nacional/estados/2026/5/18/reportan-doble-feminicidio-de-madre-hija-en-cosoleacaque-veracruz-372070.html> (referer: https://www.google.com/)
+2026-11-08 21:59:43,850 - scrapling - INFO - Fetched (200) <GET https://www.proceso.com.mx/nacional/estados/2026/5/18/reportan-doble-feminicidio-de-madre-hija-en-cosoleacaque-veracruz-372070.html> (referer: https://www.google.com/)
+[2026-11-08 21:59:44] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi4wFBVV95cUxQcExlck1fQUF5UFhlNHo0UkdrbFJXUkpDUl9hSGdHNTdKTlJqNTFYTGZWdW0yLU1EWVhuVEJTdXpnZS02M3pMYWc0WW0xalpGV3Z2aExGZGdyT0h0RDlaSldTMXJkazZ5NGF2eVJUTTN4TVVSQl9sMEpiWjk3Uzdqa1ZKZDFTZEFMdGlPRVlBdFZBUjlBbE5qTzhUWE05N3NzMUJ4aUtCSlNMSjVjUzRaemQ4MTVVYjdnQkVLTF9uQXpnM3RXOVBkcXpFaGg1WldVR2F1YzV6dUlzY0JVVUd4MlRJMA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)    
+2026-11-08 21:59:44,201 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi4wFBVV95cUxQcExlck1fQUF5UFhlNHo0UkdrbFJXUkpDUl9hSGdHNTdKTlJqNTFYTGZWdW0yLU1EWVhuVEJTdXpnZS02M3pMYWc0WW0xalpGV3Z2aExGZGdyT0h0RDlaSldTMXJkazZ5NGF2eVJUTTN4TVVSQl9sMEpiWjk3Uzdqa1ZKZDFTZEFMdGlPRVlBdFZBUjlBbE5qTzhUWE05N3NzMUJ4aUtCSlNMSjVjUzRaemQ4MTVVYjdnQkVLTF9uQXpnM3RXOVBkcXpFaGg1WldVR2F1YzV6dUlzY0JVVUd4MlRJMA?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:44] INFO: Fetched (200) <GET https://www.infobae.com/mexico/2026/08/19/urgen-mecanismos-efectivos-para-proteger-a-ninas-y-adolescentes-en-la-ley-general-contra-el-feminicidio-en-mexico/> (referer: https://www.google.com/)
+2026-11-08 21:59:44,268 - scrapling - INFO - Fetched (200) <GET https://www.infobae.com/mexico/2026/08/19/urgen-mecanismos-efectivos-para-proteger-a-ninas-y-adolescentes-en-la-ley-general-contra-el-feminicidio-en-mexico/> (referer: https://www.google.com/)
+[2026-11-08 21:59:44] INFO: Fetched (200) <GET https://news.google.com/rss/articles/CBMi8wFBVV95cUxOSkhxMlNjcVlKa2FzYjl0M1JPNlRob3BpTXBmTlFGazdFZ2lLdDF6Vm5SazZYaTlBZ0o4akprUEUtSzJKMG80SlktR2Z5S05rLWZmc2JqOV8wbXZTMkR3c243SU03OWRMT3p6dVVBQXZ0REJfSEVzTGFiYzA0bFdNd05VUWs3WHJSM3RmSlMtd0RONURNS2RndnlRdVdLczJ6NmVyNE55T2laQ0U3N2xaS2tsT2VmUTBVR0JKOUkwSS1Ud25RNFh2Mm9RSTBpUm1vUjFsbmpYSXk4S1V2MmF3STFCTGhZQ2xyZHZpSkVfVGVoOFHSAY4CQVVfeXFMTzNFcnhoS0tGbm9FSFVtUTF6d2dlZlFfQUtKaFlPa3QzdjZVSUdKaGV6RlJteTE0MEFaWGRUU1ZUYnpwcVBwWWVBdTd6VlJSWGd0X0pIeHdocDFqZVdwQTVSazdRRWhrckNOUGdUNThDT2NvSXNkQ0QtNW9FVV9Hb00ySThRZlJsckVlWnkyUWcxbjdRX2ZrV2FRRlU4TjhxYWdwM21Ta1hWR3c3R2xXSk1uMWxOTE9zanRpZTZaLVJqWHV2SVhIbzNRWTJQWXlzWVRwVGNZMzV4QktmS3VXMVVnTTZnNTRWcm9ycGlRaWJPaFBlbVhnMjZwTWtoeGdLd0xGY2owVjJoZ040X2dB?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+2026-11-08 21:59:44,488 - scrapling - INFO - Fetched (200) <GET https://news.google.com/rss/articles/CBMi8wFBVV95cUxOSkhxMlNjcVlKa2FzYjl0M1JPNlRob3BpTXBmTlFGazdFZ2lLdDF6Vm5SazZYaTlBZ0o4akprUEUtSzJKMG80SlktR2Z5S05rLWZmc2JqOV8wbXZTMkR3c243SU03OWRMT3p6dVVBQXZ0REJfSEVzTGFiYzA0bFdNd05VUWs3WHJSM3RmSlMtd0RONURNS2RndnlRdVdLczJ6NmVyNE55T2laQ0U3N2xaS2tsT2VmUTBVR0JKOUkwSS1Ud25RNFh2Mm9RSTBpUm1vUjFsbmpYSXk4S1V2MmF3STFCTGhZQ2xyZHZpSkVfVGVoOFHSAY4CQVVfeXFMTzNFcnhoS0tGbm9FSFVtUTF6d2dlZlFfQUtKaFlPa3QzdjZVSUdKaGV6RlJteTE0MEFaWGRUU1ZUYnpwcVBwWWVBdTd6VlJSWGd0X0pIeHdocDFqZVdwQTVSazdRRWhrckNOUGdUNThDT2NvSXNkQ0QtNW9FVV9Hb00ySThRZlJsckVlWnkyUWcxbjdRX2ZrV2FRRlU4TjhxYWdwM21Ta1hWR3c3R2xXSk1uMWxOTE9zanRpZTZaLVJqWHV2SVhIbzNRWTJQWXlzWVRwVGNZMzV4QktmS3VXMVVnTTZnNTRWcm9ycGlRaWJPaFBlbVhnMjZwTWtoeGdLd0xGY2owVjJoZ040X2dB?hl=en-US&gl=US&ceid=US:en> (referer: https://www.google.com/)
+[2026-11-08 21:59:44] INFO: Fetched (200) <GET https://comunicadores.mx/2026/11/03/451-ninas-ninos-y-adolescentes-fueron-victimas-de-feminicidio-u-homicidio-doloso-en-mexico/> (referer: https://www.google.com/)
+2026-11-08 21:59:44,748 - scrapling - INFO - Fetched (200) <GET https://comunicadores.mx/2026/11/03/451-ninas-ninos-y-adolescentes-fueron-victimas-de-feminicidio-u-homicidio-doloso-en-mexico/> (referer: https://www.google.com/)   
+[2026-11-08 21:59:44] INFO: Fetched (200) <GET https://www.elfinanciero.com.mx/estados/2026/05/19/doble-feminicidio-de-madre-e-hija-alerta-a-veracruz/> (referer: https://www.google.com/)
+2026-11-08 21:59:44,901 - scrapling - INFO - Fetched (200) <GET https://www.elfinanciero.com.mx/estados/2026/05/19/doble-feminicidio-de-madre-e-hija-alerta-a-veracruz/> (referer: https://www.google.com/)
+[2026-11-08 21:59:45] INFO: Fetched (200) <GET https://www.facebook.com/MilenioDiario/posts/doble-feminicidio-de-madre-e-hija-sacude-a-veracruz-los-cuerpos-de-ana-lilia-y-y/1479203067570493/> (referer: https://www.google.com/)    
+2026-11-08 21:59:45,357 - scrapling - INFO - Fetched (200) <GET https://www.facebook.com/MilenioDiario/posts/doble-feminicidio-de-madre-e-hija-sacude-a-veracruz-los-cuerpos-de-ana-lilia-y-y/1479203067570493/> (referer: https://www.google.com/)
+[2026-11-08 21:59:45] INFO: Fetched (200) <GET https://www.infobae.com/mexico/2026/06/03/mas-de-52-mil-menores-han-sido-victimas-de-delitos-en-mexico-en-2026-abuso-sexual-y-violencia-familiar-encabezan-casos/> (referer: https://www.google.com/)
+2026-11-08 21:59:45,601 - scrapling - INFO - Fetched (200) <GET https://www.infobae.com/mexico/2026/06/03/mas-de-52-mil-menores-han-sido-victimas-de-delitos-en-mexico-en-2026-abuso-sexual-y-violencia-familiar-encabezan-casos/> (referer: https://www.google.com/)
+2026-11-08 21:59:45,751 - trafilatura.core - WARNING - discarding data: https://www.facebook.com/MilenioDiario/posts/doble-feminicidio-de-madre-e-hija-sacude-a-veracruz-los-cuerpos-de-ana-lilia-y-y/1479203067570493/
+[2026-11-08 21:59:46] INFO: Fetched (200) <GET https://www.sdpnoticias.com/mexico/asi-repararan-los-derechos-de-ninas-y-ninos-huerfanos-por-feminicidio/> (referer: https://www.google.com/)
+2026-11-08 21:59:46,228 - scrapling - INFO - Fetched (200) <GET https://www.sdpnoticias.com/mexico/asi-repararan-los-derechos-de-ninas-y-ninos-huerfanos-por-feminicidio/> (referer: https://www.google.com/)
+[2026-11-08 21:59:46] INFO: Fetched (200) <GET https://lasillarota.com/veracruz/estado/2026/7/1/me-arrebato-mi-mama-hija-de-noemi-exige-justicia-por-su-presunto-feminicidio-en-veracruz-518430.html> (referer: https://www.google.com/)
+2026-11-08 21:59:46,380 - scrapling - INFO - Fetched (200) <GET https://lasillarota.com/veracruz/estado/2026/7/1/me-arrebato-mi-mama-hija-de-noemi-exige-justicia-por-su-presunto-feminicidio-en-veracruz-518430.html> (referer: https://www.google.com/)
+2026-11-08 21:59:46,447 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:46] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 21:59:50,455 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:50] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 21:59:54,457 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:54] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 21:59:55] WARNING: Attempt 1 failed: Failed to perform, curl: (28) Operation timed out after 25000 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.. Retrying in 1 seconds...
+2026-11-08 21:59:55,286 - scrapling - WARNING - Attempt 1 failed: Failed to perform, curl: (28) Operation timed out after 25000 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.. Retrying in 1 seconds...
+2026-11-08 21:59:58,473 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 21:59:58] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:00:02,475 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:00:02] "GET /api/analyze/status HTTP/1.1" 200 -
+[2026-11-08 22:00:10] INFO: Fetched (200) <GET https://elcongresista.mx/politica/chihuahua/asesinato-mujer-frente-a-hijo-ciudad-juarez> (referer: https://www.google.com/)
+2026-11-08 22:00:10,986 - scrapling - INFO - Fetched (200) <GET https://elcongresista.mx/politica/chihuahua/asesinato-mujer-frente-a-hijo-ciudad-juarez> (referer: https://www.google.com/)
+  -> Cuerpo completo extraído en 33/40 notas
+2026-11-08 22:00:12,046 - src.analysis.dedup - INFO - Deduplicación: 43 noticias de entrada
+2026-11-08 22:00:12,056 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 22:00:12,070 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 22:00:12,119 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 1 duplicados
+2026-11-08 22:00:12,127 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 22:00:12,129 - src.analysis.dedup - INFO -   Resultado: 43 -> 42 únicos (1 duplicados eliminados)       
+  Total recolectadas: 42
+  Relevantes (score >= 0.25): 41
+  Con mención a NNA: 41
+  41 noticias relevantes recolectadas
+   |-- Alta relevancia:  32
+   |-- Media relevancia: 4
+   |-- Baja relevancia:  5
+   +-- Mencionan NNA:    41
 === PASO 3: TF-IDF (domain-boosted) ===
-  Textos normalizados preparados: 13 documentos
+  Textos normalizados preparados: 41 documentos
 === PASO 6: SIMILITUD + DEDUPLICACIÓN ===
-  Similitud promedio: 0.173 | Pares > 0.5: 0
-2026-11-08 01:14:48,884 - src.analysis.dedup - INFO - Deduplicación: 13 noticias de entrada
-2026-11-08 01:14:48,889 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
-2026-11-08 01:14:48,890 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
-2026-11-08 01:14:48,908 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
-2026-11-08 01:14:48,911 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
-2026-11-08 01:14:48,913 - src.analysis.dedup - INFO -   Resultado: 13 -> 13 únicos (0 duplicados eliminados)       
+  Similitud promedio: 0.243 | Pares > 0.5: 2
+2026-11-08 22:00:12,190 - src.analysis.dedup - INFO - Deduplicación: 41 noticias de entrada
+2026-11-08 22:00:12,203 - src.analysis.dedup - INFO -   Paso 1 - Hash exacto título: 0 duplicados
+2026-11-08 22:00:12,212 - src.analysis.dedup - INFO -   Paso 2 - Jaccard títulos: 0 duplicados
+2026-11-08 22:00:12,265 - src.analysis.dedup - INFO -   Paso 3 - SimHash: 0 duplicados
+2026-11-08 22:00:12,276 - src.analysis.dedup - INFO -   Paso 4 - TF-IDF cosine: 0 duplicados
+2026-11-08 22:00:12,277 - src.analysis.dedup - INFO -   Resultado: 41 -> 41 únicos (0 duplicados eliminados)       
 === PASO 8: BÚSQUEDA MEJORADA ===
   Diccionario guardado (170 términos)
 === PASO 9: DETECCIÓN Y EXTRACCIÓN CON 5 CANDADOS (LLMExtractor) ===
-2026-11-08 01:14:49,052 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:49] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:14:53,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:53] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:14:57,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:14:57] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:01,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:01] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:05,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:05] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:09,062 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:09] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:12,832 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
-2026-11-08 01:15:13,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:13] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:16,193 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
-2026-11-08 01:15:17,048 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:17] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:21,059 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:21] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:23,601 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
-2026-11-08 01:15:24,389 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
-2026-11-08 01:15:25,058 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:27,717 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
-2026-11-08 01:15:29,052 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:29] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:32,812 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
-2026-11-08 01:15:33,061 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:33] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:33,622 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
-2026-11-08 01:15:36,932 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
-2026-11-08 01:15:37,053 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:37] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:40,200 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
-2026-11-08 01:15:41,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:41] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:45,057 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:45] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:46,022 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
-2026-11-08 01:15:49,060 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:49] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:51,176 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
-2026-11-08 01:15:52,028 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
-2026-11-08 01:15:53,054 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:53] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:55,323 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
-2026-11-08 01:15:57,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:15:57] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:15:58,670 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
-2026-11-08 01:16:01,069 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:01] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:05,060 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:05] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:06,190 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 400 json_validate_failed en groq. Reintentando sin response_format estricto...
-2026-11-08 01:16:07,244 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions). Probando siguiente proveedor...
-2026-11-08 01:16:09,049 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:09] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:10,565 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
-2026-11-08 01:16:13,053 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:13] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:13,844 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
-2026-11-08 01:16:17,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:17] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:21,062 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:21] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:24,484 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 2.5s (intento 1/2)...
-2026-11-08 01:16:25,051 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:25] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:27,769 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 5.0s (intento 2/2)...
-2026-11-08 01:16:29,055 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:29] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:33,047 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:33] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:33,556 - src.analysis.llm_extractor - WARNING - [LLMExtractor] Proveedor 'groq' falló (Rate limit (429) persistente en proveedor groq). Probando siguiente proveedor...
-2026-11-08 01:16:33,570 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 13 noticias procesado (12 llamadas a LLM, 1 filtradas por gatekeeper/presupuesto).
-  Score semántico promedio: 0.4292
-  13 noticias procesadas | Alta: 6 | Media: 0 | No relevante: 7
+2026-11-08 22:00:16,462 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:00:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:00:35,825 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 14.5s (intento 1/2)...
+2026-11-08 22:00:51,126 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 3.5s (intento 2/2)...
+2026-11-08 22:01:01,065 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 14.5s (intento 1/2)...
+2026-11-08 22:01:16,479 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:01:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:01:22,314 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 15.5s (intento 1/2)...
+2026-11-08 22:01:44,210 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 11.5s (intento 1/2)...
+2026-11-08 22:02:02,141 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 9.5s (intento 1/2)...
+2026-11-08 22:02:16,466 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:02:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:02:18,277 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 17.5s (intento 1/2)...
+2026-11-08 22:02:42,375 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 14.5s (intento 1/2)...
+2026-11-08 22:03:03,543 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 17.5s (intento 1/2)...
+2026-11-08 22:03:16,458 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:03:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:03:27,737 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 18.5s (intento 1/2)...
+2026-11-08 22:03:52,722 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 22.5s (intento 1/2)...
+2026-11-08 22:04:16,468 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:04:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:04:21,954 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 10.5s (intento 1/2)...
+2026-11-08 22:04:38,788 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 37.5s (intento 1/2)...
+2026-11-08 22:05:16,455 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:05:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:05:28,557 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 25.5s (intento 1/2)...
+2026-11-08 22:06:12,066 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 6.5s (intento 1/2)...
+2026-11-08 22:06:16,460 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:06:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:06:25,058 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 13.5s (intento 1/2)...
+2026-11-08 22:06:45,057 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 14.5s (intento 1/2)...
+2026-11-08 22:07:06,122 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 15.5s (intento 1/2)...
+2026-11-08 22:07:16,461 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:07:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:07:28,052 - src.analysis.llm_extractor - WARNING - [LLMExtractor] 429 Rate limit en proveedor 'groq'. Reintentando en 14.5s (intento 1/2)...
+2026-11-08 22:07:48,427 - src.analysis.llm_extractor - INFO - [LLMExtractor] Lote de 41 noticias procesado (25 llamadas a LLM, 16 filtradas por gatekeeper/presupuesto).
+  Score semántico promedio: 0.3017
+  41 noticias procesadas | Alta: 12 | Media: 0 | No relevante: 29
 === PASO 10: AGRUPACIÓN TEMÁTICA Y GEOGRÁFICA (OE-4, post-filtro) ===
-  Corpus relevante para agrupación: 6 noticias (Alta/Media)
-  Grupos temáticos/geográficos generados: 6
+  Corpus relevante para agrupación: 12 noticias (Alta/Media)
+  Grupos temáticos/geográficos generados: 9
 === GUARDANDO RESULTADOS ===
   CSV: data\noticias_analyzed_simplified.csv
   Metadatos: data\noticias_analyzed_simplified_metadata.json
-  Total: 13 | NNA: 6 | Alta: 6 | Media: 0
+  Total: 41 | NNA: 12 | Alta: 12 | Media: 0
 === PASO 11: PERSISTENCIA POSTGRESQL (OE-3) ===
-2026-11-08 01:16:33,692 - src.database.repository - INFO - Batch insert: 13 noticias insertadas
-  13 noticias persistidas en PostgreSQL
+2026-11-08 22:07:48,605 - src.database.repository - INFO - Batch insert: 41 noticias insertadas
+  41 noticias persistidas en PostgreSQL
 ============================================================
-  COMPLETADO — 13 noticias analizadas
+  COMPLETADO — 41 noticias analizadas
 ============================================================
-2026-11-08 01:16:33,709 - root - INFO - Datos cargados: 13 noticias desde análisis
-2026-11-08 01:16:33,716 - root - INFO - Análisis background completado exitosamente
-2026-11-08 01:16:37,046 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:37] "GET /api/analyze/status HTTP/1.1" 200 -
-2026-11-08 01:16:38,288 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET / HTTP/1.1" 200 -
-2026-11-08 01:16:38,369 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-08 01:16:38,418 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
-2026-11-08 01:16:38,425 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
-2026-11-08 01:16:38,476 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/stats HTTP/1.1" 200 -
-2026-11-08 01:16:38,545 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:38] "GET /api/sessions HTTP/1.1" 200 -
-2026-11-08 01:16:40,303 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:16:40] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&clasificacion=Alta&sesion_id=all HTTP/1.1" 200 -
-2026-11-08 01:17:01,415 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 01:17:01] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
-
+2026-11-08 22:07:48,629 - root - INFO - Datos cargados: 41 noticias desde análisis
+2026-11-08 22:07:48,630 - root - INFO - Análisis background completado exitosamente
+2026-11-08 22:08:16,459 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:16] "GET /api/analyze/status HTTP/1.1" 200 -
+2026-11-08 22:08:18,505 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET / HTTP/1.1" 200 -
+2026-11-08 22:08:18,610 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-08 22:08:18,628 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-08 22:08:18,655 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET /api/stats HTTP/1.1" 200 -
+2026-11-08 22:08:18,689 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET /static/img/logo_sistema.png HTTP/1.1" 304 -
+2026-11-08 22:08:18,691 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET /api/sessions HTTP/1.1" 200 -
+2026-11-08 22:11:20,933 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:11:20] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
 
 Admin_NNA_2026!

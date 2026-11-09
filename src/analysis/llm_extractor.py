@@ -701,7 +701,7 @@ class LLMExtractor:
             available.append({
                 "name": "groq",
                 "api_key": groq_key,
-                "model": os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b"),
+                "model": os.environ.get("GROQ_MODEL", "qwen/qwen3.8-27b"),
                 "base_url": "https://api.groq.com/openai/v1/chat/completions",
             })
 
@@ -824,9 +824,23 @@ class LLMExtractor:
                 timeout=30,
             )
             if resp.status_code >= 400:
+                def _calc_retry_delay(r, default_val: float) -> float:
+                    try:
+                        hdr = r.headers.get("retry-after") or r.headers.get("x-ratelimit-reset-tokens")
+                        if hdr:
+                            s = str(hdr).strip()
+                            if s.endswith("ms"):
+                                return max(1.5, float(s[:-2]) / 1000.0 + 0.5)
+                            elif s.endswith("s"):
+                                return max(1.5, float(s[:-1]) + 0.5)
+                            return max(1.5, float(s) + 0.5)
+                    except Exception:
+                        pass
+                    return default_val
+
                 if resp.status_code == 429:
                     if attempt < max_retries:
-                        backoff = 2.5 * (attempt + 1)
+                        backoff = _calc_retry_delay(resp, 4.0 * (attempt + 1))
                         logger.warning(
                             "[LLMExtractor] 429 Rate limit en proveedor '%s'. Reintentando en %.1fs (intento %d/%d)...",
                             provider["name"],
@@ -838,7 +852,8 @@ class LLMExtractor:
                         continue
                     raise RuntimeError(f"Rate limit (429) persistente en proveedor {provider['name']}")
                 elif resp.status_code == 400 and "json_validate_failed" in resp.text:
-                    logger.warning("[LLMExtractor] 400 json_validate_failed en %s. Reintentando sin response_format estricto...", provider["name"])
+                    logger.warning("[LLMExtractor] 400 json_validate_failed en %s. Pausando 2.5s y reintentando sin response_format estricto...", provider["name"])
+                    time.sleep(2.5)
                     payload_no_rf = dict(payload)
                     payload_no_rf.pop("response_format", None)
                     resp = requests.post(
@@ -847,6 +862,11 @@ class LLMExtractor:
                         json=payload_no_rf,
                         timeout=30,
                     )
+                    if resp.status_code == 429 and attempt < max_retries:
+                        backoff = _calc_retry_delay(resp, 5.0)
+                        logger.warning("[LLMExtractor] 429 tras reintento en '%s'. Esperando %.1fs...", provider["name"], backoff)
+                        time.sleep(backoff)
+                        continue
                 else:
                     logger.warning(
                         "[LLMExtractor] Error %d en proveedor '%s': %s",
@@ -1196,7 +1216,7 @@ class LLMExtractor:
         titles: list[str],
         contents: list[str],
         urls: Optional[list[str]] = None,
-        delay_between_llm_calls: float = 2.5,
+        delay_between_llm_calls: float = 4.0,
         max_llm_calls: int = 25,
     ) -> list[dict[str, Any]]:
         """
