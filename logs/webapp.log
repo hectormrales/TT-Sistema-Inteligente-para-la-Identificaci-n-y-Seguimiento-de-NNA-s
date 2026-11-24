@@ -1432,3 +1432,22 @@ NameError: name 'logger' is not defined
 2026-11-08 22:08:18,689 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
 2026-11-08 22:08:18,691 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:08:18] "GET /api/sessions HTTP/1.1" 200 -
 2026-11-08 22:11:20,933 - werkzeug - INFO - 127.0.0.1 - - [08/Nov/2026 22:11:20] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc&sesion_id=all HTTP/1.1" 200 -
+2026-11-23 19:13:12,082 - app - INFO - Esquema FTS inicializado
+2026-11-23 19:13:12,152 - root - INFO - Datos cargados: 41 noticias desde análisis
+2026-11-23 19:13:12,152 - app - INFO - Iniciando aplicación web NNA Sistema
+2026-11-23 19:13:12,214 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.43:5000
+2026-11-23 19:13:12,214 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-11-23 19:13:33,559 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:33] "[32mGET / HTTP/1.1[0m" 302 -
+2026-11-23 19:13:33,597 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:33] "GET /login?next=/ HTTP/1.1" 200 -
+2026-11-23 19:13:33,853 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:33] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-23 19:13:34,177 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:34] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-23 19:13:50,479 - app - INFO - Login exitoso: admin desde 127.0.0.1
+2026-11-23 19:13:50,480 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:50] "[32mPOST /login?next=/ HTTP/1.1[0m" 302 -
+2026-11-23 19:13:50,523 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:50] "GET / HTTP/1.1" 200 -
+2026-11-23 19:13:50,594 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:50] "[36mGET /static/img/logo_sistema.png HTTP/1.1[0m" 304 -
+2026-11-23 19:13:50,796 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:50] "GET /api/noticias?page=1&per_page=12&only_nna=false&orden=fecha_desc HTTP/1.1" 200 -
+2026-11-23 19:13:50,833 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:50] "GET /api/stats HTTP/1.1" 200 -
+2026-11-23 19:13:50,947 - werkzeug - INFO - 127.0.0.1 - - [23/Nov/2026 19:13:50] "GET /api/sessions HTTP/1.1" 200 -
